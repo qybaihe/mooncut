@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   Img,
   interpolate,
@@ -10,13 +11,41 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
+import {dbToVolume, getBgmTrack} from '../bgm';
+import {
+  FaceTrackedVideo,
+  type FaceFramingProfile,
+  type FaceTrackManifest,
+} from '../components/FaceTrackedVideo';
 import subtitles from '../generated-subtitles.json';
 import type {TimelineBeat, VideoTimeline} from '../timeline';
 import './talking-head.css';
 
-type Props = {timeline: VideoTimeline; talkingHeadSrc: string | null};
+export type TalkingHeadDemoProps = {
+  timeline: VideoTimeline;
+  talkingHeadSrc: string | null;
+  faceTrack: FaceTrackManifest | null;
+  sourceAspectRatio?: number;
+  bgmTrackId?: string | null;
+  bgmGainOffsetDb?: number;
+  sourceSegments?: SourceTimeSegment[];
+};
+export type SourceTimeSegment = {
+  outputStartFrame: number;
+  outputEndFrame: number;
+  sourceStartFrame: number;
+};
 type SubtitleWord = {text: string; start_ms: number; end_ms: number; confidence: number};
 type SubtitleSegment = {text: string; start_ms: number; end_ms: number};
+
+const pipFraming: FaceFramingProfile = {
+  aspectRatio: 1,
+  faceFill: 0.68,
+  anchor: [0.5, 0.45],
+  shape: 'circle',
+  maxZoom: 4,
+  edgeMode: 'pad',
+};
 
 const emphasisWords = new Set([
   '北京', '探月', '计划', '黑客', 'OpenAI', 'GPT', '5.6', '实测', '震撼',
@@ -25,6 +54,49 @@ const emphasisWords = new Set([
 
 const activeBeat = (frame: number, beats: TimelineBeat[]) =>
   beats.find((beat) => frame >= beat.start && frame < beat.end) ?? beats[beats.length - 1];
+
+const speakerModeRunStart = (beat: TimelineBeat, beats: TimelineBeat[]) => {
+  let index = beats.indexOf(beat);
+  while (index > 0 && beats[index - 1].speakerMode === beat.speakerMode) index -= 1;
+  return beats[Math.max(0, index)]?.start ?? beat.start;
+};
+
+export const validateSourceSegments = (
+  segments: readonly SourceTimeSegment[],
+  durationInFrames: number,
+) => {
+  if (segments.length === 0) return segments;
+  let expectedStart = 0;
+  for (const segment of segments) {
+    const values = [segment.outputStartFrame, segment.outputEndFrame, segment.sourceStartFrame];
+    if (!values.every(Number.isInteger) || segment.sourceStartFrame < 0) {
+      throw new Error('TalkingHeadDemo source segments require non-negative integer frames');
+    }
+    if (segment.outputStartFrame !== expectedStart || segment.outputEndFrame <= segment.outputStartFrame) {
+      throw new Error('TalkingHeadDemo source segments must be ordered, contiguous, and non-overlapping');
+    }
+    expectedStart = segment.outputEndFrame;
+  }
+  if (expectedStart !== durationInFrames) {
+    throw new Error('TalkingHeadDemo source segments must cover the complete output timeline');
+  }
+  return segments;
+};
+
+const resolveSourceTiming = (frame: number, segments: readonly SourceTimeSegment[]) => {
+  const segment = segments.find(
+    (item) => frame >= item.outputStartFrame && frame < item.outputEndFrame,
+  );
+  if (!segment) return {sourceFrame: frame, trimBefore: 0};
+  const trimBefore = segment.sourceStartFrame - segment.outputStartFrame;
+  if (trimBefore < 0) {
+    throw new Error('TalkingHeadDemo source segments require non-negative trimBefore offsets');
+  }
+  return {
+    sourceFrame: segment.sourceStartFrame + (frame - segment.outputStartFrame),
+    trimBefore,
+  };
+};
 
 const BrowserChrome = ({url, dark = false}: {url: string; dark?: boolean}) => (
   <div className={`browser-bar ${dark ? 'browser-bar-dark' : ''}`}>
@@ -130,18 +202,40 @@ const PlaceholderSpeaker = () => (
   </div>
 );
 
-const Speaker = ({beat, localFrame, src}: {beat: TimelineBeat; localFrame: number; src: string | null}) => {
+const Speaker = ({
+  beat,
+  faceTrack,
+  localFrame,
+  sourceAspectRatio,
+  sourceTimeMs,
+  trimBefore,
+  src,
+}: {
+  beat: TimelineBeat;
+  faceTrack: FaceTrackManifest | null;
+  localFrame: number;
+  sourceAspectRatio: number;
+  sourceTimeMs: number;
+  trimBefore: number;
+  src: string | null;
+}) => {
   const {fps} = useVideoConfig();
   const entrance = spring({frame: localFrame, fps, config: {damping: 18, stiffness: 130}});
 
-  if (beat.speakerMode === 'focus') {
+  if (beat.speakerMode === 'native') {
     return (
-      <div className="speaker speaker-focus" style={{opacity: entrance}}>
+      <div className="speaker speaker-native" style={{opacity: entrance}}>
         {src ? (
           <>
-            <OffthreadVideo className="speaker-focus-blur" src={staticFile(src)} volume={0} />
-            <div className="speaker-focus-shade" />
-            <OffthreadVideo className="speaker-focus-video" src={staticFile(src)} />
+            <OffthreadVideo className="speaker-native-blur" src={staticFile(src)} trimBefore={trimBefore} volume={0} />
+            <div className="speaker-native-shade" />
+            <div className="speaker-native-video">
+              <OffthreadVideo
+                className="speaker-native-source"
+                src={staticFile(src)}
+                trimBefore={trimBefore}
+              />
+            </div>
           </>
         ) : <PlaceholderSpeaker />}
       </div>
@@ -149,8 +243,18 @@ const Speaker = ({beat, localFrame, src}: {beat: TimelineBeat; localFrame: numbe
   }
 
   return (
-    <div className="speaker speaker-pip" style={{opacity: entrance, transform: `translateY(${(1 - entrance) * -22}px)`}}>
-      {src ? <OffthreadVideo className="speaker-video" src={staticFile(src)} /> : <PlaceholderSpeaker />}
+    <div className="speaker speaker-circle" style={{opacity: entrance, transform: `translateY(${(1 - entrance) * -22}px)`}}>
+      {src ? (
+        <FaceTrackedVideo
+          className="speaker-video"
+          faceTrack={faceTrack}
+          framing={pipFraming}
+          sourceAspectRatio={sourceAspectRatio}
+          sourceTimeMs={sourceTimeMs}
+          src={staticFile(src)}
+          trimBefore={trimBefore}
+        />
+      ) : <PlaceholderSpeaker />}
     </div>
   );
 };
@@ -187,21 +291,54 @@ const DynamicCaption = ({frame}: {frame: number}) => {
   );
 };
 
-export const TalkingHeadDemo: React.FC<Props> = ({timeline, talkingHeadSrc}) => {
+export const TalkingHeadDemo: React.FC<TalkingHeadDemoProps> = ({
+  bgmGainOffsetDb = 0,
+  bgmTrackId = null,
+  faceTrack,
+  sourceAspectRatio = 9 / 16,
+  sourceSegments = [],
+  timeline,
+  talkingHeadSrc,
+}) => {
   const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const validatedSourceSegments = React.useMemo(
+    () => validateSourceSegments(sourceSegments, timeline.durationInFrames),
+    [sourceSegments, timeline.durationInFrames],
+  );
   const beat = activeBeat(frame, timeline.beats);
   const localFrame = frame - beat.start;
+  const speakerLocalFrame = frame - speakerModeRunStart(beat, timeline.beats);
+  const {sourceFrame, trimBefore} = resolveSourceTiming(frame, validatedSourceSegments);
+  const sourceTimeMs = (sourceFrame / fps) * 1000;
   const reveal = interpolate(localFrame, [0, 16], [0, 1], {easing: Easing.out(Easing.cubic), extrapolateRight: 'clamp'});
+  const bgmTrack = bgmTrackId ? getBgmTrack(bgmTrackId) : null;
 
   return (
     <AbsoluteFill className="canvas">
+      {bgmTrack ? (
+        <Audio
+          loop
+          name={`BGM · ${bgmTrack.title}`}
+          src={staticFile(bgmTrack.file)}
+          volume={dbToVolume(bgmTrack.mix.gainDb + bgmGainOffsetDb)}
+        />
+      ) : null}
       <AbsoluteFill className={`background background-${beat.visual}`}><Background beat={beat} localFrame={localFrame} /></AbsoluteFill>
       <div className={`title-block title-${beat.speakerMode}`} style={{opacity: reveal, transform: `translateY(${(1 - reveal) * 22}px)`}}>
         <div className="eyebrow">{beat.kicker}</div>
         <h1>{beat.title}</h1>
       </div>
-      <Speaker beat={beat} localFrame={localFrame} src={talkingHeadSrc} />
-      <DynamicCaption frame={frame} />
+      <Speaker
+        beat={beat}
+        faceTrack={faceTrack}
+        localFrame={speakerLocalFrame}
+        sourceAspectRatio={sourceAspectRatio}
+        sourceTimeMs={sourceTimeMs}
+        trimBefore={trimBefore}
+        src={talkingHeadSrc}
+      />
+      <DynamicCaption frame={sourceFrame} />
       <div className="progress"><div style={{width: `${(frame / timeline.durationInFrames) * 100}%`}} /></div>
     </AbsoluteFill>
   );

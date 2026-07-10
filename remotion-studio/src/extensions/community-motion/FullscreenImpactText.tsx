@@ -31,6 +31,8 @@ export type FullscreenImpactTextProps = {
   fontSize?: number;
   /** Lets a composition tune how much the source video is dimmed. */
   backdropOpacity?: number;
+  /** Local sequence frame where the restrained flash/ring pulse lands. */
+  impactAtFrame?: number;
 };
 
 const clamp = (value: number, min: number, max: number) =>
@@ -70,20 +72,27 @@ export const FullscreenImpactText: React.FC<FullscreenImpactTextProps> = ({
   placement = "center",
   fontSize,
   backdropOpacity = 0.72,
+  impactAtFrame,
 }) => {
   const frame = useCurrentFrame();
   const { height, width } = useVideoConfig();
   const safeDuration = Math.max(12, Math.round(duration));
-  const impactFrame = Math.max(4, Math.round(safeDuration * 0.28));
+  const impactFrame = clamp(
+    Math.round(impactAtFrame ?? safeDuration * 0.28),
+    4,
+    Math.max(4, safeDuration - 9),
+  );
   const focusEnd = Math.max(2, impactFrame - 2);
+  const focusWindowFrames = clamp(Math.round(safeDuration * 0.18), 12, 20);
+  const focusStart = Math.max(0, focusEnd - focusWindowFrames);
   const exitFrames = Math.max(3, Math.round(safeDuration * 0.17));
   const exitStart = Math.min(
     safeDuration - 1,
     Math.max(impactFrame + 7, safeDuration - exitFrames),
   );
 
-  const focus = interpolate(frame, [0, focusEnd], [0, 1], {
-    easing: Easing.out(Easing.cubic),
+  const focus = interpolate(frame, [focusStart, focusEnd], [0, 1], {
+    easing: Easing.inOut(Easing.cubic),
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

@@ -12,6 +12,11 @@ import {
   useVideoConfig,
 } from 'remotion';
 import {FullscreenImpactText} from '../extensions/community-motion/FullscreenImpactText';
+import {MacDesktop, MacFloatingVideoWindow, MacWindow} from '../extensions/community-motion/MacDesktop';
+import {
+  DEFAULT_TALKING_HEAD_GENERATION_PRESET,
+  type TalkingHeadGenerationPreset,
+} from '../presets/default-talking-head';
 import subtitles from '../generated-horizontal-subtitles.json';
 import type {HorizontalBeat, HorizontalVisual} from '../horizontal-timeline';
 import {horizontalTimeline} from '../horizontal-timeline';
@@ -53,6 +58,7 @@ const activeBeat = (frame: number) =>
   horizontalTimeline.beats[horizontalTimeline.beats.length - 1];
 
 type MotionMode = 'baseline' | 'effects-lab';
+type WindowTones = TalkingHeadGenerationPreset['windows'];
 
 const impactMoments = [
   // The impact itself lands on the spoken keyword, not merely after it.
@@ -80,13 +86,17 @@ const ImpactMoments = () => (
 );
 
 const EventStage = ({
+  appName,
   duration,
   enhanced,
   localFrame,
+  tone,
 }: {
+  appName: string;
   duration: number;
   enhanced: boolean;
   localFrame: number;
+  tone: WindowTones['utilityTone'];
 }) => {
   const posterScroll = interpolate(localFrame, [0, duration], [0, 1420], {
     easing: Easing.inOut(Easing.cubic),
@@ -168,7 +178,14 @@ const EventStage = ({
           </span>
         </div>
       ) : null}
-      <div className="h-event-facts">
+      <MacWindow
+        bodyClassName="h-event-facts"
+        className="h-event-facts-window"
+        kind="utility"
+        title={`活动信息 · ${appName}`}
+        tone={tone}
+        toolbar={<span className="h-native-live"><i /> LIVE</span>}
+      >
         <div className="h-fact-primary"><b>PHYSICAL AI</b><span>HACKATHON</span></div>
         <div className="h-fact-grid">
           <span><small>DATE</small><b>07.10–07.12</b></span>
@@ -177,7 +194,7 @@ const EventStage = ({
           <span><small>STATUS</small><b className="h-live"><i /> LIVE</b></span>
         </div>
         <div className="h-source-line">活动信息经主办方海报与公开赛事页交叉核验</div>
-      </div>
+      </MacWindow>
     </div>
   );
 };
@@ -260,11 +277,13 @@ const BrowserStage = ({
   visual,
   duration,
   localFrame,
+  tone,
 }: {
   enhanced: boolean;
   visual: 'release' | 'design';
   duration: number;
   localFrame: number;
+  tone: WindowTones['browserTone'];
 }) => {
   const isRelease = visual === 'release';
   const pageShift = interpolate(localFrame, [0, duration], [0, isRelease ? -105 : -72], {
@@ -279,9 +298,15 @@ const BrowserStage = ({
 
   return (
     <div className="h-browser-stage">
-      <div className="h-browser-window">
+      <MacWindow
+        bodyClassName="h-browser-app"
+        className="h-browser-window"
+        kind="browser"
+        title={isRelease ? 'GPT-5.6 — Safari' : 'GPT-5.6 Design — Safari'}
+        tone={tone}
+      >
         <div className="h-browser-bar">
-          <div className="h-browser-dots"><i /><i /><i /></div>
+          <div className="h-browser-navigation"><span>‹</span><span>›</span></div>
           <div className="h-address">openai.com/index/gpt-5-6/{isRelease ? '' : '#a-leap-forward-in-design'}</div>
           <div className="h-browser-actions"><span>↻</span><span>⋯</span></div>
         </div>
@@ -292,19 +317,23 @@ const BrowserStage = ({
         </div>
         {enhanced ? <BrowserEvidenceFocus localFrame={localFrame} pageShift={pageShift} visual={visual} /> : null}
         <div className="h-verified"><i>✓</i><span>OPENAI OFFICIAL</span><b>VERIFIED SOURCE</b></div>
-      </div>
+      </MacWindow>
     </div>
   );
 };
 
 const PipelineStage = ({
+  appName,
   duration,
   enhanced,
   localFrame,
+  tone,
 }: {
+  appName: string;
   duration: number;
   enhanced: boolean;
   localFrame: number;
+  tone: WindowTones['appTone'];
 }) => {
   const nodes = [
     {step: '01', label: '口播视频', meta: 'MP4 · 1080P'},
@@ -321,6 +350,14 @@ const PipelineStage = ({
 
   return (
     <div className="h-pipeline-stage">
+      <MacWindow
+        bodyClassName="h-pipeline-workspace"
+        className="h-pipeline-window"
+        kind="app"
+        title={`${appName} · Workflow`}
+        tone={tone}
+        toolbar={<span className="h-native-live"><i /> RUNNING</span>}
+      >
       <div className="h-pipeline-line"><span style={{width: `${progress}%`}} /></div>
       <div className="h-pipeline-nodes">
         {nodes.map((node, index) => {
@@ -385,13 +422,24 @@ const PipelineStage = ({
         <i>→</i>
         <div><small>OUTPUT</small><b>完整剧情化视频</b><span>真实素材 + 动态字幕 + 自动分镜</span></div>
       </div>
+      </MacWindow>
     </div>
   );
 };
 
 const waveform = Array.from({length: 54}, (_, index) => 18 + ((index * 37) % 54));
 
-const EditorStage = ({frame, src}: {frame: number; src: string}) => {
+const EditorStage = ({
+  appName,
+  frame,
+  src,
+  tone,
+}: {
+  appName: string;
+  frame: number;
+  src: string;
+  tone: WindowTones['appTone'];
+}) => {
   const {fps} = useVideoConfig();
   const currentMs = (frame / fps) * 1000;
   const currentSegment = (subtitles.segments as SubtitleSegment[]).find(
@@ -400,7 +448,14 @@ const EditorStage = ({frame, src}: {frame: number; src: string}) => {
   const playhead = (frame / horizontalTimeline.durationInFrames) * 100;
 
   return (
-    <div className="h-editor-stage">
+    <MacWindow
+      bodyClassName="h-editor-window-body"
+      className="h-editor-stage"
+      kind="app"
+      title={`${appName} · Auto Cut`}
+      tone={tone}
+      toolbar={<span className="h-native-live"><i /> LIVE</span>}
+    >
       <div className="h-editor-topbar">
         <b>AUTO CUT · PROJECT 01</b>
         <span><i /> PROCESSING LIVE</span>
@@ -436,11 +491,19 @@ const EditorStage = ({frame, src}: {frame: number; src: string}) => {
           <div className="h-playhead" style={{left: `${playhead}%`}}><i /></div>
         </div>
       </div>
-    </div>
+    </MacWindow>
   );
 };
 
-const BetaStage = ({localFrame}: {localFrame: number}) => {
+const BetaStage = ({
+  appName,
+  localFrame,
+  tone,
+}: {
+  appName: string;
+  localFrame: number;
+  tone: WindowTones['utilityTone'];
+}) => {
   const rows = [
     ['ASR', '逐词时间戳已生成'],
     ['SOURCES', '官方页面已核验'],
@@ -448,7 +511,14 @@ const BetaStage = ({localFrame}: {localFrame: number}) => {
   ];
   return (
     <div className="h-beta-stage">
-      <div className="h-beta-stack">
+      <MacWindow
+        bodyClassName="h-beta-stack"
+        className="h-beta-window"
+        kind="utility"
+        title={`${appName} · Beta Check`}
+        tone={tone}
+        toolbar={<span className="h-native-live"><i /> READY</span>}
+      >
         {rows.map(([label, detail], index) => {
           const reveal = interpolate(localFrame, [index * 7, index * 7 + 12], [0, 1], {
             extrapolateLeft: 'clamp',
@@ -460,7 +530,7 @@ const BetaStage = ({localFrame}: {localFrame: number}) => {
             </div>
           );
         })}
-      </div>
+      </MacWindow>
       <div className="h-beta-note"><b>V0.1</b><span>测试不是终点<br />它是下一次迭代的输入</span></div>
     </div>
   );
@@ -471,35 +541,63 @@ const Stage = ({
   enhanced,
   frame,
   localFrame,
+  preset,
   src,
 }: {
   beat: HorizontalBeat;
   enhanced: boolean;
   frame: number;
   localFrame: number;
+  preset: TalkingHeadGenerationPreset;
   src: string;
 }) => {
   const duration = beat.end - beat.start;
-  if (beat.visual === 'event') return <EventStage duration={duration} enhanced={enhanced} localFrame={localFrame} />;
-  if (beat.visual === 'release' || beat.visual === 'design') {
-    return <BrowserStage duration={duration} enhanced={enhanced} localFrame={localFrame} visual={beat.visual} />;
+  if (beat.visual === 'event') {
+    return <EventStage appName={preset.desktop.applicationName} duration={duration} enhanced={enhanced} localFrame={localFrame} tone={preset.windows.utilityTone} />;
   }
-  if (beat.visual === 'pipeline') return <PipelineStage duration={duration} enhanced={enhanced} localFrame={localFrame} />;
-  if (beat.visual === 'editor') return <EditorStage frame={frame} src={src} />;
-  if (beat.visual === 'beta') return <BetaStage localFrame={localFrame} />;
+  if (beat.visual === 'release' || beat.visual === 'design') {
+    return <BrowserStage duration={duration} enhanced={enhanced} localFrame={localFrame} tone={preset.windows.browserTone} visual={beat.visual} />;
+  }
+  if (beat.visual === 'pipeline') return <PipelineStage appName={preset.desktop.applicationName} duration={duration} enhanced={enhanced} localFrame={localFrame} tone={preset.windows.appTone} />;
+  if (beat.visual === 'editor') return <EditorStage appName={preset.desktop.applicationName} frame={frame} src={src} tone={preset.windows.appTone} />;
+  if (beat.visual === 'beta') return <BetaStage appName={preset.desktop.applicationName} localFrame={localFrame} tone={preset.windows.utilityTone} />;
   return null;
 };
 
-const Speaker = ({beat, localFrame, src}: {beat: HorizontalBeat; localFrame: number; src: string}) => {
+const Speaker = ({
+  beat,
+  localFrame,
+  src,
+  tone,
+}: {
+  beat: HorizontalBeat;
+  localFrame: number;
+  src: string;
+  tone: WindowTones['cameraTone'];
+}) => {
   const {fps} = useVideoConfig();
   const entrance = spring({frame: localFrame, fps, config: {damping: 20, stiffness: 120}});
   if (beat.speakerMode === 'embedded') return null;
   const className = `h-speaker h-speaker-${beat.speakerMode}`;
 
+  if (beat.speakerMode !== 'hero') {
+    return (
+      <MacFloatingVideoWindow
+        className={className}
+        title={beat.speakerMode === 'side' ? '现场记录 · Camera' : 'Camera'}
+        tone={tone}
+        toolbar={<span className="h-camera-live"><i /> LIVE</span>}
+        style={{opacity: entrance, transform: `translateY(${(1 - entrance) * 26}px)`}}
+      >
+        <OffthreadVideo className="h-speaker-video" src={staticFile(src)} volume={0} />
+      </MacFloatingVideoWindow>
+    );
+  }
+
   return (
-    <div className={className} style={{opacity: entrance, transform: beat.speakerMode === 'hero' ? 'none' : `translateY(${(1 - entrance) * 26}px)`}}>
+    <div className={className} style={{opacity: entrance}}>
       <OffthreadVideo className="h-speaker-video" src={staticFile(src)} volume={0} />
-      {beat.speakerMode === 'hero' ? <div className="h-hero-shade" /> : null}
+      <div className="h-hero-shade" />
     </div>
   );
 };
@@ -582,14 +680,20 @@ const DynamicCaption = ({frame}: {frame: number}) => {
 };
 
 export const HorizontalLaunchVideo: React.FC<{
+  generationPreset?: TalkingHeadGenerationPreset;
   talkingHeadSrc: string;
   motionMode?: MotionMode;
-}> = ({talkingHeadSrc, motionMode = 'baseline'}) => {
+}> = ({
+  generationPreset = DEFAULT_TALKING_HEAD_GENERATION_PRESET,
+  talkingHeadSrc,
+  motionMode = 'baseline',
+}) => {
   const frame = useCurrentFrame();
   const beat = activeBeat(frame);
   const localFrame = frame - beat.start;
   const enhanced = motionMode === 'effects-lab';
   const impactIsActive = enhanced && isInsideImpactMoment(frame);
+  const desktopIsEnabled = generationPreset.rules.desktopScenes.some((visual) => visual === beat.visual);
   const reveal = interpolate(localFrame, [0, 15], [0, 1], {
     easing: Easing.out(Easing.cubic),
     extrapolateRight: 'clamp',
@@ -598,8 +702,16 @@ export const HorizontalLaunchVideo: React.FC<{
   return (
     <AbsoluteFill className={`h-canvas h-visual-${beat.visual}`}>
       <OffthreadVideo className="h-audio-source" src={staticFile(talkingHeadSrc)} />
-      <AbsoluteFill className="h-stage"><Stage beat={beat} enhanced={enhanced} frame={frame} localFrame={localFrame} src={talkingHeadSrc} /></AbsoluteFill>
-      <Speaker beat={beat} localFrame={localFrame} src={talkingHeadSrc} />
+      {desktopIsEnabled ? (
+        <MacDesktop
+          applicationName={generationPreset.desktop.applicationName}
+          shade={generationPreset.desktop.shade}
+          showDock={generationPreset.desktop.showDock}
+          showMenuBar={generationPreset.desktop.showMenuBar}
+        />
+      ) : null}
+      <AbsoluteFill className="h-stage"><Stage beat={beat} enhanced={enhanced} frame={frame} localFrame={localFrame} preset={generationPreset} src={talkingHeadSrc} /></AbsoluteFill>
+      <Speaker beat={beat} localFrame={localFrame} src={talkingHeadSrc} tone={generationPreset.windows.cameraTone} />
       {!impactIsActive ? (
         <>
           <div className={`h-title h-title-${beat.speakerMode}`} style={{opacity: reveal, transform: `translateY(${(1 - reveal) * 20}px)`}}>
