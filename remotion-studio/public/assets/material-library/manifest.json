@@ -1,0 +1,6536 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-07-10T15:12:36.478Z",
+  "totalAssets": 130,
+  "publicRoot": "assets/material-library",
+  "searchFields": [
+    "titleZh",
+    "titleEn",
+    "aliases",
+    "tagsZh",
+    "tagsEn",
+    "spokenTriggersZh",
+    "useWhenZh"
+  ],
+  "countsByCategory": {
+    "ai-tech": 21,
+    "brand-logo": 40,
+    "common-object": 19,
+    "common-symbol": 12,
+    "finance-symbol": 20,
+    "tech-symbol": 18
+  },
+  "attributionRuleZh": "source.attributionRequired 为 true 时，在片尾或说明区输出 source.creditLine。品牌标识还须遵守各品牌商标规范。",
+  "assets": [
+    {
+      "id": "photo-artificial-intelligence-1",
+      "titleZh": "人工智能 1",
+      "titleEn": "Intelligence artificielle",
+      "aliases": [
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/artificial-intelligence-1-42913849.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/artificial-intelligence-1-42913849.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1044,
+      "aspectRatio": 1.2261,
+      "sha256": "dbed616954d22d4a41cbef2aa19cef4ccf0e04389dd0e1b40cb367df6e54dedb",
+      "tagsZh": [
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "tagsEn": [
+        "artificial",
+        "intelligence",
+        "illustration"
+      ],
+      "spokenTriggersZh": [
+        "人工智能 1",
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "useWhenZh": "口播提到人工智能、人工智能、AI、大模型等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 42913849,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Intelligence_artificielle.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Intelligence_artificielle.jpg/1280px-Intelligence_artificielle.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Intelligence_artificielle.jpg",
+        "creator": "This illustration was made by ( User:Royonx ) and released under the license(s) stated above. You are free to use it for any purpose as long as you credit me and follow the terms of the license. Example : © Michel Royon / Wikimedia Commons If you use this image outside of the Wikimedia projects, I would be happy to hear from you par courriel ( royonx gmail.com). Thanks ! Ce message en français",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attributionRequired": false,
+        "creditLine": "This illustration was made by ( User:Royonx ) and released under the license(s) stated above. You are free to use it for any purpose as long as you credit me and follow the terms of the license. Example : © Michel Royon / Wikimedia Commons If you use this image outside of the Wikimedia projects, I would be happy to hear from you par courriel ( royonx gmail.com). Thanks ! Ce message en français / Wikimedia Commons / CC0"
+      }
+    },
+    {
+      "id": "photo-artificial-intelligence-2",
+      "titleZh": "人工智能 2",
+      "titleEn": "Artificial-Intelligence",
+      "aliases": [
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/artificial-intelligence-2-106438026.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/artificial-intelligence-2-106438026.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 853,
+      "aspectRatio": 1.5006,
+      "sha256": "870d198b098aa04a45a07652eaab7f920da39fabe8a149dd33b0734411f0270c",
+      "tagsZh": [
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "tagsEn": [
+        "artificial",
+        "intelligence",
+        "illustration"
+      ],
+      "spokenTriggersZh": [
+        "人工智能 2",
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "useWhenZh": "口播提到人工智能、人工智能、AI、大模型等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 106438026,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Artificial-Intelligence.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Artificial-Intelligence.jpg/1280px-Artificial-Intelligence.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/4/42/Artificial-Intelligence.jpg",
+        "creator": "El contenido de Pixabay se pone a su disposición en los siguientes términos (\"Licencia de Pixabay\"). En virtud de la Licencia de Pixabay, se le otorga un derecho irrevocable, mundial, no exclusivo y libre de regalías para usar, descargar, copiar, modificar o adaptar el Contenido con fines comerciales o no comerciales.",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attributionRequired": false,
+        "creditLine": "El contenido de Pixabay se pone a su disposición en los siguientes términos (\"Licencia de Pixabay\"). En virtud de la Licencia de Pixabay, se le otorga un derecho irrevocable, mundial, no exclusivo y libre de regalías para usar, descargar, copiar, modificar o adaptar el Contenido con fines comerciales o no comerciales. / Wikimedia Commons / CC0"
+      }
+    },
+    {
+      "id": "photo-artificial-intelligence-3",
+      "titleZh": "人工智能 3",
+      "titleEn": "Symposium Cisco Ecole Polytechnique 9-10 April 2018 Artificial Intelligence & Cybersecurity (40466247125)",
+      "aliases": [
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/artificial-intelligence-3-114811312.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/artificial-intelligence-3-114811312.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1920,
+      "aspectRatio": 0.6667,
+      "sha256": "64c62c5cffc582bd6024be615e9741e072f7f1353d65b1ba9009639e719a85d5",
+      "tagsZh": [
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "tagsEn": [
+        "artificial",
+        "intelligence",
+        "illustration"
+      ],
+      "spokenTriggersZh": [
+        "人工智能 3",
+        "人工智能",
+        "AI",
+        "大模型",
+        "智能"
+      ],
+      "useWhenZh": "口播提到人工智能、人工智能、AI、大模型等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 114811312,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Symposium_Cisco_Ecole_Polytechnique_9-10_April_2018_Artificial_Intelligence_%26_Cybersecurity_(40466247125).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Symposium_Cisco_Ecole_Polytechnique_9-10_April_2018_Artificial_Intelligence_%26_Cybersecurity_%2840466247125%29.jpg/1280px-Symposium_Cisco_Ecole_Polytechnique_9-10_April_2018_Artificial_Intelligence_%26_Cybersecurity_%2840466247125%29.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/67/Symposium_Cisco_Ecole_Polytechnique_9-10_April_2018_Artificial_Intelligence_%26_Cybersecurity_%2840466247125%29.jpg",
+        "creator": "Ecole polytechnique from Paris",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "attributionRequired": true,
+        "creditLine": "Ecole polytechnique from Paris / Wikimedia Commons / CC BY-SA 2.0"
+      }
+    },
+    {
+      "id": "photo-cloud-computing-1",
+      "titleZh": "云计算 1",
+      "titleEn": "Windows Azure Network and Computes Architecture",
+      "aliases": [
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/cloud-computing-1-12190038.png",
+      "remotionSrc": "assets/material-library/photos/ai-tech/cloud-computing-1-12190038.png",
+      "mimeType": "image/png",
+      "width": 959,
+      "height": 434,
+      "aspectRatio": 2.2097,
+      "sha256": "e85997f6bfc246b627839bd43297e9f536c3a229148f3cdb679d14580c997c9c",
+      "tagsZh": [
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "tagsEn": [
+        "cloud",
+        "computing",
+        "diagram"
+      ],
+      "spokenTriggersZh": [
+        "云计算 1",
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "useWhenZh": "口播提到云计算、云计算、云服务、网络等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 12190038,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Windows_Azure_Network_and_Computes_Architecture.png",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Windows_Azure_Network_and_Computes_Architecture.png",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/Windows_Azure_Network_and_Computes_Architecture.png",
+        "creator": "小朱",
+        "license": "CC BY-SA 2.0 tw",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/tw/deed.en",
+        "attributionRequired": true,
+        "creditLine": "小朱 / Wikimedia Commons / CC BY-SA 2.0 tw"
+      }
+    },
+    {
+      "id": "photo-cloud-computing-2",
+      "titleZh": "云计算 2",
+      "titleEn": "SmartCloud diagram",
+      "aliases": [
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/cloud-computing-2-15854204.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/cloud-computing-2-15854204.jpg",
+      "mimeType": "image/jpeg",
+      "width": 820,
+      "height": 500,
+      "aspectRatio": 1.64,
+      "sha256": "28b5bc87ea879215954e87b851963cc25a961390c4ff99df19127ab1d1445d1f",
+      "tagsZh": [
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "tagsEn": [
+        "cloud",
+        "computing",
+        "diagram"
+      ],
+      "spokenTriggersZh": [
+        "云计算 2",
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "useWhenZh": "口播提到云计算、云计算、云服务、网络等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 15854204,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:SmartCloud_diagram.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/1/12/SmartCloud_diagram.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/1/12/SmartCloud_diagram.jpg",
+        "creator": "Joanna Wilkins",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Joanna Wilkins / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-cloud-computing-3",
+      "titleZh": "云计算 3",
+      "titleEn": "Virtual Private Cloud Isolated Network",
+      "aliases": [
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/cloud-computing-3-25542122.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/cloud-computing-3-25542122.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 426,
+      "aspectRatio": 3.0047,
+      "sha256": "a8c2749e770158058e21159e13461fbd4581027a6447ed066bb08de432b2d171",
+      "tagsZh": [
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "tagsEn": [
+        "cloud",
+        "computing",
+        "diagram"
+      ],
+      "spokenTriggersZh": [
+        "云计算 3",
+        "云计算",
+        "云服务",
+        "网络",
+        "服务器"
+      ],
+      "useWhenZh": "口播提到云计算、云计算、云服务、网络等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 25542122,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Virtual_Private_Cloud_Isolated_Network.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Virtual_Private_Cloud_Isolated_Network.jpg/1280px-Virtual_Private_Cloud_Isolated_Network.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/0/02/Virtual_Private_Cloud_Isolated_Network.jpg",
+        "creator": "Centuric",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "attributionRequired": true,
+        "creditLine": "Centuric / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-computer-chip-1",
+      "titleZh": "计算机芯片 1",
+      "titleEn": "A quantum simulator based on 11 superconducting qubits",
+      "aliases": [
+        "芯片",
+        "半导体",
+        "算力",
+        "CPU",
+        "GPU"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/computer-chip-1-90764560.png",
+      "remotionSrc": "assets/material-library/photos/ai-tech/computer-chip-1-90764560.png",
+      "mimeType": "image/png",
+      "width": 1280,
+      "height": 874,
+      "aspectRatio": 1.4645,
+      "sha256": "1e8ed38b9c2376a370e8171da169cdbc331bccdb894956a1d1e23a36e49dc75f",
+      "tagsZh": [
+        "芯片",
+        "半导体",
+        "算力",
+        "CPU",
+        "GPU"
+      ],
+      "tagsEn": [
+        "computer",
+        "chip",
+        "macro",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "计算机芯片 1",
+        "芯片",
+        "半导体",
+        "算力",
+        "CPU",
+        "GPU"
+      ],
+      "useWhenZh": "口播提到计算机芯片、芯片、半导体、算力等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 90764560,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:A_quantum_simulator_based_on_11_superconducting_qubits.png",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/A_quantum_simulator_based_on_11_superconducting_qubits.png/1280px-A_quantum_simulator_based_on_11_superconducting_qubits.png",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/A_quantum_simulator_based_on_11_superconducting_qubits.png",
+        "creator": "FMNLab",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "attributionRequired": true,
+        "creditLine": "FMNLab / Wikimedia Commons / CC BY 4.0"
+      }
+    },
+    {
+      "id": "photo-computer-chip-2",
+      "titleZh": "计算机芯片 2",
+      "titleEn": "Labyrinthine circuit board lines - Flickr - quapan",
+      "aliases": [
+        "芯片",
+        "半导体",
+        "算力",
+        "CPU",
+        "GPU"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/computer-chip-2-92188968.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/computer-chip-2-92188968.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1273,
+      "height": 927,
+      "aspectRatio": 1.3732,
+      "sha256": "bb148a498b45d57dfb058c011879fc132a73f05cace6cb50263ca79acf5f4c97",
+      "tagsZh": [
+        "芯片",
+        "半导体",
+        "算力",
+        "CPU",
+        "GPU"
+      ],
+      "tagsEn": [
+        "computer",
+        "chip",
+        "macro",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "计算机芯片 2",
+        "芯片",
+        "半导体",
+        "算力",
+        "CPU",
+        "GPU"
+      ],
+      "useWhenZh": "口播提到计算机芯片、芯片、半导体、算力等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 92188968,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Labyrinthine_circuit_board_lines_-_Flickr_-_quapan.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/6/66/Labyrinthine_circuit_board_lines_-_Flickr_-_quapan.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/66/Labyrinthine_circuit_board_lines_-_Flickr_-_quapan.jpg",
+        "creator": "quapan",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "attributionRequired": true,
+        "creditLine": "quapan / Wikimedia Commons / CC BY 2.0"
+      }
+    },
+    {
+      "id": "photo-data-center-1",
+      "titleZh": "数据中心 1",
+      "titleEn": "Technician with laptop working on server rack at NERSC",
+      "aliases": [
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/data-center-1-17445570.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/data-center-1-17445570.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 850,
+      "aspectRatio": 1.5059,
+      "sha256": "b03e2fe043e5126da7f00131b8cbdf4e60249c6537d7139cdb6a3fc4a902fd3c",
+      "tagsZh": [
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "tagsEn": [
+        "data",
+        "center",
+        "server",
+        "racks",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "数据中心 1",
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "useWhenZh": "口播提到数据中心、数据中心、服务器、云计算等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 17445570,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Technician_with_laptop_working_on_server_rack_at_NERSC.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Technician_with_laptop_working_on_server_rack_at_NERSC.jpg/1280px-Technician_with_laptop_working_on_server_rack_at_NERSC.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Technician_with_laptop_working_on_server_rack_at_NERSC.jpg",
+        "creator": "Derrick Coetzee from Berkeley, CA, USA",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attributionRequired": false,
+        "creditLine": "Derrick Coetzee from Berkeley, CA, USA / Wikimedia Commons / CC0"
+      }
+    },
+    {
+      "id": "photo-data-center-2",
+      "titleZh": "数据中心 2",
+      "titleEn": "Wikimedia Foundation Servers-8055 01",
+      "aliases": [
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/data-center-2-20348418.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/data-center-2-20348418.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1920,
+      "aspectRatio": 0.6667,
+      "sha256": "ccf21f4ae42d816d0214a5543ef6c6ee1e0fb414819b019bb63eaed11c703a81",
+      "tagsZh": [
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "tagsEn": [
+        "data",
+        "center",
+        "server",
+        "racks",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "数据中心 2",
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "useWhenZh": "口播提到数据中心、数据中心、服务器、云计算等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 20348418,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Wikimedia_Foundation_Servers-8055_01.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Wikimedia_Foundation_Servers-8055_01.jpg/1280px-Wikimedia_Foundation_Servers-8055_01.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/4/41/Wikimedia_Foundation_Servers-8055_01.jpg",
+        "creator": "Victorgrigas",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "attributionRequired": true,
+        "creditLine": "Victorgrigas / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-data-center-3",
+      "titleZh": "数据中心 3",
+      "titleEn": "Wikimedia Foundation Servers-8055 03",
+      "aliases": [
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/data-center-3-20348420.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/data-center-3-20348420.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1920,
+      "aspectRatio": 0.6667,
+      "sha256": "1c0a6e6db6736e211f42a07a0dba489b80917687de66d7981bc4a88dc253dfd8",
+      "tagsZh": [
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "tagsEn": [
+        "data",
+        "center",
+        "server",
+        "racks",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "数据中心 3",
+        "数据中心",
+        "服务器",
+        "云计算",
+        "算力"
+      ],
+      "useWhenZh": "口播提到数据中心、数据中心、服务器、云计算等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 20348420,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Wikimedia_Foundation_Servers-8055_03.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Wikimedia_Foundation_Servers-8055_03.jpg/1280px-Wikimedia_Foundation_Servers-8055_03.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wikimedia_Foundation_Servers-8055_03.jpg",
+        "creator": "Victorgrigas",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "attributionRequired": true,
+        "creditLine": "Victorgrigas / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-drone-1",
+      "titleZh": "无人机 1",
+      "titleEn": "Bebop Drone flying over Monaco Bay",
+      "aliases": [
+        "无人机",
+        "航拍",
+        "飞行",
+        "科技"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/drone-1-40951613.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/drone-1-40951613.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "aspectRatio": 1.3333,
+      "sha256": "29fbeef8cd724c99cac41f521e6ea9a9b9fb95268e6f2db8f663c0024ccedc53",
+      "tagsZh": [
+        "无人机",
+        "航拍",
+        "飞行",
+        "科技"
+      ],
+      "tagsEn": [
+        "camera",
+        "drone",
+        "flying",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "无人机 1",
+        "无人机",
+        "航拍",
+        "飞行",
+        "科技"
+      ],
+      "useWhenZh": "口播提到无人机、无人机、航拍、飞行等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 40951613,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Bebop_Drone_flying_over_Monaco_Bay.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Bebop_Drone_flying_over_Monaco_Bay.jpg/1280px-Bebop_Drone_flying_over_Monaco_Bay.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Bebop_Drone_flying_over_Monaco_Bay.jpg",
+        "creator": "Nicolas Halftermeyer",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "attributionRequired": true,
+        "creditLine": "Nicolas Halftermeyer / Wikimedia Commons / CC BY-SA 4.0"
+      }
+    },
+    {
+      "id": "photo-robot-1",
+      "titleZh": "机器人 1",
+      "titleEn": "Flickr - Official U.S. Navy Imagery - Rear Adm. Klunder introduces CHARLI-2 robot.",
+      "aliases": [
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/robot-1-22640627.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/robot-1-22640627.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 909,
+      "aspectRatio": 1.4081,
+      "sha256": "9ee3969b1b8ec905668bd254c765caa91989a8bf950c1c1cd0efdf69bf8bff3b",
+      "tagsZh": [
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "tagsEn": [
+        "humanoid",
+        "robot",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "机器人 1",
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "useWhenZh": "口播提到机器人、机器人、人工智能、自动化等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 22640627,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Flickr_-_Official_U.S._Navy_Imagery_-_Rear_Adm._Klunder_introduces_CHARLI-2_robot..jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Flickr_-_Official_U.S._Navy_Imagery_-_Rear_Adm._Klunder_introduces_CHARLI-2_robot..jpg/1280px-Flickr_-_Official_U.S._Navy_Imagery_-_Rear_Adm._Klunder_introduces_CHARLI-2_robot..jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Flickr_-_Official_U.S._Navy_Imagery_-_Rear_Adm._Klunder_introduces_CHARLI-2_robot..jpg",
+        "creator": "Official Navy Page from United States of America John F. Williams/U.S. Navy",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Official Navy Page from United States of America John F. Williams/U.S. Navy / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-robot-2",
+      "titleZh": "机器人 2",
+      "titleEn": "Pepper humanoid robot - Japan - August 2014 ",
+      "aliases": [
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/robot-2-34881488.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/robot-2-34881488.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1190,
+      "aspectRatio": 1.0756,
+      "sha256": "8f847c1f18313ec603676cf8c5b058f2409eb2dfda0afd6d4354e8832e44420b",
+      "tagsZh": [
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "tagsEn": [
+        "humanoid",
+        "robot",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "机器人 2",
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "useWhenZh": "口播提到机器人、机器人、人工智能、自动化等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 34881488,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Pepper_humanoid_robot_-_Japan_-_August_2014_.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Pepper_humanoid_robot_-_Japan_-_August_2014_.jpg/1280px-Pepper_humanoid_robot_-_Japan_-_August_2014_.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Pepper_humanoid_robot_-_Japan_-_August_2014_.jpg",
+        "creator": "nesnad",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "attributionRequired": true,
+        "creditLine": "nesnad / Wikimedia Commons / CC BY 3.0"
+      }
+    },
+    {
+      "id": "photo-robot-3",
+      "titleZh": "机器人 3",
+      "titleEn": "Robot Sabor op weg naar VS per ss Rotterdam Sabor met zijn maker Peter , Bestanddeelnr 912-5391",
+      "aliases": [
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/robot-3-68305374.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/robot-3-68305374.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1350,
+      "aspectRatio": 0.9481,
+      "sha256": "9613b2de8e8d458dc109ecca042c637f2d983dc310820d735ec87a535f5336a8",
+      "tagsZh": [
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "tagsEn": [
+        "humanoid",
+        "robot",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "机器人 3",
+        "机器人",
+        "人工智能",
+        "自动化",
+        "AI"
+      ],
+      "useWhenZh": "口播提到机器人、机器人、人工智能、自动化等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 68305374,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Robot_Sabor_op_weg_naar_VS_per_ss_Rotterdam_Sabor_met_zijn_maker_Peter_,_Bestanddeelnr_912-5391.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Robot_Sabor_op_weg_naar_VS_per_ss_Rotterdam_Sabor_met_zijn_maker_Peter_%2C_Bestanddeelnr_912-5391.jpg/1280px-Robot_Sabor_op_weg_naar_VS_per_ss_Rotterdam_Sabor_met_zijn_maker_Peter_%2C_Bestanddeelnr_912-5391.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/5/51/Robot_Sabor_op_weg_naar_VS_per_ss_Rotterdam_Sabor_met_zijn_maker_Peter_%2C_Bestanddeelnr_912-5391.jpg",
+        "creator": "Eric Koch for Anefo",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attributionRequired": false,
+        "creditLine": "Eric Koch for Anefo / Wikimedia Commons / CC0"
+      }
+    },
+    {
+      "id": "photo-satellite-1",
+      "titleZh": "卫星 1",
+      "titleEn": "Satellite image of Madagascar in September 2003",
+      "aliases": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/satellite-1-38870.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/satellite-1-38870.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 2455,
+      "aspectRatio": 0.5214,
+      "sha256": "a8009f183eef3fda0ee265c68fa9fb63ba1ddd6051caa74f66580f6231515fc8",
+      "tagsZh": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "tagsEn": [
+        "satellite",
+        "Earth",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "卫星 1",
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "useWhenZh": "口播提到卫星、卫星、太空、通信等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 38870,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Satellite_image_of_Madagascar_in_September_2003.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Satellite_image_of_Madagascar_in_September_2003.jpg/1280px-Satellite_image_of_Madagascar_in_September_2003.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Satellite_image_of_Madagascar_in_September_2003.jpg",
+        "creator": "Unknown author Unknown author",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Unknown author Unknown author / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-satellite-2",
+      "titleZh": "卫星 2",
+      "titleEn": "Satellite image of France in August 2002",
+      "aliases": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/satellite-2-72559.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/satellite-2-72559.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 985,
+      "aspectRatio": 1.2995,
+      "sha256": "77157a78f050416913e4cedf8b5a29482ae178f88033f8a57201c7a03370e1f3",
+      "tagsZh": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "tagsEn": [
+        "satellite",
+        "Earth",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "卫星 2",
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "useWhenZh": "口播提到卫星、卫星、太空、通信等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 72559,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Satellite_image_of_France_in_August_2002.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Satellite_image_of_France_in_August_2002.jpg/1280px-Satellite_image_of_France_in_August_2002.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Satellite_image_of_France_in_August_2002.jpg",
+        "creator": "Jacques Descloitres, MODIS Rapid Response Team, NASA/GSFC",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Jacques Descloitres, MODIS Rapid Response Team, NASA/GSFC / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-satellite-3",
+      "titleZh": "卫星 3",
+      "titleEn": "Africa satellite orthographic",
+      "aliases": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/satellite-3-113378.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/satellite-3-113378.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1438,
+      "aspectRatio": 0.8901,
+      "sha256": "42dc79cc4dccb17030451c8ffa71ff7cd272874bc07191cbcf9d28f4bbfaf1d2",
+      "tagsZh": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "tagsEn": [
+        "satellite",
+        "Earth",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "卫星 3",
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "useWhenZh": "口播提到卫星、卫星、太空、通信等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 113378,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Africa_satellite_orthographic.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Africa_satellite_orthographic.jpg/1280px-Africa_satellite_orthographic.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/21/Africa_satellite_orthographic.jpg",
+        "creator": "NASA",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "NASA / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-vr-headset-1",
+      "titleZh": "VR 头显 1",
+      "titleEn": "Virtual reality training 130416-A-BZ540-023",
+      "aliases": [
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/vr-headset-1-39110507.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/vr-headset-1-39110507.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 853,
+      "aspectRatio": 1.5006,
+      "sha256": "869c044af77db4b1f578943476c453b71f03400eabfc7167c6e8a495eb415dea",
+      "tagsZh": [
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "tagsEn": [
+        "virtual",
+        "reality",
+        "headset",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "VR 头显 1",
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "useWhenZh": "口播提到VR 头显、VR、虚拟现实、头显等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 39110507,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Virtual_reality_training_130416-A-BZ540-023.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Virtual_reality_training_130416-A-BZ540-023.jpg/1280px-Virtual_reality_training_130416-A-BZ540-023.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/60/Virtual_reality_training_130416-A-BZ540-023.jpg",
+        "creator": "Sgt. Austin Berner",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Sgt. Austin Berner / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-vr-headset-2",
+      "titleZh": "VR 头显 2",
+      "titleEn": "Operational Adaptation Integrated Technology Demonstration DVIDS254839",
+      "aliases": [
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/vr-headset-2-40004010.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/vr-headset-2-40004010.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 777,
+      "aspectRatio": 1.6474,
+      "sha256": "195e14f9ac222581c88bc84b6d3f9eb48f2a3256dde2dcbbcef556cff396883d",
+      "tagsZh": [
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "tagsEn": [
+        "virtual",
+        "reality",
+        "headset",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "VR 头显 2",
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "useWhenZh": "口播提到VR 头显、VR、虚拟现实、头显等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 40004010,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Operational_Adaptation_Integrated_Technology_Demonstration_DVIDS254839.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Operational_Adaptation_Integrated_Technology_Demonstration_DVIDS254839.jpg/1280px-Operational_Adaptation_Integrated_Technology_Demonstration_DVIDS254839.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Operational_Adaptation_Integrated_Technology_Demonstration_DVIDS254839.jpg",
+        "creator": "John Williams",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "John Williams / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-vr-headset-3",
+      "titleZh": "VR 头显 3",
+      "titleEn": "Virtual Training part of 42nd Infantry Division annual training at Fort Drum 150617-A-FR744-004",
+      "aliases": [
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "category": "ai-tech",
+      "file": "assets/material-library/photos/ai-tech/vr-headset-3-41771071.jpg",
+      "remotionSrc": "assets/material-library/photos/ai-tech/vr-headset-3-41771071.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 898,
+      "aspectRatio": 1.4254,
+      "sha256": "495e0bece2b12689e1c54435a7aa33b9da7e678c549e8d4d37045700cb610ca9",
+      "tagsZh": [
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "tagsEn": [
+        "virtual",
+        "reality",
+        "headset",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "VR 头显 3",
+        "VR",
+        "虚拟现实",
+        "头显",
+        "元宇宙"
+      ],
+      "useWhenZh": "口播提到VR 头显、VR、虚拟现实、头显等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 41771071,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Virtual_Training_part_of_42nd_Infantry_Division_annual_training_at_Fort_Drum_150617-A-FR744-004.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Virtual_Training_part_of_42nd_Infantry_Division_annual_training_at_Fort_Drum_150617-A-FR744-004.jpg/1280px-Virtual_Training_part_of_42nd_Infantry_Division_annual_training_at_Fort_Drum_150617-A-FR744-004.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Virtual_Training_part_of_42nd_Infantry_Division_annual_training_at_Fort_Drum_150617-A-FR744-004.jpg",
+        "creator": "Sgt. J.P. Lawrence",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Sgt. J.P. Lawrence / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "brand-alibabacloud",
+      "titleZh": "阿里云",
+      "titleEn": "Alibaba Cloud",
+      "aliases": [
+        "Alibaba Cloud",
+        "阿里巴巴云"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/alibabacloud.svg",
+      "remotionSrc": "assets/material-library/brands/alibabacloud.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "c8b18c07ebc462395f26cea2795ef622ec4c59c5cd5a9b6a3fd9938e0e7650e4",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Alibaba Cloud",
+        "阿里巴巴云"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Alibaba Cloud"
+      ],
+      "spokenTriggersZh": [
+        "阿里云",
+        "Alibaba Cloud",
+        "阿里巴巴云",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“阿里云”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.alibabagroup.com/en/ir/reports",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/alibabacloud.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-alipay",
+      "titleZh": "支付宝",
+      "titleEn": "Alipay",
+      "aliases": [
+        "Alipay",
+        "移动支付"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/alipay.svg",
+      "remotionSrc": "assets/material-library/brands/alipay.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "8049dde7772116e573864e0d3fab1fd5078c75f88e90dc01f70f63a789889a1a",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Alipay",
+        "移动支付"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Alipay"
+      ],
+      "spokenTriggersZh": [
+        "支付宝",
+        "Alipay",
+        "移动支付",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“支付宝”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://global.alipay.com/docs/ac/website_hk/design",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/alipay.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-anthropic",
+      "titleZh": "Anthropic",
+      "titleEn": "Anthropic",
+      "aliases": [
+        "Claude 公司",
+        "克劳德公司"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/anthropic.svg",
+      "remotionSrc": "assets/material-library/brands/anthropic.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "1cc599f6ebce2016dc388cf84e54a52c6b13487655c7e243554d654c7bce1882",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Claude 公司",
+        "克劳德公司"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Anthropic"
+      ],
+      "spokenTriggersZh": [
+        "Anthropic",
+        "Claude 公司",
+        "克劳德公司",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Anthropic”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.anthropic.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/anthropic.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-apple",
+      "titleZh": "Apple",
+      "titleEn": "Apple",
+      "aliases": [
+        "苹果",
+        "iPhone 公司"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/apple.svg",
+      "remotionSrc": "assets/material-library/brands/apple.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "2a1509dccd25e6d2bc7a11a8e52941077e1a48555e192ce638699b9f083c2a7c",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "苹果",
+        "iPhone 公司"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Apple"
+      ],
+      "spokenTriggersZh": [
+        "Apple",
+        "苹果",
+        "iPhone 公司",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Apple”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.apple.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/apple.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-bilibili",
+      "titleZh": "哔哩哔哩",
+      "titleEn": "Bilibili",
+      "aliases": [
+        "B站",
+        "Bilibili"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/bilibili.svg",
+      "remotionSrc": "assets/material-library/brands/bilibili.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "0b31005ccf765a9d37be2c42f1d36e44572ccadb088250626d9905ae5d4f3d21",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "B站",
+        "Bilibili"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Bilibili"
+      ],
+      "spokenTriggersZh": [
+        "哔哩哔哩",
+        "B站",
+        "Bilibili",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“哔哩哔哩”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.bilibili.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/bilibili.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-binance",
+      "titleZh": "Binance",
+      "titleEn": "Binance",
+      "aliases": [
+        "币安",
+        "加密货币交易所"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/binance.svg",
+      "remotionSrc": "assets/material-library/brands/binance.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "a788deaeb7860bd15518ba5c7e062607b5256cfb8d2c464cb0f2779b74806405",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "币安",
+        "加密货币交易所"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Binance"
+      ],
+      "spokenTriggersZh": [
+        "Binance",
+        "币安",
+        "加密货币交易所",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Binance”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://binance.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/binance.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-bitcoin",
+      "titleZh": "Bitcoin",
+      "titleEn": "Bitcoin",
+      "aliases": [
+        "比特币",
+        "BTC"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/bitcoin.svg",
+      "remotionSrc": "assets/material-library/brands/bitcoin.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "9c1547b0246bd3e83b4ade35132279ab12d0388ae3f9f436dc6a3a9e29e68e9b",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "比特币",
+        "BTC"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Bitcoin"
+      ],
+      "spokenTriggersZh": [
+        "Bitcoin",
+        "比特币",
+        "BTC",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Bitcoin”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://bitcoin.org",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/bitcoin.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-claude",
+      "titleZh": "Claude",
+      "titleEn": "Claude",
+      "aliases": [
+        "克劳德",
+        "Claude AI"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/claude.svg",
+      "remotionSrc": "assets/material-library/brands/claude.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "2d6fda79eb18ddccca35b799eeb3cece0dfabc22520ce3b10abd25668df9fa93",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "克劳德",
+        "Claude AI"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Claude"
+      ],
+      "spokenTriggersZh": [
+        "Claude",
+        "克劳德",
+        "Claude AI",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Claude”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://claude.ai",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/claude.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-claudecode",
+      "titleZh": "Claude Code",
+      "titleEn": "Claude Code",
+      "aliases": [
+        "Claude 编程",
+        "克劳德代码"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/claudecode.svg",
+      "remotionSrc": "assets/material-library/brands/claudecode.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "f7691bedae6d71e39e41436f39e453430c1ee21f6305a596984c70a5786abbda",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Claude 编程",
+        "克劳德代码"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Claude Code"
+      ],
+      "spokenTriggersZh": [
+        "Claude Code",
+        "Claude 编程",
+        "克劳德代码",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Claude Code”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://code.claude.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/claudecode.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-cloudflare",
+      "titleZh": "Cloudflare",
+      "titleEn": "Cloudflare",
+      "aliases": [
+        "CDN",
+        "云服务"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/cloudflare.svg",
+      "remotionSrc": "assets/material-library/brands/cloudflare.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "408096d99907fd99e0863cb5d73f77a72537c6a85fd8d5e2704178a83a891f08",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "CDN",
+        "云服务"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Cloudflare"
+      ],
+      "spokenTriggersZh": [
+        "Cloudflare",
+        "CDN",
+        "云服务",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Cloudflare”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.cloudflare.com/logo/",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/cloudflare.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-deepseek",
+      "titleZh": "DeepSeek",
+      "titleEn": "DeepSeek",
+      "aliases": [
+        "深度求索",
+        "DeepSeek AI"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/deepseek.svg",
+      "remotionSrc": "assets/material-library/brands/deepseek.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "7a55a0a7391d116eba7d32807d6838478f9209f6034612941e74fbb14934e2ef",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "深度求索",
+        "DeepSeek AI"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "DeepSeek"
+      ],
+      "spokenTriggersZh": [
+        "DeepSeek",
+        "深度求索",
+        "DeepSeek AI",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“DeepSeek”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.deepseek.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/deepseek.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-docker",
+      "titleZh": "Docker",
+      "titleEn": "Docker",
+      "aliases": [
+        "容器",
+        "Docker 容器"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/docker.svg",
+      "remotionSrc": "assets/material-library/brands/docker.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "65571291c261ef869c31540a38f3ca0f0ee3bb73f179c172211c8860f19a6359",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "容器",
+        "Docker 容器"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Docker"
+      ],
+      "spokenTriggersZh": [
+        "Docker",
+        "容器",
+        "Docker 容器",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Docker”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.docker.com/company/newsroom/media-resources",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/docker.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-ethereum",
+      "titleZh": "Ethereum",
+      "titleEn": "Ethereum",
+      "aliases": [
+        "以太坊",
+        "ETH"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/ethereum.svg",
+      "remotionSrc": "assets/material-library/brands/ethereum.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "0ba6a9ca2c62e9a0c7f61b3053a9065cd8b48f1f35cd782edd1f7e49b1d729c2",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "以太坊",
+        "ETH"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Ethereum"
+      ],
+      "spokenTriggersZh": [
+        "Ethereum",
+        "以太坊",
+        "ETH",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Ethereum”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://ethereum.org/en/assets/",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/ethereum.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-github",
+      "titleZh": "GitHub",
+      "titleEn": "GitHub",
+      "aliases": [
+        "代码仓库",
+        "开源社区"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/github.svg",
+      "remotionSrc": "assets/material-library/brands/github.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "3bf8cceead820aec50d4ee825a3fd02c5a1cd6665cc9cf4cbf3d9c8861a204bb",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "代码仓库",
+        "开源社区"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "GitHub"
+      ],
+      "spokenTriggersZh": [
+        "GitHub",
+        "代码仓库",
+        "开源社区",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“GitHub”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://github.com/logos",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/github.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-githubcopilot",
+      "titleZh": "GitHub Copilot",
+      "titleEn": "GitHub Copilot",
+      "aliases": [
+        "Copilot",
+        "AI 编程助手"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/githubcopilot.svg",
+      "remotionSrc": "assets/material-library/brands/githubcopilot.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "c72c1e0018e84b3128c5a1ac43ec2be135ac6ec4eb9c0ea18ed76416d23f2af3",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Copilot",
+        "AI 编程助手"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "GitHub Copilot"
+      ],
+      "spokenTriggersZh": [
+        "GitHub Copilot",
+        "Copilot",
+        "AI 编程助手",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“GitHub Copilot”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://primer.style/foundations/icons/copilot-24",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/githubcopilot.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": "MIT",
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-googlecloud",
+      "titleZh": "Google Cloud",
+      "titleEn": "Google Cloud",
+      "aliases": [
+        "谷歌云",
+        "GCP"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/googlecloud.svg",
+      "remotionSrc": "assets/material-library/brands/googlecloud.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "534a0359c2784e152f5c88ce64a56976036d7336c7831775c995977fd3432713",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "谷歌云",
+        "GCP"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Google Cloud"
+      ],
+      "spokenTriggersZh": [
+        "Google Cloud",
+        "谷歌云",
+        "GCP",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Google Cloud”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://cloud.google.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/googlecloud.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-googlegemini",
+      "titleZh": "Google Gemini",
+      "titleEn": "Google Gemini",
+      "aliases": [
+        "Gemini",
+        "谷歌 Gemini",
+        "双子座模型"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/googlegemini.svg",
+      "remotionSrc": "assets/material-library/brands/googlegemini.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "a6228d8846040401e941a39ed17459785e8324dbb7b870ce84233c9b3e9863a0",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Gemini",
+        "谷歌 Gemini",
+        "双子座模型"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Google Gemini"
+      ],
+      "spokenTriggersZh": [
+        "Google Gemini",
+        "Gemini",
+        "谷歌 Gemini",
+        "双子座模型",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Google Gemini”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://gemini.google.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/googlegemini.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-huggingface",
+      "titleZh": "Hugging Face",
+      "titleEn": "Hugging Face",
+      "aliases": [
+        "抱抱脸",
+        "开源模型社区"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/huggingface.svg",
+      "remotionSrc": "assets/material-library/brands/huggingface.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "aa81744034eecf4ac6b3fb7108dd71223965c7af3c534932391314563b150109",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "抱抱脸",
+        "开源模型社区"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Hugging Face"
+      ],
+      "spokenTriggersZh": [
+        "Hugging Face",
+        "抱抱脸",
+        "开源模型社区",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Hugging Face”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://huggingface.co/brand",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/huggingface.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-kubernetes",
+      "titleZh": "Kubernetes",
+      "titleEn": "Kubernetes",
+      "aliases": [
+        "K8s",
+        "容器编排"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/kubernetes.svg",
+      "remotionSrc": "assets/material-library/brands/kubernetes.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "ceee2f4e87fa1533600672190c156194039f744fa9b5da10e83f002178e84b47",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "K8s",
+        "容器编排"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Kubernetes"
+      ],
+      "spokenTriggersZh": [
+        "Kubernetes",
+        "K8s",
+        "容器编排",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Kubernetes”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://github.com/kubernetes/kubernetes/tree/cac53883f4714452f3084a22e4be20d042a9df33/logo",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/kubernetes.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-langchain",
+      "titleZh": "LangChain",
+      "titleEn": "LangChain",
+      "aliases": [
+        "AI Agent 框架",
+        "大模型应用框架"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/langchain.svg",
+      "remotionSrc": "assets/material-library/brands/langchain.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "7886444fa437debc26c8e9a51fd86943ad2cbc24b0f8185f15421190f48ab362",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "AI Agent 框架",
+        "大模型应用框架"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "LangChain"
+      ],
+      "spokenTriggersZh": [
+        "LangChain",
+        "AI Agent 框架",
+        "大模型应用框架",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“LangChain”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.langchain.com/langchain",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/langchain.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-mastercard",
+      "titleZh": "Mastercard",
+      "titleEn": "MasterCard",
+      "aliases": [
+        "万事达",
+        "信用卡"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/mastercard.svg",
+      "remotionSrc": "assets/material-library/brands/mastercard.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "b6e25beff2c54363d6c79d58a7c924cd484908c8f6203388b6c1fe34accfffaa",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "万事达",
+        "信用卡"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "MasterCard"
+      ],
+      "spokenTriggersZh": [
+        "Mastercard",
+        "万事达",
+        "信用卡",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Mastercard”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.mastercard.com/brandcenter/us/en/download-artwork.html",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/mastercard.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-mistralai",
+      "titleZh": "Mistral AI",
+      "titleEn": "Mistral AI",
+      "aliases": [
+        "Mistral",
+        "米斯特拉尔"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/mistralai.svg",
+      "remotionSrc": "assets/material-library/brands/mistralai.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "88f00cf2e82e4d36bb4fdd0e913df200c6e7d6162ec627cc58cfdd6a4eb17d18",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Mistral",
+        "米斯特拉尔"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Mistral AI"
+      ],
+      "spokenTriggersZh": [
+        "Mistral AI",
+        "Mistral",
+        "米斯特拉尔",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Mistral AI”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://chat.mistral.ai",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/mistralai.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-nvidia",
+      "titleZh": "NVIDIA",
+      "titleEn": "NVIDIA",
+      "aliases": [
+        "英伟达",
+        "GPU"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/nvidia.svg",
+      "remotionSrc": "assets/material-library/brands/nvidia.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "b0e4cfc12712c840d4d630c9a717200fbd09aeeadbd3faeac13bda2e2ed050b0",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "英伟达",
+        "GPU"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "NVIDIA"
+      ],
+      "spokenTriggersZh": [
+        "NVIDIA",
+        "英伟达",
+        "GPU",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“NVIDIA”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.nvidia.com/en-us",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/nvidia.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-ollama",
+      "titleZh": "Ollama",
+      "titleEn": "Ollama",
+      "aliases": [
+        "本地大模型",
+        "本地运行模型"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/ollama.svg",
+      "remotionSrc": "assets/material-library/brands/ollama.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "9c62bf0159ee96c8b58c86a732f33b002b4b3bb165ec86e8ecca51ad6a82dab6",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "本地大模型",
+        "本地运行模型"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Ollama"
+      ],
+      "spokenTriggersZh": [
+        "Ollama",
+        "本地大模型",
+        "本地运行模型",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Ollama”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://github.com/ollama/ollama/issues/2152#issuecomment-1905286922",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/ollama.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-openai",
+      "titleZh": "OpenAI / Codex / ChatGPT",
+      "titleEn": "OpenAI Blossom",
+      "aliases": [
+        "OpenAI",
+        "ChatGPT",
+        "GPT",
+        "Codex",
+        "ChatGPT Codex",
+        "开放人工智能"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/openai.png",
+      "remotionSrc": "assets/material-library/brands/openai.png",
+      "mimeType": "image/png",
+      "width": 1024,
+      "height": 1024,
+      "aspectRatio": 1,
+      "sha256": "deae2c28f2974ae24d93b4132b23865c10daa07cef2a757c4acf07dc40054be5",
+      "tagsZh": [
+        "人工智能",
+        "AI",
+        "品牌标识",
+        "Logo",
+        "OpenAI",
+        "ChatGPT",
+        "GPT",
+        "Codex",
+        "ChatGPT Codex",
+        "开放人工智能"
+      ],
+      "tagsEn": [
+        "AI",
+        "brand",
+        "logo",
+        "OpenAI",
+        "Codex",
+        "ChatGPT"
+      ],
+      "spokenTriggersZh": [
+        "OpenAI / Codex / ChatGPT",
+        "OpenAI",
+        "ChatGPT",
+        "GPT",
+        "Codex",
+        "ChatGPT Codex",
+        "开放人工智能",
+        "人工智能",
+        "AI",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到 OpenAI、ChatGPT、GPT 或 Codex 时。",
+      "usageNoteZh": "仅在内容直接讨论 OpenAI、ChatGPT、GPT 或 Codex 时使用；不得改色、变形或暗示官方背书。",
+      "source": {
+        "provider": "Official brand asset",
+        "sourcePage": "https://openai.com/brand/",
+        "downloadUrl": "https://images.ctfassets.net/kftzwdyauwt9/77tJ5U1tgxHMZflZ5m4Z24/ace4d8b6ad200d87ebcb69c466344343/Blossom_4k_Icon_1.png?q=90&w=1024",
+        "license": "OpenAI Marks usage terms",
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-paypal",
+      "titleZh": "PayPal",
+      "titleEn": "PayPal",
+      "aliases": [
+        "贝宝",
+        "在线支付"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/paypal.svg",
+      "remotionSrc": "assets/material-library/brands/paypal.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "e8ea6928d3386f81dc6d4c1f58b48e7a29d29bb578b2e3dd808638bd97c63d33",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "贝宝",
+        "在线支付"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "PayPal"
+      ],
+      "spokenTriggersZh": [
+        "PayPal",
+        "贝宝",
+        "在线支付",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“PayPal”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.paypal.com/us",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/paypal.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-perplexity",
+      "titleZh": "Perplexity",
+      "titleEn": "Perplexity",
+      "aliases": [
+        "Perplexity AI",
+        "AI 搜索"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/perplexity.svg",
+      "remotionSrc": "assets/material-library/brands/perplexity.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "57220c29378ce5e615e7244d2fdfcf5a44fad40dad81a99f2e0e4260c726ca74",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Perplexity AI",
+        "AI 搜索"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Perplexity"
+      ],
+      "spokenTriggersZh": [
+        "Perplexity",
+        "Perplexity AI",
+        "AI 搜索",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Perplexity”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.perplexity.ai",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/perplexity.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-pytorch",
+      "titleZh": "PyTorch",
+      "titleEn": "PyTorch",
+      "aliases": [
+        "机器学习框架",
+        "深度学习框架"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/pytorch.svg",
+      "remotionSrc": "assets/material-library/brands/pytorch.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "4dd3f3d3e4102f3bee391fcb3d8ac960a14c48e6655d43b23f7b386d5da36d01",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "机器学习框架",
+        "深度学习框架"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "PyTorch"
+      ],
+      "spokenTriggersZh": [
+        "PyTorch",
+        "机器学习框架",
+        "深度学习框架",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“PyTorch”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://github.com/pytorch/pytorch.github.io/blob/8f083bd12192ca12d5e1c1f3d236f4831d823d8f/assets/images/logo.svg",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/pytorch.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-qwen",
+      "titleZh": "通义千问 Qwen",
+      "titleEn": "QWen",
+      "aliases": [
+        "Qwen",
+        "通义千问",
+        "阿里大模型"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/qwen.svg",
+      "remotionSrc": "assets/material-library/brands/qwen.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "36854c60b26bfa5a0cc0d4123727c0ef559efba6f129c0dfa623f3c443fe3e5b",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Qwen",
+        "通义千问",
+        "阿里大模型"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "QWen"
+      ],
+      "spokenTriggersZh": [
+        "通义千问 Qwen",
+        "Qwen",
+        "通义千问",
+        "阿里大模型",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“通义千问 Qwen”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://qwen.ai",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/qwen.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-tensorflow",
+      "titleZh": "TensorFlow",
+      "titleEn": "TensorFlow",
+      "aliases": [
+        "机器学习框架",
+        "谷歌 AI 框架"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/tensorflow.svg",
+      "remotionSrc": "assets/material-library/brands/tensorflow.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "4c828afb17cd35786d7dd336f78d3111a7c730af54011cc2b20988866bdd8665",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "机器学习框架",
+        "谷歌 AI 框架"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "TensorFlow"
+      ],
+      "spokenTriggersZh": [
+        "TensorFlow",
+        "机器学习框架",
+        "谷歌 AI 框架",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“TensorFlow”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.tensorflow.org",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/tensorflow.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-tether",
+      "titleZh": "Tether",
+      "titleEn": "Tether",
+      "aliases": [
+        "USDT",
+        "稳定币"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/tether.svg",
+      "remotionSrc": "assets/material-library/brands/tether.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "9ff947f6575e80d7f455ec41451eb6bd2034311bf081ef705cb6b7e5adbfb31b",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "USDT",
+        "稳定币"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Tether"
+      ],
+      "spokenTriggersZh": [
+        "Tether",
+        "USDT",
+        "稳定币",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Tether”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://tether.to/branding/",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/tether.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-tiktok",
+      "titleZh": "TikTok",
+      "titleEn": "TikTok",
+      "aliases": [
+        "国际版抖音",
+        "短视频平台"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/tiktok.svg",
+      "remotionSrc": "assets/material-library/brands/tiktok.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "6f54ac8d325faacea8935bdc44cbed60206a6b408641799e5fea1cba7c1a0af7",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "国际版抖音",
+        "短视频平台"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "TikTok"
+      ],
+      "spokenTriggersZh": [
+        "TikTok",
+        "国际版抖音",
+        "短视频平台",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“TikTok”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://tiktok.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/tiktok.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-tradingview",
+      "titleZh": "TradingView",
+      "titleEn": "TradingView",
+      "aliases": [
+        "行情图",
+        "看盘软件"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/tradingview.svg",
+      "remotionSrc": "assets/material-library/brands/tradingview.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "fb3a529fc6be62397416f3c55822ddc9c54429bf039d70bf6f42c5ffe168f22a",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "行情图",
+        "看盘软件"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "TradingView"
+      ],
+      "spokenTriggersZh": [
+        "TradingView",
+        "行情图",
+        "看盘软件",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“TradingView”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.tradingview.com/media-kit",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/tradingview.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-vercel",
+      "titleZh": "Vercel",
+      "titleEn": "Vercel",
+      "aliases": [
+        "前端云",
+        "网站部署"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/vercel.svg",
+      "remotionSrc": "assets/material-library/brands/vercel.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "57f1e4135486c566e9878fddd259f7f6bf8ec43f31e7e6e38a36d9e814a1c0e0",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "前端云",
+        "网站部署"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Vercel"
+      ],
+      "spokenTriggersZh": [
+        "Vercel",
+        "前端云",
+        "网站部署",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Vercel”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://vercel.com/geist/brands",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/vercel.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-visa",
+      "titleZh": "Visa",
+      "titleEn": "Visa",
+      "aliases": [
+        "信用卡",
+        "银行卡组织"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/visa.svg",
+      "remotionSrc": "assets/material-library/brands/visa.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "7cce4eea7b16b6eddf60d7d78b7b814d13ab3001bfa5e184480a7ff4a895e4ad",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "信用卡",
+        "银行卡组织"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Visa"
+      ],
+      "spokenTriggersZh": [
+        "Visa",
+        "信用卡",
+        "银行卡组织",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“Visa”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://merchantsignageeu.visa.com/product.asp?dptID=696",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/visa.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-wechat",
+      "titleZh": "微信",
+      "titleEn": "WeChat",
+      "aliases": [
+        "WeChat",
+        "公众号"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/wechat.svg",
+      "remotionSrc": "assets/material-library/brands/wechat.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "74b48b3d315337ce79cb644933b5f975e19996f564fcc4138ed67d45674c43ca",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "WeChat",
+        "公众号"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "WeChat"
+      ],
+      "spokenTriggersZh": [
+        "微信",
+        "WeChat",
+        "公众号",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“微信”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://wechat.design/tool/brand",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/wechat.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-x",
+      "titleZh": "X",
+      "titleEn": "X",
+      "aliases": [
+        "Twitter",
+        "推特"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/x.svg",
+      "remotionSrc": "assets/material-library/brands/x.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "693e68863eceb8dc9f72e2acd386ab9c20a10858dab2c076212f7084cb7a32fe",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "Twitter",
+        "推特"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "X"
+      ],
+      "spokenTriggersZh": [
+        "X",
+        "Twitter",
+        "推特",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“X”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://x.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/x.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-xiaohongshu",
+      "titleZh": "小红书",
+      "titleEn": "Xiaohongshu",
+      "aliases": [
+        "XHS",
+        "红书"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/xiaohongshu.svg",
+      "remotionSrc": "assets/material-library/brands/xiaohongshu.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "847cacc807f5c236031a7477381daa67fd829d89f3f80c16a547ff2efe050794",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "XHS",
+        "红书"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "Xiaohongshu"
+      ],
+      "spokenTriggersZh": [
+        "小红书",
+        "XHS",
+        "红书",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“小红书”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://pro.xiaohongshu.com",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/xiaohongshu.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-xrp",
+      "titleZh": "XRP",
+      "titleEn": "XRP",
+      "aliases": [
+        "瑞波币",
+        "加密货币"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/xrp.svg",
+      "remotionSrc": "assets/material-library/brands/xrp.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "6f1196844e5a08c38fbec01a40b022783e4a93c7383461b267150c8747d07e9c",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "瑞波币",
+        "加密货币"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "XRP"
+      ],
+      "spokenTriggersZh": [
+        "XRP",
+        "瑞波币",
+        "加密货币",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“XRP”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://xrpl.org",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/xrp.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "brand-youtube",
+      "titleZh": "YouTube",
+      "titleEn": "YouTube",
+      "aliases": [
+        "油管",
+        "视频平台"
+      ],
+      "category": "brand-logo",
+      "file": "assets/material-library/brands/youtube.svg",
+      "remotionSrc": "assets/material-library/brands/youtube.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "5038808acbbc4e6edda16cbeb1cc6dec80e4e4ee4e227e039c41229fa222aa8c",
+      "tagsZh": [
+        "品牌标识",
+        "Logo",
+        "油管",
+        "视频平台"
+      ],
+      "tagsEn": [
+        "brand",
+        "logo",
+        "YouTube"
+      ],
+      "spokenTriggersZh": [
+        "YouTube",
+        "油管",
+        "视频平台",
+        "品牌标识",
+        "Logo"
+      ],
+      "useWhenZh": "口播直接提到“YouTube”或其产品、平台时。",
+      "usageNoteZh": "保持原始比例和颜色；仅作识别性引用，不暗示品牌方背书。",
+      "source": {
+        "provider": "Simple Icons",
+        "sourcePage": "https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/simple-icons@16.25.0/icons/youtube.svg",
+        "collectionLicense": "CC0-1.0",
+        "iconLicense": null,
+        "iconLicenseUrl": null,
+        "trademark": true
+      }
+    },
+    {
+      "id": "photo-books-3",
+      "titleZh": "书籍 3",
+      "titleEn": "Leather bound books (Unsplash)",
+      "aliases": [
+        "书",
+        "阅读",
+        "知识",
+        "教育"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/books-3-62295544.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/books-3-62295544.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 853,
+      "aspectRatio": 1.5006,
+      "sha256": "5b181259ae6f19ccbf0d7d03af885412bdd8f9176dc8374222ab10b71f772cba",
+      "tagsZh": [
+        "书",
+        "阅读",
+        "知识",
+        "教育"
+      ],
+      "tagsEn": [
+        "stack",
+        "books",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "书籍 3",
+        "书",
+        "阅读",
+        "知识",
+        "教育"
+      ],
+      "useWhenZh": "口播提到书籍、书、阅读、知识等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 62295544,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Leather_bound_books_(Unsplash).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Leather_bound_books_%28Unsplash%29.jpg/1280px-Leather_bound_books_%28Unsplash%29.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/0/06/Leather_bound_books_%28Unsplash%29.jpg",
+        "creator": "Chris Lawton chrislawton",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "attributionRequired": false,
+        "creditLine": "Chris Lawton chrislawton / Wikimedia Commons / CC0"
+      }
+    },
+    {
+      "id": "photo-camera-1",
+      "titleZh": "相机 1",
+      "titleEn": "Partly disassembled Lumix digital camera",
+      "aliases": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/camera-1-2032615.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/camera-1-2032615.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1319,
+      "aspectRatio": 0.9704,
+      "sha256": "4a8a075753e3b8896fae2e4324d9a3b275469b80d75ea395344ae04233dcd19f",
+      "tagsZh": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "tagsEn": [
+        "digital",
+        "camera",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "相机 1",
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "useWhenZh": "口播提到相机、相机、摄影、拍摄等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 2032615,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Partly_disassembled_Lumix_digital_camera.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Partly_disassembled_Lumix_digital_camera.jpg/1280px-Partly_disassembled_Lumix_digital_camera.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Partly_disassembled_Lumix_digital_camera.jpg",
+        "creator": "Steve Jurvetson from Menlo Park, USA",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "attributionRequired": true,
+        "creditLine": "Steve Jurvetson from Menlo Park, USA / Wikimedia Commons / CC BY 2.0"
+      }
+    },
+    {
+      "id": "photo-camera-2",
+      "titleZh": "相机 2",
+      "titleEn": "BenQ C540 digital camera 01",
+      "aliases": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/camera-2-3923472.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/camera-2-3923472.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1067,
+      "height": 915,
+      "aspectRatio": 1.1661,
+      "sha256": "55ee6047b61aad4361c5d873c4426490deba94969b3a50d391f3e022e7c20b76",
+      "tagsZh": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "tagsEn": [
+        "digital",
+        "camera",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "相机 2",
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "useWhenZh": "口播提到相机、相机、摄影、拍摄等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 3923472,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:BenQ_C540_digital_camera_01.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fb/BenQ_C540_digital_camera_01.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fb/BenQ_C540_digital_camera_01.jpg",
+        "creator": "Luis Dantas",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Luis Dantas / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-camera-3",
+      "titleZh": "相机 3",
+      "titleEn": "Sony Cybershot DSC W210",
+      "aliases": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/camera-3-16961599.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/camera-3-16961599.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 831,
+      "aspectRatio": 1.5403,
+      "sha256": "9d770db9bb426fd5aa97601aa1d0d0c3a44e9c3130e48684aa75b4a145838296",
+      "tagsZh": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "tagsEn": [
+        "digital",
+        "camera",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "相机 3",
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "useWhenZh": "口播提到相机、相机、摄影、拍摄等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 16961599,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Sony_Cybershot_DSC_W210.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Sony_Cybershot_DSC_W210.jpg/1280px-Sony_Cybershot_DSC_W210.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/0/06/Sony_Cybershot_DSC_W210.jpg",
+        "creator": "Joydeep",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "attributionRequired": true,
+        "creditLine": "Joydeep / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-headphones-1",
+      "titleZh": "耳机 1",
+      "titleEn": "Headphones 1",
+      "aliases": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/headphones-1-1721612.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/headphones-1-1721612.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 853,
+      "aspectRatio": 1.5006,
+      "sha256": "f4bb6ca4148d6ff0082bddb01c24b95402e34b26fe5c1a81afd97e4a35e12c50",
+      "tagsZh": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "tagsEn": [
+        "headphones",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "耳机 1",
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "useWhenZh": "口播提到耳机、耳机、音频、音乐等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 1721612,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Headphones_1.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Headphones_1.jpg/1280px-Headphones_1.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/4/40/Headphones_1.jpg",
+        "creator": "No machine-readable author provided. PJ assumed (based on copyright claims).",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+        "attributionRequired": true,
+        "creditLine": "No machine-readable author provided. PJ assumed (based on copyright claims). / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-headphones-2",
+      "titleZh": "耳机 2",
+      "titleEn": "CES 2012 - Soul headphones (6937824285)",
+      "aliases": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/headphones-2-33399238.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/headphones-2-33399238.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "aspectRatio": 1.3333,
+      "sha256": "911b8089c0dbe5202cde4cb520bd83368cb5613084961a7c296730abd9e3cdf7",
+      "tagsZh": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "tagsEn": [
+        "headphones",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "耳机 2",
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "useWhenZh": "口播提到耳机、耳机、音频、音乐等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 33399238,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:CES_2012_-_Soul_headphones_(6937824285).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/CES_2012_-_Soul_headphones_%286937824285%29.jpg/1280px-CES_2012_-_Soul_headphones_%286937824285%29.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ea/CES_2012_-_Soul_headphones_%286937824285%29.jpg",
+        "creator": "The Conmunity - Pop Culture Geek from Los Angeles, CA, USA",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "attributionRequired": true,
+        "creditLine": "The Conmunity - Pop Culture Geek from Los Angeles, CA, USA / Wikimedia Commons / CC BY 2.0"
+      }
+    },
+    {
+      "id": "photo-headphones-3",
+      "titleZh": "耳机 3",
+      "titleEn": "CES 2012 - Soul headphones (6791707028)",
+      "aliases": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/headphones-3-33399241.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/headphones-3-33399241.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "aspectRatio": 1.3333,
+      "sha256": "8c876c6067a317ef7e0eef4e92dc74bb04185f922e661984630a127a30210cf4",
+      "tagsZh": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "tagsEn": [
+        "headphones",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "耳机 3",
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "useWhenZh": "口播提到耳机、耳机、音频、音乐等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 33399241,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:CES_2012_-_Soul_headphones_(6791707028).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/CES_2012_-_Soul_headphones_%286791707028%29.jpg/1280px-CES_2012_-_Soul_headphones_%286791707028%29.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/CES_2012_-_Soul_headphones_%286791707028%29.jpg",
+        "creator": "The Conmunity - Pop Culture Geek from Los Angeles, CA, USA",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "attributionRequired": true,
+        "creditLine": "The Conmunity - Pop Culture Geek from Los Angeles, CA, USA / Wikimedia Commons / CC BY 2.0"
+      }
+    },
+    {
+      "id": "photo-laptop-1",
+      "titleZh": "笔记本电脑 1",
+      "titleEn": "MacBook Pro 17",
+      "aliases": [
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/laptop-1-856697.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/laptop-1-856697.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1246,
+      "height": 1000,
+      "aspectRatio": 1.246,
+      "sha256": "b0ab70d7d4420dbdf3cff588c9472bb6e1c04b504c283bdde1eed9cf214216ef",
+      "tagsZh": [
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "tagsEn": [
+        "laptop",
+        "computer",
+        "desk",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "笔记本电脑 1",
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "useWhenZh": "口播提到笔记本电脑、电脑、笔记本、办公等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 856697,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:MacBook_Pro_17.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/MacBook_Pro_17.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/MacBook_Pro_17.jpg",
+        "creator": "aplumb (Andrew Plumb)",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "attributionRequired": true,
+        "creditLine": "aplumb (Andrew Plumb) / Wikimedia Commons / CC BY-SA 2.0"
+      }
+    },
+    {
+      "id": "photo-laptop-2",
+      "titleZh": "笔记本电脑 2",
+      "titleEn": "Dell Latitude with Ubuntu",
+      "aliases": [
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/laptop-2-1011694.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/laptop-2-1011694.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1030,
+      "height": 1244,
+      "aspectRatio": 0.828,
+      "sha256": "5b7c03d61e7288b86ed03cd822d4b421cdc8bc9c4fc2c480f91ad74ab659d25a",
+      "tagsZh": [
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "tagsEn": [
+        "laptop",
+        "computer",
+        "desk",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "笔记本电脑 2",
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "useWhenZh": "口播提到笔记本电脑、电脑、笔记本、办公等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 1011694,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Dell_Latitude_with_Ubuntu.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Dell_Latitude_with_Ubuntu.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Dell_Latitude_with_Ubuntu.jpg",
+        "creator": "No machine-readable author provided. MarkGallagher~commonswiki assumed (based on copyright claims).",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "attributionRequired": true,
+        "creditLine": "No machine-readable author provided. MarkGallagher~commonswiki assumed (based on copyright claims). / Wikimedia Commons / CC BY-SA 4.0"
+      }
+    },
+    {
+      "id": "photo-laptop-3",
+      "titleZh": "笔记本电脑 3",
+      "titleEn": "Computer classes -- Afghanistan",
+      "aliases": [
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/laptop-3-6769401.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/laptop-3-6769401.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "aspectRatio": 1.3333,
+      "sha256": "32f0404936d37daa4fd40cc8b9ab5dfe8a658efb79548b0f9f92774e77168b63",
+      "tagsZh": [
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "tagsEn": [
+        "laptop",
+        "computer",
+        "desk",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "笔记本电脑 3",
+        "电脑",
+        "笔记本",
+        "办公",
+        "工作"
+      ],
+      "useWhenZh": "口播提到笔记本电脑、电脑、笔记本、办公等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 6769401,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Computer_classes_--_Afghanistan.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Computer_classes_--_Afghanistan.jpg/1280px-Computer_classes_--_Afghanistan.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Computer_classes_--_Afghanistan.jpg",
+        "creator": "Todd Huffman from Phoenix, AZ",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "attributionRequired": true,
+        "creditLine": "Todd Huffman from Phoenix, AZ / Wikimedia Commons / CC BY 2.0"
+      }
+    },
+    {
+      "id": "photo-lightbulb-1",
+      "titleZh": "灯泡 1",
+      "titleEn": "Light bulb anno 2010",
+      "aliases": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/lightbulb-1-10389372.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/lightbulb-1-10389372.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1000,
+      "height": 750,
+      "aspectRatio": 1.3333,
+      "sha256": "ed08349c2fca9018551e3b5c0c32679ebeac222f6319df25e4732ec433ed5c54",
+      "tagsZh": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "tagsEn": [
+        "light",
+        "bulb",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "灯泡 1",
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "useWhenZh": "口播提到灯泡、灯泡、创意、灵感等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 10389372,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Light_bulb_anno_2010.JPG",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Light_bulb_anno_2010.JPG",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Light_bulb_anno_2010.JPG",
+        "creator": "JaneArt",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "attributionRequired": true,
+        "creditLine": "JaneArt / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-lightbulb-2",
+      "titleZh": "灯泡 2",
+      "titleEn": "Metal halide light bulb in Tunisia",
+      "aliases": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/lightbulb-2-12646032.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/lightbulb-2-12646032.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1093,
+      "height": 2043,
+      "aspectRatio": 0.535,
+      "sha256": "a235d92d9e06a8d234d8ad47060c4e8f72304c3f66a2606e093d381b9c4b1e88",
+      "tagsZh": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "tagsEn": [
+        "light",
+        "bulb",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "灯泡 2",
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "useWhenZh": "口播提到灯泡、灯泡、创意、灵感等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 12646032,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Metal_halide_light_bulb_in_Tunisia.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/6/62/Metal_halide_light_bulb_in_Tunisia.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/62/Metal_halide_light_bulb_in_Tunisia.jpg",
+        "creator": "Riki1979",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Riki1979 / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-lightbulb-3",
+      "titleZh": "灯泡 3",
+      "titleEn": "Ledge Light bulb closeup",
+      "aliases": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/lightbulb-3-16410706.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/lightbulb-3-16410706.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "aspectRatio": 1.3333,
+      "sha256": "0a42027f86e0ef9b3c8d0d9cc6e6f8b37f9e5323d0ef47374a2aded3606885b1",
+      "tagsZh": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "tagsEn": [
+        "light",
+        "bulb",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "灯泡 3",
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "useWhenZh": "口播提到灯泡、灯泡、创意、灵感等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 16410706,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Ledge_Light_bulb_closeup.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Ledge_Light_bulb_closeup.jpg/1280px-Ledge_Light_bulb_closeup.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/9/90/Ledge_Light_bulb_closeup.jpg",
+        "creator": "Pi.1415926535",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "attributionRequired": true,
+        "creditLine": "Pi.1415926535 / Wikimedia Commons / CC BY-SA 3.0"
+      }
+    },
+    {
+      "id": "photo-microphone-1",
+      "titleZh": "麦克风 1",
+      "titleEn": "US Navy 040303-N-3986D-028 Professional golfers Tiger Woods and Mark O'Meara are interviewed by Chief Journalist Henry Rice after a golf ball driving demonstration aboard the nuclear powered aircraft carrier USS George Washingt",
+      "aliases": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/microphone-1-8207360.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/microphone-1-8207360.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 914,
+      "aspectRatio": 1.4004,
+      "sha256": "db0355526e3c89ed0c07b456b146e7ae02a331d147ad4180038163c8f3606ce9",
+      "tagsZh": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "tagsEn": [
+        "professional",
+        "microphone",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "麦克风 1",
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "useWhenZh": "口播提到麦克风、麦克风、录音、口播等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 8207360,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:US_Navy_040303-N-3986D-028_Professional_golfers_Tiger_Woods_and_Mark_O%27Meara_are_interviewed_by_Chief_Journalist_Henry_Rice_after_a_golf_ball_driving_demonstration_aboard_the_nuclear_powered_aircraft_carrier_USS_George_Washingt.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/US_Navy_040303-N-3986D-028_Professional_golfers_Tiger_Woods_and_Mark_O%27Meara_are_interviewed_by_Chief_Journalist_Henry_Rice_after_a_golf_ball_driving_demonstration_aboard_the_nuclear_powered_aircraft_carrier_USS_George_Washingt.jpg/1280px-thumbnail.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/60/US_Navy_040303-N-3986D-028_Professional_golfers_Tiger_Woods_and_Mark_O%27Meara_are_interviewed_by_Chief_Journalist_Henry_Rice_after_a_golf_ball_driving_demonstration_aboard_the_nuclear_powered_aircraft_carrier_USS_George_Washingt.jpg",
+        "creator": "U.S. Navy photo by Photographer's Mate Airman Jessica Davis.",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "U.S. Navy photo by Photographer's Mate Airman Jessica Davis. / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-microphone-2",
+      "titleZh": "麦克风 2",
+      "titleEn": "Billie Holiday, Downbeat, New York, N.Y., ca. Feb. 1947 (William P. Gottlieb 04251)",
+      "aliases": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/microphone-2-11181478.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/microphone-2-11181478.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1336,
+      "aspectRatio": 0.9581,
+      "sha256": "b406f6b436e2663c05becfa1df3781805412b359377e5849564331d6d2855a32",
+      "tagsZh": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "tagsEn": [
+        "professional",
+        "microphone",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "麦克风 2",
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "useWhenZh": "口播提到麦克风、麦克风、录音、口播等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 11181478,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Billie_Holiday,_Downbeat,_New_York,_N.Y.,_ca._Feb._1947_(William_P._Gottlieb_04251).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Billie_Holiday%2C_Downbeat%2C_New_York%2C_N.Y.%2C_ca._Feb._1947_%28William_P._Gottlieb_04251%29.jpg/1280px-Billie_Holiday%2C_Downbeat%2C_New_York%2C_N.Y.%2C_ca._Feb._1947_%28William_P._Gottlieb_04251%29.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Billie_Holiday%2C_Downbeat%2C_New_York%2C_N.Y.%2C_ca._Feb._1947_%28William_P._Gottlieb_04251%29.jpg",
+        "creator": "William P. Gottlieb",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "William P. Gottlieb / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-microphone-3",
+      "titleZh": "麦克风 3",
+      "titleEn": "Harry Caray 1951",
+      "aliases": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/microphone-3-17012590.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/microphone-3-17012590.jpg",
+      "mimeType": "image/jpeg",
+      "width": 758,
+      "height": 900,
+      "aspectRatio": 0.8422,
+      "sha256": "e4a4382643985cf7f341f86babaa48bfb5b0c822100642f3a77596b6506c7bb1",
+      "tagsZh": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "tagsEn": [
+        "professional",
+        "microphone",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "麦克风 3",
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "声音"
+      ],
+      "useWhenZh": "口播提到麦克风、麦克风、录音、口播等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 17012590,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Harry_Caray_1951.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Harry_Caray_1951.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Harry_Caray_1951.jpg",
+        "creator": "Photographer-Howard Earl Day, St. Louis, MO. Uploaded by We hope at en.wikipedia",
+        "license": "Public domain",
+        "licenseUrl": null,
+        "attributionRequired": false,
+        "creditLine": "Photographer-Howard Earl Day, St. Louis, MO. Uploaded by We hope at en.wikipedia / Wikimedia Commons / Public domain"
+      }
+    },
+    {
+      "id": "photo-package-1",
+      "titleZh": "快递纸箱 1",
+      "titleEn": "Trailer Hitch box (2458596312)",
+      "aliases": [
+        "纸箱",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/package-1-34588503.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/package-1-34588503.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "aspectRatio": 1.3333,
+      "sha256": "9888112d27b55ff8588a97483c4c9faa139aac5d159b4c2f388b2a3045e77927",
+      "tagsZh": [
+        "纸箱",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "tagsEn": [
+        "cardboard",
+        "shipping",
+        "box",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "快递纸箱 1",
+        "纸箱",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "useWhenZh": "口播提到快递纸箱、纸箱、快递、物流等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 34588503,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Trailer_Hitch_box_(2458596312).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Trailer_Hitch_box_%282458596312%29.jpg/1280px-Trailer_Hitch_box_%282458596312%29.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/Trailer_Hitch_box_%282458596312%29.jpg",
+        "creator": "dave_7 from Lethbridge, Canada",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "attributionRequired": true,
+        "creditLine": "dave_7 from Lethbridge, Canada / Wikimedia Commons / CC BY-SA 2.0"
+      }
+    },
+    {
+      "id": "photo-package-3",
+      "titleZh": "快递纸箱 3",
+      "titleEn": "Sticking a label onto a parcel for shipping",
+      "aliases": [
+        "纸箱",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/package-3-120365134.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/package-3-120365134.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 853,
+      "aspectRatio": 1.5006,
+      "sha256": "e3e709ec8874057f6f3b422ceb7d7bf52cb89d868d20edee7af6d0adbda00f3c",
+      "tagsZh": [
+        "纸箱",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "tagsEn": [
+        "cardboard",
+        "shipping",
+        "box",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "快递纸箱 3",
+        "纸箱",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "useWhenZh": "口播提到快递纸箱、纸箱、快递、物流等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 120365134,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:Sticking_a_label_onto_a_parcel_for_shipping.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Sticking_a_label_onto_a_parcel_for_shipping.jpg/1280px-Sticking_a_label_onto_a_parcel_for_shipping.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Sticking_a_label_onto_a_parcel_for_shipping.jpg",
+        "creator": "Meanwell Packaging",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "attributionRequired": true,
+        "creditLine": "Meanwell Packaging / Wikimedia Commons / CC BY 2.0"
+      }
+    },
+    {
+      "id": "photo-smartphone-1",
+      "titleZh": "智能手机 1",
+      "titleEn": "CSIRO ScienceImage 2102 A woman seated at a desk using mobile devices",
+      "aliases": [
+        "手机",
+        "智能手机",
+        "移动互联网",
+        "屏幕"
+      ],
+      "category": "common-object",
+      "file": "assets/material-library/photos/common-object/smartphone-1-35460390.jpg",
+      "remotionSrc": "assets/material-library/photos/common-object/smartphone-1-35460390.jpg",
+      "mimeType": "image/jpeg",
+      "width": 1280,
+      "height": 1458,
+      "aspectRatio": 0.8779,
+      "sha256": "39066dffe9c05fa02ce756068b955f976b8ca29fac3a92117e414eabb33cce78",
+      "tagsZh": [
+        "手机",
+        "智能手机",
+        "移动互联网",
+        "屏幕"
+      ],
+      "tagsEn": [
+        "smartphone",
+        "desk",
+        "photograph"
+      ],
+      "spokenTriggersZh": [
+        "智能手机 1",
+        "手机",
+        "智能手机",
+        "移动互联网",
+        "屏幕"
+      ],
+      "useWhenZh": "口播提到智能手机、手机、智能手机、移动互联网等内容，并需要真实题材画面时。",
+      "usageNoteZh": "优先用作全屏切镜、画中画或背景图；保留画面主体，避免拉伸。",
+      "source": {
+        "provider": "Wikimedia Commons",
+        "pageId": 35460390,
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_2102_A_woman_seated_at_a_desk_using_mobile_devices.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/CSIRO_ScienceImage_2102_A_woman_seated_at_a_desk_using_mobile_devices.jpg/1280px-CSIRO_ScienceImage_2102_A_woman_seated_at_a_desk_using_mobile_devices.jpg",
+        "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/3/33/CSIRO_ScienceImage_2102_A_woman_seated_at_a_desk_using_mobile_devices.jpg",
+        "creator": ", CSIRO",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "attributionRequired": true,
+        "creditLine": ", CSIRO / Wikimedia Commons / CC BY 3.0"
+      }
+    },
+    {
+      "id": "common-symbol-book-open",
+      "titleZh": "书籍图标",
+      "titleEn": "book open",
+      "aliases": [
+        "书",
+        "阅读",
+        "知识",
+        "教育"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/book-open.svg",
+      "remotionSrc": "assets/material-library/symbols/general/book-open.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "fa06e844a3cb0bc0475f28cdd068124570e972351b74e51f33c5f13d2084046e",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "书",
+        "阅读",
+        "知识",
+        "教育"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "book",
+        "open"
+      ],
+      "spokenTriggersZh": [
+        "书籍图标",
+        "书",
+        "阅读",
+        "知识",
+        "教育",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到书、阅读、知识、教育等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/book-open",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/book-open.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-calendar-days",
+      "titleZh": "日历图标",
+      "titleEn": "calendar days",
+      "aliases": [
+        "日历",
+        "日期",
+        "计划",
+        "截止时间"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/calendar-days.svg",
+      "remotionSrc": "assets/material-library/symbols/general/calendar-days.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "14cc70912806a5ac09f85a1e6c6db6a11af8c9e39d3d9613c605b94fe53c688f",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "日历",
+        "日期",
+        "计划",
+        "截止时间"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "calendar",
+        "days"
+      ],
+      "spokenTriggersZh": [
+        "日历图标",
+        "日历",
+        "日期",
+        "计划",
+        "截止时间",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到日历、日期、计划、截止时间等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/calendar-days",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/calendar-days.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-camera",
+      "titleZh": "相机图标",
+      "titleEn": "camera",
+      "aliases": [
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/camera.svg",
+      "remotionSrc": "assets/material-library/symbols/general/camera.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "325ad7bcd88540781f29e55ba2e272925da55a8b7085227b1be69e4693ffdb55",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "camera"
+      ],
+      "spokenTriggersZh": [
+        "相机图标",
+        "相机",
+        "摄影",
+        "拍摄",
+        "镜头",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到相机、摄影、拍摄、镜头等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/camera",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/camera.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-clock-3",
+      "titleZh": "时钟图标",
+      "titleEn": "clock 3",
+      "aliases": [
+        "时间",
+        "时钟",
+        "效率",
+        "截止时间"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/clock-3.svg",
+      "remotionSrc": "assets/material-library/symbols/general/clock-3.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "d4c2ff66029f929e117b9b7f6358a4f44d2cd886c318670a6846d9cbb021ad93",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "时间",
+        "时钟",
+        "效率",
+        "截止时间"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "clock",
+        "3"
+      ],
+      "spokenTriggersZh": [
+        "时钟图标",
+        "时间",
+        "时钟",
+        "效率",
+        "截止时间",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到时间、时钟、效率、截止时间等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/clock-3",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/clock-3.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-coffee",
+      "titleZh": "咖啡图标",
+      "titleEn": "coffee",
+      "aliases": [
+        "咖啡",
+        "办公",
+        "生活方式",
+        "提神"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/coffee.svg",
+      "remotionSrc": "assets/material-library/symbols/general/coffee.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "d8ecd3c1a47eb40d8815edc3ced5129a4bbf89426d9334cdf525e8501f611e65",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "咖啡",
+        "办公",
+        "生活方式",
+        "提神"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "coffee"
+      ],
+      "spokenTriggersZh": [
+        "咖啡图标",
+        "咖啡",
+        "办公",
+        "生活方式",
+        "提神",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到咖啡、办公、生活方式、提神等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/coffee",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/coffee.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-headphones",
+      "titleZh": "耳机图标",
+      "titleEn": "headphones",
+      "aliases": [
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/headphones.svg",
+      "remotionSrc": "assets/material-library/symbols/general/headphones.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "aaaffc53c7f2cc8f07d38955228bc8def84e59eeb1d80b9672123c4a238c5def",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "耳机",
+        "音频",
+        "音乐",
+        "声音"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "headphones"
+      ],
+      "spokenTriggersZh": [
+        "耳机图标",
+        "耳机",
+        "音频",
+        "音乐",
+        "声音",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到耳机、音频、音乐、声音等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/headphones",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/headphones.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-laptop",
+      "titleZh": "笔记本电脑图标",
+      "titleEn": "laptop",
+      "aliases": [
+        "电脑",
+        "办公",
+        "工作",
+        "互联网"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/laptop.svg",
+      "remotionSrc": "assets/material-library/symbols/general/laptop.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "0c932f48f6ec1281f698bcd6a1d286a7a6f7eb975bb68f460dbfa851e603f167",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "电脑",
+        "办公",
+        "工作",
+        "互联网"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "laptop"
+      ],
+      "spokenTriggersZh": [
+        "笔记本电脑图标",
+        "电脑",
+        "办公",
+        "工作",
+        "互联网",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到电脑、办公、工作、互联网等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/laptop",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/laptop.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-lightbulb",
+      "titleZh": "灯泡图标",
+      "titleEn": "lightbulb",
+      "aliases": [
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/lightbulb.svg",
+      "remotionSrc": "assets/material-library/symbols/general/lightbulb.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "e7599beac101994fda07db9281794e7f4a5f663e491ab63281e493cc526f0e7d",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "lightbulb"
+      ],
+      "spokenTriggersZh": [
+        "灯泡图标",
+        "灯泡",
+        "创意",
+        "灵感",
+        "想法",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到灯泡、创意、灵感、想法等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/lightbulb",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/lightbulb.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-mic",
+      "titleZh": "麦克风图标",
+      "titleEn": "mic",
+      "aliases": [
+        "麦克风",
+        "录音",
+        "口播",
+        "播客"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/mic.svg",
+      "remotionSrc": "assets/material-library/symbols/general/mic.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "4337e4caadbc9a4632a59ddcdac9664be780de8d8b66b996618ae12a1728bb78",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "麦克风",
+        "录音",
+        "口播",
+        "播客"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "mic"
+      ],
+      "spokenTriggersZh": [
+        "麦克风图标",
+        "麦克风",
+        "录音",
+        "口播",
+        "播客",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到麦克风、录音、口播、播客等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/mic",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/mic.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-notebook-pen",
+      "titleZh": "笔记本和笔图标",
+      "titleEn": "notebook pen",
+      "aliases": [
+        "笔记",
+        "写作",
+        "记录",
+        "学习"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/notebook-pen.svg",
+      "remotionSrc": "assets/material-library/symbols/general/notebook-pen.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "32e6c5e2ec59afdcfff870744a49522e6b5b39fe66934f35d4035865d874367f",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "笔记",
+        "写作",
+        "记录",
+        "学习"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "notebook",
+        "pen"
+      ],
+      "spokenTriggersZh": [
+        "笔记本和笔图标",
+        "笔记",
+        "写作",
+        "记录",
+        "学习",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到笔记、写作、记录、学习等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/notebook-pen",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/notebook-pen.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-package",
+      "titleZh": "包裹图标",
+      "titleEn": "package",
+      "aliases": [
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/package.svg",
+      "remotionSrc": "assets/material-library/symbols/general/package.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "ca88ce12f20da602d8257deca48e46dbad17af8e159b7b3fb6c159d9c812bbdb",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "快递",
+        "物流",
+        "包裹",
+        "电商"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "package"
+      ],
+      "spokenTriggersZh": [
+        "包裹图标",
+        "快递",
+        "物流",
+        "包裹",
+        "电商",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到快递、物流、包裹、电商等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/package",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/package.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "common-symbol-smartphone",
+      "titleZh": "手机图标",
+      "titleEn": "smartphone",
+      "aliases": [
+        "手机",
+        "移动互联网",
+        "App",
+        "屏幕"
+      ],
+      "category": "common-symbol",
+      "file": "assets/material-library/symbols/general/smartphone.svg",
+      "remotionSrc": "assets/material-library/symbols/general/smartphone.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "75b1aedefa823e35341fb3ed9ebdfb09d321e2820fc7a2ee1ddda647b2ec7116",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "手机",
+        "移动互联网",
+        "App",
+        "屏幕"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "smartphone"
+      ],
+      "spokenTriggersZh": [
+        "手机图标",
+        "手机",
+        "移动互联网",
+        "App",
+        "屏幕",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到手机、移动互联网、App、屏幕等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/smartphone",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/smartphone.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-badge-percent",
+      "titleZh": "百分比图标",
+      "titleEn": "badge percent",
+      "aliases": [
+        "百分比",
+        "折扣",
+        "利率",
+        "收益率"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/badge-percent.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/badge-percent.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "2c5435ad45940424623018a8b98b97a3187ce4dd6b991b30c004cc9337b540a5",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "百分比",
+        "折扣",
+        "利率",
+        "收益率"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "badge",
+        "percent"
+      ],
+      "spokenTriggersZh": [
+        "百分比图标",
+        "百分比",
+        "折扣",
+        "利率",
+        "收益率",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到百分比、折扣、利率、收益率等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/badge-percent",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/badge-percent.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-banknote",
+      "titleZh": "纸币图标",
+      "titleEn": "banknote",
+      "aliases": [
+        "现金",
+        "纸币",
+        "工资",
+        "货币"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/banknote.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/banknote.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "266a9a0bb72f7ae44772bca5e104af04abcab1d646847404b9af919b36256730",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "现金",
+        "纸币",
+        "工资",
+        "货币"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "banknote"
+      ],
+      "spokenTriggersZh": [
+        "纸币图标",
+        "现金",
+        "纸币",
+        "工资",
+        "货币",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到现金、纸币、工资、货币等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/banknote",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/banknote.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-bitcoin",
+      "titleZh": "比特币符号",
+      "titleEn": "bitcoin",
+      "aliases": [
+        "比特币",
+        "BTC",
+        "加密货币",
+        "区块链"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/bitcoin.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/bitcoin.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "912ceb78b5bd02a8836c737840a0244300f654f617d5c6a47ac04192cd2ffa40",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "比特币",
+        "BTC",
+        "加密货币",
+        "区块链"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "bitcoin"
+      ],
+      "spokenTriggersZh": [
+        "比特币符号",
+        "比特币",
+        "BTC",
+        "加密货币",
+        "区块链",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到比特币、BTC、加密货币、区块链等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/bitcoin",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/bitcoin.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-briefcase-business",
+      "titleZh": "商务公文包",
+      "titleEn": "briefcase business",
+      "aliases": [
+        "商务",
+        "投资",
+        "工作",
+        "企业"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/briefcase-business.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/briefcase-business.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "a6ba13c1a7536bafa4f74a0117708a1dff9f6ed25c606d174cf893134d09d5f2",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "商务",
+        "投资",
+        "工作",
+        "企业"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "briefcase",
+        "business"
+      ],
+      "spokenTriggersZh": [
+        "商务公文包",
+        "商务",
+        "投资",
+        "工作",
+        "企业",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到商务、投资、工作、企业等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/briefcase-business",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/briefcase-business.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-building-2",
+      "titleZh": "企业大楼",
+      "titleEn": "building 2",
+      "aliases": [
+        "企业",
+        "公司",
+        "写字楼",
+        "商业"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/building-2.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/building-2.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "ccfd2087e718267ffac6bef0efc82b529cb98cfeb972d1ea82f9a1a13c469575",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "企业",
+        "公司",
+        "写字楼",
+        "商业"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "building",
+        "2"
+      ],
+      "spokenTriggersZh": [
+        "企业大楼",
+        "企业",
+        "公司",
+        "写字楼",
+        "商业",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到企业、公司、写字楼、商业等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/building-2",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/building-2.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-calculator",
+      "titleZh": "计算器图标",
+      "titleEn": "calculator",
+      "aliases": [
+        "计算",
+        "财务",
+        "会计",
+        "预算"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/calculator.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/calculator.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "c24b1ac06de96bf7bcc961e19ec4c8a738e3cc88204fb9955d1d08e78c413342",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "计算",
+        "财务",
+        "会计",
+        "预算"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "calculator"
+      ],
+      "spokenTriggersZh": [
+        "计算器图标",
+        "计算",
+        "财务",
+        "会计",
+        "预算",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到计算、财务、会计、预算等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/calculator",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/calculator.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-chart-candlestick",
+      "titleZh": "K线图标",
+      "titleEn": "chart candlestick",
+      "aliases": [
+        "K线",
+        "蜡烛图",
+        "股票",
+        "技术分析"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/chart-candlestick.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/chart-candlestick.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "66f42c14ab9e29c22e9882edf3e9f0b9fce373daf479e7c3d0bd26993e174a46",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "K线",
+        "蜡烛图",
+        "股票",
+        "技术分析"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "chart",
+        "candlestick"
+      ],
+      "spokenTriggersZh": [
+        "K线图标",
+        "K线",
+        "蜡烛图",
+        "股票",
+        "技术分析",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到K线、蜡烛图、股票、技术分析等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/chart-candlestick",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/chart-candlestick.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-chart-no-axes-combined",
+      "titleZh": "综合行情图",
+      "titleEn": "chart no axes combined",
+      "aliases": [
+        "行情",
+        "图表",
+        "数据",
+        "金融"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/chart-no-axes-combined.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/chart-no-axes-combined.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "06939c01caf85812524287b51a7c4c093376d942123c0377fe9a210e492390c2",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "行情",
+        "图表",
+        "数据"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "chart",
+        "no",
+        "axes",
+        "combined"
+      ],
+      "spokenTriggersZh": [
+        "综合行情图",
+        "行情",
+        "图表",
+        "数据",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到行情、图表、数据、金融等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/chart-no-axes-combined",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/chart-no-axes-combined.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-circle-dollar-sign",
+      "titleZh": "美元图标",
+      "titleEn": "circle dollar sign",
+      "aliases": [
+        "美元",
+        "货币",
+        "价格",
+        "收入"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/circle-dollar-sign.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/circle-dollar-sign.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "343c0460805f4caeae090b67b7a820bb77d045f5b1b744e73885c59c70b05487",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "美元",
+        "货币",
+        "价格",
+        "收入"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "circle",
+        "dollar",
+        "sign"
+      ],
+      "spokenTriggersZh": [
+        "美元图标",
+        "美元",
+        "货币",
+        "价格",
+        "收入",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到美元、货币、价格、收入等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/circle-dollar-sign",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/circle-dollar-sign.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-coins",
+      "titleZh": "硬币图标",
+      "titleEn": "coins",
+      "aliases": [
+        "钱",
+        "硬币",
+        "财富",
+        "储蓄"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/coins.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/coins.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "35f7349eece49a040240c56130568b47d1dbd5a8ea46f77625eebb54825f62c7",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "钱",
+        "硬币",
+        "财富",
+        "储蓄"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "coins"
+      ],
+      "spokenTriggersZh": [
+        "硬币图标",
+        "钱",
+        "硬币",
+        "财富",
+        "储蓄",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到钱、硬币、财富、储蓄等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/coins",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/coins.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-credit-card",
+      "titleZh": "信用卡图标",
+      "titleEn": "credit card",
+      "aliases": [
+        "信用卡",
+        "支付",
+        "消费",
+        "银行卡"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/credit-card.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/credit-card.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "c106efa619b9909ba554804f9ec68cc5a61c5fcb75a284b8ba47816cd0a1073c",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "信用卡",
+        "支付",
+        "消费",
+        "银行卡"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "credit",
+        "card"
+      ],
+      "spokenTriggersZh": [
+        "信用卡图标",
+        "信用卡",
+        "支付",
+        "消费",
+        "银行卡",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到信用卡、支付、消费、银行卡等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/credit-card",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/credit-card.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-hand-coins",
+      "titleZh": "投资收益图标",
+      "titleEn": "hand coins",
+      "aliases": [
+        "投资",
+        "收益",
+        "回报",
+        "理财"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/hand-coins.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/hand-coins.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "aa33c5f5aec4b95e3c28eff50d644475cde6697cbb5b74d18cf4202ac6b9c679",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "投资",
+        "收益",
+        "回报",
+        "理财"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "hand",
+        "coins"
+      ],
+      "spokenTriggersZh": [
+        "投资收益图标",
+        "投资",
+        "收益",
+        "回报",
+        "理财",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到投资、收益、回报、理财等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/hand-coins",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/hand-coins.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-landmark",
+      "titleZh": "银行图标",
+      "titleEn": "landmark",
+      "aliases": [
+        "银行",
+        "金融机构",
+        "央行",
+        "利率"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/landmark.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/landmark.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "8ecd041d5ccedc5bfbbddadf62f7628f54d8be0146a1a01756aa56ae4c778c70",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "银行",
+        "金融机构",
+        "央行",
+        "利率"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "landmark"
+      ],
+      "spokenTriggersZh": [
+        "银行图标",
+        "银行",
+        "金融机构",
+        "央行",
+        "利率",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到银行、金融机构、央行、利率等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/landmark",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/landmark.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-piggy-bank",
+      "titleZh": "存钱罐图标",
+      "titleEn": "piggy bank",
+      "aliases": [
+        "储蓄",
+        "理财",
+        "存钱",
+        "儿童金融"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/piggy-bank.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/piggy-bank.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "0929bb17c63fe921944cf7448b795aef5f69b5b08d0b6dbfddb55de7ca1759b6",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "储蓄",
+        "理财",
+        "存钱",
+        "儿童金融"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "piggy",
+        "bank"
+      ],
+      "spokenTriggersZh": [
+        "存钱罐图标",
+        "储蓄",
+        "理财",
+        "存钱",
+        "儿童金融",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到储蓄、理财、存钱、儿童金融等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/piggy-bank",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/piggy-bank.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-presentation",
+      "titleZh": "商业演示图标",
+      "titleEn": "presentation",
+      "aliases": [
+        "路演",
+        "汇报",
+        "图表",
+        "商业计划"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/presentation.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/presentation.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "98bc09e8e56711f46fb18415c9ad08c493e38ad3aa00aa9670b3e7c7ad7b3383",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "路演",
+        "汇报",
+        "图表",
+        "商业计划"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "presentation"
+      ],
+      "spokenTriggersZh": [
+        "商业演示图标",
+        "路演",
+        "汇报",
+        "图表",
+        "商业计划",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到路演、汇报、图表、商业计划等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/presentation",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/presentation.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-receipt",
+      "titleZh": "收据图标",
+      "titleEn": "receipt",
+      "aliases": [
+        "收据",
+        "发票",
+        "消费",
+        "报销"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/receipt.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/receipt.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "19edea68bf1a5c835927371ea7cd309082e0a918f36f3a387339f5291d5222c6",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "收据",
+        "发票",
+        "消费",
+        "报销"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "receipt"
+      ],
+      "spokenTriggersZh": [
+        "收据图标",
+        "收据",
+        "发票",
+        "消费",
+        "报销",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到收据、发票、消费、报销等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/receipt",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/receipt.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-scale",
+      "titleZh": "权衡与监管",
+      "titleEn": "scale",
+      "aliases": [
+        "监管",
+        "法律",
+        "平衡",
+        "风险"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/scale.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/scale.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "aa1eb035f80115ec590782286d3c533116ce62861e54be1711b822b149d498dc",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "监管",
+        "法律",
+        "平衡",
+        "风险"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "scale"
+      ],
+      "spokenTriggersZh": [
+        "权衡与监管",
+        "监管",
+        "法律",
+        "平衡",
+        "风险",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到监管、法律、平衡、风险等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/scale",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/scale.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-trending-down",
+      "titleZh": "下跌趋势",
+      "titleEn": "trending down",
+      "aliases": [
+        "下跌",
+        "下降",
+        "熊市",
+        "利空"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/trending-down.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/trending-down.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "b7d3eaf8d4390b6af3d893d545162808bb3d42e1d527cdfd9b62fa8d7e7a0cc7",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "下跌",
+        "下降",
+        "熊市",
+        "利空"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "trending",
+        "down"
+      ],
+      "spokenTriggersZh": [
+        "下跌趋势",
+        "下跌",
+        "下降",
+        "熊市",
+        "利空",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到下跌、下降、熊市、利空等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/trending-down",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/trending-down.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-trending-up",
+      "titleZh": "上涨趋势",
+      "titleEn": "trending up",
+      "aliases": [
+        "上涨",
+        "增长",
+        "牛市",
+        "利好"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/trending-up.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/trending-up.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "09491de73b56280b7e6f98b226a07bc6eb03573d0eb341855bf0243847f5aefd",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "上涨",
+        "增长",
+        "牛市",
+        "利好"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "trending",
+        "up"
+      ],
+      "spokenTriggersZh": [
+        "上涨趋势",
+        "上涨",
+        "增长",
+        "牛市",
+        "利好",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到上涨、增长、牛市、利好等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/trending-up",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/trending-up.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "finance-symbol-wallet",
+      "titleZh": "钱包图标",
+      "titleEn": "wallet",
+      "aliases": [
+        "钱包",
+        "资产",
+        "现金",
+        "支付"
+      ],
+      "category": "finance-symbol",
+      "file": "assets/material-library/symbols/finance/wallet.svg",
+      "remotionSrc": "assets/material-library/symbols/finance/wallet.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "187832bdf39befa8b97b5c8ecdbcd6e2a5545350aded827ac5fea3ab4307a11e",
+      "tagsZh": [
+        "金融",
+        "透明底",
+        "钱包",
+        "资产",
+        "现金",
+        "支付"
+      ],
+      "tagsEn": [
+        "finance",
+        "outline icon",
+        "wallet"
+      ],
+      "spokenTriggersZh": [
+        "钱包图标",
+        "钱包",
+        "资产",
+        "现金",
+        "支付",
+        "金融",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到钱包、资产、现金、支付等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/wallet",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/wallet.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-bot",
+      "titleZh": "AI 机器人图标",
+      "titleEn": "bot",
+      "aliases": [
+        "机器人",
+        "AI",
+        "人工智能",
+        "自动化"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/bot.svg",
+      "remotionSrc": "assets/material-library/symbols/general/bot.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "a7bd3dedef163bfb38dd6d50bbe2a73388cc1d280f47deca50c64f6ba3614583",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "机器人",
+        "AI",
+        "人工智能",
+        "自动化"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "bot"
+      ],
+      "spokenTriggersZh": [
+        "AI 机器人图标",
+        "机器人",
+        "AI",
+        "人工智能",
+        "自动化",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到机器人、AI、人工智能、自动化等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/bot",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/bot.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-brain-circuit",
+      "titleZh": "智能大脑图标",
+      "titleEn": "brain circuit",
+      "aliases": [
+        "人工智能",
+        "大模型",
+        "神经网络",
+        "推理"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/brain-circuit.svg",
+      "remotionSrc": "assets/material-library/symbols/general/brain-circuit.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "9af10668d12bc10e3378b082c66de90f26179465d0527c559fd168feb685730b",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "人工智能",
+        "大模型",
+        "神经网络",
+        "推理"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "brain",
+        "circuit"
+      ],
+      "spokenTriggersZh": [
+        "智能大脑图标",
+        "人工智能",
+        "大模型",
+        "神经网络",
+        "推理",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到人工智能、大模型、神经网络、推理等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/brain-circuit",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/brain-circuit.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-cable",
+      "titleZh": "数据线图标",
+      "titleEn": "cable",
+      "aliases": [
+        "数据线",
+        "连接",
+        "接口",
+        "硬件"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/cable.svg",
+      "remotionSrc": "assets/material-library/symbols/general/cable.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "8fc1971c1458d8f6df3b28aa7084a583aa0dcf55bf682cc69f7594b390b249c4",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "数据线",
+        "连接",
+        "接口",
+        "硬件"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "cable"
+      ],
+      "spokenTriggersZh": [
+        "数据线图标",
+        "数据线",
+        "连接",
+        "接口",
+        "硬件",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到数据线、连接、接口、硬件等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/cable",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/cable.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-cloud",
+      "titleZh": "云服务图标",
+      "titleEn": "cloud",
+      "aliases": [
+        "云计算",
+        "云服务",
+        "网络",
+        "存储"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/cloud.svg",
+      "remotionSrc": "assets/material-library/symbols/general/cloud.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "f732e580f653fc37e6d1171a5acf6cc36c5442415b88e864d1973fa6462fb12c",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "云计算",
+        "云服务",
+        "网络",
+        "存储"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "cloud"
+      ],
+      "spokenTriggersZh": [
+        "云服务图标",
+        "云计算",
+        "云服务",
+        "网络",
+        "存储",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到云计算、云服务、网络、存储等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/cloud",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/cloud.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-code-2",
+      "titleZh": "编程代码图标",
+      "titleEn": "code 2",
+      "aliases": [
+        "代码",
+        "编程",
+        "软件开发",
+        "程序员"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/code-2.svg",
+      "remotionSrc": "assets/material-library/symbols/general/code-2.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "848dd46cd644aeb3600a0ef137fb73e052d0a59ba3ffddd5987f41c5ebac6db3",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "代码",
+        "编程",
+        "软件开发",
+        "程序员"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "code",
+        "2"
+      ],
+      "spokenTriggersZh": [
+        "编程代码图标",
+        "代码",
+        "编程",
+        "软件开发",
+        "程序员",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到代码、编程、软件开发、程序员等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/code-2",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/code-2.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-cpu",
+      "titleZh": "芯片图标",
+      "titleEn": "cpu",
+      "aliases": [
+        "芯片",
+        "CPU",
+        "GPU",
+        "算力"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/cpu.svg",
+      "remotionSrc": "assets/material-library/symbols/general/cpu.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "0b3f30d7e5ca684ec8e13000a610396012a32d1e9864ea933e7607407a5028c3",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "芯片",
+        "CPU",
+        "GPU",
+        "算力"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "cpu"
+      ],
+      "spokenTriggersZh": [
+        "芯片图标",
+        "芯片",
+        "CPU",
+        "GPU",
+        "算力",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到芯片、CPU、GPU、算力等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/cpu",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/cpu.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-database",
+      "titleZh": "数据库图标",
+      "titleEn": "database",
+      "aliases": [
+        "数据库",
+        "数据",
+        "存储",
+        "信息"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/database.svg",
+      "remotionSrc": "assets/material-library/symbols/general/database.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "4b47a5dfd9274280323cbc6558f735279fda9973db50a5c66c561fac0e0c2b19",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "数据库",
+        "数据",
+        "存储",
+        "信息"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "database"
+      ],
+      "spokenTriggersZh": [
+        "数据库图标",
+        "数据库",
+        "数据",
+        "存储",
+        "信息",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到数据库、数据、存储、信息等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/database",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/database.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-drone",
+      "titleZh": "无人机图标",
+      "titleEn": "drone",
+      "aliases": [
+        "无人机",
+        "航拍",
+        "飞行",
+        "科技"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/drone.svg",
+      "remotionSrc": "assets/material-library/symbols/general/drone.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "643357d050fc3fa8e648807c7101d32c95a7ceaa88c411414e13bf34cc7c6837",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "无人机",
+        "航拍",
+        "飞行",
+        "科技"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "drone"
+      ],
+      "spokenTriggersZh": [
+        "无人机图标",
+        "无人机",
+        "航拍",
+        "飞行",
+        "科技",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到无人机、航拍、飞行、科技等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/drone",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/drone.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-glasses",
+      "titleZh": "智能眼镜图标",
+      "titleEn": "glasses",
+      "aliases": [
+        "智能眼镜",
+        "AR",
+        "VR",
+        "穿戴设备"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/glasses.svg",
+      "remotionSrc": "assets/material-library/symbols/general/glasses.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "5da8d9a77de068c958ececc0378cd7b1dff491dec69442beb3ae7a35d2029d26",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "智能眼镜",
+        "AR",
+        "VR",
+        "穿戴设备"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "glasses"
+      ],
+      "spokenTriggersZh": [
+        "智能眼镜图标",
+        "智能眼镜",
+        "AR",
+        "VR",
+        "穿戴设备",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到智能眼镜、AR、VR、穿戴设备等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/glasses",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/glasses.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-hard-drive",
+      "titleZh": "硬盘图标",
+      "titleEn": "hard drive",
+      "aliases": [
+        "硬盘",
+        "存储",
+        "文件",
+        "数据"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/hard-drive.svg",
+      "remotionSrc": "assets/material-library/symbols/general/hard-drive.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "3f0b666ff5583adc51f55dd4e75534883d536a88b30a60bcfaec68ed59a01122",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "硬盘",
+        "存储",
+        "文件",
+        "数据"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "hard",
+        "drive"
+      ],
+      "spokenTriggersZh": [
+        "硬盘图标",
+        "硬盘",
+        "存储",
+        "文件",
+        "数据",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到硬盘、存储、文件、数据等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/hard-drive",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/hard-drive.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-network",
+      "titleZh": "网络节点图标",
+      "titleEn": "network",
+      "aliases": [
+        "网络",
+        "连接",
+        "节点",
+        "互联网"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/network.svg",
+      "remotionSrc": "assets/material-library/symbols/general/network.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "d93814192ea3d8a6ae3550e66a65924eeba8ebac26d8909782c8fd77eedea6bc",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "网络",
+        "连接",
+        "节点",
+        "互联网"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "network"
+      ],
+      "spokenTriggersZh": [
+        "网络节点图标",
+        "网络",
+        "连接",
+        "节点",
+        "互联网",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到网络、连接、节点、互联网等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/network",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/network.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-radio-tower",
+      "titleZh": "通信基站图标",
+      "titleEn": "radio tower",
+      "aliases": [
+        "通信",
+        "基站",
+        "信号",
+        "无线网络"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/radio-tower.svg",
+      "remotionSrc": "assets/material-library/symbols/general/radio-tower.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "cbb7599361e632229a0680f4c9fe936069a7399c54bffb00d580c1583764d6c1",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "通信",
+        "基站",
+        "信号",
+        "无线网络"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "radio",
+        "tower"
+      ],
+      "spokenTriggersZh": [
+        "通信基站图标",
+        "通信",
+        "基站",
+        "信号",
+        "无线网络",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到通信、基站、信号、无线网络等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/radio-tower",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/radio-tower.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-router",
+      "titleZh": "路由器图标",
+      "titleEn": "router",
+      "aliases": [
+        "路由器",
+        "Wi-Fi",
+        "网络",
+        "连接"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/router.svg",
+      "remotionSrc": "assets/material-library/symbols/general/router.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "edc9558027ff38031f8cc0d9afc41f4ce6de1d49c30394cb66e037dfe66f166d",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "路由器",
+        "Wi-Fi",
+        "网络",
+        "连接"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "router"
+      ],
+      "spokenTriggersZh": [
+        "路由器图标",
+        "路由器",
+        "Wi-Fi",
+        "网络",
+        "连接",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到路由器、Wi-Fi、网络、连接等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/router",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/router.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-satellite",
+      "titleZh": "卫星图标",
+      "titleEn": "satellite",
+      "aliases": [
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/satellite.svg",
+      "remotionSrc": "assets/material-library/symbols/general/satellite.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "4185ef7c50c890e3f4169b20a315b41aadcff05f47a46b8104346de5cc70b961",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "卫星",
+        "太空",
+        "通信",
+        "遥感"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "satellite"
+      ],
+      "spokenTriggersZh": [
+        "卫星图标",
+        "卫星",
+        "太空",
+        "通信",
+        "遥感",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到卫星、太空、通信、遥感等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/satellite",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/satellite.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-scan-eye",
+      "titleZh": "视觉识别图标",
+      "titleEn": "scan eye",
+      "aliases": [
+        "视觉识别",
+        "计算机视觉",
+        "扫描",
+        "摄像头"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/scan-eye.svg",
+      "remotionSrc": "assets/material-library/symbols/general/scan-eye.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "3021ccc5ef14fc5674ec737fe1f34d6adaefbe2fcd16fee7ba703f3eca499e04",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "视觉识别",
+        "计算机视觉",
+        "扫描",
+        "摄像头"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "scan",
+        "eye"
+      ],
+      "spokenTriggersZh": [
+        "视觉识别图标",
+        "视觉识别",
+        "计算机视觉",
+        "扫描",
+        "摄像头",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到视觉识别、计算机视觉、扫描、摄像头等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/scan-eye",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/scan-eye.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-server",
+      "titleZh": "服务器图标",
+      "titleEn": "server",
+      "aliases": [
+        "服务器",
+        "数据中心",
+        "云计算",
+        "后端"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/server.svg",
+      "remotionSrc": "assets/material-library/symbols/general/server.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "2a4bb82f14ccce103e878fffcd4a6cebd8de340220bc338e52486928eeda5ce8",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "服务器",
+        "数据中心",
+        "云计算",
+        "后端"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "server"
+      ],
+      "spokenTriggersZh": [
+        "服务器图标",
+        "服务器",
+        "数据中心",
+        "云计算",
+        "后端",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到服务器、数据中心、云计算、后端等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/server",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/server.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-shield-check",
+      "titleZh": "网络安全图标",
+      "titleEn": "shield check",
+      "aliases": [
+        "网络安全",
+        "隐私",
+        "防护",
+        "可信"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/shield-check.svg",
+      "remotionSrc": "assets/material-library/symbols/general/shield-check.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "0f8480d5ceda5025dfd6919f1a0dcf9724a714f92d30b15ccfd5aebb6f785502",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "网络安全",
+        "隐私",
+        "防护",
+        "可信"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "shield",
+        "check"
+      ],
+      "spokenTriggersZh": [
+        "网络安全图标",
+        "网络安全",
+        "隐私",
+        "防护",
+        "可信",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到网络安全、隐私、防护、可信等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/shield-check",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/shield-check.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    },
+    {
+      "id": "tech-symbol-webcam",
+      "titleZh": "网络摄像头图标",
+      "titleEn": "webcam",
+      "aliases": [
+        "摄像头",
+        "视频会议",
+        "直播",
+        "录制"
+      ],
+      "category": "tech-symbol",
+      "file": "assets/material-library/symbols/general/webcam.svg",
+      "remotionSrc": "assets/material-library/symbols/general/webcam.svg",
+      "mimeType": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "aspectRatio": 1,
+      "sha256": "d602fcc2996e11bebe489252f9611af8c78d9bc369b99b3109d168db57f7d561",
+      "tagsZh": [
+        "通用元素",
+        "透明底",
+        "摄像头",
+        "视频会议",
+        "直播",
+        "录制"
+      ],
+      "tagsEn": [
+        "general",
+        "outline icon",
+        "webcam"
+      ],
+      "spokenTriggersZh": [
+        "网络摄像头图标",
+        "摄像头",
+        "视频会议",
+        "直播",
+        "录制",
+        "通用元素",
+        "透明底"
+      ],
+      "useWhenZh": "口播提到摄像头、视频会议、直播、录制等概念，需要简洁透明底示意元素时。",
+      "usageNoteZh": "中性线性 SVG，可改描边颜色和线宽；适合人物旁挂件、关键词强调和数据转场。",
+      "source": {
+        "provider": "Lucide",
+        "sourcePage": "https://lucide.dev/icons/webcam",
+        "downloadUrl": "https://cdn.jsdelivr.net/npm/lucide-static@1.24.0/icons/webcam.svg",
+        "license": "ISC",
+        "licenseUrl": "https://lucide.dev/license",
+        "attributionRequired": false
+      }
+    }
+  ]
+}
