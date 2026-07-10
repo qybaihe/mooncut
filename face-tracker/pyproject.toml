@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mooncut-face-tracker"
+version = "0.2.0"
+description = "Stable YOLO face tracking and reframing for spoken-word videos"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "ultralytics>=8.4.0,<9",
+  "opencv-python>=4.8.0,<5",
+  "lap>=0.5.12,<1",
+]
+
+[project.scripts]
+mooncut-face-track = "face_tracker.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["face_tracker*"]
+
+[tool.setuptools.package-data]
+face_tracker = ["weights/*.pt", "weights/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

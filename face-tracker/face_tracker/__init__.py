@@ -1,7 +1,41 @@
-from .face_tracker import FaceData, FaceTracker, FaceTrackingResult
+from .face_tracker import (
+    FaceData,
+    FaceTracker,
+    FaceTrackingResult,
+    default_model_path,
+)
+from .reframing import (
+    FRAMING_PRESETS,
+    SCHEMA_VERSION,
+    CropRect,
+    FaceTrackManifest,
+    FaceTrackSample,
+    FramingProfile,
+    ReframeConfig,
+    SourceMetadata,
+    analyze_video,
+    interpolate_sample,
+    render_reframed_video,
+    resolve_crop,
+    validate_manifest_source,
+)
 
 __all__ = (
+    "SCHEMA_VERSION",
+    "FRAMING_PRESETS",
+    "CropRect",
     "FaceData",
     "FaceTracker",
     "FaceTrackingResult",
+    "FaceTrackManifest",
+    "FaceTrackSample",
+    "FramingProfile",
+    "ReframeConfig",
+    "SourceMetadata",
+    "analyze_video",
+    "default_model_path",
+    "interpolate_sample",
+    "render_reframed_video",
+    "resolve_crop",
+    "validate_manifest_source",
 )
