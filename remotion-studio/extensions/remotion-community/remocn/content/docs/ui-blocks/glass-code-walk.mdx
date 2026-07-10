@@ -1,0 +1,97 @@
+---
+title: Glass Code Walk
+description: A camera that scans a glass code block top to bottom as it types, then pulls back to a centered hold
+---
+
+<ComponentPreview name="glass-code-walk" />
+
+## Installation
+
+<InstallBlock name="glass-code-walk" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { GlassCodeWalk } from "@/components/remocn/glass-code-walk";
+
+const GlassCodeWalkScene = () => (
+  <GlassCodeWalk
+    title="scene.tsx"
+    code={`export function Intro() {\n  return <h1>Ship it</h1>;\n}`}
+  />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="GlassCodeWalk"
+    component={GlassCodeWalkScene}
+    durationInFrames={150}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+The camera mirrors `glass-code-block`'s line layout to keep the revealing line pinned, so it pairs with that component — `npx shadcn add @remocn/glass-code-walk` pulls it in automatically. Renders transparent; supply the background with `Backdrop` so the glass has an image to refract.
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "code",
+      type: "string",
+      description: "Source code to render. Newlines split into lines the camera scans.",
+    },
+    {
+      name: "title",
+      type: "string",
+      default: "\"scene.tsx\"",
+      description: "Filename shown in the chrome bar",
+    },
+    {
+      name: "width",
+      type: "number",
+      default: "880",
+      description: "Glass block width in pixels; centering and the camera pin derive from it",
+    },
+    {
+      name: "height",
+      type: "number",
+      default: "420",
+      description: "Glass block height in pixels",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      default: "18",
+      description: "Code font size in pixels; line geometry is derived from it",
+    },
+    {
+      name: "staggerFrames",
+      type: "number",
+      default: "10",
+      description: "Frames between each line's reveal; the camera scan tracks the same cadence",
+    },
+    {
+      name: "zoom",
+      type: "number",
+      default: "2.6",
+      description: "Camera scale while scanning before the pull-back to centered",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Playback multiplier applied to both the reveal and the camera",
+    },
+    {
+      name: "className",
+      type: "string",
+      description: "Optional className passed to the outer container",
+    },
+  ]}
+/>

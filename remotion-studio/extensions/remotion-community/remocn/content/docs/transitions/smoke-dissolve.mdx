@@ -1,0 +1,64 @@
+---
+title: Smoke Dissolve
+description: Expand a smoke ring outward across the frame to reveal the next scene
+---
+
+<ComponentPreview name="smoke-dissolve" />
+
+## Installation
+
+<InstallBlock name="smoke-dissolve" />
+
+## Usage
+
+`smokeDissolve()` is a Remotion transition presentation. Pass it to a
+`TransitionSeries.Transition` between two sequences. The smoke ring grows in
+radius, scale and thickness while the incoming scene resolves behind it, so
+give the transition enough frames for the full expansion (104 works well).
+
+```tsx
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { smokeDissolve } from "@/components/remocn/smoke-dissolve";
+
+export const MyVideo = () => (
+  <TransitionSeries>
+    <TransitionSeries.Sequence durationInFrames={110}>
+      <SceneA />
+    </TransitionSeries.Sequence>
+    <TransitionSeries.Transition
+      timing={linearTiming({ durationInFrames: 104 })}
+      presentation={smokeDissolve()}
+    />
+    <TransitionSeries.Sequence durationInFrames={110}>
+      <SceneB />
+    </TransitionSeries.Sequence>
+  </TransitionSeries>
+);
+```
+
+## Props
+
+`smokeDissolve(props)` accepts:
+
+<PropsTable
+  rows={[
+    {
+      name: "colorBack",
+      type: "string",
+      default: '"#141318"',
+      description: "Solid color behind the smoke ring during the transition.",
+    },
+    {
+      name: "colors",
+      type: "string[]",
+      default: '["#8f88ae"]',
+      description: "Smoke ring colors.",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Shader animation speed.",
+    },
+  ]}
+/>

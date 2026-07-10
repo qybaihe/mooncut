@@ -1,0 +1,31 @@
+{
+  "name": "fifa-worldcup26-highlights",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI to find official FIFA World Cup 2026 highlights and download them via headless browser + ffmpeg",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "bin": {
+    "wc26": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx --test test/**/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}

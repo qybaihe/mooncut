@@ -1,0 +1,40 @@
+{
+  "name": "@onda/www",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Onda — landing page and component docs surface.",
+  "scripts": {
+    "dev": "next dev",
+    "predev": "node scripts/sync-registry-to-public.mjs",
+    "build": "next build",
+    "prebuild": "node scripts/sync-registry-to-public.mjs",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.7",
+    "@radix-ui/react-popover": "^1.1.4",
+    "@remotion/player": "^4.0.466",
+    "@shikijs/rehype": "^4.1.0",
+    "github-slugger": "^2.0.0",
+    "next": "^15.0.0",
+    "next-mdx-remote": "^6.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "remotion": "^4.0.466",
+    "shiki": "^4.1.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.4.0",
+    "unified": "^11.0.5"
+  }
+}

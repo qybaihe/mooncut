@@ -1,0 +1,51 @@
+node_modules/
+out/
+dist/
+build/
+.DS_Store
+*.log
+.env*
+!.env.example
+.vscode/
+.idea/
+
+# TypeScript incremental build cache. Regenerated on every tsc run; should
+# never be in git history.
+*.tsbuildinfo
+
+# Local Claude Code state — per-developer permission allowlists, session
+# locks, scheduled-task pids. Personal to whoever is driving the project
+# from this checkout; not useful to anyone else and noisy in diffs.
+#
+# Exception: .claude/skills/ holds team-shared workflow tooling (e.g. the
+# /issues skill that wraps `gh issue` for triaging this repo). Those ARE
+# meant to be versioned and used by any contributor running Claude Code.
+# (Note: must exclude contents via `*` not the dir itself, otherwise git
+# refuses to re-include any path beneath it.)
+.claude/*
+!.claude/skills/
+
+# Internal docs that aren't useful to outside contributors — running activity
+# logs, internal task queues. Their content lives here so the local maintainer
+# can keep working with them; git just doesn't track them.
+_private/
+
+# Generated at build time by www/scripts/sync-registry-to-public.mjs.
+# Source of truth: registry/r/ and registry/registry.json.
+www/public/r/
+
+# Generated at build time by scripts/sync-manifest-module.mjs (runs as
+# part of the CLI's `pnpm build`). Source of truth: each component's
+# schema.ts re-export + its meta.json. Regenerated automatically before
+# every publish via the CLI package's prepublishOnly hook.
+packages/cli/src/manifest.ts
+
+# npm credentials / publish tokens — never commit, regardless of subdirectory.
+.npmrc.publish
+.npmrc.local
+.npmrc-*
+
+# npm 2FA recovery codes — must never be committed. Move them to your
+# password manager and delete the file from the repo dir entirely.
+npm_recovery_codes*
+recovery_codes*

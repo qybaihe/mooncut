@@ -1,0 +1,122 @@
+---
+title: Perspective Marquee
+description: A 3D-tilted infinite marquee with depth-of-field blur on items rolling toward the horizon
+---
+
+<ComponentPreview name="perspective-marquee" />
+
+## Installation
+
+<InstallBlock name="perspective-marquee" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { PerspectiveMarquee } from "@/components/remocn/perspective-marquee";
+
+const PerspectiveMarqueeScene = () => (
+  <PerspectiveMarquee
+    items={["Vercel", "Linear", "Stripe", "Figma"]}
+    rotateY={-28}
+    pixelsPerFrame={2}
+  />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="PerspectiveMarquee"
+    component={PerspectiveMarqueeScene}
+    durationInFrames={240}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+### With Backdrop
+
+Renders transparent — supply the background via `Backdrop`:
+
+```tsx
+import { Backdrop } from "@/components/remocn/backdrop";
+import { PerspectiveMarquee } from "@/components/remocn/perspective-marquee";
+
+<Backdrop fill={{ type: "color", value: "#050505" }}>
+  <PerspectiveMarquee items={["Vercel", "Linear", "Stripe", "Figma"]} rotateY={-28} pixelsPerFrame={2} />
+</Backdrop>
+```
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "items",
+      type: "string[]",
+      default: "[\"Vercel\", \"Linear\", \"Stripe\", \"Figma\", \"Notion\", \"Raycast\", \"Arc\", \"Cursor\"]",
+      description: "Items rendered in the marquee. Repeated three times under the hood for a seamless loop.",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      default: "84",
+      description: "Font size in pixels",
+    },
+    {
+      name: "color",
+      type: "string",
+      default: "\"#fafafa\"",
+      description: "Text color of each item",
+    },
+    {
+      name: "fontWeight",
+      type: "number",
+      default: "700",
+      description: "CSS font-weight",
+    },
+    {
+      name: "pixelsPerFrame",
+      type: "number",
+      default: "2",
+      description: "Horizontal scroll speed in pixels per frame",
+    },
+    {
+      name: "rotateY",
+      type: "number",
+      default: "-28",
+      description: "Y-axis rotation in degrees applied to the marquee row",
+    },
+    {
+      name: "rotateX",
+      type: "number",
+      default: "8",
+      description: "X-axis rotation in degrees applied to the marquee row",
+    },
+    {
+      name: "perspective",
+      type: "number",
+      default: "1200",
+      description: "CSS perspective in pixels on the parent",
+    },
+    {
+      name: "fadeColor",
+      type: "string",
+      default: "\"#050505\"",
+      description: "Color used in the edge vignette gradients",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Playback speed multiplier",
+    },
+    {
+      name: "className",
+      type: "string",
+      description: "Optional className passed to the root container",
+    },
+  ]}
+/>

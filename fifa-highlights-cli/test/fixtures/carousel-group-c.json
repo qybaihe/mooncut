@@ -1,0 +1,16 @@
+{
+  "title": "Group C",
+  "items": [
+    {
+      "entryId": "brazil-norway-video",
+      "title": "Brazil v Norway | Group C | FIFA World Cup 2026™",
+      "description": "Watch the highlights from Brazil v Norway.",
+      "readMorePageUrl": "/en/watch/brazil-norway-official",
+      "watchDataDto": {
+        "type": "video",
+        "videoEntryId": "brazil-norway-video",
+        "videoDuration": 420
+      }
+    }
+  ]
+}

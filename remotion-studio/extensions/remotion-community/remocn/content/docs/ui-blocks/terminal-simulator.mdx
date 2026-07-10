@@ -1,0 +1,91 @@
+---
+title: Terminal Simulator
+description: A console window that types out commands and rolls older lines off the top
+---
+
+<ComponentPreview name="terminal-simulator" />
+
+## Installation
+
+<InstallBlock name="terminal-simulator" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { TerminalSimulator } from "@/components/remocn/terminal-simulator";
+
+const TerminalSimulatorScene = () => (
+  <TerminalSimulator
+    lines={[
+      { text: "npm run build", type: "command" },
+      { text: "Compiled successfully", type: "success", delay: 14 },
+    ]}
+  />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="TerminalSimulator"
+    component={TerminalSimulatorScene}
+    durationInFrames={240}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "lines",
+      type: "Array<{ text: string; type: 'command' | 'log' | 'success' | 'error'; delay?: number }>",
+      description: "The lines to render. `delay` is the frame gap before the line starts typing.",
+    },
+    {
+      name: "prompt",
+      type: "string",
+      default: "\"$\"",
+      description: "Prompt prefix shown before `command` lines",
+    },
+    {
+      name: "title",
+      type: "string",
+      default: "\"~/projects/remocn\"",
+      description: "Title shown in the window chrome bar",
+    },
+    {
+      name: "background",
+      type: "string",
+      default: "\"#0a0a0a\"",
+      description: "Terminal background color",
+    },
+    {
+      name: "chromeColor",
+      type: "string",
+      default: "\"#1a1a1a\"",
+      description: "Window chrome bar color",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      default: "18",
+      description: "Monospace font size in pixels",
+    },
+    {
+      name: "charsPerFrame",
+      type: "number",
+      default: "1",
+      description: "Typing speed: how many characters appear per frame",
+    },
+    {
+      name: "className",
+      type: "string",
+      description: "Optional className passed to the outer container",
+    },
+  ]}
+/>

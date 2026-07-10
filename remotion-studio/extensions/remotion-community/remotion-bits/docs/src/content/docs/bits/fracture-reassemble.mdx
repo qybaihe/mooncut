@@ -1,0 +1,25 @@
+---
+title: Fracture Reassemble
+category: Staggered Motion
+description: Grid of tiles shatters into 3D space and reassembles with abstract symbol accents
+---
+import { BitPlayground } from '@components/BitPlayground';
+
+A colorful grid of tiles shatters outward in 3D space with random rotations, then reassembles back into a coherent layout with abstract Unicode symbols.
+
+<BitPlayground client:only="react" bitName="FractureReassemble" />
+
+## Overview
+
+Demonstrates 3D CSS transforms with staggered per-tile timing based on distance from center for a dramatic fracture/rebuild effect.
+
+Key techniques:
+- Per-tile **randomFloat** seeded scatter positions and rotations
+- **StaggeredMotion** keyframe sequencing with `hold(...)` for assemble → hold → fracture
+- Distance-from-center delay timing for ripple-like animation
+- Abstract Unicode symbol overlay on center-row tiles
+
+## Reference
+
+- [Motion](/docs/reference/staggered-motion)
+- [Random](/docs/reference/utils-random)

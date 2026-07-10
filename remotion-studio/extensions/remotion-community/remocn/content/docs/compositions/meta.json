@@ -1,0 +1,10 @@
+{
+  "title": "Compositions",
+  "collapsible": false,
+  "pages": [
+    "index",
+    "ecosystem-constellation",
+    "infinite-bento-pan",
+    "live-code-compilation"
+  ]
+}

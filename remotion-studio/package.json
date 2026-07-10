@@ -1,0 +1,30 @@
+{
+  "name": "talking-head-remotion-studio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts TalkingHeadDemo out/moonshot-gpt56.mp4",
+    "render:horizontal": "remotion render src/index.ts HorizontalLaunchVideo out/moonshot-gpt56-horizontal.mp4 --codec=h264",
+    "render:horizontal:still": "remotion still src/index.ts HorizontalLaunchVideo out/horizontal-preview.png --frame=520",
+    "render:argentina-egypt": "remotion render src/index.ts ArgentinaEgyptAnalysis out/argentina-egypt-analysis.mp4 --codec=h264",
+    "render:argentina-egypt:v2": "remotion render src/index.ts ArgentinaEgyptAnalysisV2 out/argentina-egypt-analysis-v2.mp4 --codec=h264",
+    "render:still": "remotion still src/index.ts TalkingHeadDemo out/poster.png --frame=210",
+    "transcribe": "node scripts/transcribe.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/captions": "4.0.487",
+    "@remotion/transitions": "4.0.487",
+    "remotion": "4.0.487",
+    "react": "19.2.1",
+    "react-dom": "19.2.1"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.487",
+    "@remotion/renderer": "4.0.487",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  }
+}

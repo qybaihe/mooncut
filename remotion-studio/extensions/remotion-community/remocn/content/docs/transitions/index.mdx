@@ -1,0 +1,96 @@
+---
+title: Transitions
+description: Scene transitions built as presentations for TransitionSeries
+---
+
+Every transition here is a presentation for `@remotion/transitions` — pass it to a `TransitionSeries.Transition` between two sequences and control the pace with `linearTiming` or `springTiming`.
+
+## Camera Motion
+
+Pure CSS-transform physics, no dependencies beyond Remotion.
+
+<ComponentCardGrid
+  items={[
+    {
+      name: "WhipPan",
+      description: "Whip the camera sideways with motion blur so both scenes fly through in one move",
+      status: "stable",
+      href: "/docs/transitions/whip-pan",
+    },
+    {
+      name: "PushThrough",
+      description: "Dolly through the outgoing scene while the next one approaches from the depth",
+      status: "stable",
+      href: "/docs/transitions/push-through",
+    },
+    {
+      name: "FocusPull",
+      description: "Rack focus from one scene to the next through a soft defocus breath",
+      status: "stable",
+      href: "/docs/transitions/focus-pull",
+    },
+    {
+      name: "ZoomBlur",
+      description: "Push the outgoing scene through the viewer while the incoming one resolves out of blur",
+      status: "stable",
+      href: "/docs/transitions/zoom-blur",
+    },
+  ]}
+/>
+
+## Shader
+
+Textured, organic transitions driven by frame-synced shaders. They install `@paper-design/shaders-react`.
+
+<ComponentCardGrid
+  items={[
+    {
+      name: "GrainDissolve",
+      description: "Disintegrate the outgoing scene into soft grainy shapes and condense the next out of the noise",
+      status: "stable",
+      href: "/docs/transitions/grain-dissolve",
+    },
+    {
+      name: "WaveWipe",
+      description: "Sweep a grainy wave up across the frame and reveal the next scene from below",
+      status: "stable",
+      href: "/docs/transitions/wave-wipe",
+    },
+    {
+      name: "RippleZoom",
+      description: "Fly the camera through the center of grainy ripple rings while the next scene approaches",
+      status: "stable",
+      href: "/docs/transitions/ripple-zoom",
+    },
+    {
+      name: "SwirlDissolve",
+      description: "Twist the frame into swirling bands that unwind into the next scene",
+      status: "stable",
+      href: "/docs/transitions/swirl-dissolve",
+    },
+    {
+      name: "DitherDissolve",
+      description: "Dissolve through an animated dither pattern for a retro print texture",
+      status: "stable",
+      href: "/docs/transitions/dither-dissolve",
+    },
+    {
+      name: "PerlinDissolve",
+      description: "Sweep a perlin-noise threshold across the frame to dissolve into the next scene",
+      status: "stable",
+      href: "/docs/transitions/perlin-dissolve",
+    },
+    {
+      name: "SmokeDissolve",
+      description: "Expand a smoke ring outward across the frame to reveal the next scene",
+      status: "stable",
+      href: "/docs/transitions/smoke-dissolve",
+    },
+    {
+      name: "WarpDissolve",
+      description: "Melt the outgoing scene into a folding domain-warp field that straightens into the next",
+      status: "stable",
+      href: "/docs/transitions/warp-dissolve",
+    },
+  ]}
+/>

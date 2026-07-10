@@ -1,0 +1,24 @@
+# Local secrets and account data
+**/.env
+**/.env.*
+!**/.env.example
+**/accounts.db*
+
+# Installed dependencies and virtual environments
+**/node_modules/
+**/.venv/
+**/venv/
+
+# Generated caches
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+**/.cache/
+
+# Local browser automation artifacts
+**/.playwright-cli/
+
+# Operating-system metadata
+.DS_Store

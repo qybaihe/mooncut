@@ -1,0 +1,323 @@
+import React from "react";
+import { AbsoluteFill, Sequence } from "remotion";
+import { MotionTransition } from "../../../src/components/MotionTransition";
+import { Center } from "./Center";
+
+const Bg = ({ children }: { children: React.ReactNode }) => (
+  <AbsoluteFill style={{ backgroundColor: "#100f0f" }}>
+    <Center style={{ padding: "4rem" }}>{children}</Center>
+  </AbsoluteFill>
+);
+
+const boxStyle: React.CSSProperties = {
+  width: 256,
+  height: 256,
+  backgroundColor: "#205ea6",
+  borderRadius: "12px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "2rem",
+  fontWeight: 700,
+  color: "white",
+  margin: "10px",
+};
+
+const labelStyle: React.CSSProperties = {
+  fontSize: "2.5rem",
+  fontWeight: 600,
+  opacity: 0.2,
+  color: "#b7b5ac",
+  marginBottom: "4rem",
+  fontFamily: "Inter, ui-sans-serif, system-ui",
+};
+
+// Shape components
+const Circle: React.FC<{ style?: React.CSSProperties; color?: string }> = ({ style, color = "#205ea6" }) => (
+  <div style={{ ...boxStyle, backgroundColor: color, ...style }}>
+    <svg width="120" height="120" viewBox="0 0 60 60">
+      <circle cx="30" cy="30" r="25" fill="white" />
+    </svg>
+  </div>
+);
+
+const Triangle: React.FC<{ style?: React.CSSProperties; color?: string }> = ({ style, color = "#d14d41" }) => (
+  <div style={{ ...boxStyle, backgroundColor: color, ...style }}>
+    <svg width="120" height="120" viewBox="0 0 60 60">
+      <polygon points="30,10 55,50 5,50" fill="white" />
+    </svg>
+  </div>
+);
+
+const RoundedSquare: React.FC<{ style?: React.CSSProperties; color?: string }> = ({ style, color = "#768d21" }) => (
+  <div style={{ ...boxStyle, backgroundColor: color, ...style }}>
+    <svg width="120" height="120" viewBox="0 0 60 60">
+      <rect x="10" y="10" width="40" height="40" rx="8" fill="white" />
+    </svg>
+  </div>
+);
+
+const Star: React.FC<{ style?: React.CSSProperties; color?: string }> = ({ style, color = "#da702c" }) => (
+  <div style={{ ...boxStyle, backgroundColor: color, ...style }}>
+    <svg width="120" height="120" viewBox="0 0 60 60">
+      <path d="M30 5 L37 23 L56 23 L41 35 L48 53 L30 41 L12 53 L19 35 L4 23 L23 23 Z" fill="white" />
+    </svg>
+  </div>
+);
+
+const Cross: React.FC<{ style?: React.CSSProperties; color?: string }> = ({ style, color = "#735eb5" }) => (
+  <div style={{ ...boxStyle, backgroundColor: color, ...style }}>
+    <svg width="120" height="120" viewBox="0 0 60 60">
+      <path d="M30 10 L30 25 L45 25 L45 35 L30 35 L30 50 L20 50 L20 35 L5 35 L5 25 L20 25 L20 10 Z" fill="white" />
+    </svg>
+  </div>
+);
+
+export const SimpleFadeSlideShowcase: React.FC = () => {
+  return (
+    <Bg>
+      <div style={labelStyle}>Simple Fade & Slide</div>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <MotionTransition
+          transition={{
+            opacity: [0, 1],
+            y: [80, 0],
+            duration: 60,
+            easing: "easeOutCubic",
+          }}
+        >
+          <Circle color="#205ea6" />
+        </MotionTransition>
+      </div>
+    </Bg>
+  );
+};
+
+export const SimultaneousFadeShowcase: React.FC = () => {
+  return (
+    <Bg>
+      <div style={labelStyle}>Simultaneous Fade In</div>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <MotionTransition
+          transition={{
+            opacity: [0, 1],
+            duration: 60,
+            easing: "easeOutCubic",
+          }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "4rem",
+          }}
+        >
+          <Circle color="#205ea6" />
+          <Triangle color="#d14d41" />
+          <RoundedSquare color="#768d21" />
+          <Star color="#da702c" />
+          <Cross color="#735eb5" />
+        </MotionTransition>
+      </div>
+    </Bg>
+  );
+};
+
+export const FadeInStaggerShowcase: React.FC = () => {
+  return (
+    <Bg>
+      <div style={labelStyle}>Stagger (Forward)</div>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <MotionTransition
+          transition={{
+            opacity: [0, 1],
+            y: [300, 0],
+            duration: 30,
+            stagger: 5,
+            staggerDirection: "forward",
+            easing: "easeOutCubic",
+          }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "4rem",
+          }}
+        >
+          <Circle color="#205ea6" />
+          <Triangle color="#d14d41" />
+          <RoundedSquare color="#768d21" />
+          <Star color="#da702c" />
+          <Cross color="#735eb5" />
+        </MotionTransition>
+      </div>
+    </Bg>
+  );
+};
+
+export const ReverseStaggerShowcase: React.FC = () => {
+  return (
+    <Bg>
+      <div style={labelStyle}>Stagger (Reverse)</div>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <MotionTransition
+          transition={{
+            opacity: [0, 1],
+            y: [300, 0],
+            duration: 30,
+            stagger: 5,
+            staggerDirection: "reverse",
+            easing: "easeOutCubic",
+          }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "4rem",
+          }}
+        >
+          <Circle color="#205ea6" />
+          <Triangle color="#d14d41" />
+          <RoundedSquare color="#768d21" />
+          <Star color="#da702c" />
+          <Cross color="#735eb5" />
+        </MotionTransition>
+      </div>
+    </Bg>
+  );
+};
+
+export const CenterStaggerShowcase: React.FC = () => {
+  return (
+    <Bg>
+      <div style={labelStyle}>Stagger (Center)</div>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <MotionTransition
+          transition={{
+            opacity: [0, 1],
+            y: [300, 0],
+            duration: 30,
+            stagger: 5,
+            staggerDirection: "center",
+            easing: "easeOutCubic",
+          }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "4rem",
+          }}
+        >
+          <Circle color="#205ea6" />
+          <Triangle color="#d14d41" />
+          <RoundedSquare color="#768d21" />
+          <Star color="#da702c" />
+          <Cross color="#735eb5" />
+        </MotionTransition>
+      </div>
+    </Bg>
+  );
+};
+
+export const ComplexMotionShowcase: React.FC = () => {
+  return (
+    <Bg>
+      <div style={labelStyle}>Complex Multi-Property Animation</div>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <MotionTransition
+          transition={{
+            opacity: [0, 1, 1, 0.8],
+            y: [100, -20, 0, 0],
+            scale: [0.5, 1.1, 1, 1],
+            rotate: [0, 0, 90, 90],
+            duration: 90,
+            stagger: 5,
+            staggerDirection: "forward",
+            easing: "easeInOutCubic",
+          }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "4rem",
+          }}
+        >
+          <Circle color="#205ea6" />
+          <Triangle color="#d14d41" />
+          <RoundedSquare color="#768d21" />
+          <Star color="#da702c" />
+        </MotionTransition>
+      </div>
+    </Bg>
+  );
+};
+
+export const RandomGridShowcase: React.FC = () => {
+  // Create 24 grid items using the shape components (4 rows x 6 columns)
+  const shapes = [Circle, Triangle, RoundedSquare, Star, Cross];
+  const colors = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6"];
+
+  const gridItems = Array.from({ length: 48 }, (_, i) => {
+    const ShapeComponent = shapes[i % shapes.length];
+    const color = colors[i % colors.length];
+    return <ShapeComponent key={i} color={color} />;
+  });
+
+  return (
+    <Bg>
+      <MotionTransition
+        transition={{
+          y: [200, -200],
+          duration: 120,
+        }}
+      >
+
+        <MotionTransition
+          transition={{
+            opacity: [0, 1],
+            scale: [0.5, 1],
+            duration: 10,
+            stagger: 1,
+            staggerDirection: "random",
+            easing: "easeOutCubic",
+          }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(6, 1fr)",
+            gap: "1rem",
+          }}
+        >
+          {gridItems}
+        </MotionTransition>
+      </MotionTransition>
+    </Bg>
+  );
+};
+
+export const MotionTransitionShowcase: React.FC = () => {
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#0f172a" }}>
+      <Sequence from={0} durationInFrames={90}>
+        <SimpleFadeSlideShowcase />
+      </Sequence>
+
+      <Sequence from={90} durationInFrames={90}>
+        <SimultaneousFadeShowcase />
+      </Sequence>
+
+      <Sequence from={180} durationInFrames={90}>
+        <FadeInStaggerShowcase />
+      </Sequence>
+
+      <Sequence from={270} durationInFrames={90}>
+        <ReverseStaggerShowcase />
+      </Sequence>
+
+      <Sequence from={360} durationInFrames={90}>
+        <CenterStaggerShowcase />
+      </Sequence>
+
+      <Sequence from={450} durationInFrames={120}>
+        <ComplexMotionShowcase />
+      </Sequence>
+
+      <Sequence from={570} durationInFrames={120}>
+        <RandomGridShowcase />
+      </Sequence>
+    </AbsoluteFill>
+  );
+};

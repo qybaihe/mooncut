@@ -1,0 +1,45 @@
+{
+  "name": "onda-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Premium motion graphics components for Remotion — installed as source, owned by you.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render",
+    "typecheck": "tsc --noEmit",
+    "sync-registry": "node scripts/sync-registry.mjs",
+    "sync-manifests": "node scripts/sync-manifests.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.466",
+    "@remotion/media-utils": "^4.0.466",
+    "@remotion/motion-blur": "^4.0.466",
+    "@remotion/paths": "^4.0.466",
+    "@remotion/player": "^4.0.466",
+    "@remotion/transitions": "^4.0.466",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.466",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "next": "^15.0.0",
+    "typescript": "^5.4.0",
+    "zod-to-json-schema": "^3.25.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0"
+    }
+  }
+}

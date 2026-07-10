@@ -1,0 +1,37 @@
+---
+title: Dithering
+description: Ordered-dither shading over an animated gradient field
+---
+
+<ComponentPreview name="shader-dithering" />
+
+## Installation
+
+<InstallBlock name="shader-dithering" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { ShaderDithering } from "@/components/remocn/shader-dithering";
+
+const ShaderDitheringScene = () => (
+  <ShaderDithering speed={1} size={2} type="4x4" />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="ShaderDithering"
+    component={ShaderDitheringScene}
+    durationInFrames={150}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Credits
+
+Shader by [paper-design/shaders](https://github.com/paper-design/shaders).

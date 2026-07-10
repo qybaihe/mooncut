@@ -1,0 +1,37 @@
+---
+title: Pulsing Border
+description: Glowing border frame that pulses around the edges
+---
+
+<ComponentPreview name="shader-pulsing-border" />
+
+## Installation
+
+<InstallBlock name="shader-pulsing-border" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { ShaderPulsingBorder } from "@/components/remocn/shader-pulsing-border";
+
+const ShaderPulsingBorderScene = () => (
+  <ShaderPulsingBorder speed={1} thickness={0.1} roundness={0.25} />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="ShaderPulsingBorder"
+    component={ShaderPulsingBorderScene}
+    durationInFrames={150}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Credits
+
+Shader by [paper-design/shaders](https://github.com/paper-design/shaders).

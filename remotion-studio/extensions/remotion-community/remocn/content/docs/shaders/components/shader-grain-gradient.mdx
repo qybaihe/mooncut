@@ -1,0 +1,37 @@
+---
+title: Grain Gradient
+description: Grainy multi-stop gradient that drifts slowly with film-grain texture over the blend
+---
+
+<ComponentPreview name="shader-grain-gradient" />
+
+## Installation
+
+<InstallBlock name="shader-grain-gradient" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { ShaderGrainGradient } from "@/components/remocn/shader-grain-gradient";
+
+const ShaderGrainGradientScene = () => (
+  <ShaderGrainGradient speed={1} intensity={0.2} noise={0.15} />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="ShaderGrainGradient"
+    component={ShaderGrainGradientScene}
+    durationInFrames={150}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Credits
+
+Shader by [paper-design/shaders](https://github.com/paper-design/shaders).

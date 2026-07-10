@@ -1,0 +1,12 @@
+__pycache__/
+.coverage
+.DS_Store
+.ruff_cache/
+*.pyc
+accounts.db*
+accounts/
+data_media/
+data/
+dist/
+results-parsed/
+results-raw/

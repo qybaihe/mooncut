@@ -1,0 +1,11 @@
+.DS_Store
+.ruff_cache/
+.coverage
+.venv/
+accounts/
+results-raw/
+results-parsed/
+accounts.db*
+data/
+data_media/
+dist/

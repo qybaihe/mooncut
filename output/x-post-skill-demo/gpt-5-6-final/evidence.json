@@ -1,0 +1,54 @@
+{
+  "schema_version": "x-post-screenshot/1",
+  "captured_at_utc": "2026-07-10T08:43:49.217467+00:00",
+  "query": "GPT-5.6 rolling out",
+  "source_url": "https://x.com/OpenAI/status/2075271421149020426",
+  "observation": "Public X post rendered at capture time; post claims are not independently proven.",
+  "selection": {
+    "retrieval_method": "trusted_account_timeline",
+    "topic_matched": true,
+    "matched_topic_tokens": [
+      "gpt",
+      "5",
+      "6",
+      "out"
+    ],
+    "candidate_score": 914
+  },
+  "screenshot": {
+    "path": "/Users/baihe/Documents/moonbot/output/x-post-skill-demo/gpt-5-6-final/original-x-post.png",
+    "mime": "image/png",
+    "bytes": 304053,
+    "width": 566,
+    "height": 577,
+    "sha256": "sha256:1cbd001fd88545f54af20e3244f217954e9e3db65bf28f89e730c8118e40d01e",
+    "top_background_luminance": 246.7,
+    "transformations": []
+  },
+  "post": {
+    "id": "2075271421149020426",
+    "published_at": "2026-07-09 17:30:38+00:00",
+    "text": "Sol, Terra, and Luna, our GPT‑5.6 family of models, are starting to roll out now in ChatGPT, Codex, and the API. https://t.co/Qri7GdtYs3",
+    "account": {
+      "name": "OpenAI",
+      "handle": "OpenAI",
+      "profile_url": "https://x.com/OpenAI"
+    }
+  },
+  "trust": {
+    "passed": true,
+    "reasons": [
+      "account is in the caller-provided trusted allowlist",
+      "account profile links to the caller-provided official domain"
+    ],
+    "handle_allowlisted": true,
+    "matched_official_domains": [
+      "openai.com"
+    ],
+    "badge_metadata": {
+      "blue": true,
+      "type": "Business"
+    },
+    "warning": null
+  }
+}

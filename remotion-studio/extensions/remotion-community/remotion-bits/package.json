@@ -1,0 +1,99 @@
+{
+  "name": "remotion-bits",
+  "version": "0.2.0",
+  "description": "Remotion component bits with a shadcn-like installer",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "remotion-bits": "./dist/bin/remotion-bits.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "dist/**/*.js.map",
+    "docs/src/bits/examples/**/*.tsx",
+    "src",
+    "registry.json",
+    "README.md"
+  ],
+  "keywords": [
+    "remotion",
+    "react",
+    "video",
+    "components",
+    "cli"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "remotion": ">=4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/culori": "^4.0.1",
+    "@types/node": "^25.1.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "culori": "^4.0.2",
+    "jsdom": "^24.0.0",
+    "jsrepo": "^3.0.0",
+    "oxfmt": "^0.9.0",
+    "oxlint": "^0.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.9",
+    "zod": "^4.3.6"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "inventory:generate": "tsx scripts/generate-shared-bit-inventory.ts",
+    "build": "npm run clean && npm run inventory:generate && tsc -p tsconfig.json && tsx scripts/add-extensions.ts",
+    "bits:lookup": "npm run inventory:generate && tsx scripts/remotion-bits-lookup.ts",
+    "bits:find": "npm run inventory:generate && tsx scripts/remotion-bits-lookup.ts find",
+    "bits:fetch": "npm run inventory:generate && tsx scripts/remotion-bits-lookup.ts fetch",
+    "mcp:bits": "npm run inventory:generate && tsx scripts/remotion-bits-mcp.ts",
+    "registry:extract": "tsx scripts/extract-bit-registry.ts",
+    "registry:build": "npm run inventory:generate && jsrepo build",
+    "prepublishOnly": "npm run build && npm run registry:build",
+    "prepack": "npm run build && npm run registry:build",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "format": "oxfmt .",
+    "format:check": "oxfmt . --check",
+    "typecheck": "npm run inventory:generate && tsc -p tsconfig.json --noEmit",
+    "test:cli-integration": "vitest run scripts/__tests__/published-package.test.ts",
+    "test": "npm run inventory:generate && vitest run",
+    "test:watch": "vitest",
+    "demo": "cd demo && npm start",
+    "demo:install": "cd demo && npm install",
+    "docs:install": "cd docs && npm install",
+    "docs:dev": "cd docs && npm run dev",
+    "docs:build": "cd docs && npm run build",
+    "docs:preview": "cd docs && npm run preview"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@types/three": "^0.182.0",
+    "prism-react-renderer": "^2.4.1",
+    "three": "^0.182.0"
+  }
+}

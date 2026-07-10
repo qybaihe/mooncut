@@ -1,0 +1,130 @@
+{
+  "Results": [
+    {
+      "IdMatch": "400021501",
+      "MatchNumber": 13,
+      "Date": "2026-06-20T18:00:00Z",
+      "LocalDate": "2026-06-20T14:00:00",
+      "IdCompetition": "17",
+      "IdSeason": "285023",
+      "Home": {
+        "IdTeam": "43924",
+        "IdCountry": "BRA",
+        "Abbreviation": "BRA",
+        "Score": 2,
+        "TeamName": [
+          { "Locale": "zh", "Description": "巴西" },
+          { "Locale": "en", "Description": "Brazil" }
+        ]
+      },
+      "Away": {
+        "IdTeam": "43962",
+        "IdCountry": "NOR",
+        "Abbreviation": "NOR",
+        "Score": 1,
+        "TeamName": [
+          { "Locale": "zh", "Description": "挪威" },
+          { "Locale": "en", "Description": "Norway" }
+        ]
+      },
+      "StageName": [
+        { "Locale": "zh", "Description": "小组赛" },
+        { "Locale": "en", "Description": "First Stage" }
+      ],
+      "GroupName": [
+        { "Locale": "zh", "Description": "C组" },
+        { "Locale": "en", "Description": "Group C" }
+      ],
+      "Stadium": {
+        "Name": [{ "Locale": "zh", "Description": "大都会人寿体育场" }],
+        "CityName": [{ "Locale": "zh", "Description": "纽约/新泽西" }]
+      },
+      "MatchStatus": "Played",
+      "ResultType": "normal"
+    },
+    {
+      "IdMatch": "400021502",
+      "MatchNumber": 14,
+      "Date": "2026-06-21T16:00:00Z",
+      "LocalDate": "2026-06-21T12:00:00",
+      "IdCompetition": "17",
+      "IdSeason": "285023",
+      "Home": {
+        "IdTeam": "43922",
+        "IdCountry": "ARG",
+        "Abbreviation": "ARG",
+        "Score": null,
+        "TeamName": [
+          { "Locale": "zh", "Description": "阿根廷" },
+          { "Locale": "en", "Description": "Argentina" }
+        ]
+      },
+      "Away": {
+        "IdTeam": "43975",
+        "IdCountry": "EGY",
+        "Abbreviation": "EGY",
+        "Score": null,
+        "TeamName": [
+          { "Locale": "zh", "Description": "埃及" },
+          { "Locale": "en", "Description": "Egypt" }
+        ]
+      },
+      "StageName": [
+        { "Locale": "zh", "Description": "小组赛" },
+        { "Locale": "en", "Description": "First Stage" }
+      ],
+      "GroupName": [
+        { "Locale": "zh", "Description": "D组" },
+        { "Locale": "en", "Description": "Group D" }
+      ],
+      "Stadium": {
+        "Name": [{ "Locale": "zh", "Description": "卢赛尔体育场" }],
+        "CityName": [{ "Locale": "zh", "Description": "墨西哥城" }]
+      },
+      "MatchStatus": "Scheduled",
+      "ResultType": "notstarted"
+    },
+    {
+      "IdMatch": "400021503",
+      "MatchNumber": 25,
+      "Date": "2026-06-27T19:00:00Z",
+      "LocalDate": "2026-06-27T15:00:00",
+      "IdCompetition": "17",
+      "IdSeason": "285023",
+      "Home": {
+        "IdTeam": "43922",
+        "IdCountry": "ARG",
+        "Abbreviation": "ARG",
+        "Score": 3,
+        "TeamName": [
+          { "Locale": "zh", "Description": "阿根廷" },
+          { "Locale": "en", "Description": "Argentina" }
+        ]
+      },
+      "Away": {
+        "IdTeam": "43960",
+        "IdCountry": "JPN",
+        "Abbreviation": "JPN",
+        "Score": 0,
+        "TeamName": [
+          { "Locale": "zh", "Description": "日本" },
+          { "Locale": "en", "Description": "Japan" }
+        ]
+      },
+      "StageName": [
+        { "Locale": "zh", "Description": "小组赛" },
+        { "Locale": "en", "Description": "First Stage" }
+      ],
+      "GroupName": [
+        { "Locale": "zh", "Description": "D组" },
+        { "Locale": "en", "Description": "Group D" }
+      ],
+      "Stadium": {
+        "Name": [{ "Locale": "zh", "Description": "AT&T 体育场" }],
+        "CityName": [{ "Locale": "zh", "Description": "达拉斯" }]
+      },
+      "MatchStatus": "Played",
+      "ResultType": "normal"
+    }
+  ]
+}

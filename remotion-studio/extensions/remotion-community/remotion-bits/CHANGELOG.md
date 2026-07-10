@@ -1,0 +1,118 @@
+### v0.2.0
+
+- Feature: Added a published `remotion-bits` CLI and MCP server for finding and fetching live bits
+- Feature: Added a generated shared bit inventory and runtime catalog so published packages ship discoverable source-backed bit metadata
+- Fix: Updated docs catalog, playground, and 3D bit references to use the shared catalog and corrected exported bit identifiers
+- Docs: Refreshed README and skill guidance around CLI, MCP, and example-first bit workflows
+
+### v0.1.14
+
+- Feature: Added Fracture Reassemble and Mosaic Reframe bits for advanced staggered 3D layout transitions
+- Fix: Added missing `Easing` export injection in BitPlayground runtime compilation context
+- Improvement: Updated `StaggeredMotion` to pass resolved duration into motion interpolation for consistent timing
+- Docs: Added documentation pages for Fracture Reassemble and Mosaic Reframe and refreshed bit authoring guidance
+
+### v0.1.13
+
+- Feature: Added TypingCodeBlock bit - code block with typing animation effect
+- Feature: Added Fireflies bit - animated particle fireflies effect using ParticleSystem
+- Feature: Added Carousel3D bit - 3D carousel navigation using Scene3D
+- Fix: Added missing ScrollingColumns export to BitPlayground
+- Improvement: Refactored CodeBlock component with CodeLine sub-component and stagger direction support
+
+### v0.1.12
+
+- Feature: Added Terminal3D bit - animated 3D terminal display with Scene3D
+- Feature: Added KenBurns bit - Ken Burns photo panning and zooming effect using Scene3D
+- Improvement: Enhanced Scene3D and layout patterns in skill documentation
+- Docs: Updated skill reference documentation for components, patterns, and utilities
+
+### v0.1.11
+
+- Feature: Added CounterConfetti bit - counter reaching 1000 with confetti particles bursting from sides
+- Feature: Added CubeNavigation bit - navigate through faces of a 3D cube using Scene3D steps
+- Feature: Added CursorFlyover bit - camera flies over screenshot with animated cursor highlighting areas
+- Fix: Added missing utilities (isoDist, Matrix4, createRect) to BitPlayground exports
+- Improvement: Improved theme compatibility by using currentColor instead of hardcoded white in examples
+
+### v0.1.10
+
+- Fix: Added missing component exports for TypeWriter and ScrollingColumns
+- Docs: Updated README with new URL and removed splash image
+- Docs: Added skill documentation to getting-started guide
+- Improvement: General documentation and linting improvements
+
+### v0.1.9
+
+- Feature: Added CodeBlock component for syntax highlighting and animations
+- Feature: Added TypeWriter component for typewriter text effects
+- Feature: Added MatrixRain component for Matrix-style falling character effects
+- Feature: Added GlitchCycle and GlitchIn components for glitch transition effects
+- Feature: Added ShapeIcon component for animated shape icons
+- Feature: Enhanced AnimatedCounter with step timing support
+- Feature: Added hold functionality to interpolation utilities
+- Feature: Added scaleZ support to Transform3D and Step components
+- Feature: Enhanced Transform3D with ID management, random operations, and Vector3 support for translate method
+- Feature: Enhanced StepResponsive with centered prop, style props, cumulative step property resolution, and transform key support
+- Feature: Enhanced Scene3D components with duration support and centered transformations
+- Feature: Enhanced AnimatedText with dynamic duration support
+- Improvement: Enhanced BitPlayground to handle bit props and improve error handling
+- Improvement: Updated dependencies and improved documentation for Bits
+- Improvement: Added gradient backgrounds and enhanced FeatureShowcase component
+- Docs: Completed showcase documentation
+- Docs: Added transitions scene documentation
+- Fix: Removed unused doFrame function causing TypeScript error
+
+### v0.1.8
+
+- Feature: Added duration prop to Step component for customizable step duration
+- Feature: Enhanced interpolation functions to support Transform3D and Matrix4
+- Feature: Added 3D interpolation utilities and transform handling
+- Improvement: Updated easing function to use 'easeInOut' for smoother transitions
+- Docs: Added Transform3D link to Bits sidebar in documentation
+
+### v0.1.7
+
+- Fix: Packaged version fix and added extensions script for better build tooling
+- Improvement: Cleaned up 3D Elements example by removing unnecessary red triangle
+
+### v0.1.6
+
+- Feature: Added `StepResponsive` component for responsive 3D element transformations based on active step
+- Feature: Added `StepTimingContext` and `useStepTiming` hook for accessing Step timing information
+- Feature: Enhanced `useMotionTiming` to auto-align with Step boundaries when used inside a Step
+- Improvement: Made `transition` prop optional in `AnimatedText` and `StaggeredMotion` components
+- Improvement: Enhanced `AnimatedText` split prop with predefined options ("none", "word", "character", "line")
+- Docs: Updated 3D Elements example with better formatting and showcase of new StepResponsive features
+- Fix: StepResponsive animation logic to match Scene3D camera transition, preventing instant jumps
+- Fix: StepResponsive now correctly respects `transition.duration` and `transition.delay` overrides
+
+### v0.1.5
+
+- Feature: Added all component bits to the registry for easier installation
+- Docs: Enhanced skill documentation with better examples and patterns
+
+### v0.1.4
+
+- Improvement: Cleaned up README documentation
+- Docs: Added Scene3D examples reference to skill file
+- Fix: Linter fixes and code quality improvements
+
+### v0.1.3
+
+- Improvement: Refined Scene3D mechanics and usage patterns
+- Feature: Added skill maintenance to agent instructions
+- Improvement: Landing page cleanups with squircle design elements
+- Docs: Updated skill info related to 3D scenes
+- Docs: CLAUDE.md now references AGENTS.md for better organization
+
+### v0.1.2
+
+- Feature: Added scrolling columns bit component
+- Feature: Added better bento grid layout for docs
+- Feature: Improved BitPlayground with action styles and custom scrollbars
+- Feature: Enhanced catalog with proper tags and theme improvements
+- Fix: Fixed radial gradient transitions
+- Improvement: Normalized bit names for consistency
+- Improvement: Playground and README fixes and tweaks
+- Docs: Added jsrepo config and reference for existing components

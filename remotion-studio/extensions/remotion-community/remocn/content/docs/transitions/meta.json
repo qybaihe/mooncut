@@ -1,0 +1,19 @@
+{
+  "title": "Transitions",
+  "collapsible": false,
+  "pages": [
+    "index",
+    "grain-dissolve",
+    "wave-wipe",
+    "ripple-zoom",
+    "warp-dissolve",
+    "swirl-dissolve",
+    "dither-dissolve",
+    "perlin-dissolve",
+    "smoke-dissolve",
+    "whip-pan",
+    "push-through",
+    "focus-pull",
+    "zoom-blur"
+  ]
+}

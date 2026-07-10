@@ -1,0 +1,37 @@
+---
+title: Warp
+description: Domain-warped color field that folds and stretches like liquid
+---
+
+<ComponentPreview name="shader-warp" />
+
+## Installation
+
+<InstallBlock name="shader-warp" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { ShaderWarp } from "@/components/remocn/shader-warp";
+
+const ShaderWarpScene = () => (
+  <ShaderWarp speed={1} distortion={0.2} swirl={0.4} />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="ShaderWarp"
+    component={ShaderWarpScene}
+    durationInFrames={150}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Credits
+
+Shader by [paper-design/shaders](https://github.com/paper-design/shaders).

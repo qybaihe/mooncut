@@ -1,0 +1,47 @@
+# Dependabot — automatic security + dependency updates. Open low-noise PRs
+# weekly so the lockfile doesn't accumulate quietly-vulnerable transitive
+# deps. Grouped so we don't get one PR per package — one PR per ecosystem.
+
+version: 2
+updates:
+  # Root + every workspace child share one entry because pnpm's workspace
+  # protocol means Dependabot resolves through the root lockfile.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      production:
+        dependency-type: production
+        # Majors get their own PRs — easier to review one breaking change at a time.
+        update-types: ['minor', 'patch']
+      development:
+        dependency-type: development
+        update-types: ['minor', 'patch']
+    ignore:
+      # Zod 4 is a breaking peer-dep change for the public `ondajs` package
+      # (drops `zod-to-json-schema`, requires a 1.0.0 release, needs
+      # lock-step coordination with downstream consumers). Revisit as a
+      # deliberate techspec — see closed PR #37.
+      - dependency-name: zod
+        update-types: ['version-update:semver-major']
+      # TypeScript 6 has breaking type changes that fail the existing
+      # typecheck (~50+ errors across the registry). Deserves a deliberate
+      # migration as its own techspec — see closed PR #36. TS 5.9 is
+      # actively maintained, no urgency.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+      # Next.js 16 is a major framework bump touching App Router conventions,
+      # image handling, route segments, and Vercel build target. Deserves a
+      # deliberate migration as its own techspec — see closed PR #43.
+      # Next 15 is actively maintained, no urgency.
+      - dependency-name: next
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2

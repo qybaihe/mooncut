@@ -1,0 +1,16 @@
+{
+  "title": "Group D",
+  "items": [
+    {
+      "entryId": "argentina-japan-video",
+      "title": "Argentina v Japan | Group D | FIFA World Cup 2026™",
+      "description": "Watch the highlights from Argentina v Japan.",
+      "readMorePageUrl": "/en/watch/argentina-japan-official",
+      "watchDataDto": {
+        "type": "video",
+        "videoEntryId": "argentina-japan-video",
+        "videoDuration": 388
+      }
+    }
+  ]
+}

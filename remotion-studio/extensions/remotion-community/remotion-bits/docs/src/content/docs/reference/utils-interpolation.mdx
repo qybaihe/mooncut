@@ -1,0 +1,126 @@
+---
+title: Interpolation Utils
+description: Utilities for value interpolation and easing.
+---
+
+A collection of interpolation functions for animation timing, values, and colors.
+
+## Interpolation
+
+### `interpolate`
+
+An enhanced version of Remotion's `interpolate` that supports non-monotonic input ranges (e.g., repeating frames for pauses, or back-and-forth sequences).
+
+```tsx
+import { interpolate } from "remotion-bits";
+
+const val = interpolate(frame, [0, 30, 30, 60], [0, 100, 100, 200]);
+```
+
+**Features:**
+- Supports input ranges like `[0, 30, 30, 60]` to "hold" values.
+- Supports input ranges like `[0, 20, 10]` for reverse playback segments.
+
+### `interpolateColorKeyframes`
+
+Interpolates between multiple color stops using the Oklch color space for perceptually uniform results.
+
+```tsx
+import { interpolateColorKeyframes } from "remotion-bits";
+
+const color = interpolateColorKeyframes(
+    ["red", "blue", "green"],
+    progress // 0 to 1
+);
+```
+
+## 3D Transform Interpolation
+
+### `interpolateTransform`
+
+Interpolates between two `Transform3D` instances using quaternion SLERP for smooth rotation.
+
+```tsx
+import { interpolateTransform, Transform3D } from "remotion-bits";
+
+const from = Transform3D.identity();
+const to = Transform3D.fromEuler(Math.PI, 0, 0);
+
+const interpolated = interpolateTransform(
+  from,
+  to,
+  progress,
+  Easing.easeInOutCubic
+);
+```
+
+**Benefits:**
+- Smooth spherical interpolation for rotations (SLERP)
+- Linear interpolation for position and scale
+- Optional easing function
+- No gimbal lock artifacts
+
+### `interpolateTransformKeyframes`
+
+Interpolates through multiple `Transform3D` keyframes.
+
+```tsx
+import { interpolateTransformKeyframes, Transform3D, Vector3 } from "remotion-bits";
+
+const keyframes = [
+  Transform3D.identity(),
+  Transform3D.fromEuler(Math.PI / 2, 0, 0, new Vector3(100, 0, 0)),
+  Transform3D.fromEuler(Math.PI, Math.PI / 2, 0, new Vector3(200, 100, 0)),
+];
+
+const current = interpolateTransformKeyframes(
+  keyframes,
+  progress // 0 to 1
+);
+```
+
+### `lerpVector3`
+
+Linear interpolation between two `Vector3` instances.
+
+```tsx
+import { lerpVector3, Vector3 } from "remotion-bits";
+
+const from = new Vector3(0, 0, 0);
+const to = new Vector3(100, 100, 100);
+
+const mid = lerpVector3(from, to, 0.5);
+```
+
+### `slerpQuaternion`
+
+Spherical linear interpolation between two `Quaternion` rotations.
+
+```tsx
+import { slerpQuaternion, Quaternion } from "remotion-bits";
+
+const from = new Quaternion(0, 0, 0, 1);
+const to = new Quaternion(0, 0.707, 0, 0.707);
+
+const mid = slerpQuaternion(from, to, 0.5);
+```
+
+See [Transform3D reference](/docs/reference/transform3d) for more details.
+
+## Easing
+
+The `Easing` object contains standard easing functions.
+
+```tsx
+import { Easing } from "remotion-bits";
+
+const t = Easing.easeOutCubic(progress);
+```
+
+**Available Easings:**
+- `linear`
+- `easeIn`, `easeOut`, `easeInOut` (Cubic by default, or Quad?) _(Check source for specifics, typically defaults usually map to Quad or Cubic)_
+- `easeInQuad`, `easeOutQuad`, `easeInOutQuad`
+- `easeInCubic`, `easeOutCubic`, `easeInOutCubic`
+- `easeInSine`, `easeOutSine`, `easeInOutSine`
+- `easeInQuart`, `easeOutQuart`, `easeInOutQuart`

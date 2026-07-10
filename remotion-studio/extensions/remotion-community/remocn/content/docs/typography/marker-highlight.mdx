@@ -1,0 +1,104 @@
+---
+title: Marker Highlight
+description: A colored marker block draws behind a phrase while the text color shifts
+---
+
+<ComponentPreview name="marker-highlight" />
+
+## Installation
+
+<InstallBlock name="marker-highlight" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { MarkerHighlight } from "@/components/remocn/marker-highlight";
+
+const MarkerHighlightScene = () => (
+  <MarkerHighlight
+    before="Ship it "
+    highlight="fast"
+    after="."
+    markerColor="#facc15"
+  />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="MarkerHighlight"
+    component={MarkerHighlightScene}
+    durationInFrames={90}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "before",
+      type: "string",
+      default: "\"\"",
+      description: "Text that appears before the highlighted phrase",
+    },
+    {
+      name: "highlight",
+      type: "string",
+      required: true,
+      description: "The phrase the marker draws behind",
+    },
+    {
+      name: "after",
+      type: "string",
+      default: "\"\"",
+      description: "Text that appears after the highlighted phrase",
+    },
+    {
+      name: "markerColor",
+      type: "string",
+      default: "\"#facc15\"",
+      description: "Color of the marker block",
+    },
+    {
+      name: "baseColor",
+      type: "string",
+      default: "\"#171717\"",
+      description: "Color of the surrounding text",
+    },
+    {
+      name: "highlightedTextColor",
+      type: "string",
+      default: "\"#171717\"",
+      description: "Final color of the highlighted phrase once the marker is drawn",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      default: "72",
+      description: "Font size in pixels",
+    },
+    {
+      name: "fontWeight",
+      type: "number",
+      default: "600",
+      description: "CSS font-weight",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Multiplier for animation speed",
+    },
+    {
+      name: "className",
+      type: "string",
+      description: "Optional className passed to the outer text span",
+    },
+  ]}
+/>

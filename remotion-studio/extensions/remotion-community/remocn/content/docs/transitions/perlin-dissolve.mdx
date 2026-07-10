@@ -1,0 +1,70 @@
+---
+title: Perlin Dissolve
+description: Sweep a perlin-noise threshold across the frame to dissolve into the next scene
+---
+
+<ComponentPreview name="perlin-dissolve" />
+
+## Installation
+
+<InstallBlock name="perlin-dissolve" />
+
+## Usage
+
+`perlinDissolve()` is a Remotion transition presentation. Pass it to a
+`TransitionSeries.Transition` between two sequences. The perlin field sweeps
+its threshold from back to front while the incoming scene resolves through it,
+so give the transition enough frames for the full sweep (104 works well).
+
+```tsx
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { perlinDissolve } from "@/components/remocn/perlin-dissolve";
+
+export const MyVideo = () => (
+  <TransitionSeries>
+    <TransitionSeries.Sequence durationInFrames={110}>
+      <SceneA />
+    </TransitionSeries.Sequence>
+    <TransitionSeries.Transition
+      timing={linearTiming({ durationInFrames: 104 })}
+      presentation={perlinDissolve()}
+    />
+    <TransitionSeries.Sequence durationInFrames={110}>
+      <SceneB />
+    </TransitionSeries.Sequence>
+  </TransitionSeries>
+);
+```
+
+## Props
+
+`perlinDissolve(props)` accepts:
+
+<PropsTable
+  rows={[
+    {
+      name: "colorBack",
+      type: "string",
+      default: '"#141318"',
+      description: "Solid color behind the noise during the transition.",
+    },
+    {
+      name: "colorFront",
+      type: "string",
+      default: '"#8f88ae"',
+      description: "Foreground color the noise threshold sweeps toward.",
+    },
+    {
+      name: "softness",
+      type: "number",
+      default: "0.1",
+      description: "Edge softness of the noise threshold.",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Shader animation speed.",
+    },
+  ]}
+/>

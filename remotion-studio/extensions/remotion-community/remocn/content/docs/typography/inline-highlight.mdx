@@ -1,0 +1,92 @@
+---
+title: Inline Highlight
+description: Animate one word inside a sentence from a base color to a brand color
+---
+
+<ComponentPreview name="inline-highlight" />
+
+## Installation
+
+<InstallBlock name="inline-highlight" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { InlineHighlight } from "@/components/remocn/inline-highlight";
+
+const InlineHighlightScene = () => (
+  <InlineHighlight
+    before="Ship faster with "
+    highlight="remocn"
+    highlightColor="#ff5e3a"
+    fontSize={72}
+  />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="InlineHighlight"
+    component={InlineHighlightScene}
+    durationInFrames={90}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "before",
+      type: "string",
+      required: true,
+      description: "Text rendered before the highlighted word",
+    },
+    {
+      name: "highlight",
+      type: "string",
+      required: true,
+      description: "The word that animates color",
+    },
+    {
+      name: "after",
+      type: "string",
+      default: "\"\"",
+      description: "Text rendered after the highlighted word",
+    },
+    {
+      name: "baseColor",
+      type: "string",
+      default: "\"#171717\"",
+      description: "Starting color of the highlighted word and color of the surrounding text",
+    },
+    {
+      name: "highlightColor",
+      type: "string",
+      default: "\"#ff5e3a\"",
+      description: "Final color of the highlighted word",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      default: "48",
+      description: "Font size in pixels",
+    },
+    {
+      name: "fontWeight",
+      type: "number",
+      default: "600",
+      description: "CSS font-weight",
+    },
+    {
+      name: "className",
+      type: "string",
+      description: "Optional className passed to the underlying span",
+    },
+  ]}
+/>

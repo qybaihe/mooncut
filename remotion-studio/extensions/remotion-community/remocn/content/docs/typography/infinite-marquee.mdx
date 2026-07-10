@@ -1,0 +1,106 @@
+---
+title: Infinite Marquee
+description: A continuously scrolling horizontal text strip that loops seamlessly
+---
+
+<ComponentPreview name="infinite-marquee" />
+
+## Installation
+
+<InstallBlock name="infinite-marquee" />
+
+## Usage
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { InfiniteMarquee } from "@/components/remocn/infinite-marquee";
+
+const InfiniteMarqueeScene = () => (
+  <InfiniteMarquee text="ship · build · animate · " pixelsPerFrame={4} stroke />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="InfiniteMarquee"
+    component={InfiniteMarqueeScene}
+    durationInFrames={180}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+### With Backdrop
+
+Renders transparent — supply the background via `Backdrop`:
+
+```tsx
+import { Backdrop } from "@/components/remocn/backdrop";
+import { InfiniteMarquee } from "@/components/remocn/infinite-marquee";
+
+<Backdrop fill={{ type: "color", value: "#fafafa" }}>
+  <InfiniteMarquee text="ship · build · animate · " pixelsPerFrame={4} stroke />
+</Backdrop>
+```
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "text",
+      type: "string",
+      default: "\"ship · build · animate · \"",
+      description: "Text repeated across the marquee. Include trailing whitespace or punctuation for spacing.",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      default: "120",
+      description: "Font size in pixels",
+    },
+    {
+      name: "color",
+      type: "string",
+      default: "\"#171717\"",
+      description: "Text color when `stroke` is false",
+    },
+    {
+      name: "fontWeight",
+      type: "number",
+      default: "900",
+      description: "CSS font-weight",
+    },
+    {
+      name: "pixelsPerFrame",
+      type: "number",
+      default: "4",
+      description: "Horizontal scroll speed in pixels per frame",
+    },
+    {
+      name: "stroke",
+      type: "boolean",
+      default: "false",
+      description: "Render outlined text via `-webkit-text-stroke` instead of filled",
+    },
+    {
+      name: "strokeColor",
+      type: "string",
+      default: "\"#171717\"",
+      description: "Stroke color used when `stroke` is true",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Playback speed multiplier",
+    },
+    {
+      name: "className",
+      type: "string",
+      description: "Optional className passed to the translating row",
+    },
+  ]}
+/>

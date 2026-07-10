@@ -1,0 +1,232 @@
+<div align="center">
+
+# `ondajs`
+
+**The official CLI for [Onda](https://remotion.onda.video) — premium motion-graphics components for [Remotion](https://remotion.dev).**
+
+[![npm version](https://img.shields.io/npm/v/ondajs.svg?style=flat-square&color=D96B82)](https://www.npmjs.com/package/ondajs)
+[![npm downloads](https://img.shields.io/npm/dm/ondajs.svg?style=flat-square&color=D96B82)](https://www.npmjs.com/package/ondajs)
+[![License: MIT](https://img.shields.io/badge/license-MIT-D96B82.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Built for Remotion](https://img.shields.io/badge/built%20for-Remotion-D96B82.svg?style=flat-square)](https://remotion.dev)
+
+</div>
+
+```bash
+npx ondajs add blur-reveal
+```
+
+Components are written as **source you own** into your project — not imported as a black-box dependency. Edit them, version them, fork them. The motion identity (calm spring fingerprint, restrained accent, signature typography) comes baked into every install.
+
+---
+
+## What you get
+
+- **70 Remotion components + 18 transitions** — entrances, scene blocks, data, graphics, cinematic, media, atmosphere, and an `interface` category covering developer / product UI surfaces (`code-block`, `terminal`, `browser-frame`, `device-frame`, `cursor`, `code-diff`, `kanban-board`, `pricing-card`, `bento-grid`, …).
+- **One placement vocabulary across the catalog** — every positionable component takes a `placement` prop (region shorthand or fractional coordinates) that works on any canvas dimension.
+- **Canvas-aware sizing** — semantic typography roles (`'hero' | 'heading' | 'body' …`) that read at the same visual weight on horizontal, vertical, and square compositions.
+- **Agent-friendly by design** — every component ships with a Zod schema and a `kind` discriminator, so the whole surface is an exhaustively-typed union. The library also ships `<CompositionRenderer>` + a `Composition` payload type and publishes [`llms.txt`](https://remotion.onda.video/llms.txt) / [`llms-full.txt`](https://remotion.onda.video/llms-full.txt) for agent context.
+- **No black box, no lock-in** — `ondajs add` writes plain `.tsx` files into your `components/onda/` folder. The CLI also maintains an `index.ts` barrel exporting `ondaRegistry` (components — drop straight into `<CompositionRenderer registry={ondaRegistry}>`) and, when you install transitions, a parallel `ondaTransitions` registry keyed by factory name.
+
+---
+
+## Install components
+
+```bash
+# Single component
+npx ondajs add blur-reveal
+
+# Multiple at once — transitive deps (lib helpers + composed primitives) are deduped
+npx ondajs add title-card stat-card lower-third
+
+# Custom install path
+npx ondajs add fade-in --components-out ./components/animations
+
+# See the plan without writing
+npx ondajs add quote-card --dry-run
+
+# Skip the auto-generated barrel
+npx ondajs add bar-chart --no-barrel
+```
+
+What it actually does:
+
+1. Resolves the full transitive set (a scene block like `TitleCard` pulls in its lib helpers + composed primitives in one pass).
+2. Detects conflicts before writing — never silently overwrites a file with different content.
+3. Rewrites import paths so the installed code points at your project's `lib/onda/` and `components/onda/`.
+4. Updates `components/onda/index.ts` with `ondaRegistry` — the lookup map `<CompositionRenderer>` consumes. When you install transitions, the barrel also exports `ondaTransitions` (keyed by factory name; shape `{ factory, schema }`) so agent runtimes can dispatch on slug.
+5. Prints the peer-dep install line for any new Remotion packages.
+
+---
+
+## Browse the catalog
+
+```bash
+npx ondajs list                       # grouped by category
+npx ondajs list --category scenes     # filter
+npx ondajs list --json                # machine-readable
+```
+
+Or visit [remotion.onda.video/components](https://remotion.onda.video/components) for the live previews.
+
+---
+
+## Use what you installed
+
+Drop installed components into any Remotion composition:
+
+```tsx
+import { Composition } from 'remotion';
+import { BlurReveal, blurRevealSchema } from './components/onda/blur-reveal/BlurReveal';
+
+<Composition
+  id="hero"
+  component={BlurReveal}
+  durationInFrames={60} fps={30} width={1080} height={1920}
+  schema={blurRevealSchema}
+  defaultProps={{ text: 'Hello', placement: 'upper-third', size: 'hero' }}
+/>
+```
+
+### Render multi-component scenes from a payload
+
+For agent-driven runtimes or anywhere you want to render a timeline composition from a JSON payload, install the bundled renderer too:
+
+```bash
+npx ondajs add lib-composition-renderer
+```
+
+That pulls in `<CompositionRenderer>` plus its `Composition` payload type (lives at `lib/onda/composition-renderer.tsx`):
+
+```tsx
+import { Composition } from 'remotion';
+import { CompositionRenderer } from './lib/onda/composition-renderer';
+import type { Composition as Comp } from './lib/onda/composition';
+import { ondaRegistry } from './components/onda';   // auto-generated by ondajs add
+
+const payload: Comp = {
+  fps: 30, width: 1080, height: 1920,
+  tracks: [{
+    entries: [
+      { at: '0:00', for: '0:02', component: 'TitleCard', props: { title: 'Onda' } },
+      { at: '0:02', for: '0:03', component: 'StatCard',  props: { value: 1247 } },
+    ],
+  }],
+};
+
+<Composition
+  id="scene"
+  component={CompositionRenderer}
+  durationInFrames={150} fps={30} width={1080} height={1920}
+  defaultProps={{ composition: payload, registry: ondaRegistry }}
+/>
+```
+
+Time strings (`"0:02"`, `"30s"`, `"500ms"`) resolve to frames internally — agents never compute frame math. Unknown components and invalid props render visible error placeholders, not silent crashes.
+
+### Embed in a Remotion `<Player>` on your own page
+
+Onda compositions look great in a Remotion `<Player>` — until the Player runs in a small or flexible container (catalog cards, mobile previews, AI-editor thumbnails). The default behavior is to render at the composition's intrinsic resolution (e.g. 1920×1080) and CSS-scale down, which softens borders and sub-pixel anti-aliasing.
+
+`<AdaptivePlayer>` is a drop-in replacement that renders at the size it's actually displayed at (CSS size × DPR, floored at 720px on the long edge, capped at the intrinsic resolution):
+
+```bash
+npx ondajs add lib-adaptive-player
+```
+
+```tsx
+import { AdaptivePlayer } from './lib/onda/adaptive-player';
+import { QuoteCard } from './components/onda/quote-card/QuoteCard';
+
+<AdaptivePlayer
+  component={QuoteCard}
+  inputProps={{ quote: "Motion is craft.", author: "Saul Bass" }}
+  durationInFrames={180}
+  fps={30}
+  compositionWidth={1920}
+  compositionHeight={1080}
+  autoPlay
+  loop
+  style={{ width: '100%', aspectRatio: '16 / 9' }}
+/>
+```
+
+For advanced cases (you already manage your own Player ref / wrapper), the underlying `useAdaptiveCompositionSize(ref, intrinsicW, intrinsicH)` hook is exported alongside.
+
+### Drive your own animation — `ondajs/motion`
+
+The choreography vocabulary, motion tokens, and easing the components use are also published as a direct import — no `ondajs add`, no source files. Reach for it when you're animating your *own* elements (a custom component, an AI editor, an overlay) and want the Onda motion fingerprint instead of hand-rolled springs:
+
+```tsx
+import { useCurrentFrame, useVideoConfig } from 'remotion';
+import { entryFadeRise, DURATION } from 'ondajs/motion';
+
+function Headline({ text }: { text: string }) {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  // Pure (frame, fps) → { opacity, transform } — spread onto the element.
+  const { opacity, transform } = entryFadeRise({ frame, fps, durationInFrames: DURATION.base });
+  return <h1 style={{ opacity, transform }}>{text}</h1>;
+}
+```
+
+Each pattern is a pure function of `frame` / `fps` (plus optional `delay`, `durationInFrames`, and pattern-specific params) returning `{ opacity, transform }` — so it works inside any Remotion `<Sequence>` (where `useCurrentFrame()` is sequence-relative).
+
+| Export | Kind | Use for |
+|---|---|---|
+| `entryFade` | entrance | opacity-only reveal (no movement) |
+| `entryFadeRise` | entrance | the workhorse — fade + small rise (~80% of entries) |
+| `entrySlide` | entrance | directional fade + translate (`direction`, `distance`) |
+| `entryScale` | entrance | fade + scale from `from` → 1 |
+| `heroReveal` | entrance | two-phase landing with a 3% overshoot — one hero per scene |
+| `exitFadeFall` | exit | faster downward fade-out |
+| `stateSwap` | swap | in-place crossfade for a changing value/label (`{ outOpacity, inOpacity }`) |
+| `DURATION`, `STAGGER`, `OVERSHOOT`, `SPRING_SMOOTH`, `SPRING_SNAPPY`, `staggerFrames`, `HOUSE_EASE` | tokens | the house timing / spring / easing constants |
+
+`react` and `remotion` are **optional** peer dependencies — only required if you import `ondajs/motion` (or the React renderer). The `ondajs add` / `ondajs/manifest` paths stay dependency-free.
+
+### Theme it with your own brand
+
+Onda's palette and fonts are the **default**, not a lock-in. Every component reads its colors and fonts from CSS variables, with the Onda value as the fallback (e.g. the accent default is `var(--onda-accent, #D96B82)`). So a component you `ondajs add` re-skins with **zero imports** — just set the variables on a root (or a wrapper to scope it), pointing the font variables at any font you've loaded in your project:
+
+```css
+:root {
+  --onda-accent: #6366f1;
+  --onda-text: #f4f4f8;
+  --onda-bg: #0b0b12;
+  --onda-font-display: "Inter", sans-serif;
+  --onda-font-body: "Inter", sans-serif;
+}
+```
+
+Brand drives the surface slots (colors + the two fonts) at runtime; motion ships as Onda's signature default — not a lock, since you own the copied source and can tune it. Full slot list, typed helpers (`brandToCssVars`, `ThemeProvider`), and the composition `brand` prop are in the [theming guide](https://github.com/degueba/onda/blob/main/docs/theming.md). See it live at [remotion.onda.video/brand](https://remotion.onda.video/brand).
+
+---
+
+## Learn more
+
+- **[remotion.onda.video](https://remotion.onda.video)** — landing, catalog, docs
+- **[remotion.onda.video/docs](https://remotion.onda.video/docs)** — getting started
+- **[Composing with Onda](https://github.com/degueba/onda/blob/main/docs/composing-with-onda.md)** — agent-facing reference: payload shape, placement / size vocabulary, full component index
+- **[GitHub](https://github.com/degueba/onda)** — source, issues, techspecs
+
+---
+
+## CLI reference
+
+Run `npx ondajs --help` for the full command and flag listing.
+
+| Command | What |
+|---|---|
+| `ondajs add <slug...>` | Install components by slug (with transitive deps) |
+| `ondajs list` | Print the catalog grouped by category |
+| `ondajs --help` | Full reference |
+| `ondajs --version` | Print the CLI version |
+
+---
+
+<div align="center">
+
+**Built for developers and AI agents.**
+[MIT](LICENSE) · [Report a bug](https://github.com/degueba/onda/issues) · [Contribute](https://github.com/degueba/onda)
+
+</div>

@@ -1,0 +1,127 @@
+---
+title: Logo Enter
+description: A stacked group of round brand chips that spring in one-by-one, then hold
+---
+
+<ComponentPreview name="logo-enter" />
+
+## Installation
+
+<InstallBlock name="logo-enter" />
+
+## Usage
+
+Standalone in a Remotion `<Composition>` — ships with a sample set of AI-tool marks so the video renders immediately after install:
+
+```tsx
+// src/Root.tsx
+import { Composition } from "remotion";
+import { LogoEnter } from "@/components/remocn/logo-enter";
+
+const LogoEnterScene = () => (
+  <LogoEnter
+    diameter={118}
+    overlap={38}
+    ringColor="#0B0B0C"
+    orientation="horizontal"
+    stagger={7}
+    speed={1}
+  />
+);
+
+export const RemotionRoot = () => (
+  <Composition
+    id="LogoEnter"
+    component={LogoEnterScene}
+    durationInFrames={90}
+    fps={30}
+    width={1280}
+    height={720}
+  />
+);
+```
+
+Each chip is a round, ring-bordered circle that springs in with a scale-up and a small slide, staggered one after another, then holds. The exit is left to your timeline — drop it in a `TransitionSeries.Sequence` and pair it with any transition.
+
+### Swap the logos
+
+The `logos` prop defaults to the exported `SAMPLE_LOGOS`. Each entry is `{ mark, bg }` — `mark` is any React node (an inline SVG works best), `bg` is the chip's fill. Edit the copied file to feature your own marks:
+
+```tsx
+import { LogoEnter, type Logo } from "@/components/remocn/logo-enter";
+
+const MY_LOGOS: Logo[] = [
+  { mark: <MyBrandMark />, bg: "#ffffff" },
+  { mark: <PartnerMark />, bg: "#0A0A0A" },
+];
+
+<LogoEnter logos={MY_LOGOS} />
+```
+
+### With Backdrop
+
+Renders transparent — supply the background via `Backdrop`:
+
+```tsx
+import { Backdrop } from "@/components/remocn/backdrop";
+import { LogoEnter } from "@/components/remocn/logo-enter";
+
+<Backdrop fill={{ type: "color", value: "#0a0a0a" }}>
+  <LogoEnter orientation="horizontal" />
+</Backdrop>
+```
+
+## Props
+
+<PropsTable
+  rows={[
+    {
+      name: "logos",
+      type: "Logo[]",
+      default: "SAMPLE_LOGOS",
+      description: "Chips to stack — each is { mark: ReactNode; bg?: string }. Defaults to a sample set of AI-tool marks; swap for your own",
+    },
+    {
+      name: "diameter",
+      type: "number",
+      default: "118",
+      description: "Chip diameter in px — the mark is sized to 52% of it",
+    },
+    {
+      name: "overlap",
+      type: "number",
+      default: "38",
+      description: "How many px each chip tucks under the previous one",
+    },
+    {
+      name: "ringColor",
+      type: "string",
+      default: "\"#0B0B0C\"",
+      description: "Color of the 5px ring around each chip",
+    },
+    {
+      name: "orientation",
+      type: "\"horizontal\" | \"vertical\"",
+      default: "\"horizontal\"",
+      description: "Stacking axis — row (overlap left, rise in) or column (overlap up, slide in)",
+    },
+    {
+      name: "stagger",
+      type: "number",
+      default: "7",
+      description: "Frames between each chip springing in",
+    },
+    {
+      name: "speed",
+      type: "number",
+      default: "1",
+      description: "Animation speed multiplier",
+    },
+  ]}
+/>
+
+## Notes
+
+- **Own your marks:** the four sample marks (Claude, Codex, Cursor, Grok) are inline SVGs in the copied file — edit, reorder, or replace them directly. Each fills its chip via `width="100%"` so it scales with `diameter`.
+- **Transparent:** the component paints no background or scrim — wrap it in `Backdrop` to set the scene.
+- **Enter-only:** chips spring in and hold; compose the exit with a `TransitionSeries` transition.

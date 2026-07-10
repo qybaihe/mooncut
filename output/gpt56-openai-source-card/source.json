@@ -1,0 +1,18 @@
+{
+  "event": "GPT-5.6 发布",
+  "display_type": "zh-CN source-post card",
+  "translation_notice": "中文转述，非 X 原帖",
+  "account": {
+    "name": "OpenAI",
+    "handle": "@OpenAI",
+    "platform": "X",
+    "verification": "Business"
+  },
+  "original_post": {
+    "url": "https://x.com/OpenAI/status/2075271421149020426",
+    "published_at": "2026-07-09T17:30:38Z",
+    "text": "Sol, Terra, and Luna, our GPT-5.6 family of models, are starting to roll out now in ChatGPT, Codex, and the API."
+  },
+  "zh_summary": "GPT-5.6 模型家族 Sol、Terra 和 Luna，现已开始在 ChatGPT、Codex 和 API 推出。",
+  "official_release_url": "https://openai.com/index/gpt-5-6/"
+}

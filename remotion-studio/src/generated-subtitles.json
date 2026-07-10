@@ -1,0 +1,790 @@
+{
+  "job_id": "40724cc2895e4db290cede9c6a3e4ee5",
+  "language": "zh-CN",
+  "duration_ms": 25791,
+  "transcript": "我现在在这个北京探月计划黑客松的现场，今天发布了一个特别重磅的炸弹，OpenAI出了GPT-5.6。这个模型我拿到手实测了一下，哇，真的是太震撼了！一下子前端能力简直就是飞一样的提升，我感觉已经追平国内的GLM 5.2了。我相信有了GPT五点六的加持，我们这次模型一定，或者说我们这次一定能做一个特别厉害的东西来给大家看。",
+  "segments": [
+    {
+      "index": 1,
+      "text": "我现在在这个北京探月计划黑客松的\n现场，",
+      "start_ms": 320,
+      "end_ms": 3760
+    },
+    {
+      "index": 2,
+      "text": "今天发布了一个特别重磅的炸弹，\nOpenAI出了GPT-5.6。",
+      "start_ms": 3760,
+      "end_ms": 7600
+    },
+    {
+      "index": 3,
+      "text": "这个模型我拿到手实测了一下，哇，\n真的是太震撼了！",
+      "start_ms": 7600,
+      "end_ms": 10880
+    },
+    {
+      "index": 4,
+      "text": "一下子前端能力简直就是飞一样的提\n升，",
+      "start_ms": 10880,
+      "end_ms": 14395
+    },
+    {
+      "index": 5,
+      "text": "我感觉已经追平国内的GLM\n5.2了。",
+      "start_ms": 14395,
+      "end_ms": 17675
+    },
+    {
+      "index": 6,
+      "text": "我相信有了GPT五点六的加持，\n我们这次模型一定，",
+      "start_ms": 17675,
+      "end_ms": 21515
+    },
+    {
+      "index": 7,
+      "text": "或者说我们这次一定能做一个特别厉\n害的东西来给大家看。",
+      "start_ms": 21515,
+      "end_ms": 25275
+    }
+  ],
+  "words": [
+    {
+      "text": "我",
+      "start_ms": 320,
+      "end_ms": 533,
+      "confidence": 0.99902344,
+      "character_start": 0,
+      "character_end": 1
+    },
+    {
+      "text": "现在",
+      "start_ms": 533,
+      "end_ms": 960,
+      "confidence": 0.99902344,
+      "character_start": 1,
+      "character_end": 3
+    },
+    {
+      "text": "在",
+      "start_ms": 960,
+      "end_ms": 1173,
+      "confidence": 0.90283203,
+      "character_start": 3,
+      "character_end": 4
+    },
+    {
+      "text": "这个",
+      "start_ms": 1173,
+      "end_ms": 1600,
+      "confidence": 0.90283203,
+      "character_start": 4,
+      "character_end": 6
+    },
+    {
+      "text": "北京",
+      "start_ms": 1600,
+      "end_ms": 2240,
+      "confidence": 0.99609375,
+      "character_start": 6,
+      "character_end": 8
+    },
+    {
+      "text": "探月",
+      "start_ms": 2240,
+      "end_ms": 2640,
+      "confidence": 1,
+      "character_start": 8,
+      "character_end": 10
+    },
+    {
+      "text": "计划",
+      "start_ms": 2640,
+      "end_ms": 2960,
+      "confidence": 1,
+      "character_start": 10,
+      "character_end": 12
+    },
+    {
+      "text": "黑客",
+      "start_ms": 2960,
+      "end_ms": 3200,
+      "confidence": 0.9152832,
+      "character_start": 12,
+      "character_end": 14
+    },
+    {
+      "text": "松",
+      "start_ms": 3200,
+      "end_ms": 3360,
+      "confidence": 0.99902344,
+      "character_start": 14,
+      "character_end": 15
+    },
+    {
+      "text": "的",
+      "start_ms": 3360,
+      "end_ms": 3440,
+      "confidence": 0.76171875,
+      "character_start": 15,
+      "character_end": 16
+    },
+    {
+      "text": "现场",
+      "start_ms": 3440,
+      "end_ms": 3760,
+      "confidence": 0.99902344,
+      "character_start": 16,
+      "character_end": 18
+    },
+    {
+      "text": "今天",
+      "start_ms": 3760,
+      "end_ms": 4240,
+      "confidence": 0.9980469,
+      "character_start": 18,
+      "character_end": 20
+    },
+    {
+      "text": "发布",
+      "start_ms": 4240,
+      "end_ms": 4560,
+      "confidence": 0.99902344,
+      "character_start": 20,
+      "character_end": 22
+    },
+    {
+      "text": "了",
+      "start_ms": 4560,
+      "end_ms": 4720,
+      "confidence": 0.99902344,
+      "character_start": 22,
+      "character_end": 23
+    },
+    {
+      "text": "一个",
+      "start_ms": 4720,
+      "end_ms": 4960,
+      "confidence": 0.99902344,
+      "character_start": 23,
+      "character_end": 25
+    },
+    {
+      "text": "特别",
+      "start_ms": 4960,
+      "end_ms": 5280,
+      "confidence": 1,
+      "character_start": 25,
+      "character_end": 27
+    },
+    {
+      "text": "重磅",
+      "start_ms": 5280,
+      "end_ms": 5520,
+      "confidence": 0.9985351499999999,
+      "character_start": 27,
+      "character_end": 29
+    },
+    {
+      "text": "的",
+      "start_ms": 5520,
+      "end_ms": 5680,
+      "confidence": 0.99609375,
+      "character_start": 29,
+      "character_end": 30
+    },
+    {
+      "text": "炸弹",
+      "start_ms": 5680,
+      "end_ms": 5920,
+      "confidence": 0.99316406,
+      "character_start": 30,
+      "character_end": 32
+    },
+    {
+      "text": "OpenAI",
+      "start_ms": 5920,
+      "end_ms": 6400,
+      "confidence": 0.8291015666666667,
+      "character_start": 32,
+      "character_end": 38
+    },
+    {
+      "text": "出",
+      "start_ms": 6400,
+      "end_ms": 6520,
+      "confidence": 0.92578125,
+      "character_start": 38,
+      "character_end": 39
+    },
+    {
+      "text": "了",
+      "start_ms": 6520,
+      "end_ms": 6640,
+      "confidence": 0.92578125,
+      "character_start": 39,
+      "character_end": 40
+    },
+    {
+      "text": "GPT",
+      "start_ms": 6640,
+      "end_ms": 7040,
+      "confidence": 0.9326172,
+      "character_start": 40,
+      "character_end": 43
+    },
+    {
+      "text": "5.6",
+      "start_ms": 7040,
+      "end_ms": 7600,
+      "confidence": 0.76904297,
+      "character_start": 43,
+      "character_end": 45
+    },
+    {
+      "text": "这个",
+      "start_ms": 7600,
+      "end_ms": 7840,
+      "confidence": 0.86279297,
+      "character_start": 45,
+      "character_end": 47
+    },
+    {
+      "text": "模型",
+      "start_ms": 7840,
+      "end_ms": 8080,
+      "confidence": 1,
+      "character_start": 47,
+      "character_end": 49
+    },
+    {
+      "text": "我",
+      "start_ms": 8080,
+      "end_ms": 8320,
+      "confidence": 0.9951172,
+      "character_start": 49,
+      "character_end": 50
+    },
+    {
+      "text": "拿到",
+      "start_ms": 8320,
+      "end_ms": 8560,
+      "confidence": 0.99902344,
+      "character_start": 50,
+      "character_end": 52
+    },
+    {
+      "text": "手",
+      "start_ms": 8560,
+      "end_ms": 8800,
+      "confidence": 0.99609375,
+      "character_start": 52,
+      "character_end": 53
+    },
+    {
+      "text": "实测",
+      "start_ms": 8800,
+      "end_ms": 9120,
+      "confidence": 0.7553711000000001,
+      "character_start": 53,
+      "character_end": 55
+    },
+    {
+      "text": "了",
+      "start_ms": 9120,
+      "end_ms": 9200,
+      "confidence": 0.9658203,
+      "character_start": 55,
+      "character_end": 56
+    },
+    {
+      "text": "一下",
+      "start_ms": 9200,
+      "end_ms": 9360,
+      "confidence": 0.9658203,
+      "character_start": 56,
+      "character_end": 58
+    },
+    {
+      "text": "哇",
+      "start_ms": 9360,
+      "end_ms": 9600,
+      "confidence": 0.54345703,
+      "character_start": 58,
+      "character_end": 59
+    },
+    {
+      "text": "真的",
+      "start_ms": 9600,
+      "end_ms": 9867,
+      "confidence": 0.9873047,
+      "character_start": 59,
+      "character_end": 61
+    },
+    {
+      "text": "是",
+      "start_ms": 9867,
+      "end_ms": 10000,
+      "confidence": 0.9873047,
+      "character_start": 61,
+      "character_end": 62
+    },
+    {
+      "text": "太",
+      "start_ms": 10000,
+      "end_ms": 10320,
+      "confidence": 1,
+      "character_start": 62,
+      "character_end": 63
+    },
+    {
+      "text": "震撼",
+      "start_ms": 10320,
+      "end_ms": 10640,
+      "confidence": 0.99902344,
+      "character_start": 63,
+      "character_end": 65
+    },
+    {
+      "text": "了",
+      "start_ms": 10640,
+      "end_ms": 10880,
+      "confidence": 0.9951172,
+      "character_start": 65,
+      "character_end": 66
+    },
+    {
+      "text": "一下子",
+      "start_ms": 10880,
+      "end_ms": 11520,
+      "confidence": 0.9990234399999999,
+      "character_start": 66,
+      "character_end": 69
+    },
+    {
+      "text": "前端",
+      "start_ms": 11520,
+      "end_ms": 11920,
+      "confidence": 0.99951172,
+      "character_start": 69,
+      "character_end": 71
+    },
+    {
+      "text": "能力",
+      "start_ms": 11920,
+      "end_ms": 12240,
+      "confidence": 0.99902344,
+      "character_start": 71,
+      "character_end": 73
+    },
+    {
+      "text": "简直",
+      "start_ms": 12240,
+      "end_ms": 12680,
+      "confidence": 0.99316406,
+      "character_start": 73,
+      "character_end": 75
+    },
+    {
+      "text": "就是",
+      "start_ms": 12680,
+      "end_ms": 13120,
+      "confidence": 0.99316406,
+      "character_start": 75,
+      "character_end": 77
+    },
+    {
+      "text": "飞",
+      "start_ms": 13435,
+      "end_ms": 13755,
+      "confidence": 0.5708008,
+      "character_start": 77,
+      "character_end": 78
+    },
+    {
+      "text": "一样",
+      "start_ms": 13755,
+      "end_ms": 13968,
+      "confidence": 0.99316406,
+      "character_start": 78,
+      "character_end": 80
+    },
+    {
+      "text": "的",
+      "start_ms": 13968,
+      "end_ms": 14075,
+      "confidence": 0.99316406,
+      "character_start": 80,
+      "character_end": 81
+    },
+    {
+      "text": "提升",
+      "start_ms": 14075,
+      "end_ms": 14395,
+      "confidence": 1,
+      "character_start": 81,
+      "character_end": 83
+    },
+    {
+      "text": "我",
+      "start_ms": 14395,
+      "end_ms": 14555,
+      "confidence": 0.9980469,
+      "character_start": 83,
+      "character_end": 84
+    },
+    {
+      "text": "感觉",
+      "start_ms": 14555,
+      "end_ms": 14875,
+      "confidence": 0.9980469,
+      "character_start": 84,
+      "character_end": 86
+    },
+    {
+      "text": "已经",
+      "start_ms": 14875,
+      "end_ms": 15675,
+      "confidence": 1,
+      "character_start": 86,
+      "character_end": 88
+    },
+    {
+      "text": "追平",
+      "start_ms": 15675,
+      "end_ms": 16155,
+      "confidence": 0.85107422,
+      "character_start": 88,
+      "character_end": 90
+    },
+    {
+      "text": "国内",
+      "start_ms": 16155,
+      "end_ms": 16422,
+      "confidence": 0.9980469,
+      "character_start": 90,
+      "character_end": 92
+    },
+    {
+      "text": "的",
+      "start_ms": 16422,
+      "end_ms": 16555,
+      "confidence": 0.9980469,
+      "character_start": 92,
+      "character_end": 93
+    },
+    {
+      "text": "GLM",
+      "start_ms": 16555,
+      "end_ms": 17115,
+      "confidence": 0.9742839,
+      "character_start": 93,
+      "character_end": 96
+    },
+    {
+      "text": "5.2",
+      "start_ms": 17115,
+      "end_ms": 17595,
+      "confidence": 0.99267577,
+      "character_start": 96,
+      "character_end": 98
+    },
+    {
+      "text": "了",
+      "start_ms": 17595,
+      "end_ms": 17675,
+      "confidence": 0.8408203,
+      "character_start": 98,
+      "character_end": 99
+    },
+    {
+      "text": "我",
+      "start_ms": 17675,
+      "end_ms": 17888,
+      "confidence": 0.99902344,
+      "character_start": 99,
+      "character_end": 100
+    },
+    {
+      "text": "相信",
+      "start_ms": 17888,
+      "end_ms": 18315,
+      "confidence": 0.99902344,
+      "character_start": 100,
+      "character_end": 102
+    },
+    {
+      "text": "有",
+      "start_ms": 18315,
+      "end_ms": 18515,
+      "confidence": 0.99316406,
+      "character_start": 102,
+      "character_end": 103
+    },
+    {
+      "text": "了",
+      "start_ms": 18515,
+      "end_ms": 18715,
+      "confidence": 0.99316406,
+      "character_start": 103,
+      "character_end": 104
+    },
+    {
+      "text": "GPT",
+      "start_ms": 18715,
+      "end_ms": 19035,
+      "confidence": 0.97265625,
+      "character_start": 104,
+      "character_end": 107
+    },
+    {
+      "text": "五点",
+      "start_ms": 18995,
+      "end_ms": 19275,
+      "confidence": 0.33015137299999997,
+      "character_start": 107,
+      "character_end": 109
+    },
+    {
+      "text": "六",
+      "start_ms": 19355,
+      "end_ms": 19515,
+      "confidence": 0.62,
+      "character_start": 109,
+      "character_end": 110
+    },
+    {
+      "text": "的",
+      "start_ms": 19515,
+      "end_ms": 19595,
+      "confidence": 0.9892578,
+      "character_start": 110,
+      "character_end": 111
+    },
+    {
+      "text": "加持",
+      "start_ms": 19931,
+      "end_ms": 20155,
+      "confidence": 0.21603125,
+      "character_start": 111,
+      "character_end": 113
+    },
+    {
+      "text": "我们",
+      "start_ms": 20155,
+      "end_ms": 20395,
+      "confidence": 0.9165039,
+      "character_start": 113,
+      "character_end": 115
+    },
+    {
+      "text": "这次",
+      "start_ms": 20395,
+      "end_ms": 20715,
+      "confidence": 0.99902344,
+      "character_start": 115,
+      "character_end": 117
+    },
+    {
+      "text": "模型",
+      "start_ms": 20715,
+      "end_ms": 21035,
+      "confidence": 1,
+      "character_start": 117,
+      "character_end": 119
+    },
+    {
+      "text": "一定",
+      "start_ms": 21035,
+      "end_ms": 21515,
+      "confidence": 0.9741211,
+      "character_start": 119,
+      "character_end": 121
+    },
+    {
+      "text": "或者说",
+      "start_ms": 21515,
+      "end_ms": 22075,
+      "confidence": 0.9980469,
+      "character_start": 121,
+      "character_end": 124
+    },
+    {
+      "text": "我们",
+      "start_ms": 22075,
+      "end_ms": 22235,
+      "confidence": 1,
+      "character_start": 124,
+      "character_end": 126
+    },
+    {
+      "text": "这次",
+      "start_ms": 22235,
+      "end_ms": 22475,
+      "confidence": 0.99902344,
+      "character_start": 126,
+      "character_end": 128
+    },
+    {
+      "text": "一定",
+      "start_ms": 22475,
+      "end_ms": 22635,
+      "confidence": 0.9902344,
+      "character_start": 128,
+      "character_end": 130
+    },
+    {
+      "text": "能",
+      "start_ms": 22635,
+      "end_ms": 22795,
+      "confidence": 0.9951172,
+      "character_start": 130,
+      "character_end": 131
+    },
+    {
+      "text": "做",
+      "start_ms": 22795,
+      "end_ms": 22902,
+      "confidence": 0.9350586,
+      "character_start": 131,
+      "character_end": 132
+    },
+    {
+      "text": "一个",
+      "start_ms": 22902,
+      "end_ms": 23115,
+      "confidence": 0.9350586,
+      "character_start": 132,
+      "character_end": 134
+    },
+    {
+      "text": "特别",
+      "start_ms": 23115,
+      "end_ms": 23515,
+      "confidence": 1,
+      "character_start": 134,
+      "character_end": 136
+    },
+    {
+      "text": "厉害",
+      "start_ms": 23515,
+      "end_ms": 23755,
+      "confidence": 1,
+      "character_start": 136,
+      "character_end": 138
+    },
+    {
+      "text": "的",
+      "start_ms": 23755,
+      "end_ms": 23888,
+      "confidence": 1,
+      "character_start": 138,
+      "character_end": 139
+    },
+    {
+      "text": "东西",
+      "start_ms": 23888,
+      "end_ms": 24155,
+      "confidence": 1,
+      "character_start": 139,
+      "character_end": 141
+    },
+    {
+      "text": "来",
+      "start_ms": 24155,
+      "end_ms": 24395,
+      "confidence": 0.9970703,
+      "character_start": 141,
+      "character_end": 142
+    },
+    {
+      "text": "给",
+      "start_ms": 24395,
+      "end_ms": 24528,
+      "confidence": 0.9902344,
+      "character_start": 142,
+      "character_end": 143
+    },
+    {
+      "text": "大家",
+      "start_ms": 24528,
+      "end_ms": 24795,
+      "confidence": 0.9902344,
+      "character_start": 143,
+      "character_end": 145
+    },
+    {
+      "text": "看",
+      "start_ms": 24795,
+      "end_ms": 25275,
+      "confidence": 0.99902344,
+      "character_start": 145,
+      "character_end": 146
+    }
+  ],
+  "alignment": {
+    "exact_ratio": 0.9657534246575342,
+    "mapped_ratio": 0.9931506849315068,
+    "average_confidence": 0.9391786352465752,
+    "uncertain_ranges": [
+      {
+        "text": "5",
+        "start_ms": 7040,
+        "end_ms": 7280,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "实",
+        "start_ms": 8800,
+        "end_ms": 8960,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "哇",
+        "start_ms": 9360,
+        "end_ms": 9600,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "五点",
+        "start_ms": 18995,
+        "end_ms": 19275,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "加持",
+        "start_ms": 19931,
+        "end_ms": 20155,
+        "reason": "low_alignment_confidence"
+      }
+    ]
+  },
+  "providers": {
+    "text_provider": "mimo-v2.5-asr",
+    "timestamp_provider": "deepgram-nova-3",
+    "chunk_count": 1,
+    "fallback_chunks": 0,
+    "glossary_corrections": [
+      {
+        "term": "黑客松",
+        "replaced_text": "黑石松",
+        "timestamp_match": "黑客松",
+        "match_confidence": 1,
+        "chunk_index": 0
+      },
+      {
+        "term": "GPT-5.6",
+        "replaced_text": "GPT五点六",
+        "timestamp_match": "gpt5。6",
+        "match_confidence": 1,
+        "chunk_index": 0
+      },
+      {
+        "term": "GLM 5.2",
+        "replaced_text": "GLM五点二",
+        "timestamp_match": "glm5。2",
+        "match_confidence": 1,
+        "chunk_index": 0
+      }
+    ]
+  }
+}

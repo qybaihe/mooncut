@@ -1,0 +1,19 @@
+{
+  "sections": [
+    {
+      "entryId": "group-c-carousel",
+      "entryType": "sectionPromoCarousel",
+      "entryEndpoint": "sections/promoCarousel/group-c-carousel?locale=en"
+    },
+    {
+      "entryId": "group-d-carousel",
+      "entryType": "sectionPromoCarousel",
+      "entryEndpoint": "sections/promoCarousel/group-d-carousel?locale=en"
+    },
+    {
+      "entryId": "latest-highlights",
+      "entryType": "news",
+      "entryEndpoint": "sections/news/latest-highlights?locale=en&limit=20"
+    }
+  ]
+}

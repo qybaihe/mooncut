@@ -1,0 +1,27 @@
+---
+title: Mosaic Reframe
+category: Staggered Motion
+description: Twelve image tiles transition from a grid to a feature mosaic, then into a diagonal cascade
+---
+import { BitPlayground } from '@components/BitPlayground';
+
+Twelve seeded photo tiles rearrange through three computed layouts: a regular grid, a feature mosaic with one expanded tile, and a diagonal cascade.
+
+<BitPlayground client:only="react" bitName="MosaicReframe" />
+
+## Overview
+
+This bit computes three layout states and linearly morphs each tile's position, size, and rotation between them with per-tile staggered timing.
+
+Key techniques:
+- Three generated configurations: 4×3 grid, feature mosaic, diagonal stack
+- Precomputed keyframes for each tile's position, size, and rotation
+- `StaggeredMotion` + `hold(60)` for staggered transform/depth sequencing (A→B, pause, B→C)
+- Direct width/height interpolation per tile to preserve image aspect while resizing
+- Seeded `picsum.photos` imagery sized from each tile's max required dimensions
+- Global opacity envelope for intro/outro fade
+
+## Reference
+
+- [Motion](/docs/reference/staggered-motion)
+- [useViewportRect](/docs/reference/use-viewport-rect)
