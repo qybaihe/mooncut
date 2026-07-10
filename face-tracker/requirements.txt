@@ -1,0 +1,4 @@
+ultralytics>=8.4.0
+opencv-python>=4.8.0
+shapely>=2.0.0
+lap>=0.5.12
