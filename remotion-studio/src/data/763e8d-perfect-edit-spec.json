@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "mooncut.perfect-talking-head.v1",
+  "title": "MoonCut 极致口播测试｜连续开发 8 小时",
+  "summary": "在探月计划具身智能黑客松现场，用一条 100 秒真实口播验证 YOLO 圆形小窗、原构图主镜头、素材内 B-roll、产品 UI、语义动效、已评审音效和低增益 BGM 的完整成片链路。",
+  "accent": "#d9ff63",
+  "fps": 30,
+  "durationInFrames": 3016,
+  "width": 1920,
+  "height": 1080,
+  "source": {
+    "src": "agent-jobs/763e8d-perfect-v1/source-sdr.mp4",
+    "aspectRatio": 1.7777777777777777
+  },
+  "transcript": "大家好，我是小贺。现在已经是北京时间的10点半了，距离我们上一条发布视频已经过了大约8个小时。在这8个小时时间内，我们进行了不间断的开发，就是要把我们这个做的视频效果打磨到极致。现在你看到的这条视频，将是由我们在现在这套系统下跑出来的口播视频。来看一看现在什么样的效果了。我们的Codex现在还在不间断地运行，它已经坚持运行了有12个小时了。我们的Pro 20的周限已经基本用掉了30%。这一天的开发过程真的是非常非常有成就感。看到我们这一套系统就这样一点一点地搭建起来，希望可以给探月具身智能社区带来一个让他们非常Amazing的产品。我们一起期待起来。看一看这个教室，大家都还在这里开发。现在10点半，我看到这里基本休息的人很少，大家都还在努力。这真的震惊到我了。今天我们尝鲜了最新的模型，用最新的模型，我觉得跑出来的效果比之前的模型要好很多。但是我们现在在做什么样的一个事呢？我们现在想把它上线成一个网站，然后我们会集成一套智能体，还有对应的API。我希望任何一个人，他们的一条口播视频上传上来之后，我们就给它剪辑完成，自动发送到他的邮箱。然后它可以自动发布到他的小红书、抖音平台，实现一套从录制到自动发布的完整运作流程。这个我相信会在明天实现。我们明天见。感谢观看！",
+  "subtitles": [
+    {"index": 1, "text": "大家好，我是小贺。", "start_ms": 210, "end_ms": 1790},
+    {"index": 2, "text": "现在已经是北京时间 10 点半了。", "start_ms": 1870, "end_ms": 4570},
+    {"index": 3, "text": "距离上一条发布视频，已经过去大约 8 个小时。", "start_ms": 4590, "end_ms": 8510},
+    {"index": 4, "text": "这 8 个小时里，我们进行了不间断的开发。", "start_ms": 8570, "end_ms": 11710},
+    {"index": 5, "text": "就是要把这个视频效果，打磨到极致。", "start_ms": 11810, "end_ms": 15090},
+    {"index": 6, "text": "现在你看到的这条口播视频，就是由我们这套系统跑出来的。来看看现在的效果。", "start_ms": 15130, "end_ms": 22550},
+    {"index": 7, "text": "我们的 Codex 还在不间断运行，已经坚持了 12 个小时。", "start_ms": 22550, "end_ms": 28210},
+    {"index": 8, "text": "我们 Pro 20 的周限，已经基本用掉 30%。", "start_ms": 28270, "end_ms": 32130},
+    {"index": 9, "text": "这一天的开发过程，真的非常有成就感。", "start_ms": 32770, "end_ms": 37250},
+    {"index": 10, "text": "看着这一套系统，就这样一点一点搭建起来。", "start_ms": 37310, "end_ms": 40570},
+    {"index": 11, "text": "希望给探月具身智能社区带来一个非常 Amazing 的产品。我们一起期待！", "start_ms": 40690, "end_ms": 48630},
+    {"index": 12, "text": "看看这个教室，大家都还在这里开发。", "start_ms": 48630, "end_ms": 52170},
+    {"index": 13, "text": "现在 10 点半，基本没什么人休息，大家还在努力。", "start_ms": 52270, "end_ms": 58470},
+    {"index": 14, "text": "这真的震惊到我了。", "start_ms": 58530, "end_ms": 60970},
+    {"index": 15, "text": "今天我们尝鲜了最新模型，效果比之前的模型好很多。", "start_ms": 61110, "end_ms": 68610},
+    {"index": 16, "text": "但我们现在在做一件什么事？", "start_ms": 68750, "end_ms": 71210},
+    {"index": 17, "text": "我们想把它上线成一个网站，集成一套智能体和对应的 API。", "start_ms": 71230, "end_ms": 77810},
+    {"index": 18, "text": "任何人上传一条口播视频后，我们自动剪辑完成，再发送到他的邮箱。", "start_ms": 77810, "end_ms": 85630},
+    {"index": 19, "text": "然后自动发布到小红书、抖音平台。", "start_ms": 85670, "end_ms": 90590},
+    {"index": 20, "text": "实现从录制到自动发布的一套完整流程。", "start_ms": 90610, "end_ms": 94890},
+    {"index": 21, "text": "这个，我相信明天就会实现。", "start_ms": 94950, "end_ms": 97170},
+    {"index": 22, "text": "我们明天见。", "start_ms": 97230, "end_ms": 98850},
+    {"index": 23, "text": "感谢观看！", "start_ms": 99730, "end_ms": 100490}
+  ],
+  "beats": [
+    {
+      "startMs": 0,
+      "endMs": 4590,
+      "visual": "speaker-focus",
+      "headline": "22:30 · 开发现场",
+      "body": "探月计划黑客松现场，第二条真实成片测试开始。",
+      "keywords": ["北京时间", "10 点半", "小贺"]
+    },
+    {
+      "startMs": 4590,
+      "endMs": 8510,
+      "visual": "metrics",
+      "headline": "上一条视频之后",
+      "body": "时间没有停，系统也没有停。",
+      "keywords": ["8 个小时", "上一条视频"],
+      "metrics": [
+        {"label": "距离上一条视频", "value": "8", "unit": "H"},
+        {"label": "当前北京时间", "value": "22:30"}
+      ]
+    },
+    {
+      "startMs": 8510,
+      "endMs": 15130,
+      "visual": "pipeline",
+      "headline": "不间断打磨",
+      "body": "把真实素材、字幕、构图、动效和声音一点点推到更完整。",
+      "keywords": ["连续开发", "效果打磨", "极致成片"]
+    },
+    {
+      "startMs": 15130,
+      "endMs": 22550,
+      "visual": "speaker-focus",
+      "headline": "这条口播，由系统跑出来",
+      "body": "保留真实表达，用数据驱动镜头、字幕与节奏。",
+      "keywords": ["口播视频", "系统", "效果"]
+    },
+    {
+      "startMs": 22550,
+      "endMs": 32130,
+      "visual": "source-full",
+      "headline": "Codex 仍在运行",
+      "body": "素材本身的电脑画面就是最真实的 B-roll，不再额外伪造界面。",
+      "keywords": ["Codex", "12 个小时", "30%"],
+      "metrics": [
+        {"label": "连续运行", "value": "12", "unit": "H"},
+        {"label": "Pro 20 周限", "value": "30", "unit": "%"}
+      ]
+    },
+    {
+      "startMs": 32130,
+      "endMs": 40690,
+      "visual": "speaker-focus",
+      "headline": "一点一点搭起来",
+      "body": "真实开发最有成就感的瞬间，是系统开始完整运转。",
+      "keywords": ["开发过程", "成就感", "系统"]
+    },
+    {
+      "startMs": 40690,
+      "endMs": 48630,
+      "visual": "pipeline",
+      "headline": "给社区一个 Amazing 产品",
+      "body": "从黑客松现场出发，把自动口播剪辑变成真正可交付的产品。",
+      "keywords": ["探月计划", "具身智能", "Amazing 产品"]
+    },
+    {
+      "startMs": 48630,
+      "endMs": 58530,
+      "visual": "source-full",
+      "headline": "教室里，大家还在开发",
+      "body": "22:30 的真实现场：很少有人休息，镜头直接保留环境与氛围。",
+      "keywords": ["教室", "10 点半", "还在努力"],
+      "metrics": [
+        {"label": "现场时间", "value": "22:30"},
+        {"label": "休息的人", "value": "很少"}
+      ]
+    },
+    {
+      "startMs": 58530,
+      "endMs": 61110,
+      "visual": "impact",
+      "headline": "还在努力",
+      "body": "这真的震惊到我了。",
+      "keywords": ["震惊", "努力"]
+    },
+    {
+      "startMs": 61110,
+      "endMs": 68750,
+      "visual": "model-compare",
+      "headline": "最新模型，效果明显更好",
+      "body": "只呈现口播中明确说出的相对结论，不虚构跑分与数据。",
+      "keywords": ["最新模型", "效果", "好很多"]
+    },
+    {
+      "startMs": 68750,
+      "endMs": 77810,
+      "visual": "product-ui",
+      "headline": "上线网站 · 接入 Agent 与 API",
+      "body": "用项目当前真实界面承接产品愿景，让观众看到它正在成为可用工具。",
+      "keywords": ["网站", "智能体", "API"],
+      "assetId": "mooncut-upload-ui"
+    },
+    {
+      "startMs": 77810,
+      "endMs": 85670,
+      "visual": "distribution",
+      "headline": "上传之后，自动交付",
+      "body": "口播视频进入系统，完成剪辑，再把成片发到邮箱。",
+      "keywords": ["上传", "AI 剪辑", "邮箱送达"]
+    },
+    {
+      "startMs": 85670,
+      "endMs": 94950,
+      "visual": "distribution",
+      "headline": "从录制，到自动发布",
+      "body": "完整链路连接小红书与抖音，让一次录制真正走到分发。",
+      "keywords": ["录制", "自动剪辑", "小红书", "抖音", "自动发布"]
+    },
+    {
+      "startMs": 94950,
+      "endMs": 100523,
+      "visual": "closing",
+      "headline": "明天实现",
+      "body": "继续把长线开发变成真正稳定、可交付的自动化工作流。",
+      "keywords": ["明天", "实现", "明天见"]
+    }
+  ],
+  "assets": [
+    {
+      "id": "mooncut-upload-ui",
+      "src": "agent-jobs/763e8d-perfect-v1/assets/mooncut-upload-ui.png",
+      "label": "MoonCut 当前剪辑台"
+    }
+  ],
+  "cameraPolicy": {
+    "mode": "track-small-overlays-only",
+    "trackedLayout": "circle",
+    "nativeReframe": "preserve-source",
+    "minimumLayoutHoldMs": 3500,
+    "transitionMs": 240
+  },
+  "bgm": {
+    "src": "audio/bgm/tracks/dear-mr-super-computer.mp3",
+    "title": "Dear Mr Super Computer",
+    "gainDb": -27,
+    "fadeInMs": 900,
+    "fadeOutMs": 1400
+  },
+  "sfx": [
+    {"id": "emphasis-impact-soft", "src": "sfx/emphasis-impact-soft.mp3", "atMs": 7800, "gainDb": -25, "durationMs": 1440},
+    {"id": "transition-whoosh-tech", "src": "sfx/transition-whoosh-tech.mp3", "atMs": 22450, "gainDb": -26, "durationMs": 1992},
+    {"id": "transition-whoosh-quick", "src": "sfx/transition-whoosh-quick.mp3", "atMs": 32670, "gainDb": -25, "durationMs": 1032},
+    {"id": "transition-whoosh-quick", "src": "sfx/transition-whoosh-quick.mp3", "atMs": 48530, "gainDb": -25, "durationMs": 1032},
+    {"id": "emphasis-impact-cinematic", "src": "sfx/emphasis-impact-cinematic.mp3", "atMs": 59450, "gainDb": -28, "durationMs": 2088},
+    {"id": "transition-whoosh-tech", "src": "sfx/transition-whoosh-tech.mp3", "atMs": 68650, "gainDb": -26, "durationMs": 1992},
+    {"id": "ui-click-mouse", "src": "sfx/ui-click-mouse.mp3", "atMs": 72050, "gainDb": -27, "durationMs": 1056},
+    {"id": "status-correct-ding", "src": "sfx/status-correct-ding.mp3", "atMs": 84400, "gainDb": -25, "durationMs": 1320},
+    {"id": "text-pop-bubble", "src": "sfx/text-pop-bubble.mp3", "atMs": 87300, "gainDb": -23, "durationMs": 1080},
+    {"id": "emphasis-impact-soft", "src": "sfx/emphasis-impact-soft.mp3", "atMs": 94950, "gainDb": -26, "durationMs": 1440}
+  ],
+  "cameraPolicy": {
+    "mode": "track-small-overlays-only",
+    "trackedLayout": "circle",
+    "nativeReframe": "preserve-source",
+    "minimumLayoutHoldMs": 2500,
+    "transitionMs": 220
+  }
+}
