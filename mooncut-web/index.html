@@ -5,13 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="MoonCut 智能口播创作台，从想法、口播稿到录制和剪辑。"
+      content="MoonCut 口播创作工作台：先聊出脚本、对着提词器录下来，再把停顿、重复和字幕交给 MoonCut。当前为本地演示。"
     />
-    <meta name="theme-color" content="#f3f1ea" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%231b1714'/%3E%3Ccircle cx='30' cy='31' r='16' fill='%23b8ee43'/%3E%3Ccircle cx='38' cy='24' r='16' fill='%231b1714'/%3E%3Cpath d='M49 11l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' fill='%23ff6848'/%3E%3C/svg%3E" />
-    <title>MoonCut · 智能口播创作台</title>
+    <meta name="theme-color" content="#070A12" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffffff'/%3E%3Ccircle cx='30' cy='31' r='16' fill='%232383e2'/%3E%3Ccircle cx='38' cy='24' r='16' fill='%23ffffff'/%3E%3Cpath d='M49 11l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' fill='%232383e2'/%3E%3C/svg%3E" />
+    <title>MoonCut · 口播创作工作台</title>
   </head>
   <body>
+    <script>
+      (function () {
+        var VALID = { light: 1, dark: 1, memphis: 1 };
+        try {
+          var t = localStorage.getItem('mooncut:theme');
+          // Memphis 只由用户主动选择后才会落盘；未保存或非法值时跟随系统浅/深偏好。
+          if (!t || !Object.prototype.hasOwnProperty.call(VALID, t)) {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
