@@ -15,17 +15,22 @@ import {
   Upload,
   WandSparkles,
   X,
-  Zap,
 } from '@lucide/vue'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { VideoAsset } from '../types'
+import { useTheme } from '../composables/useTheme'
+import type { PetAnimationState, VideoAsset } from '../types'
 import ToastMessage from './ToastMessage.vue'
 import VideoSurface from './VideoSurface.vue'
+
+const { currentTheme } = useTheme()
 
 type ClipStage = 'empty' | 'ready' | 'processing' | 'done'
 
 const props = defineProps<{ initialAsset: VideoAsset | null }>()
-const emit = defineEmits<{ 'clear-handoff': [] }>()
+const emit = defineEmits<{
+  'clear-handoff': []
+  'pet-state': [state: PetAnimationState]
+}>()
 
 const processingSteps = [
   { label: '读取口播内容', detail: '识别人声与句子边界' },
@@ -62,6 +67,14 @@ const activeStep = computed(() => {
   return 3
 })
 
+const petState = computed<PetAnimationState>(() => {
+  if (toast.value) return 'jumping'
+  if (stage.value === 'processing') return 'running'
+  if (stage.value === 'done') return 'jumping'
+  if (stage.value === 'ready') return 'review'
+  return 'waiting'
+})
+
 watch(
   () => props.initialAsset,
   (next) => {
@@ -80,6 +93,8 @@ watch(toast, (message) => {
   if (toastTimer) window.clearTimeout(toastTimer)
   if (message) toastTimer = window.setTimeout(() => (toast.value = ''), 2600)
 })
+
+watch(petState, (state) => emit('pet-state', state), { immediate: true })
 
 function formatSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
@@ -202,6 +217,14 @@ onBeforeUnmount(() => {
           <span class="upload-frame frame-front"><Upload :size="24" :stroke-width="2.2" /></span>
           <span class="upload-spark spark-one">✦</span>
           <span class="upload-spark spark-two">✦</span>
+          <img
+            v-if="currentTheme === 'memphis'"
+            class="memphis-sticker upload-sticker"
+            src="/memphis-icons/upload-file-line.png"
+            alt=""
+            width="52"
+            height="52"
+          />
         </div>
         <h2>{{ isDragging ? '松手，开始创作' : '拖入一条素口播' }}</h2>
         <p>或者点击选择本地视频</p>
@@ -215,18 +238,6 @@ onBeforeUnmount(() => {
           </span>
         </div>
       </div>
-
-      <aside class="promise-card">
-        <div class="promise-topline"><span class="mini-label">自然口播模式</span><span class="new-badge">推荐</span></div>
-        <h2>少一点剪辑感，<br>多一点表达力。</h2>
-        <p>不把每一处呼吸都剪掉，只处理真正影响观看节奏的部分。</p>
-        <div class="workflow-list">
-          <div><span>01</span><p><strong>听懂</strong>识别完整表达</p></div>
-          <div><span>02</span><p><strong>精简</strong>去掉无效停顿</p></div>
-          <div><span>03</span><p><strong>包装</strong>加上节奏字幕</p></div>
-        </div>
-        <div class="promise-note"><Zap :size="16" fill="currentColor" /><span>一条 3 分钟口播，演示版约 8 秒完成</span></div>
-      </aside>
     </div>
 
     <div v-else-if="stage === 'ready' && asset" class="clip-workbench reveal">
@@ -329,7 +340,11 @@ onBeforeUnmount(() => {
       </div>
 
       <aside class="result-card">
-        <span class="success-kicker"><CheckCircle2 :size="17" /> 成片已完成</span>
+        <span class="success-kicker">
+          <CheckCircle2 :size="17" />
+          <img v-if="currentTheme === 'memphis'" class="memphis-sticker success-sticker" src="/memphis-icons/check-circle.png" alt="" width="20" height="20">
+          成片已完成
+        </span>
         <h2>节奏更紧了，<br>表达还是你的。</h2>
         <p class="result-description">我们保留了自然语气，只清理了真正拖慢内容的部分。</p>
         <div class="result-stats">
@@ -340,7 +355,10 @@ onBeforeUnmount(() => {
         <div class="result-checks">
           <span><Check :size="14" /> 1080P 高清</span><span><Check :size="14" /> 节奏字幕已生成</span><span><Check :size="14" /> 原画质保留</span>
         </div>
-        <button class="primary-button large-button" type="button" @click="toast = '演示版：成片下载流程已触发'"><Download :size="18" /> 下载成片</button>
+        <button class="primary-button large-button" type="button" @click="toast = '演示版：成片下载流程已触发'">
+          <img v-if="currentTheme === 'memphis'" class="memphis-sticker button-sticker" src="/memphis-icons/download-file-line.png" alt="" width="20" height="20">
+          <Download v-else :size="18" /> 下载成片
+        </button>
         <div class="result-actions">
           <button type="button" @click="beginProcessing"><RotateCcw :size="15" /> 重新剪一版</button>
           <button type="button" @click="reset"><X :size="15" /> 换个视频</button>

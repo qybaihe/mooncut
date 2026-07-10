@@ -26,8 +26,11 @@ import {
   Zap,
 } from '@lucide/vue'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import type { VideoAsset } from '../types'
+import { useTheme } from '../composables/useTheme'
+import type { PetAnimationState, VideoAsset } from '../types'
 import ToastMessage from './ToastMessage.vue'
+
+const { currentTheme } = useTheme()
 
 type StudioMode = 'compose' | 'teleprompter' | 'review'
 type RecordState = 'idle' | 'countdown' | 'recording' | 'paused'
@@ -37,6 +40,7 @@ type ChatMessage = { id: number; role: 'assistant' | 'user'; content: string }
 const emit = defineEmits<{
   'send-to-edit': [asset: VideoAsset]
   'mode-change': [mode: StudioMode]
+  'pet-state': [state: PetAnimationState]
 }>()
 
 const quickTopics = ['讲一个知识点', '做产品介绍', '分享个人经历', '表达一个观点']
@@ -110,10 +114,22 @@ const currentSentence = computed(() => {
   return Math.min(sentences.value.length - 1, Math.floor(elapsed.value / Math.max(3, 9 - scrollSpeed.value)))
 })
 const recordingExtension = computed(() => recordedMime.value.includes('mp4') ? 'mp4' : 'webm')
+const petState = computed<PetAnimationState>(() => {
+  if (toast.value || mode.value === 'review') return 'jumping'
+  if (mode.value === 'teleprompter') {
+    if (recordState.value === 'countdown') return 'waving'
+    if (recordState.value === 'recording' || recordState.value === 'paused') return 'waiting'
+    return cameraStatus.value === 'requesting' ? 'waiting' : 'waving'
+  }
+  if (isThinking.value) return 'running'
+  if (mobilePanel.value === 'draft' || messages.value.length > 1) return 'review'
+  return 'idle'
+})
 
 watch(draft, (value) => localStorage.setItem('mooncut:draft', value))
 watch(messages, (value) => localStorage.setItem('mooncut:messages', JSON.stringify(value)), { deep: true })
 watch(mode, (value) => emit('mode-change', value), { immediate: true })
+watch(petState, (state) => emit('pet-state', state), { immediate: true })
 watch([messages, isThinking], async () => {
   await nextTick()
   chatEndRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -408,7 +424,7 @@ onBeforeUnmount(() => {
           {{ cameraStatus === 'live' ? '镜头已就绪' : cameraStatus === 'requesting' ? '正在连接镜头' : '演示镜头' }}
         </template>
       </div>
-      <span class="teleprompter-brand">MOONCUT ✦</span>
+      <span class="teleprompter-brand">MOONCUT <img v-if="currentTheme === 'memphis'" class="memphis-sticker brand-sticker" src="/memphis-icons/camera-line.png" alt="" width="16" height="16">✦</span>
     </div>
 
     <div class="teleprompter-layout">
@@ -466,7 +482,7 @@ onBeforeUnmount(() => {
 
   <section v-else-if="mode === 'review'" class="workspace-page review-page reveal">
     <div class="page-heading compact-heading">
-      <div><span class="eyebrow"><Check :size="15" /> 录制完成</span><h1>这一遍，很自然。</h1><p>预览一下，满意就直接交给智能剪辑。</p></div>
+      <div><span class="eyebrow"><Check :size="15" /> 录制完成 <img v-if="currentTheme === 'memphis'" class="memphis-sticker eyebrow-sticker" src="/memphis-icons/record-line.png" alt="" width="18" height="18"></span><h1>这一遍，很自然。</h1><p>预览一下，满意就直接交给智能剪辑。</p></div>
     </div>
     <div class="review-layout">
       <div class="review-video-card">
@@ -495,7 +511,7 @@ onBeforeUnmount(() => {
   <section v-else class="workspace-page record-page">
     <div class="page-heading reveal">
       <div>
-        <span class="eyebrow"><MessageCircleMore :size="15" /> 口播助手</span>
+        <span class="eyebrow"><MessageCircleMore :size="15" /> 口播助手 <img v-if="currentTheme === 'memphis'" class="memphis-sticker eyebrow-sticker" src="/memphis-icons/chat-line.png" alt="" width="18" height="18"></span>
         <h1>先聊明白，再开口录。</h1>
         <p>说说你想讲什么，助手会陪你把它变成一篇能直接念的口播稿。</p>
       </div>
