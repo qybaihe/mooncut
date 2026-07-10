@@ -1,0 +1,59 @@
+name: MoonCut
+
+options:
+  minimumXcodeGenVersion: 2.42.0
+  createIntermediateGroups: true
+
+settings:
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"
+    SUPPORTS_MACCATALYST: NO
+
+targets:
+  MoonCut:
+    type: application
+    platform: iOS
+    sources:
+      - path: MoonCut
+        excludes:
+          - Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mooncut.demo
+        PRODUCT_NAME: MoonCut
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        INFOPLIST_FILE: MoonCut/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+    scheme:
+      testTargets:
+        - MoonCutTests
+        - MoonCutUITests
+
+  MoonCutTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MoonCutTests
+    dependencies:
+      - target: MoonCut
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mooncut.demo.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+  MoonCutUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: MoonCutUITests
+    dependencies:
+      - target: MoonCut
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mooncut.demo.uitests
+        GENERATE_INFOPLIST_FILE: YES
