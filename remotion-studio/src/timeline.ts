@@ -1,4 +1,5 @@
-export type SpeakerMode = 'pip' | 'focus';
+/** `circle` is the only tracked mode; `native` preserves the source composition. */
+export type SpeakerMode = 'circle' | 'native';
 export type Visual = 'event' | 'gpt-release' | 'coding' | 'opinion' | 'closing';
 
 export type TimelineBeat = {
@@ -28,7 +29,7 @@ export const demoTimeline: VideoTimeline = {
       start: 0,
       end: 113,
       transcript: '我现在在这个北京探月计划黑客松的现场。',
-      speakerMode: 'pip',
+      speakerMode: 'circle',
       visual: 'event',
       kicker: 'BEIJING | PHYSICAL AI',
       title: '探月计划黑客松现场',
@@ -38,7 +39,7 @@ export const demoTimeline: VideoTimeline = {
       start: 113,
       end: 228,
       transcript: '今天发布了一个特别重磅的炸弹，OpenAI 出了 GPT-5.6。',
-      speakerMode: 'pip',
+      speakerMode: 'circle',
       visual: 'gpt-release',
       kicker: 'OPENAI | PRODUCT RELEASE',
       title: 'GPT-5.6 正式发布',
@@ -48,7 +49,7 @@ export const demoTimeline: VideoTimeline = {
       start: 228,
       end: 326,
       transcript: '这个模型我拿到手实测了一下，哇，真的是太震撼了！',
-      speakerMode: 'focus',
+      speakerMode: 'native',
       visual: 'opinion',
       kicker: 'HANDS-ON IMPRESSION',
       title: '实测后的第一反应',
@@ -58,7 +59,7 @@ export const demoTimeline: VideoTimeline = {
       start: 326,
       end: 432,
       transcript: '一下子前端能力，简直就是飞一样的提升。',
-      speakerMode: 'pip',
+      speakerMode: 'circle',
       visual: 'coding',
       kicker: 'FRONT-END BUILD',
       title: '前端能力，飞一样提升',
@@ -68,7 +69,7 @@ export const demoTimeline: VideoTimeline = {
       start: 432,
       end: 530,
       transcript: '我感觉已经追平国内的 GLM 5.2 了。',
-      speakerMode: 'focus',
+      speakerMode: 'native',
       visual: 'opinion',
       kicker: 'PERSONAL JUDGMENT',
       title: '这是我的现场判断',
@@ -78,7 +79,7 @@ export const demoTimeline: VideoTimeline = {
       start: 530,
       end: 774,
       transcript: '我相信有了 GPT-5.6 的加持，我们这次一定能做一个特别厉害的东西来给大家看。',
-      speakerMode: 'pip',
+      speakerMode: 'circle',
       visual: 'closing',
       kicker: 'NEXT BUILD',
       title: '做出更厉害的东西',
