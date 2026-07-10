@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: MoonCut Pi Video Editor API
+  version: 0.1.0
+servers:
+  - url: http://127.0.0.1:4317
+paths:
+  /healthz:
+    get:
+      summary: Check the agent and local model gateway
+      responses:
+        "200":
+          description: Healthy
+  /v1/models:
+    get:
+      summary: List gateway models and MoonCut model routing
+      responses:
+        "200":
+          description: Model list
+  /v1/assets:
+    post:
+      summary: Upload a raw video body
+      parameters:
+        - in: query
+          name: filename
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/octet-stream: {}
+          video/mp4: {}
+      responses:
+        "201":
+          description: Uploaded asset
+  /v1/edit-jobs:
+    post:
+      summary: Create an asynchronous editing job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assetId: {type: string}
+                inputPath: {type: string}
+                title: {type: string}
+                prompt: {type: string}
+              anyOf:
+                - required: [assetId]
+                - required: [inputPath]
+      responses:
+        "202":
+          description: Queued job
+  /v1/edit-jobs/{jobId}:
+    get:
+      summary: Read job status and artifact manifest
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Job record
+  /v1/edit-jobs/{jobId}/artifacts/{artifactName}:
+    get:
+      summary: Download one completed artifact
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: {type: string}
+        - in: path
+          name: artifactName
+          required: true
+          schema:
+            type: string
+            enum: [video, editSpec, subtitles, faceTrack, sourceInspection, sourceContactSheet, finalContactSheet, verification, renderProps, renderLog, piEvents, agentSummary]
+      responses:
+        "200":
+          description: Artifact bytes

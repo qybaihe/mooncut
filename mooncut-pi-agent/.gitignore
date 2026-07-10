@@ -1,0 +1,7 @@
+node_modules/
+data/assets/*
+data/jobs/*
+!data/assets/.gitkeep
+!data/jobs/.gitkeep
+.env
+*.log

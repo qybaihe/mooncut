@@ -1,0 +1,36 @@
+{
+  "name": "@mooncut/pi-video-editor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pi-powered talking-head video editing agent for MoonCut",
+  "keywords": [
+    "pi-package",
+    "remotion",
+    "video-editing-agent"
+  ],
+  "pi": {
+    "skills": [
+      "./.pi/skills"
+    ]
+  },
+  "scripts": {
+    "serve": "node src/cli.ts serve",
+    "edit": "node src/cli.ts edit",
+    "models": "node src/cli.ts models",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@earendil-works/pi-ai": "0.80.6",
+    "@earendil-works/pi-coding-agent": "0.80.6",
+    "typebox": "1.1.38"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.4",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  }
+}
