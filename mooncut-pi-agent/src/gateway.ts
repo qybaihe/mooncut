@@ -31,11 +31,16 @@ const gatewayHeaders = () => {
   };
 };
 
+let modelListCache: {expiresAt: number; models: string[]} | undefined;
+
 export const listGatewayModels = async (): Promise<string[]> => {
+  if (modelListCache && modelListCache.expiresAt > Date.now()) return modelListCache.models;
   const response = await fetch(`${config.gatewayBaseUrl}/models`, {headers: gatewayHeaders()});
   if (!response.ok) throw new Error(`Model discovery failed: ${response.status} ${await response.text()}`);
   const payload = (await response.json()) as ModelListResponse;
-  return (payload.data ?? []).flatMap((entry) => (entry.id ? [entry.id] : [])).sort();
+  const models = (payload.data ?? []).flatMap((entry) => (entry.id ? [entry.id] : [])).sort();
+  modelListCache = {expiresAt: Date.now() + 60_000, models};
+  return models;
 };
 
 const cleanVisionText = (text: string) =>
@@ -59,6 +64,7 @@ const requestVision = async (
     try {
       const response = await fetch(`${config.gatewayBaseUrl}/chat/completions`, {
         method: "POST",
+        signal: AbortSignal.timeout(config.visionRequestTimeoutMs),
         headers: gatewayHeaders(),
         body: JSON.stringify({
           model,
@@ -108,11 +114,12 @@ const requestVisionGate = async (
     try {
       const response = await fetch(`${config.gatewayBaseUrl}/chat/completions`, {
         method: "POST",
+        signal: AbortSignal.timeout(config.visionRequestTimeoutMs),
         headers: gatewayHeaders(),
         body: JSON.stringify({
           model,
           stream: false,
-          max_tokens: 1800,
+          max_tokens: 700,
           messages: [{
             role: "user",
             content: [

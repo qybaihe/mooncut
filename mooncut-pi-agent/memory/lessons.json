@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "mooncut.lessons.v1",
+  "lessons": [
+    {
+      "id": "impact-must-use-local-timeline",
+      "status": "active",
+      "learnedFrom": "agent-generated-v1.mp4",
+      "trigger": "A beat uses kind=impact.",
+      "rule": "The impact component must run inside a Sequence whose frame zero is local to that beat. Sample the latter half of the beat and reject the render if the expected phrase is not visibly full-screen.",
+      "regression": "quality-review impact sequence must pass visual text confirmation"
+    },
+    {
+      "id": "real-evidence-over-simulated-card",
+      "status": "active",
+      "learnedFrom": "User requirement: real browser and X evidence",
+      "trigger": "The spoken claim references an official launch, announcement, page, product, or X post.",
+      "rule": "Use browser-evidence or x-post-evidence before planning. Attach the returned evidenceId to an evidence beat. Never replace source evidence with a recreated X card or invented browser UI.",
+      "regression": "captured evidence must be used and visually confirmed inside the rendered Safari scene"
+    },
+    {
+      "id": "impact-pulse-must-match-spoken-word",
+      "status": "active",
+      "learnedFrom": "agent-generated-v2.mp4",
+      "trigger": "A timed transcript contains a word matching an impact phrase or keyword.",
+      "rule": "Persist the absolute word timestamp as impactAtMs and land the full-screen flash/ring pulse there. Never derive semantic sync from a fixed percentage of the beat duration.",
+      "regression": "impact QA samples must be centered on impactAtMs and the rendered phrase must visibly land there"
+    }
+  ]
+}

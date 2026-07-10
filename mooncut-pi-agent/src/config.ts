@@ -48,6 +48,7 @@ export const config = {
     .split(",")
     .map((model) => model.trim())
     .filter(Boolean),
+  visionRequestTimeoutMs: integerEnv("MOONCUT_VISION_TIMEOUT_MS", 120_000),
   host: process.env.MOONCUT_AGENT_HOST ?? "127.0.0.1",
   port: integerEnv("MOONCUT_AGENT_PORT", 4317),
   subtitleApiUrl: (process.env.MOONCUT_SUBTITLE_API_URL ?? "http://127.0.0.1:8765").replace(/\/$/u, ""),
