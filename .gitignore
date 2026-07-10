@@ -16,6 +16,17 @@
 **/.ruff_cache/
 **/.mypy_cache/
 **/.cache/
+**/*.egg-info/
+
+# Generated renders, local vendor checkouts, and runtime credentials
+/output/
+/external/
+/remotion-studio/out/
+/remotion-studio/extensions/wallpaper-candidates/
+/remotion-studio/public/agent-jobs/*
+!/remotion-studio/public/agent-jobs/763e8d-perfect-v1/
+!/remotion-studio/public/agent-jobs/763e8d-perfect-v1/**
+/mooncut-pi-agent/data/pi-runtime/
 
 # Local browser automation artifacts
 **/.playwright-cli/
