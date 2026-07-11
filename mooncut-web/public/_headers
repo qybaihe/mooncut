@@ -1,0 +1,46 @@
+# MoonCut Web · Cloudflare Pages 缓存与安全头
+#
+# 带内容哈希的构建产物：永久缓存，浏览器与边缘节点均可长缓存。
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# MediaPipe WASM / 模型文件：体积大、按文件名版本化，录制间才按需拉取。
+# 明确 MIME + CORS，避免部分浏览器把 .wasm/.task 当 HTML SPA 回退或拦截 Worker 加载。
+/mediapipe/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+/mediapipe/*.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+/mediapipe/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+/models/*.task
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+/models/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# 静态媒体资源：长缓存，更新靠文件名哈希或路径版本。
+/landing/*
+  Cache-Control: public, max-age=604800
+/pet/*
+  Cache-Control: public, max-age=604800
+/memphis-icons/*
+  Cache-Control: public, max-age=604800
+
+# 入口 HTML：必须始终取最新，否则新版本发布后旧 index.html 会引用过期资源。
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 通用安全头（静态站点基线）。
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), microphone=(self), geolocation=()

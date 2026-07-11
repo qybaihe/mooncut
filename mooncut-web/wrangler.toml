@@ -1,0 +1,39 @@
+# MoonCut Web · Cloudflare Pages (Phase 1 edge auth + video tunnel)
+#
+# Architecture:
+#   Browser → Pages
+#     ├─ static assets
+#     ├─ /api/v1/auth/*     → D1 (this project)
+#     └─ /api/v1/edits|edit-jobs|assets|render-queue → Tunnel → local agent
+#
+# Secrets (Dashboard or wrangler pages secret put):
+#   AGENT_ORIGIN         https://<tunnel-hostname>
+#   AGENT_INTERNAL_KEY   same value as local MOONCUT_API_KEY
+
+name = "mooncut"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
+
+# Assistant upstreams. Keep credentials in Cloudflare Pages Secrets, never in this file.
+# Set: ASSISTANT_SCRIPT_API_KEY, ASSISTANT_COACH_API_KEY and DEEPGRAM_API_KEY
+# with `wrangler pages secret put <NAME> --project-name mooncut`.
+[vars]
+ASSISTANT_SCRIPT_URL = "https://opencode.ai/zen/go/v1/chat/completions"
+ASSISTANT_SCRIPT_MODEL = "glm-5.2"
+# Pet / live coach — same OpenCode endpoint, DeepSeek v4 Flash
+ASSISTANT_COACH_URL = "https://opencode.ai/zen/go/v1/chat/completions"
+ASSISTANT_COACH_MODEL = "deepseek-v4-flash"
+# Thinking budget for reasoning models; edge clamps so it never eats all max_tokens.
+ASSISTANT_THINKING_BUDGET = "4096"
+# Deepgram live teleprompter ASR (chunked HTTP via /api/v1/asr/transcribe)
+DEEPGRAM_MODEL = "nova-2"
+DEEPGRAM_LANGUAGE = "zh-CN"
+# Resend: put RESEND_API_KEY via `wrangler pages secret put` (never commit the key).
+# mooncut.me is verified in Resend — do not use onboarding@resend.dev (test-only sender).
+RESEND_FROM = "MoonCut <noreply@mooncut.me>"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mooncut"
+database_id = "6fbf1aa4-cc17-42a8-9123-58910af44a12"
+migrations_dir = "migrations"

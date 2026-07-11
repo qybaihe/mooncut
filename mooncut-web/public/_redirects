@@ -1,0 +1,5 @@
+# MoonCut Web · Cloudflare Pages SPA fallback
+# 单页应用：所有非静态资源路径回退到 index.html，由前端 activePage 状态机接管。
+# 注意：/api/* 由 Pages Function (functions/api/[[path]].ts) 处理，
+# Cloudflare Pages 中 Functions 优先级高于 _redirects，因此无需在此排除。
+/*    /index.html   200
