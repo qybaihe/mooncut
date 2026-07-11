@@ -18,8 +18,9 @@
     "serve": "node src/cli.ts serve",
     "edit": "node src/cli.ts edit",
     "models": "node src/cli.ts models",
+    "build:studio": "node scripts/build-studio-entry.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node --test test/*.test.ts"
+    "test": "npm run build:studio && node --experimental-strip-types --test test/*.test.ts"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "0.80.6",

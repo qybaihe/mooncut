@@ -3,9 +3,11 @@ import {existsSync} from "node:fs";
 import {mkdir, readdir, readFile, rename, stat, writeFile} from "node:fs/promises";
 import {basename, join, resolve} from "node:path";
 import {runEditingAgent, runSubtitleRepairAgent} from "./agent.ts";
+import {capabilityStore} from "./capabilities.ts";
 import {assetsRoot, config, jobsRoot} from "./config.ts";
 import {copySourceIntoRemotion} from "./media.ts";
 import {sendJobMailAutomatically} from "./mail.ts";
+import {publishEvidence} from "./research.ts";
 import type {
   AgentEditSpec,
   ArtifactMap,
@@ -17,6 +19,7 @@ import type {
   SubtitleData,
   SubtitleRepairFeedback,
 } from "./types.ts";
+import type {CapabilitySnapshot} from "./capabilities.ts";
 
 const now = () => new Date().toISOString();
 
@@ -71,6 +74,32 @@ export const readAsset = async (id: string): Promise<StoredAsset> => {
 
 const jobPath = (id: string) => join(jobsRoot, id, "job.json");
 
+const runRequestedCapabilities = async (context: RunContext) => {
+  const requests = context.job.request.capabilityRequests ?? [];
+  if (!requests.length) return;
+  const userId = context.job.ownerUserId;
+  if (!userId) throw new Error("Capability requests require an authenticated job owner");
+  const selected = new Set((context.job.capabilitySnapshot ?? []).map((snapshot) => snapshot.installationId));
+  for (const {installationId, ...request} of requests) {
+    if (!selected.has(installationId)) throw new Error("Capability request is not included in this job's selected installation snapshot");
+    const invocation = await capabilityStore.invoke(userId, installationId, request);
+    context.capabilityInvocations.push(invocation);
+    const metadataPath = join(context.jobDir, `capability-${invocation.id}.json`);
+    await writeFile(metadataPath, `${JSON.stringify(invocation, null, 2)}\n`);
+    // A confirmed FIFA screenshot becomes the existing evidence-asset shape.
+    // The renderer sees only the copied task-private image, never a server path.
+    for (const artifact of invocation.artifacts.filter((item) => item.kind === "web-screenshot")) {
+      const stored = capabilityStore.getArtifact(userId, invocation.id, artifact.id);
+      await publishEvidence(context, stored.path, metadataPath, {
+        id: `capability-${artifact.id.slice(0, 12)}`,
+        kind: "webpage",
+        label: `${invocation.release.slug} · ${request.tool}`,
+        url: artifact.sourceUrl ?? "https://www.fifa.com/",
+      });
+    }
+  }
+};
+
 export class JobManager {
   private queue = Promise.resolve();
   private persistenceQueue = Promise.resolve();
@@ -102,7 +131,7 @@ export class JobManager {
     }
   }
 
-  async create(request: EditJobRequest, ownerUserId?: string): Promise<EditJobRecord> {
+  async create(request: EditJobRequest, ownerUserId?: string, capabilitySnapshot?: CapabilitySnapshot[]): Promise<EditJobRecord> {
     if (!this.canAccept()) throw new Error(`Job queue is full (${config.maxQueuedJobs})`);
     let inputPath: string;
     let originalName: string;
@@ -135,6 +164,7 @@ export class JobManager {
       inputPath,
       originalName,
       request,
+      ...(capabilitySnapshot?.length ? {capabilitySnapshot} : {}),
       mail: request.notificationEmail ? {
         recipient: request.notificationEmail,
         status: "scheduled",
@@ -182,6 +212,7 @@ export class JobManager {
           feedback.replacementText ? `正确字幕：${feedback.replacementText}` : "",
         ].filter(Boolean).join("\n"),
       },
+      ...(parent.capabilitySnapshot?.length ? {capabilitySnapshot: parent.capabilitySnapshot} : {}),
       subtitleRepair: {
         parentJobId: parent.id,
         rootJobId,
@@ -200,9 +231,27 @@ export class JobManager {
   async wait(id: string): Promise<EditJobRecord> {
     while (true) {
       const job = await this.get(id);
-      if (job.status === "completed" || job.status === "failed") return job;
+      if (job.status === "completed" || job.status === "failed" || job.status === "cancelled") return job;
       await new Promise((resolvePromise) => setTimeout(resolvePromise, 1000));
     }
+  }
+
+  /**
+   * Request cancellation. Terminal state is `cancelled` (not failed) so clients
+   * do not treat user cancel as a retryable failure.
+   */
+  async cancel(id: string): Promise<EditJobRecord> {
+    const job = await this.get(id);
+    if (job.status === "completed" || job.status === "failed" || job.status === "cancelled") {
+      return job;
+    }
+    job.cancelRequested = true;
+    job.status = "cancelled";
+    job.stage = "cancelled";
+    job.error = "Task cancelled by user. Intermediate artifacts were retained; source media was not deleted.";
+    job.progress = job.progress ?? 0;
+    await this.persist(job);
+    return job;
   }
 
   async get(id: string): Promise<EditJobRecord> {
@@ -256,9 +305,25 @@ export class JobManager {
     await operation;
   }
 
+  private async isCancelRequested(jobId: string): Promise<boolean> {
+    try {
+      const latest = await this.get(jobId);
+      return Boolean(latest.cancelRequested) || latest.status === "cancelled";
+    } catch {
+      return false;
+    }
+  }
+
   private async run(job: EditJobRecord) {
     const jobDir = join(jobsRoot, job.id);
     try {
+      if (await this.isCancelRequested(job.id)) {
+        job.status = "cancelled";
+        job.stage = "cancelled";
+        job.cancelRequested = true;
+        await this.persist(job);
+        return;
+      }
       job.status = "running";
       job.stage = "preparing-source";
       job.progress = 0.02;
@@ -276,8 +341,18 @@ export class JobManager {
         evidenceAssets: [],
         generatedVisuals: [],
         qualityReviews: [],
+        capabilityInvocations: [],
       };
+      if (job.request.capabilityRequests?.length) {
+        job.stage = "running-selected-capabilities";
+        job.progress = 0.05;
+        await this.persist(job);
+      }
+      await runRequestedCapabilities(context);
       const summary = await runEditingAgent(context, async (stage, progress) => {
+        if (await this.isCancelRequested(job.id)) {
+          throw new Error("CANCELLED");
+        }
         job.stage = stage;
         job.progress = progress;
         await this.persist(job);
@@ -300,11 +375,16 @@ export class JobManager {
         qualityReview: join(jobDir, `quality-review-${Math.max(1, context.qualityReviews.length)}.json`),
       };
       if (context.faceTrack) artifacts.faceTrack = join(jobDir, "face-track.json");
+      if (context.speechCleanupPath) artifacts.speechCleanup = context.speechCleanupPath;
+      if (context.cleanedSpeechPath) artifacts.speechCleanVideo = context.cleanedSpeechPath;
       for (const evidence of context.evidenceAssets) {
         artifacts[`evidence-${evidence.id}`] = evidence.localPath;
         artifacts[`evidence-meta-${evidence.id}`] = evidence.evidencePath;
       }
       if (context.imageSchedule) artifacts.imageGeneration = join(jobDir, "image-generation.json");
+      for (const invocation of context.capabilityInvocations) {
+        artifacts[`capability-${invocation.id}`] = join(jobDir, `capability-${invocation.id}.json`);
+      }
       for (const visual of context.generatedVisuals) {
         artifacts[`generated-${visual.id}`] = visual.localPath;
         artifacts[`generated-meta-${visual.id}`] = visual.metadataPath;
@@ -345,6 +425,14 @@ export class JobManager {
       }
       await this.persist(job);
     } catch (error) {
+      if (await this.isCancelRequested(job.id) || (error instanceof Error && error.message === "CANCELLED")) {
+        job.status = "cancelled";
+        job.stage = "cancelled";
+        job.cancelRequested = true;
+        job.error = "Task cancelled by user. Intermediate artifacts were retained; source media was not deleted.";
+        await this.persist(job);
+        return;
+      }
       job.status = "failed";
       job.stage = "failed";
       job.error = error instanceof Error ? error.stack ?? error.message : String(error);
@@ -396,6 +484,7 @@ export class JobManager {
       evidenceAssets: parentSpec.evidenceAssets,
       generatedVisuals: parentSpec.generatedVisuals ?? [],
       qualityReviews: [],
+      capabilityInvocations: [],
     };
     const result = await runSubtitleRepairAgent(context, parentSpec, repair.feedback, async (stage, progress) => {
       job.stage = stage;

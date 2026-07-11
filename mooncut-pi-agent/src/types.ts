@@ -1,4 +1,4 @@
-export type JobStatus = "queued" | "running" | "completed" | "failed";
+export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancelled";
 
 export type FaceTrackManifest = {
   schema_version: "mooncut.face-track.v1";
@@ -50,6 +50,45 @@ export type SubtitleData = {
   segments: SubtitleSegment[];
   words?: SubtitleWord[];
   provider: string;
+};
+
+/** Conservative local delivery-cleanup settings applied before semantic editing. */
+export type SpeechCleanupPolicy = {
+  enabled: boolean;
+  minSilenceMs: number;
+  retainedSilenceMs: number;
+  fillerPaddingMs: number;
+  wordGuardMs: number;
+};
+
+export type SpeechCleanupCut = {
+  startMs: number;
+  endMs: number;
+  kind: "silence" | "filler" | "combined";
+  reasons: string[];
+};
+
+export type SpeechCleanupKeepRange = {
+  sourceStartMs: number;
+  sourceEndMs: number;
+  outputStartMs: number;
+  outputEndMs: number;
+};
+
+/**
+ * Auditable edit-decision list for removing dead air and isolated fillers.
+ * All timestamps in `cuts` and `keptRanges` refer to the pre-cleanup source.
+ */
+export type SpeechCleanupManifest = {
+  schemaVersion: "mooncut.speech-cleanup.v1";
+  status: "applied" | "skipped";
+  reason: string;
+  policy: SpeechCleanupPolicy;
+  sourceDurationMs: number;
+  outputDurationMs: number;
+  removedDurationMs: number;
+  cuts: SpeechCleanupCut[];
+  keptRanges: SpeechCleanupKeepRange[];
 };
 
 /** A deliberately narrow human instruction for a completed video's subtitles. */
@@ -163,6 +202,7 @@ export type AgentEditSpec = {
   beats: EditBeat[];
   evidenceAssets: EvidenceAsset[];
   generatedVisuals?: GeneratedVisualAsset[];
+  speechCleanup?: SpeechCleanupManifest;
   generationPreset: "macos-sonoma-native";
   cameraPolicy?: {
     mode: "track-small-overlays-only";
@@ -206,6 +246,10 @@ export type EditJobRequest = {
   title?: string;
   notificationEmail?: string;
   imageGeneration?: "auto" | "off";
+  /** Installed capabilities explicitly selected for this task. */
+  capabilityInstallIds?: string[];
+  /** User-authorized calls that should produce research before editing begins. */
+  capabilityRequests?: Array<CapabilityInvocationRequest & {installationId: string}>;
 };
 
 export type MailDeliveryStatus = "scheduled" | "ready" | "awaiting-confirmation" | "sent" | "failed";
@@ -231,9 +275,13 @@ export type EditJobRecord = {
   updatedAt: string;
   /** Local worker process that owns queued/running state. */
   ownerPid?: number;
+  /** Set when a user/API cancel is requested while queued/running. */
+  cancelRequested?: boolean;
   inputPath: string;
   originalName: string;
   request: EditJobRequest;
+  /** Immutable release identities captured at creation; runtime still checks enabled state. */
+  capabilitySnapshot?: CapabilitySnapshot[];
   /** Present only on a non-destructive human subtitle-repair version. */
   subtitleRepair?: SubtitleRepairRecord;
   mail?: MailDelivery;
@@ -261,6 +309,9 @@ export type RunContext = {
   visionAnalysis?: string;
   visionModel?: string;
   subtitles?: SubtitleData;
+  speechCleanup?: SpeechCleanupManifest;
+  speechCleanupPath?: string;
+  cleanedSpeechPath?: string;
   faceTrack?: FaceTrackManifest | null;
   spec?: AgentEditSpec;
   renderPath?: string;
@@ -270,4 +321,6 @@ export type RunContext = {
   generatedVisuals: GeneratedVisualAsset[];
   imageSchedule?: ImageGenerationSchedule;
   qualityReviews: QualityReview[];
+  capabilityInvocations: CapabilityInvocation[];
 };
+import type {CapabilityInvocation, CapabilityInvocationRequest, CapabilitySnapshot} from "./capabilities.ts";

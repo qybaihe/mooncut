@@ -5,6 +5,13 @@ import {extname, join} from "node:path";
 import {pipeline} from "node:stream/promises";
 import {createServer, type IncomingMessage, type ServerResponse} from "node:http";
 import {runCoachAdvice, runScriptAssistant, type CoachAdviceRequest, type ScriptAssistantRequest} from "./assistant.ts";
+import {
+  capabilityStore,
+  CapabilityStoreError,
+  type CapabilityInstallation,
+  type CapabilityInvocation,
+  type CapabilityInvocationRequest,
+} from "./capabilities.ts";
 import {agentRoot, assetsRoot, config} from "./config.ts";
 import {authStore, AuthError, clearSessionCookie, parseSessionCookie, sessionCookie, type AuthUser} from "./auth.ts";
 import {communityStore, CommunityStoreError, type CommunityPost, type PublishCommunityPostInput} from "./community.ts";
@@ -92,6 +99,31 @@ const publicCommunityPost = (post: CommunityPost, baseUrl: string) => ({
   ...(post.posterPath ? {posterUrl: `${baseUrl}/v1/community/posts/${post.id}/poster`} : {}),
 });
 
+const publicCapabilityInstallation = (installation: CapabilityInstallation) => ({
+  id: installation.installationId,
+  packageId: installation.packageId,
+  releaseId: installation.releaseId,
+  slug: installation.slug,
+  version: installation.version,
+  manifestHash: installation.manifestHash,
+  status: installation.status,
+  installedAt: installation.installedAt,
+  updatedAt: installation.updatedAt,
+  permissions: installation.manifest.permissions,
+  tasks: installation.manifest.compatibility.tasks,
+  name: installation.manifest.display.name,
+  tagline: installation.manifest.display.tagline,
+  category: installation.manifest.display.category,
+});
+
+const publicCapabilityInvocation = (invocation: CapabilityInvocation, baseUrl: string) => ({
+  ...invocation,
+  artifacts: invocation.artifacts.map((artifact) => ({
+    ...artifact,
+    url: `${baseUrl}/v1/capability-invocations/${invocation.id}/artifacts/${artifact.id}`,
+  })),
+});
+
 export const redactInternalPaths = (value: string) => value.replace(
   /\/(?:opt|home|Users|var|tmp)\/[^\s`|)\]}]+/gu,
   "[internal path]",
@@ -111,7 +143,9 @@ const publicJobRecord = (job: EditJobRecord, baseUrl: string) => ({
     prompt: job.request.prompt,
     notificationEmail: job.request.notificationEmail,
     imageGeneration: job.request.imageGeneration ?? "auto",
+    capabilityInstallIds: job.capabilitySnapshot?.map((snapshot) => snapshot.installationId) ?? [],
   },
+  ...(job.capabilitySnapshot?.length ? {capabilities: job.capabilitySnapshot.map(({installationId, slug, version, manifestHash}) => ({installationId, slug, version, manifestHash}))} : {}),
   ...(job.error ? {error: redactInternalPaths(job.error.split("\n", 1)[0])} : {}),
   ...(job.mail ? {mail: job.mail} : {}),
   ...(job.subtitleRepair ? {subtitleRepair: job.subtitleRepair} : {}),
@@ -154,7 +188,15 @@ const isEditJobRequest = (value: unknown): value is EditJobRequest => {
     (record.prompt === undefined || typeof record.prompt === "string") &&
     (record.title === undefined || typeof record.title === "string") &&
     (record.notificationEmail === undefined || typeof record.notificationEmail === "string") &&
-    (record.imageGeneration === undefined || record.imageGeneration === "auto" || record.imageGeneration === "off")
+    (record.imageGeneration === undefined || record.imageGeneration === "auto" || record.imageGeneration === "off") &&
+    (record.capabilityInstallIds === undefined || Array.isArray(record.capabilityInstallIds) && record.capabilityInstallIds.length <= 4 && record.capabilityInstallIds.every((id) => typeof id === "string" && /^[a-f0-9]{32}$/u.test(id))) &&
+    (record.capabilityRequests === undefined || Array.isArray(record.capabilityRequests) && record.capabilityRequests.length <= 1 && record.capabilityRequests.every((request) => {
+      if (!request || typeof request !== "object") return false;
+      const item = request as Record<string, unknown>;
+      if (typeof item.installationId !== "string" || !/^[a-f0-9]{32}$/u.test(item.installationId)) return false;
+      const {installationId: _installationId, ...capabilityRequest} = item;
+      return isCapabilityInvocationRequest(capabilityRequest);
+    }))
   );
 };
 
@@ -197,6 +239,40 @@ const isCommunityPublishRequest = (value: unknown): value is PublishCommunityPos
     (record.title === undefined || typeof record.title === "string") &&
     (record.caption === undefined || typeof record.caption === "string");
 };
+
+const isInstallationStatusPatch = (value: unknown): value is {status: "enabled" | "disabled"} => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return Object.keys(record).length === 1 && (record.status === "enabled" || record.status === "disabled");
+};
+
+const isCapabilityInvocationRequest = (value: unknown): value is CapabilityInvocationRequest => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  if (record.tool === "fifa_find_highlights") {
+    return !!record.input && typeof record.input === "object" &&
+      typeof (record.input as Record<string, unknown>).query === "string";
+  }
+  if (record.tool === "fifa_match_context") {
+    if (!record.input || typeof record.input !== "object") return false;
+    const input = record.input as Record<string, unknown>;
+    return typeof input.matchId === "string" &&
+      (input.includeChineseContext === undefined || typeof input.includeChineseContext === "boolean") &&
+      (input.screenshotView === undefined || input.screenshotView === "ratings" || input.screenshotView === "match" || input.screenshotView === "chat") &&
+      (record.confirmedArtifact === undefined || typeof record.confirmedArtifact === "boolean");
+  }
+  return false;
+};
+
+const isCapabilityPackageRequest = (value: unknown): value is {slug: string; trustLevel?: "official" | "verified"} => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.slug === "string" &&
+    (record.trustLevel === undefined || record.trustLevel === "official" || record.trustLevel === "verified");
+};
+
+const isCapabilityReleaseRequest = (value: unknown): value is {manifest: unknown} =>
+  Boolean(value && typeof value === "object" && "manifest" in value);
 
 const contentType = (path: string) => {
   switch (extname(path).toLowerCase()) {
@@ -301,7 +377,7 @@ export const startServer = async () => {
       if (request.method === "OPTIONS") {
         response.writeHead(204, {
           "Access-Control-Allow-Headers": "Authorization, Content-Type",
-          "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+          "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
         });
         response.end();
         return;
@@ -315,7 +391,18 @@ export const startServer = async () => {
         return;
       }
       if (request.method === "GET" && url.pathname === "/healthz") {
-        const models = await listGatewayModels();
+        // Studio injects MOONCUT_PROBE_GATEWAY_ON_HEALTH=false so Agent can be
+        // healthy without a configured gateway key (provider may be set later).
+        const probeGateway = process.env.MOONCUT_PROBE_GATEWAY_ON_HEALTH !== "false";
+        let gatewayReachable = false;
+        if (probeGateway && config.gatewayApiKey) {
+          try {
+            const models = await listGatewayModels();
+            gatewayReachable = models.includes(config.plannerModel);
+          } catch {
+            gatewayReachable = false;
+          }
+        }
         json(response, 200, {
           ok: true,
           service: "mooncut-pi-video-editor",
@@ -323,7 +410,7 @@ export const startServer = async () => {
           visionModels: config.visionModels,
           imageGenerationConfigured: Boolean(config.imageGenerationBaseUrl && config.imageGenerationApiKey && config.imageGenerationModel),
           communityPosts: communityStore.count(),
-          gatewayReachable: models.includes(config.plannerModel),
+          gatewayReachable,
         });
         return;
       }
@@ -363,6 +450,18 @@ export const startServer = async () => {
         json(response, 200, {user: authStore.getUserBySession(sessionToken) ?? null});
         return;
       }
+      // Discovery is public. A session only adds the caller's installation
+      // state; no private install, invocation or artifact data is exposed.
+      const catalogUser = authStore.getUserBySession(sessionToken);
+      if (request.method === "GET" && url.pathname === "/v1/capabilities") {
+        json(response, 200, {items: capabilityStore.listCatalog(catalogUser?.id, url.searchParams.get("query") ?? undefined)});
+        return;
+      }
+      const capabilityDetailMatch = url.pathname.match(/^\/v1\/capabilities\/([a-z0-9-]{3,80})$/u);
+      if (request.method === "GET" && capabilityDetailMatch) {
+        json(response, 200, capabilityStore.getCatalog(capabilityDetailMatch[1], catalogUser?.id));
+        return;
+      }
       let principal: RequestPrincipal | undefined;
       if (isServiceAuthorized(request.headers.authorization)) principal = {kind: "service"};
       else {
@@ -375,6 +474,97 @@ export const startServer = async () => {
         return;
       }
       const ownerUserId = principal?.kind === "user" ? principal.user.id : undefined;
+      const requireUser = () => {
+        if (principal?.kind !== "user") throw new HttpError(403, "A signed-in user session is required for capability management");
+        return principal.user;
+      };
+      const requireService = () => {
+        if (principal?.kind !== "service") throw new HttpError(403, "A service API key is required for capability publishing");
+      };
+      if (request.method === "POST" && url.pathname === "/v1/admin/capability-packages") {
+        requireService();
+        const payload = await readJson(request);
+        if (!isCapabilityPackageRequest(payload)) throw new HttpError(400, "Body requires a lowercase slug and optional trustLevel");
+        const created = capabilityStore.createPackage(payload.slug, payload.trustLevel);
+        json(response, created.created ? 201 : 200, created);
+        return;
+      }
+      const capabilityReleasePublishMatch = url.pathname.match(/^\/v1\/admin\/capability-packages\/([A-Za-z0-9_-]{3,120})\/releases$/u);
+      if (request.method === "POST" && capabilityReleasePublishMatch) {
+        requireService();
+        const payload = await readJson(request);
+        if (!isCapabilityReleaseRequest(payload)) throw new HttpError(400, "Body requires a capability manifest");
+        json(response, 201, capabilityStore.publishRelease(capabilityReleasePublishMatch[1], payload.manifest));
+        return;
+      }
+      const capabilityYankMatch = url.pathname.match(/^\/v1\/admin\/capability-releases\/([a-f0-9]{32})\/yank$/u);
+      if (request.method === "POST" && capabilityYankMatch) {
+        requireService();
+        capabilityStore.yankRelease(capabilityYankMatch[1]);
+        json(response, 200, {ok: true});
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/me/capability-installations") {
+        const user = requireUser();
+        json(response, 200, {items: capabilityStore.listInstallations(user.id).map(publicCapabilityInstallation)});
+        return;
+      }
+      const capabilityInstallMatch = url.pathname.match(/^\/v1\/capabilities\/([a-z0-9-]{3,80})\/install$/u);
+      if (request.method === "POST" && capabilityInstallMatch) {
+        const user = requireUser();
+        const installed = capabilityStore.install(user.id, capabilityInstallMatch[1]);
+        json(response, installed.created ? 201 : 200, {created: installed.created, installation: publicCapabilityInstallation(installed.installation)});
+        return;
+      }
+      const capabilityInstallationMatch = url.pathname.match(/^\/v1\/me\/capability-installations\/([a-f0-9]{32})$/u);
+      if (capabilityInstallationMatch && request.method === "PATCH") {
+        const user = requireUser();
+        const payload = await readJson(request);
+        if (!isInstallationStatusPatch(payload)) throw new HttpError(400, "Body requires status enabled or disabled");
+        json(response, 200, {installation: publicCapabilityInstallation(capabilityStore.setStatus(user.id, capabilityInstallationMatch[1], payload.status))});
+        return;
+      }
+      if (capabilityInstallationMatch && request.method === "DELETE") {
+        const user = requireUser();
+        capabilityStore.uninstall(user.id, capabilityInstallationMatch[1]);
+        json(response, 200, {ok: true});
+        return;
+      }
+      const capabilityReconfirmMatch = url.pathname.match(/^\/v1\/me\/capability-installations\/([a-f0-9]{32})\/reconfirm$/u);
+      if (capabilityReconfirmMatch && request.method === "POST") {
+        const user = requireUser();
+        json(response, 200, {installation: publicCapabilityInstallation(capabilityStore.reconfirm(user.id, capabilityReconfirmMatch[1]))});
+        return;
+      }
+      const capabilityPreflightMatch = url.pathname.match(/^\/v1\/me\/capability-installations\/([a-f0-9]{32})\/preflight$/u);
+      if (capabilityPreflightMatch && request.method === "POST") {
+        const user = requireUser();
+        json(response, 200, await capabilityStore.preflight(user.id, capabilityPreflightMatch[1]));
+        return;
+      }
+      const capabilityInvokeMatch = url.pathname.match(/^\/v1\/me\/capability-installations\/([a-f0-9]{32})\/invoke$/u);
+      if (capabilityInvokeMatch && request.method === "POST") {
+        const user = requireUser();
+        const payload = await readJson(request);
+        if (!isCapabilityInvocationRequest(payload)) throw new HttpError(400, "Body requires a supported capability tool and valid input");
+        const invocation = await capabilityStore.invoke(user.id, capabilityInvokeMatch[1], payload);
+        json(response, 200, publicCapabilityInvocation(invocation, publicBaseUrl(request)));
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/capability-invocations") {
+        const user = requireUser();
+        const installationId = url.searchParams.get("installationId") ?? undefined;
+        if (installationId && !/^[a-f0-9]{32}$/u.test(installationId)) throw new HttpError(400, "installationId is invalid");
+        json(response, 200, {items: capabilityStore.listInvocations(user.id, installationId).map((invocation) => publicCapabilityInvocation(invocation, publicBaseUrl(request)))});
+        return;
+      }
+      const capabilityArtifactMatch = url.pathname.match(/^\/v1\/capability-invocations\/([a-f0-9]{32})\/artifacts\/([a-f0-9]{32})$/u);
+      if (capabilityArtifactMatch && request.method === "GET") {
+        const user = requireUser();
+        const artifact = capabilityStore.getArtifact(user.id, capabilityArtifactMatch[1], capabilityArtifactMatch[2]);
+        await streamArtifact(request, response, artifact.path);
+        return;
+      }
       const getAccessibleJob = async (id: string) => {
         let job: EditJobRecord;
         try {
@@ -548,13 +738,30 @@ export const startServer = async () => {
           json(response, 400, {error: "notificationEmail is invalid"});
           return;
         }
-        const job = await jobManager.create(payload, ownerUserId);
+        if ((payload.capabilityInstallIds?.length || payload.capabilityRequests?.length) && !ownerUserId) {
+          throw new HttpError(403, "Capability-backed editing requires a signed-in user session");
+        }
+        const selectedInstallations = payload.capabilityInstallIds ?? [];
+        if (payload.capabilityRequests?.some((capability) => !selectedInstallations.includes(capability.installationId))) {
+          throw new HttpError(400, "Every capability request must be included in capabilityInstallIds");
+        }
+        const capabilitySnapshot = ownerUserId
+          ? capabilityStore.resolveSnapshots(ownerUserId, selectedInstallations, "video-edit")
+          : [];
+        const job = await jobManager.create(payload, ownerUserId, capabilitySnapshot);
         const baseUrl = publicBaseUrl(request);
         json(response, 202, {
           id: job.id,
           status: job.status,
           statusUrl: `${baseUrl}/v1/edit-jobs/${job.id}`,
         });
+        return;
+      }
+      const cancelMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/cancel$/u);
+      if (request.method === "POST" && cancelMatch) {
+        const job = await getAccessibleJob(cancelMatch[1]!);
+        const cancelled = await jobManager.cancel(job.id);
+        json(response, 200, publicJobRecord(cancelled, publicBaseUrl(request)));
         return;
       }
       const subtitleRepairMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/subtitle-repairs$/u);
@@ -647,8 +854,8 @@ export const startServer = async () => {
     } catch (error) {
       const requestId = randomUUID();
       console.error(`[http] ${request.method ?? "?"} ${request.url ?? "/"}:`, error);
-      if (error instanceof HttpError || error instanceof CommunityStoreError || error instanceof AuthError) {
-        json(response, error.status, {error: error.message, ...(error instanceof AuthError ? {code: error.code} : {}), requestId});
+      if (error instanceof HttpError || error instanceof CommunityStoreError || error instanceof CapabilityStoreError || error instanceof AuthError) {
+        json(response, error.status, {error: error.message, ...(error instanceof AuthError || error instanceof CapabilityStoreError ? {code: error.code} : {}), requestId});
       } else if (error instanceof Error && /asset access denied/iu.test(error.message)) {
         json(response, 404, {error: "Asset not found", requestId});
       } else if (error instanceof Error && error.message.startsWith("Job queue is full")) {
@@ -663,7 +870,12 @@ export const startServer = async () => {
     server.once("error", reject);
     server.listen(config.port, config.host, resolvePromise);
   });
-  console.log(`MoonCut Pi editing agent listening on http://${config.host}:${config.port}`);
+  const bound = server.address();
+  const boundPort = typeof bound === "object" && bound ? bound.port : config.port;
+  console.log(`MoonCut Pi editing agent listening on http://${config.host}:${boundPort}`);
+  // Studio Supervisor waits for this exact marker (stdout/stderr).
+  console.log(`MOONCUT_AGENT_READY host=${config.host} port=${boundPort}`);
   console.log(`Asset store: ${assetsRoot}`);
+  console.log(`Data root: ${config.databasePath}`);
   return server;
 };

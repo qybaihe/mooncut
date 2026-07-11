@@ -5,14 +5,9 @@ import {homedir} from "node:os";
 
 const sourceDir = dirname(fileURLToPath(import.meta.url));
 
-export const agentRoot = resolve(sourceDir, "..");
-export const workspaceRoot = resolve(agentRoot, "..");
-export const remotionRoot = join(workspaceRoot, "remotion-studio");
-export const faceTrackerRoot = join(workspaceRoot, "face-tracker");
-export const dataRoot = join(agentRoot, "data");
-export const assetsRoot = join(dataRoot, "assets");
-export const jobsRoot = join(dataRoot, "jobs");
-export const agentRuntimeRoot = join(dataRoot, "pi-runtime");
+export const agentRoot = resolve(
+  process.env.MOONCUT_AGENT_ROOT ? resolve(process.env.MOONCUT_AGENT_ROOT) : resolve(sourceDir, ".."),
+);
 
 const loadDotEnv = () => {
   const envPath = join(agentRoot, ".env");
@@ -35,10 +30,33 @@ const integerEnv = (name: string, fallback: number) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const booleanEnv = (name: string, fallback: boolean) => {
+  const value = process.env[name]?.trim().toLocaleLowerCase();
+  if (!value) return fallback;
+  if (["1", "true", "yes", "on"].includes(value)) return true;
+  if (["0", "false", "no", "off"].includes(value)) return false;
+  return fallback;
+};
+
 const pathEnv = (name: string, fallback: string) => {
   const value = process.env[name] ?? fallback;
-  return value === "~" || value.startsWith("~/") ? join(homedir(), value.slice(2)) : value;
+  return value === "~" || value.startsWith("~/") ? join(homedir(), value.slice(2)) : resolve(value);
 };
+
+/** Workspace containing remotion/face-tracker (monorepo or packaged mooncut-runtime). */
+export const workspaceRoot = pathEnv("MOONCUT_WORKSPACE_ROOT", resolve(agentRoot, ".."));
+export const remotionRoot = pathEnv("MOONCUT_REMOTION_ROOT", join(workspaceRoot, "remotion-studio"));
+export const faceTrackerRoot = pathEnv("MOONCUT_FACE_TRACKER_ROOT", join(workspaceRoot, "face-tracker"));
+
+/**
+ * Writable data isolation root. Studio injects MOONCUT_DATA_ROOT under userData;
+ * default remains agentRoot/data for standalone server deployments.
+ */
+export const dataRoot = pathEnv("MOONCUT_DATA_ROOT", join(agentRoot, "data"));
+export const assetsRoot = pathEnv("MOONCUT_ASSETS_ROOT", join(dataRoot, "assets"));
+export const jobsRoot = pathEnv("MOONCUT_JOBS_ROOT", join(dataRoot, "jobs"));
+export const agentRuntimeRoot = pathEnv("MOONCUT_AGENT_RUNTIME_ROOT", join(dataRoot, "pi-runtime"));
+export const capabilityArtifactsRoot = pathEnv("MOONCUT_CAPABILITY_ARTIFACTS_ROOT", join(dataRoot, "capability-artifacts"));
 
 const enumEnv = <T extends string>(name: string, values: readonly T[], fallback: T): T => {
   const value = process.env[name] as T | undefined;
@@ -73,18 +91,31 @@ export const config = {
   // The conversational Pi planner remains available for experimentation, but
   // production must not leave a video task in an unbounded tool-call loop.
   agentExecutionMode: enumEnv("MOONCUT_AGENT_EXECUTION_MODE", ["reliable", "pi"] as const, "reliable"),
-  // Server default: a review-ready 16:9 render that avoids swapping on the
-  // small CPU worker. These remain configurable per deployment.
-  renderWidth: Math.max(320, integerEnv("MOONCUT_RENDER_WIDTH", 1280)),
-  renderHeight: Math.max(180, integerEnv("MOONCUT_RENDER_HEIGHT", 720)),
-  renderFps: Math.min(60, Math.max(12, integerEnv("MOONCUT_RENDER_FPS", 24))),
+  // Deliverable default: full-HD 16:9. Low-resolution output must be an
+  // explicit deployment override, never an implicit quality downgrade.
+  renderWidth: Math.max(320, integerEnv("MOONCUT_RENDER_WIDTH", 1920)),
+  renderHeight: Math.max(180, integerEnv("MOONCUT_RENDER_HEIGHT", 1080)),
+  renderFps: Math.min(60, Math.max(12, integerEnv("MOONCUT_RENDER_FPS", 30))),
   renderConcurrency: integerEnv("MOONCUT_RENDER_CONCURRENCY", 1),
+  // Talking-head delivery cleanup is local and non-destructive. The original
+  // upload remains intact; only the derived source supplied to Remotion changes.
+  speechCleanupEnabled: booleanEnv("MOONCUT_SPEECH_CLEANUP_ENABLED", true),
+  speechCleanupMinSilenceMs: Math.max(350, integerEnv("MOONCUT_SPEECH_CLEANUP_MIN_SILENCE_MS", 750)),
+  speechCleanupRetainedSilenceMs: Math.max(80, integerEnv("MOONCUT_SPEECH_CLEANUP_RETAINED_SILENCE_MS", 190)),
+  speechCleanupFillerPaddingMs: Math.max(0, integerEnv("MOONCUT_SPEECH_CLEANUP_FILLER_PADDING_MS", 80)),
+  speechCleanupWordGuardMs: Math.max(20, integerEnv("MOONCUT_SPEECH_CLEANUP_WORD_GUARD_MS", 55)),
   // Desktop-grade 1080p compositions can take far longer than the source clip
   // on a modest CPU-only server. Do not let a healthy long edit inherit an
   // arbitrary short command timeout.
   renderTimeoutMs: Math.max(60_000, integerEnv("MOONCUT_RENDER_TIMEOUT_MS", 2 * 60 * 60_000)),
   browserExecutable: process.env.MOONCUT_BROWSER_EXECUTABLE || undefined,
   databasePath: pathEnv("MOONCUT_DATABASE_PATH", join(dataRoot, "mooncut.sqlite")),
+  // Bundled releases use this to detect accidental database/content tampering.
+  // Production deployments must override the development fallback.
+  capabilitySigningKey: process.env.MOONCUT_CAPABILITY_SIGNING_KEY ?? "mooncut-development-capability-signing-key",
+  capabilityArtifactsRoot,
+  fifaCliPath: pathEnv("MOONCUT_FIFA_CLI_PATH", join(workspaceRoot, "fifa-highlights-cli/dist/index.js")),
+  fifaCliCwd: pathEnv("MOONCUT_FIFA_CLI_CWD", join(workspaceRoot, "fifa-highlights-cli")),
   sessionDays: Math.min(90, Math.max(1, integerEnv("MOONCUT_SESSION_DAYS", 30))),
   cookieSecure: process.env.MOONCUT_COOKIE_SECURE === "true",
   publicBaseUrl: (process.env.MOONCUT_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
