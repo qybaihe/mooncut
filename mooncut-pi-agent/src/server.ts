@@ -12,7 +12,7 @@ import {
   type CapabilityInvocation,
   type CapabilityInvocationRequest,
 } from "./capabilities.ts";
-import {agentRoot, assetsRoot, config} from "./config.ts";
+import {agentRoot, assertPublicDeploymentSecurity, assetsRoot, config} from "./config.ts";
 import {authStore, AuthError, clearSessionCookie, parseSessionCookie, sessionCookie, type AuthUser} from "./auth.ts";
 import {communityStore, CommunityStoreError, type CommunityPost, type PublishCommunityPostInput} from "./community.ts";
 import {listGatewayModels} from "./gateway.ts";
@@ -365,6 +365,7 @@ const streamArtifact = async (request: IncomingMessage, response: ServerResponse
 };
 
 export const startServer = async () => {
+  assertPublicDeploymentSecurity();
   await jobManager.recoverInterruptedJobs();
   const server = createServer(async (request, response) => {
     try {

@@ -36,6 +36,12 @@
 
 # Generated web shot/output artifacts
 /mooncut-web/output/
+/mooncut-web/dist/
+/fifa-highlights-cli/dist/
+/face-tracker/build/
+/face-tracker/dist/
+/hybrid-subtitle-service/build/
+/hybrid-subtitle-service/dist/
 
 # MoonCut Studio generated / heavy local artifacts
 /mooncut-studio/apps/desktop/release/

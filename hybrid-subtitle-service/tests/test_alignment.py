@@ -4,6 +4,8 @@ from hybrid_subtitle.alignment import (
     build_alignment_stats,
 )
 from hybrid_subtitle.providers import ProviderWord
+from hybrid_subtitle.providers import DeepgramResult
+from hybrid_subtitle import processor
 
 
 def test_mimo_spelling_is_kept_with_deepgram_timing() -> None:
@@ -45,3 +47,39 @@ def test_glossary_uses_timestamp_transcript_to_correct_mimo_text() -> None:
 
     assert corrected == "讲到 Codec 的时候，需要自动弹出页面。"
     assert [item.term for item in corrections] == ["Codec", "弹出页面"]
+
+
+def test_alignment_falls_back_to_timestamp_transcript_after_mimo_text_mismatch(
+    monkeypatch,
+) -> None:
+    timestamp_result = DeepgramResult(
+        transcript="备用字幕",
+        words=[
+            ProviderWord("备用", 0.0, 0.4, 0.99),
+            ProviderWord("字幕", 0.4, 0.8, 0.99),
+        ],
+        request_id=None,
+        detected_language="zh-CN",
+    )
+    original_align = processor.align_transcript
+    attempted_texts: list[str] = []
+
+    def fail_once(*, authoritative_text: str, **kwargs):
+        attempted_texts.append(authoritative_text)
+        if len(attempted_texts) == 1:
+            raise ValueError("MiMo wording is not alignable")
+        return original_align(authoritative_text=authoritative_text, **kwargs)
+
+    monkeypatch.setattr(processor, "align_transcript", fail_once)
+    aligned, used_fallback = processor._align_with_timestamp_fallback(
+        authoritative_text="完全不匹配的文本",
+        timestamp_result=timestamp_result,
+        duration_ms=800,
+        offset_ms=0,
+        fallback_already_used=False,
+        strict_hybrid=False,
+    )
+
+    assert used_fallback is True
+    assert attempted_texts == ["完全不匹配的文本", "备用字幕"]
+    assert aligned.transcript == "备用字幕"

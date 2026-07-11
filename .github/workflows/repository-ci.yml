@@ -1,0 +1,141 @@
+name: Repository CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: repository-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Web build and tests
+            directory: mooncut-web
+            lockfile: mooncut-web/package-lock.json
+            companion_directory: ""
+            companion_lockfile: ""
+            commands: |
+              npm run test
+              npm run build
+          - name: Pi Agent typecheck and tests
+            directory: mooncut-pi-agent
+            lockfile: mooncut-pi-agent/package-lock.json
+            # The Electron spawn regression test intentionally verifies the
+            # Studio-installed runtime path.
+            companion_directory: mooncut-studio
+            companion_lockfile: mooncut-studio/package-lock.json
+            commands: |
+              npm run typecheck
+              npm test
+          - name: Studio build typecheck and tests
+            directory: mooncut-studio
+            lockfile: mooncut-studio/package-lock.json
+            # Studio's runtime-agent test starts the sibling Pi Agent entry.
+            companion_directory: mooncut-pi-agent
+            companion_lockfile: mooncut-pi-agent/package-lock.json
+            commands: |
+              npm run build
+              npm run typecheck
+              npm test
+          - name: Remotion typecheck and tests
+            directory: remotion-studio
+            lockfile: remotion-studio/package-lock.json
+            companion_directory: ""
+            companion_lockfile: ""
+            commands: |
+              npm run typecheck
+              npm test
+          - name: FIFA CLI typecheck and tests
+            directory: fifa-highlights-cli
+            lockfile: fifa-highlights-cli/package-lock.json
+            companion_directory: ""
+            companion_lockfile: ""
+            commands: |
+              npm run check
+              npm test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ${{ matrix.lockfile }}
+      - name: Install from lockfile
+        working-directory: ${{ matrix.directory }}
+        run: npm ci --include=optional --no-audit --no-fund
+      - name: Install companion workspace required by integration tests
+        if: matrix.companion_directory != ''
+        working-directory: ${{ matrix.companion_directory }}
+        run: npm ci --include=optional --no-audit --no-fund
+      - name: Verify
+        working-directory: ${{ matrix.directory }}
+        run: ${{ matrix.commands }}
+
+  python:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Hybrid Subtitle API
+            directory: hybrid-subtitle-service
+            commands: |
+              uv run ruff check src tests
+              uv run pytest -q
+              docker build --tag mooncut-hybrid-subtitle-ci .
+          - name: Face tracker
+            directory: face-tracker
+            commands: |
+              uv run ruff check face_tracker tests
+              uv run pytest -q
+              uv build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: ${{ matrix.directory }}/uv.lock
+      - name: Sync locked development environment
+        working-directory: ${{ matrix.directory }}
+        run: uv sync --frozen --group dev
+      - name: Verify
+        working-directory: ${{ matrix.directory }}
+        run: ${{ matrix.commands }}
+
+  ios:
+    name: iOS test-bundle build
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile app and test targets without a signing identity
+        working-directory: ios
+        run: >-
+          xcodebuild build-for-testing
+          -project MoonCut.xcodeproj
+          -scheme MoonCut
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+
+  repository-integrity:
+    name: Git LFS pointer integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify every LFS-managed path is a canonical pointer
+        run: git lfs fsck --pointers

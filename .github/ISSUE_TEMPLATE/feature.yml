@@ -1,0 +1,18 @@
+name: Feature proposal
+description: Propose a user problem and a testable product outcome.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Who is blocked and what are they trying to accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe behavior, constraints, and alternatives considered.
+    validations:
+      required: true

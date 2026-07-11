@@ -76,24 +76,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf node_modules
-          npm install --no-audit --no-fund
-          # npm optional-deps bug: rollup native binary often missing on clean CI
-          # https://github.com/npm/cli/issues/4828
-          case "${{ runner.os }}" in
-            Linux)
-              npm install --no-save @rollup/rollup-linux-x64-gnu || true
-              ;;
-            Windows)
-              npm install --no-save @rollup/rollup-win32-x64-msvc || true
-              ;;
-            macOS)
-              if [[ "$(uname -m)" == "arm64" ]]; then
-                npm install --no-save @rollup/rollup-darwin-arm64 || true
-              else
-                npm install --no-save @rollup/rollup-darwin-x64 || true
-              fi
-              ;;
-          esac
+          npm ci --include=optional --no-audit --no-fund
 
       - name: Install pi-agent + prebuild dist/cli.mjs
         working-directory: mooncut-pi-agent
@@ -101,7 +84,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf node_modules
-          npm install --no-audit --no-fund
+          npm ci --include=optional --no-audit --no-fund
           test -f src/capabilities.ts
           npm run build:studio
           test -f dist/cli.mjs
@@ -196,6 +179,10 @@ jobs:
           find release-assets -type f -print0 | while IFS= read -r -d '' f; do
             cp -v "$f" "dist-release/$(basename "$f")"
           done
+          (
+            cd dist-release
+            shasum -a 256 * > SHA256SUMS.txt
+          )
           ls -lah dist-release
           test "$(find dist-release -type f | wc -l | tr -d ' ')" -ge 1
 

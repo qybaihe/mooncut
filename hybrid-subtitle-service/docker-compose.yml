@@ -2,10 +2,13 @@ services:
   subtitles:
     build: .
     ports:
-      - "8000:8000"
+      # Keep credentials and uploaded media off the LAN by default. Put a
+      # TLS-terminating proxy in front of this service for a public deployment.
+      - "127.0.0.1:8000:8000"
     env_file:
       - .env
     volumes:
       - ./data:/data
     restart: unless-stopped
-
+    security_opt:
+      - no-new-privileges:true

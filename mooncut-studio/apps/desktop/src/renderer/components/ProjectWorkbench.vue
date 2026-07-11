@@ -254,7 +254,7 @@ onUnmounted(() => {
 
     <!-- Stepper -->
     <div v-if="clipStage !== 'empty'" class="clip-stepper" aria-label="剪辑进度">
-      <span :class="{'is-done': clipStage !== 'empty'}">
+      <span class="is-done">
         <UiIcon name="check" :size="12" /> 上传
       </span>
       <i />

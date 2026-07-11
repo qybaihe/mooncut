@@ -8,6 +8,7 @@ from pathlib import Path
 import httpx
 
 from .alignment import (
+    AlignedText,
     CoreSlice,
     apply_glossary,
     align_transcript,
@@ -19,7 +20,13 @@ from .alignment import (
 from .audio import AudioChunk, create_chunks, normalize_audio, probe_duration
 from .config import Settings
 from .models import GlossaryCorrection, JobOptions, ProviderMetadata, SubtitleResult
-from .providers import DeepgramClient, FasterWhisperClient, MimoClient, ProviderError
+from .providers import (
+    DeepgramClient,
+    DeepgramResult,
+    FasterWhisperClient,
+    MimoClient,
+    ProviderError,
+)
 from .subtitles import segment_transcript
 
 
@@ -32,6 +39,45 @@ class _ChunkOutput:
     core_slice: CoreSlice
     used_fallback: bool
     glossary_corrections: list[GlossaryCorrection]
+
+
+def _align_with_timestamp_fallback(
+    authoritative_text: str,
+    timestamp_result: DeepgramResult,
+    duration_ms: int,
+    offset_ms: int,
+    fallback_already_used: bool,
+    strict_hybrid: bool,
+) -> tuple[AlignedText, bool]:
+    """Align MiMo text first and fall back to the timestamp provider safely.
+
+    A transcript can be linguistically useful yet too divergent from the
+    acoustic tokens to align.  In that narrow case the timestamp transcript is
+    the only defensible fallback.  Keep this transition in one testable helper
+    so a recovery-path typo cannot turn a recoverable job into a NameError.
+    """
+    try:
+        return (
+            align_transcript(
+                authoritative_text=authoritative_text,
+                timestamp_words=timestamp_result.words,
+                duration_ms=duration_ms,
+                offset_ms=offset_ms,
+            ),
+            fallback_already_used,
+        )
+    except ValueError:
+        if fallback_already_used or strict_hybrid:
+            raise
+        return (
+            align_transcript(
+                authoritative_text=timestamp_result.transcript,
+                timestamp_words=timestamp_result.words,
+                duration_ms=duration_ms,
+                offset_ms=offset_ms,
+            ),
+            True,
+        )
 
 
 class SubtitleProcessor:
@@ -113,23 +159,19 @@ class SubtitleProcessor:
                             correction.model_copy(update={"chunk_index": chunk.index})
                             for correction in glossary_corrections
                         ]
-                    try:
-                        aligned = align_transcript(
-                            authoritative_text=authoritative_text,
-                            timestamp_words=timestamp_result.words,
-                            duration_ms=round(chunk.duration * 1000),
-                            offset_ms=round(chunk.extract_start * 1000),
-                        )
-                    except ValueError:
-                        if used_fallback or options.strict_hybrid:
-                            raise
-                        used_fallback = True
-                        aligned = align_transcript(
-                            authoritative_text=deepgram_result.transcript,
-                            timestamp_words=timestamp_result.words,
-                            duration_ms=round(chunk.duration * 1000),
-                            offset_ms=round(chunk.extract_start * 1000),
-                        )
+                    aligned, used_fallback = _align_with_timestamp_fallback(
+                        authoritative_text=authoritative_text,
+                        timestamp_result=timestamp_result,
+                        duration_ms=round(chunk.duration * 1000),
+                        offset_ms=round(chunk.extract_start * 1000),
+                        fallback_already_used=used_fallback,
+                        strict_hybrid=options.strict_hybrid,
+                    )
+                    if used_fallback:
+                        # Glossary corrections describe the authoritative MiMo
+                        # text only; do not report them when its text was not
+                        # ultimately used in the subtitle timeline.
+                        glossary_corrections = []
                     core_slice = slice_alignment_to_core(
                         aligned,
                         core_start_ms=round(chunk.core_start * 1000),

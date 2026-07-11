@@ -17,6 +17,12 @@ dependencies = [
 [project.scripts]
 mooncut-face-track = "face_tracker.cli:main"
 
+[dependency-groups]
+dev = [
+  "pytest>=8.0,<9",
+  "ruff>=0.12,<1",
+]
+
 [tool.setuptools.packages.find]
 include = ["face_tracker*"]
 
