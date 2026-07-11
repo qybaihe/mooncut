@@ -31,7 +31,27 @@ protocol.registerSchemesAsPrivileged([
 let mainWindow: BrowserWindow | null = null;
 const services = createServices();
 
+/** Brand app icon for window / dock (packaged + dev). */
+const resolveAppIcon = (): string | undefined => {
+  const candidates = [
+    // Packaged: extraResources → Resources/icon.png
+    process.resourcesPath ? join(process.resourcesPath, "icon.png") : "",
+    // Dev / asar: apps/desktop/build/icon.png next to dist-electron
+    join(__dirname, "../../build/icon.png"),
+    join(app.getAppPath(), "build/icon.png"),
+  ].filter(Boolean);
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate;
+  }
+  return undefined;
+};
+
 const createWindow = async () => {
+  const icon = resolveAppIcon();
+  if (icon && process.platform === "darwin" && app.dock) {
+    app.dock.setIcon(icon);
+  }
+
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -40,6 +60,7 @@ const createWindow = async () => {
     title: "MoonCut Studio",
     backgroundColor: "#ffffff",
     show: false,
+    ...(icon ? {icon} : {}),
     webPreferences: {
       // CJS single-file bundle — required for reliable sandbox preload (no ESM package imports).
       preload: join(__dirname, "../preload/index.cjs"),
