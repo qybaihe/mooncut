@@ -18,8 +18,9 @@
 </p>
 
 <p align="center">
-  <img src="./ios/screenshots/record-chat-iphone16pro.png" width="31%" alt="MoonCut 말하기 어시스턴트" />
-  <img src="./ios/screenshots/clip-empty-iphone16pro.png" width="31%" alt="MoonCut 스마트 편집 화면" />
+  <img src="./ios/screenshots/memphis-home-iphone.png" width="31%" alt="MoonCut 창작 홈 · Memphis" />
+  <img src="./ios/screenshots/memphis-coach-iphone.png" width="31%" alt="MoonCut 스피킹 코치 · Memphis" />
+  <img src="./ios/screenshots/memphis-jobs-iphone.png" width="31%" alt="MoonCut 작업 큐 · Memphis" />
 </p>
 
 > **한 줄로 말하면:** MoonCut은 말하기 영상 제작을 보이지 않는 블랙박스로 만들지 않습니다. 전달할 내용을 정리하고, 자신 있게 녹화한 뒤, 실제 자막·의미 기반 분할·품질 게이트로 완성 영상을 만듭니다.

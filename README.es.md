@@ -18,8 +18,9 @@
 </p>
 
 <p align="center">
-  <img src="./ios/screenshots/record-chat-iphone16pro.png" width="31%" alt="Asistente para hablar de MoonCut" />
-  <img src="./ios/screenshots/clip-empty-iphone16pro.png" width="31%" alt="Entrada de edición inteligente de MoonCut" />
+  <img src="./ios/screenshots/memphis-home-iphone.png" width="31%" alt="Inicio de creación MoonCut · Memphis" />
+  <img src="./ios/screenshots/memphis-coach-iphone.png" width="31%" alt="Entrenador de habla MoonCut · Memphis" />
+  <img src="./ios/screenshots/memphis-jobs-iphone.png" width="31%" alt="Cola de tareas MoonCut · Memphis" />
 </p>
 
 > **En una frase:** MoonCut no arroja un vídeo a una caja negra. Convierte la creación de vídeos hablados en una ruta controlable: aclarar el mensaje, grabar con confianza y terminar con subtítulos reales, planos semánticos y puertas de calidad.

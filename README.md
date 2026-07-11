@@ -18,8 +18,9 @@
 </p>
 
 <p align="center">
-  <img src="./ios/screenshots/record-chat-iphone16pro.png" width="31%" alt="MoonCut 口播助手界面" />
-  <img src="./ios/screenshots/clip-empty-iphone16pro.png" width="31%" alt="MoonCut 智能剪辑入口" />
+  <img src="./ios/screenshots/memphis-home-iphone.png" width="31%" alt="MoonCut 创作首页 · Memphis" />
+  <img src="./ios/screenshots/memphis-coach-iphone.png" width="31%" alt="MoonCut 口播陪练 · Memphis" />
+  <img src="./ios/screenshots/memphis-jobs-iphone.png" width="31%" alt="MoonCut 任务队列 · Memphis" />
 </p>
 
 > **一句话**：MoonCut 不是把视频丢进“黑盒”里等结果，而是将口播创作拆成可控的表达链路——先把话说清楚，再把镜头录好，最后用真实字幕、语义分镜和质检把它做成成片。
@@ -131,7 +132,7 @@ flowchart TB
 | 层级 | 采用的能力与依赖 | 在产品中的职责 |
 | --- | --- | --- |
 | 创作界面 | Vue 3、TypeScript、Vite、MediaPipe Tasks Vision | 脚本、录制、实时陪练、任务状态和本地演示。 |
-| 社区 | Node 内置 SQLite、Range 视频流 | 用户主动发布质检通过的成片，浏览其他创作者作品；历史任务默认私有。 |
+| 能力市场与案例 | Node 内置 SQLite、受签名的能力 release、Range 视频流 | 用户为自己的 Pi 安装受控能力；创作案例保留质检通过的视频分享，历史任务默认私有。 |
 | 原生移动端 | SwiftUI、AVFoundation、AVKit、PhotosUI | iPhone 上的相机、提词、回放、导入和分享体验。 |
 | 智能体编排 | Node.js、TypeScript、`@earendil-works/pi` SDK、OpenAI 兼容模型网关 | 让模型按受控顺序完成检查、转写、分镜、渲染与验收。 |
 | 字幕 | Python、FastAPI、MiMo、Deepgram、FFmpeg、jieba | 组合文本准确性与逐词声学时间戳。 |
@@ -160,7 +161,7 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | `mooncut-face-track analyze` | 分析口播素材并锁定主讲人 | `mooncut.face-track.v1` 轨迹 JSON。 |
 | `mooncut-face-track render` / `run` | 使用既有轨迹生成竖版、方形、横版或圆形预览 | 重构预览视频与轨迹。 |
 | Remotion 的 `render` / `transcribe` / `materials:*` | 渲染样片、生成字幕、维护可检索视觉素材库 | 可复现的成片、字幕与素材索引。 |
-| `wc26` | 查询官方 FIFA 赛事集锦、中文赛况页和页面截图 | 可用于演示“真实网页证据”的独立素材工具；它不是 MoonCut 的核心用户功能。 |
+| `wc26` | 查询官方 FIFA 赛事集锦、中文赛况页和页面截图 | 首个官方能力包的受控适配器；Pi 只能通过白名单工具查询，下载仍不开放给市场。 |
 
 ### 内嵌 Pi Skills
 

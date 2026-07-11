@@ -18,8 +18,9 @@
 </p>
 
 <p align="center">
-  <img src="./ios/screenshots/record-chat-iphone16pro.png" width="31%" alt="MoonCut speaking assistant" />
-  <img src="./ios/screenshots/clip-empty-iphone16pro.png" width="31%" alt="MoonCut smart editing entry" />
+  <img src="./ios/screenshots/memphis-home-iphone.png" width="31%" alt="MoonCut create home · Memphis" />
+  <img src="./ios/screenshots/memphis-coach-iphone.png" width="31%" alt="MoonCut speaking coach · Memphis" />
+  <img src="./ios/screenshots/memphis-jobs-iphone.png" width="31%" alt="MoonCut job queue · Memphis" />
 </p>
 
 > **In one line:** MoonCut turns talking-head creation into a deliberate, inspectable path: clarify the message, record with confidence, then use real captions, semantic story beats, and quality gates to make the final video.

@@ -18,8 +18,9 @@
 </p>
 
 <p align="center">
-  <img src="./ios/screenshots/record-chat-iphone16pro.png" width="31%" alt="MoonCut の話すアシスタント" />
-  <img src="./ios/screenshots/clip-empty-iphone16pro.png" width="31%" alt="MoonCut のスマート編集画面" />
+  <img src="./ios/screenshots/memphis-home-iphone.png" width="31%" alt="MoonCut 作成ホーム · Memphis" />
+  <img src="./ios/screenshots/memphis-coach-iphone.png" width="31%" alt="MoonCut 話し方コーチ · Memphis" />
+  <img src="./ios/screenshots/memphis-jobs-iphone.png" width="31%" alt="MoonCut タスクキュー · Memphis" />
 </p>
 
 > **ひとことで言うと：** MoonCut は、話す動画の制作を見えないブラックボックスにしません。伝えたいことを整え、自信を持って録画し、実際の字幕、意味に基づく分鏡、品質ゲートによって完成動画へと仕上げます。
