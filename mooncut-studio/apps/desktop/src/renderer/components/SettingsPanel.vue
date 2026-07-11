@@ -122,8 +122,9 @@ async function saveSettings(partial: Partial<StudioSettings>) {
   busy.value = true;
   error.value = "";
   try {
-    settings.value = await getMooncut().updateSettings(partial);
-    emit("updated", settings.value);
+    const updated = await getMooncut().updateSettings(partial);
+    settings.value = updated;
+    emit("updated", updated);
     message.value = "设置已保存";
   } catch (err) {
     error.value = err instanceof Error ? err.message : String(err);

@@ -22,7 +22,7 @@ Build complex transformations step-by-step:
 ```tsx
 const transform = Transform3D.identity()
   .translate(x, y, z)
-  .rotateZ(Math.PI / 8)
+  .rotateZ(22.5)
   .scaleBy(1.5, 1.5, 1.5);
 ```
 
@@ -34,7 +34,7 @@ Create hierarchical transforms with proper composition:
 // Satellites orbit around parent
 const orbit = Transform3D.identity()
   .translate(x, y, z)
-  .rotateY(angle);
+  .rotateY(`${angle}rad`);
   
 // Apply to CSS
 element.style.transform = orbit.toCSSMatrix3D();

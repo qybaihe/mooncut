@@ -43,7 +43,7 @@ export const Component: React.FC = () => {
   const baseTransform = React.useMemo(() => {
     return Transform3D.identity()
       .translate(0, rect.vmin * -10, 0)
-      .rotateZ(Math.PI / 8)
+      .rotateZ(22.5)
   }, [rect.vmin]);
 
   const createSatelliteTransform = (angle: number, distance: number, height: number) => {
@@ -52,7 +52,7 @@ export const Component: React.FC = () => {
 
     return Transform3D.identity()
       .translate(x, height, z)
-      .rotateY(angle + Math.PI / 2);
+      .rotateY(`${angle + Math.PI / 2}rad`);
   };
 
   // Demonstrate smooth matrix-based interpolation between keyframes
@@ -150,7 +150,7 @@ export const Component: React.FC = () => {
             }}>
               {`Transform3D.identity()
   .translate(x, y, z)
-  .rotateZ(Math.PI / 8)
+  .rotateZ(22.5)
   .scaleBy(1.5, 1.5, 1.5)`}
             </pre>
           </div>

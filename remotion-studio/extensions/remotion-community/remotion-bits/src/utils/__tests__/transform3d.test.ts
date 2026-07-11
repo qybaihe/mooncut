@@ -91,7 +91,7 @@ describe('Transform3D', () => {
 
     it('should rotate', () => {
       const transform = Transform3D.identity();
-      const rotated = transform.rotateX(Math.PI / 2);
+      const rotated = transform.rotateX(90);
 
       const euler = rotated.toEuler();
       expect(euler.x).toBeCloseTo(Math.PI / 2, 5);
@@ -99,7 +99,7 @@ describe('Transform3D', () => {
 
     it('should rotate on Y axis', () => {
       const transform = Transform3D.identity();
-      const rotated = transform.rotateY(Math.PI / 3);
+      const rotated = transform.rotateY(60);
 
       const euler = rotated.toEuler();
       expect(euler.y).toBeCloseTo(Math.PI / 3, 5);
@@ -107,7 +107,7 @@ describe('Transform3D', () => {
 
     it('should rotate on Z axis', () => {
       const transform = Transform3D.identity();
-      const rotated = transform.rotateZ(Math.PI / 4);
+      const rotated = transform.rotateZ(45);
 
       const euler = rotated.toEuler();
       expect(euler.z).toBeCloseTo(Math.PI / 4, 5);
@@ -127,7 +127,7 @@ describe('Transform3D', () => {
     it('should chain operations', () => {
       const transform = Transform3D.identity()
         .translate(10, 20, 30)
-        .rotateZ(Math.PI / 4)
+        .rotateZ(45)
         .scaleBy(2, 2, 2);
 
       expect(transform.position.x).toBe(10);

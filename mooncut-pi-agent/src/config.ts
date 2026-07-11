@@ -38,6 +38,9 @@ const booleanEnv = (name: string, fallback: boolean) => {
   return fallback;
 };
 
+const boundedIntegerEnv = (name: string, fallback: number, minimum: number, maximum: number) =>
+  Math.min(maximum, Math.max(minimum, integerEnv(name, fallback)));
+
 const pathEnv = (name: string, fallback: string) => {
   const value = process.env[name] ?? fallback;
   return value === "~" || value.startsWith("~/") ? join(homedir(), value.slice(2)) : resolve(value);
@@ -63,6 +66,17 @@ const enumEnv = <T extends string>(name: string, values: readonly T[], fallback:
   return value && values.includes(value) ? value : fallback;
 };
 
+export const DEVELOPMENT_CAPABILITY_SIGNING_KEY = "mooncut-development-capability-signing-key";
+
+export const isLoopbackHost = (host: string) => {
+  const normalized = host.trim().replace(/^\[|\]$/gu, "").toLowerCase();
+  return normalized === "localhost" || normalized === "127.0.0.1" || normalized === "::1";
+};
+
+const agentHost = process.env.MOONCUT_AGENT_HOST ?? "127.0.0.1";
+const defaultCookieSecure = !isLoopbackHost(agentHost);
+const maxUploadMegabytes = boundedIntegerEnv("MOONCUT_MAX_UPLOAD_MB", 512, 16, 2048);
+
 export const config = {
   gatewayBaseUrl: (process.env.MOONCUT_GATEWAY_BASE_URL ?? "http://localhost:8080/v1").replace(/\/$/u, ""),
   gatewayApiKey: process.env.MOONCUT_GATEWAY_API_KEY ?? "",
@@ -80,7 +94,7 @@ export const config = {
     .map((model) => model.trim())
     .filter(Boolean),
   visionRequestTimeoutMs: integerEnv("MOONCUT_VISION_TIMEOUT_MS", 120_000),
-  host: process.env.MOONCUT_AGENT_HOST ?? "127.0.0.1",
+  host: agentHost,
   port: integerEnv("MOONCUT_AGENT_PORT", 4317),
   apiKeys: (process.env.MOONCUT_API_KEYS ?? process.env.MOONCUT_API_KEY ?? "")
     .split(",")
@@ -112,12 +126,14 @@ export const config = {
   databasePath: pathEnv("MOONCUT_DATABASE_PATH", join(dataRoot, "mooncut.sqlite")),
   // Bundled releases use this to detect accidental database/content tampering.
   // Production deployments must override the development fallback.
-  capabilitySigningKey: process.env.MOONCUT_CAPABILITY_SIGNING_KEY ?? "mooncut-development-capability-signing-key",
+  capabilitySigningKey: process.env.MOONCUT_CAPABILITY_SIGNING_KEY ?? DEVELOPMENT_CAPABILITY_SIGNING_KEY,
   capabilityArtifactsRoot,
   fifaCliPath: pathEnv("MOONCUT_FIFA_CLI_PATH", join(workspaceRoot, "fifa-highlights-cli/dist/index.js")),
   fifaCliCwd: pathEnv("MOONCUT_FIFA_CLI_CWD", join(workspaceRoot, "fifa-highlights-cli")),
   sessionDays: Math.min(90, Math.max(1, integerEnv("MOONCUT_SESSION_DAYS", 30))),
-  cookieSecure: process.env.MOONCUT_COOKIE_SECURE === "true",
+  // A loopback Studio can use HTTP locally. A process bound to a public
+  // interface must never default to a cookie that browsers can send over HTTP.
+  cookieSecure: booleanEnv("MOONCUT_COOKIE_SECURE", defaultCookieSecure),
   publicBaseUrl: (process.env.MOONCUT_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
   // Optional public edge path for the read-only Community surface. It must not
   // replace the private Agent base URL used by jobs, sessions, or artifacts.
@@ -142,10 +158,38 @@ export const config = {
   requireSubtitleService: process.env.MOONCUT_REQUIRE_SUBTITLE_SERVICE === "true",
   subtitleJobTimeoutMs: integerEnv("MOONCUT_SUBTITLE_JOB_TIMEOUT_MS", 45 * 60_000),
   subtitlePollIntervalMs: Math.max(500, integerEnv("MOONCUT_SUBTITLE_POLL_INTERVAL_MS", 2_000)),
-  maxUploadBytes: integerEnv("MOONCUT_MAX_UPLOAD_MB", 2048) * 1024 * 1024,
+  // 512 MiB is sufficient for normal HD talking-head uploads. Deployments that
+  // accept larger source footage must opt in explicitly, up to the hard cap.
+  maxUploadBytes: maxUploadMegabytes * 1024 * 1024,
   transcribePython: pathEnv("MOONCUT_TRANSCRIBE_PYTHON", join(agentRoot, ".venv-transcribe/bin/python")),
   whisperModel: process.env.MOONCUT_WHISPER_MODEL ?? "small",
   whisperLanguage: process.env.MOONCUT_WHISPER_LANGUAGE ?? "auto",
   xPostCaptureScript: pathEnv("MOONCUT_X_POST_CAPTURE_SCRIPT", join(homedir(), ".codex/skills/x-post-screenshot/scripts/x_post_capture.py")),
   playwrightCli: pathEnv("MOONCUT_PLAYWRIGHT_CLI", join(homedir(), ".codex/skills/playwright/scripts/playwright_cli.sh")),
+};
+
+type PublicDeploymentSecurityConfig = Pick<
+  typeof config,
+  "host" | "apiKeys" | "capabilitySigningKey" | "cookieSecure"
+>;
+
+/**
+ * A local Studio is intentionally easy to start. A server that accepts remote
+ * traffic is not: accidental public binding with development credentials must
+ * stop before it stores user videos or signs capability releases.
+ */
+export const publicDeploymentSecurityErrors = (settings: PublicDeploymentSecurityConfig): string[] => {
+  if (isLoopbackHost(settings.host)) return [];
+  const errors: string[] = [];
+  if (settings.apiKeys.length === 0) errors.push("MOONCUT_API_KEYS must be configured for a non-loopback server");
+  if (settings.capabilitySigningKey === DEVELOPMENT_CAPABILITY_SIGNING_KEY) {
+    errors.push("MOONCUT_CAPABILITY_SIGNING_KEY must replace the development key for a non-loopback server");
+  }
+  if (!settings.cookieSecure) errors.push("MOONCUT_COOKIE_SECURE must be true for a non-loopback server");
+  return errors;
+};
+
+export const assertPublicDeploymentSecurity = (settings: PublicDeploymentSecurityConfig = config) => {
+  const errors = publicDeploymentSecurityErrors(settings);
+  if (errors.length > 0) throw new Error(`Unsafe MoonCut public deployment: ${errors.join("; ")}`);
 };

@@ -429,11 +429,11 @@ describe("interpolateGradients", () => {
 
     const result1 = interpolateGradients(from, to, 0.3);
     expect(result1.shape).toBe("circle");
-    expect(result1.position).toBe("center");
+    expect(result1.position).toBe("35% 35%");
 
     const result2 = interpolateGradients(from, to, 0.7);
     expect(result2.shape).toBe("ellipse");
-    expect(result2.position).toBe("top left");
+    expect(result2.position).toBe("15% 15%");
   });
 
   it("should interpolate conic gradient angles", () => {

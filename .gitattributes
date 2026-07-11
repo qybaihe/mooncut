@@ -1,2 +1,12 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
+
+# These five tiny third-party demo tracks predate the repository-wide MP3 LFS
+# rule. Keep them as ordinary blobs explicitly instead of leaving Git LFS in a
+# permanently failing "should have been a pointer" state. New product media
+# must continue to use LFS.
+remotion-studio/extensions/remotion-community/onda/www/public/ambient.mp3 -filter -diff -merge -text
+remotion-studio/extensions/remotion-community/onda/www/public/dance.mp3 -filter -diff -merge -text
+remotion-studio/extensions/remotion-community/onda/www/public/music.mp3 -filter -diff -merge -text
+remotion-studio/extensions/remotion-community/onda/www/public/synthwave.mp3 -filter -diff -merge -text
+remotion-studio/extensions/remotion-community/onda/www/public/voice.mp3 -filter -diff -merge -text

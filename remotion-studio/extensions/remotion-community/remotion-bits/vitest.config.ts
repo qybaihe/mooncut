@@ -16,8 +16,6 @@ export default defineConfig({
       "src/**/*.test.ts",
       "src/**/*.test.tsx",
       "scripts/**/*.test.ts",
-      "docs/src/**/*.test.ts",
-      "docs/src/**/*.test.tsx"
     ],
     globals: true,
     coverage: {
