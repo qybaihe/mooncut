@@ -5,7 +5,12 @@
  */
 import {computed, onMounted, ref} from "vue";
 import {getMooncut} from "../composables/useMooncut";
-import type {DependencyInfo, StudioSettings} from "@mooncut/studio-shared";
+import type {
+  AgentMode,
+  DependencyInfo,
+  ExternalCliConfig,
+  StudioSettings,
+} from "@mooncut/studio-shared";
 import UiIcon from "./UiIcon.vue";
 
 const emit = defineEmits<{done: [StudioSettings]}>();
@@ -17,6 +22,10 @@ const createSample = ref(true);
 const deps = ref<DependencyInfo[]>([]);
 const busy = ref(false);
 const error = ref("");
+
+/** 助手来源（三选一）。沿用 preferLocalOnly 做 mock 的勾选态，新增 agentMode/explicit CLI 选择。 */
+const agentMode = ref<AgentMode>("mock");
+const externalCli = ref<ExternalCliConfig>({kind: "claude"});
 
 /** Tour + setup steps (last steps collect real settings). */
 const panels = [
@@ -44,9 +53,9 @@ const panels = [
   {
     id: "privacy",
     kind: "setup" as const,
-    kicker: "隐私与模型",
-    title: "默认只在本地运行",
-    body: "需要远程大模型时，可稍后在设置里自行配置 API。",
+    kicker: "助手来源",
+    title: "选一个助手就能开聊",
+    body: "三选一：仅本地验证 / 内置派 / 你自己的 Claude Code 或 OpenCode。随时可在设置里改。",
   },
   {
     id: "ready",
@@ -113,6 +122,13 @@ function back() {
   if (step.value > 0) step.value -= 1;
 }
 
+/** 三选一切换：更新 agentMode 并联动 preferLocalOnly 的勾选态。 */
+function chooseAgentMode(mode: AgentMode) {
+  agentMode.value = mode;
+  // mock = 仅本地；其它两个都需要联网（派走网关，或 CLI 自己联网）。
+  preferLocalOnly.value = mode === "mock";
+}
+
 async function finish() {
   if (!workspaceRoot.value) {
     error.value = "请选择工作目录";
@@ -128,8 +144,13 @@ async function finish() {
       preferLocalOnly: preferLocalOnly.value,
       createSampleProject: createSample.value,
       addRemoteProvider: !preferLocalOnly.value,
+      agentMode: agentMode.value,
+      ...(agentMode.value === "external-cli" ? {externalCli: externalCli.value} : {}),
     });
-    await api.agentRestart().catch(() => undefined);
+    // external-cli 模式下不要强行 restart 派 supervisor。
+    if (agentMode.value !== "external-cli") {
+      await api.agentRestart().catch(() => undefined);
+    }
     emit("done", settings);
   } catch (err) {
     error.value = err instanceof Error ? err.message : String(err);
@@ -143,6 +164,14 @@ onMounted(async () => {
     const onboarding = await getMooncut().getOnboarding();
     workspaceRoot.value = onboarding.workspaceRoot;
     preferLocalOnly.value = onboarding.preferLocalOnly;
+  } catch {
+    /* keep defaults */
+  }
+  // 恢复已选 agentMode（若 settings 里有）
+  try {
+    const s = await getMooncut().getSettings();
+    if (s.agentMode) agentMode.value = s.agentMode;
+    if (s.externalCli) externalCli.value = s.externalCli;
   } catch {
     /* keep defaults */
   }
@@ -262,16 +291,72 @@ onMounted(async () => {
 
           <!-- Privacy toggles -->
           <div v-if="panels[step].id === 'privacy'" class="onboard-form">
-            <label class="onboard-toggle">
-              <div>
-                <strong>仅本地运行</strong>
-                <small>不自动发起远程模型请求</small>
+            <div class="agent-source-cards">
+              <button
+                type="button"
+                class="agent-source-card"
+                :class="{active: agentMode === 'mock'}"
+                @click="chooseAgentMode('mock')"
+              >
+                <span class="agent-source-icon"><UiIcon name="harddrive" :size="16" /></span>
+                <strong>仅本地</strong>
+                <small>离线验证流程，不联模型</small>
+              </button>
+              <button
+                type="button"
+                class="agent-source-card"
+                :class="{active: agentMode === 'real'}"
+                @click="chooseAgentMode('real')"
+              >
+                <span class="agent-source-icon"><UiIcon name="agent" :size="16" /></span>
+                <strong>内置派</strong>
+                <small>自带 pi-agent，可配置 OpenAI 兼容网关</small>
+              </button>
+              <button
+                type="button"
+                class="agent-source-card"
+                :class="{active: agentMode === 'external-cli'}"
+                @click="chooseAgentMode('external-cli')"
+              >
+                <span class="agent-source-icon"><UiIcon name="sparkles" :size="16" /></span>
+                <strong>我的 CLI</strong>
+                <small>用本机 Claude Code / OpenCode，无需配 API</small>
+              </button>
+            </div>
+
+            <!-- external-cli 子区域 -->
+            <div v-if="agentMode === 'external-cli'" class="agent-cli-subform">
+              <span class="mini-label">优先命令</span>
+              <div class="agent-cli-kinds">
+                <label class="onboard-toggle compact">
+                  <div>
+                    <strong>Claude Code</strong>
+                    <small>自动探测 which claude</small>
+                  </div>
+                  <input
+                    :checked="externalCli.kind === 'claude'"
+                    type="radio"
+                    name="onboard-cli-kind"
+                    @change="externalCli.kind = 'claude'"
+                  />
+                </label>
+                <label class="onboard-toggle compact">
+                  <div>
+                    <strong>OpenCode</strong>
+                    <small>自动探测 which opencode</small>
+                  </div>
+                  <input
+                    :checked="externalCli.kind === 'opencode'"
+                    type="radio"
+                    name="onboard-cli-kind"
+                    @change="externalCli.kind = 'opencode'"
+                  />
+                </label>
               </div>
-              <input v-model="preferLocalOnly" type="checkbox" />
-            </label>
-            <p class="meta" style="margin: 8px 0 0">
-              之后可在「设置 → 模型服务」添加 OpenAI 兼容接口。
-            </p>
+              <p class="meta" style="margin: 6px 0 0">
+                没装这俩也没关系——用的时候会自动切回内置派。
+              </p>
+            </div>
           </div>
 
           <!-- Ready options -->

@@ -297,9 +297,24 @@ export type StudioJob = {
   providerProfileId?: string;
 };
 
+/** 三选一助手来源：
+ *  - mock：离线，不联网，用于验证任务流
+ *  - real：内置派（mooncut-pi-agent Studio 模式），需在设置里配 OpenAI 兼容网关
+ *  - external-cli：用户本地的 Claude Code / OpenCode CLI 无界面调用，无需配模型
+ */
+export type AgentMode = "mock" | "real" | "external-cli";
+
+/** 外部 CLI agent 的配置（external-cli 模式生效）。 */
+export type ExternalCliConfig = {
+  /** 优先使用哪个 CLI。 */
+  kind: "claude" | "opencode";
+  /** 可选手填的绝对路径；留空 → 自动探测 `which claude` / `which opencode`。 */
+  commandPath?: string;
+};
+
 export type AgentHostStatus = {
   state: "stopped" | "starting" | "healthy" | "unhealthy" | "crashed";
-  mode: "mock" | "real";
+  mode: AgentMode;
   host: string;
   port: number | null;
   pid: number | null;
@@ -316,7 +331,9 @@ export type StudioSettings = {
   locale: string;
   theme: StudioTheme;
   allowNetworkForProviders: boolean;
-  agentMode: "mock" | "real";
+  agentMode: AgentMode;
+  /** external-cli 模式下使用的 CLI 配置。mock/real 模式下可缺省。 */
+  externalCli?: ExternalCliConfig;
 };
 
 export type OnboardingState = {
@@ -435,6 +452,7 @@ export type UpdateSettingsInput = Partial<
     | "theme"
     | "allowNetworkForProviders"
     | "agentMode"
+    | "externalCli"
   >
 >;
 
@@ -443,6 +461,10 @@ export type CompleteOnboardingInput = {
   preferLocalOnly: boolean;
   createSampleProject: boolean;
   addRemoteProvider?: boolean;
+  /** 新手引导里选的助手来源；未传 → 默认 mock。 */
+  agentMode?: AgentMode;
+  /** external-cli 模式下使用的 CLI 配置。 */
+  externalCli?: ExternalCliConfig;
 };
 
 /** Stage labels for UI — honest, not decorative. */

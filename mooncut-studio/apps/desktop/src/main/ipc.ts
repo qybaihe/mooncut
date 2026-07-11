@@ -28,6 +28,7 @@ import {
 import {
   IPC_CHANNELS,
   redactSecrets,
+  type AgentMode,
   type CompleteOnboardingInput,
   type CreateJobInput,
   type CreateProjectInput,
@@ -45,6 +46,14 @@ import {
   MAX_RECORDING_BYTES,
   MAX_RECORDING_DURATION_MS,
 } from "./media-access.js";
+import {
+  EXTERNAL_CLI_NOT_FOUND_SENTINEL,
+  EXTERNAL_CLI_PARSE_ERROR_SENTINEL,
+  ExternalCliNotFoundError,
+  CliJsonParseError,
+  runExternalCliAssistant,
+  sentinelError,
+} from "./external-cli.js";
 
 const VIDEO_FILTERS = [
   {name: "Video", extensions: ["mp4", "mov", "m4v", "webm", "mkv"]},
@@ -79,6 +88,14 @@ function supervisorOptionsFromRuntime(
     ffprobePath: runtime.ffprobePath ?? undefined,
     ...(provider ? {provider} : {}),
   };
+}
+
+/**
+ * Map any AgentMode down to the supervisor's "mock" | "real" enum.
+ * external-cli 不启动派进程，请求时即时 spawn CLI；fallback 时以 mock 启动派。
+ */
+function supervisorMode(agentMode: AgentMode): "mock" | "real" {
+  return agentMode === "external-cli" ? "mock" : agentMode;
 }
 
 /** Collect allowed roots for mooncut-media / IPC preview. */
@@ -226,10 +243,17 @@ export function registerIpc(services: StudioServices) {
     const next = {...current, ...input};
     if (input.agentMode && input.agentMode !== current.agentMode) {
       const runtime = runtimeOf();
-      supervisor.updateOptions(supervisorOptionsFromRuntime(paths, runtime, input.agentMode));
-      await supervisor.restart().catch((error) => {
-        console.error("[agent] restart after mode change failed", error);
-      });
+      // external-cli 不需要 supervisor 进程；切到它只需 stop，从它切回 mock/real 才重启。
+      if (input.agentMode === "external-cli") {
+        await supervisor.stop().catch((error) => {
+          console.error("[agent] stop on switch to external-cli failed", error);
+        });
+      } else {
+        supervisor.updateOptions(supervisorOptionsFromRuntime(paths, runtime, supervisorMode(input.agentMode)));
+        await supervisor.restart().catch((error) => {
+          console.error("[agent] restart after mode change failed", error);
+        });
+      }
     }
     await saveSettings(paths.settings, next);
     return next;
@@ -255,14 +279,16 @@ export function registerIpc(services: StudioServices) {
       workspaceRoot: workspace,
       onboardingCompleted: true,
       allowNetworkForProviders: !input.preferLocalOnly,
-      agentMode: "mock",
+      agentMode: input.agentMode ?? "mock",
+      ...(input.externalCli ? {externalCli: input.externalCli} : {}),
     };
     await saveSettings(paths.settings, settings);
     if (input.createSampleProject) {
       const {manifest, rootPath} = await createProject(workspace, "示例项目");
       await upsertIndexEntry(paths.projectIndex, rootPath, manifest);
     }
-    if (!supervisor.getStatus().port) {
+    // external-cli 模式不强制启动派 supervisor（请求时即时 spawn CLI）。
+    if (settings.agentMode !== "external-cli" && !supervisor.getStatus().port) {
       await supervisor.start().catch((error) => console.error(error));
     }
     return settings;
@@ -390,7 +416,7 @@ export function registerIpc(services: StudioServices) {
     const runtime = runtimeOf();
     workspaceRoot = runtime.workspaceRoot;
     const provider = await resolveProviderForJob(providers, settings.defaultProviderProfileId);
-    supervisor.updateOptions(supervisorOptionsFromRuntime(paths, runtime, settings.agentMode, provider));
+    supervisor.updateOptions(supervisorOptionsFromRuntime(paths, runtime, supervisorMode(settings.agentMode), provider));
     return supervisor.restart();
   });
 
@@ -410,7 +436,7 @@ export function registerIpc(services: StudioServices) {
     const provider = await resolveProviderForJob(providers, profileId);
     const runtime = runtimeOf();
     supervisor.updateOptions(
-      supervisorOptionsFromRuntime(paths, runtime, settings.agentMode, provider),
+      supervisorOptionsFromRuntime(paths, runtime, supervisorMode(settings.agentMode), provider),
     );
     const providerFp = AgentSupervisor.fingerprintProvider(provider);
     if (supervisor.getStatus().state !== "healthy") {
@@ -529,7 +555,7 @@ export function registerIpc(services: StudioServices) {
     if (!previous?.mediaAssetId) throw new Error("无法重试：缺少原素材引用");
     if (supervisor.getStatus().state !== "healthy") {
       const settings = await getSettings(services);
-      supervisor.updateOptions({mode: settings.agentMode});
+      supervisor.updateOptions({mode: supervisorMode(settings.agentMode)});
       await supervisor.start();
     }
     const client = supervisor.getClient();
@@ -749,9 +775,23 @@ export function registerIpc(services: StudioServices) {
   );
 
   ipcMain.handle(IPC_CHANNELS.assistantScript, async (_e, body: unknown) => {
+    const settings = await getSettings(services);
+    if (settings.agentMode === "external-cli" && settings.externalCli?.kind) {
+      try {
+        return await runExternalCliAssistant(body, settings.externalCli);
+      } catch (error) {
+        if (error instanceof ExternalCliNotFoundError) {
+          throw new Error(sentinelError("not-found", error.message));
+        }
+        if (error instanceof CliJsonParseError) {
+          throw new Error(sentinelError("parse-error", error.message));
+        }
+        // Non-zero exit / timeout: treat as not-found fallback so renderer switches back.
+        throw new Error(sentinelError("not-found", error instanceof Error ? error.message : String(error)));
+      }
+    }
     if (supervisor.getStatus().state !== "healthy") {
-      const settings = await getSettings(services);
-      supervisor.updateOptions(supervisorOptionsFromRuntime(paths, services.runtime, settings.agentMode));
+      supervisor.updateOptions(supervisorOptionsFromRuntime(paths, services.runtime, supervisorMode(settings.agentMode)));
       await supervisor.start();
     }
     if (supervisor.getStatus().state !== "healthy") {
@@ -761,6 +801,11 @@ export function registerIpc(services: StudioServices) {
   });
 
   ipcMain.handle(IPC_CHANNELS.assistantCoach, async (_e, body: unknown) => {
+    const settings = await getSettings(services);
+    // external-cli 模式：Coach 走本地 useSpeakingCoach 规则建议，不直调外部 CLI（高频 spawn 太慢）。
+    if (settings.agentMode === "external-cli") {
+      throw new Error("Agent Host 未就绪，将继续使用本地实时建议。");
+    }
     if (supervisor.getStatus().state !== "healthy") {
       throw new Error("Agent Host 未就绪，将继续使用本地实时建议。");
     }
@@ -777,7 +822,7 @@ export async function bootstrapAgent(services: StudioServices) {
   services.workspaceRoot = runtime.workspaceRoot;
   const provider = await resolveProviderForJob(services.providers, settings.defaultProviderProfileId);
   services.supervisor.updateOptions(
-    supervisorOptionsFromRuntime(services.paths, runtime, settings.agentMode, provider),
+    supervisorOptionsFromRuntime(services.paths, runtime, supervisorMode(settings.agentMode), provider),
   );
   try {
     await services.supervisor.start();

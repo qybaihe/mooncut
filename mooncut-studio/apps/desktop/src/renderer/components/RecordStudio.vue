@@ -93,6 +93,29 @@ async function requestScriptAssistant(payload: {
   }>
 }
 
+/** Hybrid: 检测 main 端 sentinel 报错；若是外部 CLI 不可用/解析失败 → 提示并自动切回 real 派。 */
+const EXTERNAL_CLI_NOT_FOUND_SENTINEL = 'mooncut:external-cli:not-found'
+const EXTERNAL_CLI_PARSE_ERROR_SENTINEL = 'mooncut:external-cli:parse-error'
+let switchingBackToReal = false
+async function handleExternalCliFallback(failureMessage: string) {
+  if (
+    !failureMessage.includes(EXTERNAL_CLI_NOT_FOUND_SENTINEL) &&
+    !failureMessage.includes(EXTERNAL_CLI_PARSE_ERROR_SENTINEL)
+  ) return false
+  toast.value = '外部 CLI 不可用，已切回内置派，可在设置改回'
+  if (!switchingBackToReal) {
+    switchingBackToReal = true
+    try {
+      await getMooncut().updateSettings({ agentMode: 'real' })
+    } catch {
+      /* best effort */
+    } finally {
+      switchingBackToReal = false
+    }
+  }
+  return true
+}
+
 async function requestCoachAdvice(payload: {
   transcript: string
   currentScript: string
@@ -388,7 +411,10 @@ async function sendMessage(preset?: string, retry = false) {
     suggestionOptions.value = []
     lastFailedMessage.value = content
     assistantError.value = error instanceof Error ? error.message : '模型请求失败，请重试'
-    toast.value = `真实模型调用失败：${assistantError.value}`
+    const fellBack = await handleExternalCliFallback(assistantError.value)
+    toast.value = fellBack
+      ? '外部 CLI 不可用，已切回内置派，可在设置改回'
+      : `真实模型调用失败：${assistantError.value}`
   } finally {
     isThinking.value = false
   }
@@ -441,7 +467,10 @@ async function applySuggestions() {
     toast.value = `${response.model} 已整理成完整口播稿`
   } catch (error) {
     assistantError.value = error instanceof Error ? error.message : '模型没有生成稿件'
-    toast.value = `成稿失败：${assistantError.value}`
+    const fellBack = await handleExternalCliFallback(assistantError.value)
+    toast.value = fellBack
+      ? '外部 CLI 不可用，已切回内置派，可在设置改回'
+      : `成稿失败：${assistantError.value}`
   } finally {
     isThinking.value = false
   }
@@ -466,7 +495,10 @@ async function polishDraft(style: 'oral' | 'short' | 'emotional') {
     toast.value = `${response.model} 已${result}`
   } catch (error) {
     assistantError.value = error instanceof Error ? error.message : '模型润色失败'
-    toast.value = `润色失败：${assistantError.value}`
+    const fellBack = await handleExternalCliFallback(assistantError.value)
+    toast.value = fellBack
+      ? '外部 CLI 不可用，已切回内置派，可在设置改回'
+      : `润色失败：${assistantError.value}`
   } finally {
     isThinking.value = false
   }
@@ -904,51 +936,83 @@ onBeforeUnmount(() => {
   </section>
 
   <section v-else class="workspace-page record-page record-page--assistant">
-    <div class="page-heading reveal record-compose-heading">
-      <div>
-        <span class="eyebrow"><MessageCircleMore :size="15" /> 口播助手 <img v-if="currentTheme === 'memphis'" class="memphis-sticker eyebrow-sticker" :src="assetUrl('memphis-icons/chat-line.png')" alt="" width="18" height="18"></span>
-        <h1>先聊明白，再开口录。</h1>
-        <p>说说你想讲什么，助手会陪你变成一篇能直接念的口播稿。</p>
-      </div>
-      <div class="record-flow-indicator" aria-label="口播创作流程"><span class="is-current">1 聊想法</span><i /><span>2 成稿</span><i /><span>3 录制</span></div>
+    <!-- Compact process rail (desktop template: no giant marketing heading) -->
+    <div class="compose-rail" aria-label="口播创作流程">
+      <ol class="compose-steps">
+        <li class="is-current"><span>1</span> 聊想法</li>
+        <li :class="{ 'is-done': Boolean(draft.trim()) }"><span>2</span> 成稿</li>
+        <li><span>3</span> 提词录制</li>
+      </ol>
+      <p class="compose-rail-hint">左侧对话收敛主题 · 右侧沉淀可念稿</p>
     </div>
 
     <div class="mobile-compose-tabs" role="tablist" aria-label="口播创作面板">
-      <button role="tab" type="button" :class="{ 'is-active': mobilePanel === 'chat' }" :aria-selected="mobilePanel === 'chat'" @click="mobilePanel = 'chat'"><MessageCircleMore :size="16" /> 和助手聊</button>
-      <button role="tab" type="button" :class="{ 'is-active': mobilePanel === 'draft' }" :aria-selected="mobilePanel === 'draft'" @click="mobilePanel = 'draft'"><WandSparkles :size="16" /> 我的口播稿</button>
+      <button role="tab" type="button" :class="{ 'is-active': mobilePanel === 'chat' }" :aria-selected="mobilePanel === 'chat'" @click="mobilePanel = 'chat'"><MessageCircleMore :size="16" /> 对话</button>
+      <button role="tab" type="button" :class="{ 'is-active': mobilePanel === 'draft' }" :aria-selected="mobilePanel === 'draft'" @click="mobilePanel = 'draft'"><WandSparkles :size="16" /> 口播稿</button>
     </div>
 
-    <div class="compose-layout reveal reveal-delay">
-      <section class="assistant-card" :class="{ 'mobile-panel-hidden': mobilePanel !== 'chat' }">
-        <div class="panel-header">
+    <div class="compose-layout compose-split reveal" role="group" aria-label="口播创作工作台">
+      <!-- LEFT: conversation pane -->
+      <section class="assistant-card compose-pane" :class="{ 'mobile-panel-hidden': mobilePanel !== 'chat' }">
+        <header class="panel-header compose-pane-header">
           <div class="assistant-identity">
-            <span class="assistant-avatar"><Bot :size="19" /></span>
+            <span class="assistant-avatar" aria-hidden="true"><Bot :size="18" /></span>
             <div>
               <strong>Moon 助手</strong>
-              <small><span class="status-dot" :class="{ amber: isThinking }" /> {{ isThinking ? '正在调用真实模型' : lastResponseModel ? `${lastResponseModel} · 真实响应` : '真实模型等待输入' }}</small>
+              <small>
+                <span class="status-dot" :class="{ amber: isThinking, ok: !isThinking && lastResponseModel }" />
+                {{ isThinking ? '模型生成中…' : lastResponseModel ? `${lastResponseModel}` : '等待你的主题' }}
+              </small>
             </div>
           </div>
-          <span class="context-pill">懂口播节奏</span>
-        </div>
+          <span class="context-pill">对话</span>
+        </header>
 
-        <div class="chat-scroll">
-          <div v-for="message in messages" :key="message.id" class="chat-message" :class="message.role">
-            <span v-if="message.role === 'assistant'" class="message-avatar"><Sparkles :size="15" /></span><p>{{ message.content }}</p>
+        <div class="chat-scroll compose-chat">
+          <div v-if="messages.length <= 1" class="chat-empty">
+            <div class="chat-empty-icon" aria-hidden="true"><MessageCircleMore :size="20" /></div>
+            <strong>用一句话说清主题</strong>
+            <p>例如「给小白讲口播开头 3 秒为什么重要」——助手会帮你拆结构、给角度、再合成稿。</p>
           </div>
+
+          <!-- Skip the static seed bubble when empty-state card is visible -->
+          <template v-for="message in messages" :key="message.id">
+            <div
+              v-if="!(message.id === 1 && messages.length === 1)"
+              class="chat-message"
+              :class="message.role"
+            >
+              <span v-if="message.role === 'assistant'" class="message-avatar" aria-hidden="true"><Sparkles :size="14" /></span>
+              <p>{{ message.content }}</p>
+            </div>
+          </template>
+
           <div v-if="messages.length === 1" class="quick-topics">
-            <span>不知道怎么说？选一个开始</span>
-            <div><button v-for="item in quickTopics" :key="item" type="button" @click="sendMessage(item)">{{ item }} <ArrowRight :size="13" /></button></div>
+            <span class="quick-topics-label">快捷开场</span>
+            <div>
+              <button v-for="item in quickTopics" :key="item" type="button" @click="sendMessage(item)">
+                {{ item }}
+                <ArrowRight :size="12" />
+              </button>
+            </div>
           </div>
+
           <div v-if="isThinking" class="chat-message assistant thinking-message" role="status" aria-label="助手正在思考">
-            <span class="message-avatar"><Sparkles :size="15" /></span><p><span>正在分析你的主题</span><i /><i /><i /></p>
+            <span class="message-avatar" aria-hidden="true"><Sparkles :size="14" /></span>
+            <p><span>分析主题</span><i /><i /><i /></p>
           </div>
+
           <div v-if="assistantError && !isThinking" class="chat-model-error" role="alert">
-            <strong>真实模型暂时没有返回结果</strong>
+            <strong>模型未返回结果</strong>
             <p>{{ assistantError }}</p>
-            <button v-if="lastFailedMessage" type="button" @click="retryDialogue"><RotateCcw :size="14" /> 重试本次对话</button>
+            <button v-if="lastFailedMessage" type="button" @click="retryDialogue"><RotateCcw :size="14" /> 重试</button>
           </div>
+
           <div v-if="suggestionOptions.length === 3 && !isThinking" class="suggestion-block">
-            <div class="suggestion-heading"><span>建议你从这 3 个角度讲</span><small>点击选择需要的内容</small></div>
+            <div class="suggestion-heading">
+              <span>可选角度</span>
+              <small>点选后合并成稿</small>
+            </div>
             <button
               v-for="(suggestion, index) in suggestionOptions"
               :key="suggestion.title"
@@ -958,47 +1022,85 @@ onBeforeUnmount(() => {
               :aria-pressed="selectedSuggestions.has(index)"
               @click="toggleSuggestion(index)"
             >
-              <span class="suggestion-icon"><component :is="suggestion.icon" :size="17" /></span>
-              <span><small>{{ suggestion.eyebrow }}</small><strong>{{ suggestion.title }}</strong><em>{{ suggestion.detail }}</em></span>
-              <i><Check v-if="selectedSuggestions.has(index)" :size="13" /></i>
+              <span class="suggestion-icon"><component :is="suggestion.icon" :size="16" /></span>
+              <span>
+                <small>{{ suggestion.eyebrow }}</small>
+                <strong>{{ suggestion.title }}</strong>
+                <em>{{ suggestion.detail }}</em>
+              </span>
+              <i><Check v-if="selectedSuggestions.has(index)" :size="12" /></i>
             </button>
             <div class="suggestion-actions">
-              <button class="apply-button" type="button" :disabled="!selectedSuggestions.size" @click="applySuggestions"><WandSparkles :size="16" /> 加入口播稿</button>
-              <button type="button" @click="refreshSuggestions"><RotateCcw :size="14" /> 真实换一组</button>
+              <button class="apply-button" type="button" :disabled="!selectedSuggestions.size" @click="applySuggestions">
+                <WandSparkles :size="15" /> 写入口播稿
+              </button>
+              <button type="button" @click="refreshSuggestions"><RotateCcw :size="13" /> 换一组</button>
             </div>
           </div>
           <div ref="chatEndRef" />
         </div>
 
-        <div class="chat-composer">
-          <textarea v-model="input" rows="2" aria-label="告诉助手你想讲的内容" placeholder="比如：我想讲为什么口播开头 3 秒很重要…" @keydown="handleInputKeydown" />
-          <button type="button" :disabled="!input.trim() || isThinking" aria-label="发送消息" @click="sendMessage()"><Send :size="18" /></button>
-          <small><span><Mic2 :size="13" /> 也可以直接说</span><span>Enter 发送</span></small>
-        </div>
+        <footer class="chat-composer compose-composer">
+          <textarea
+            v-model="input"
+            rows="2"
+            aria-label="告诉助手你想讲的内容"
+            placeholder="描述主题、受众、时长… Enter 发送"
+            @keydown="handleInputKeydown"
+          />
+          <button type="button" :disabled="!input.trim() || isThinking" aria-label="发送消息" @click="sendMessage()">
+            <Send :size="16" />
+          </button>
+          <small>
+            <span><Mic2 :size="12" /> 文字即可</span>
+            <span>Enter 发送 · Shift+Enter 换行</span>
+          </small>
+        </footer>
       </section>
 
-      <section class="script-card" :class="{ 'mobile-panel-hidden': mobilePanel !== 'draft' }">
-        <div class="panel-header script-header">
-          <div><span class="mini-label">你的口播稿</span><h2>可以直接念，也可以继续改。</h2></div>
-          <span class="script-metrics">{{ characterCount ? `约 ${estimatedSeconds} 秒 · ${characterCount} 字` : '等待模型成稿' }}</span>
-        </div>
-        <div class="polish-tools" aria-label="稿件润色工具">
-          <span><Sparkles :size="15" /> 快速润色</span>
-          <button type="button" :disabled="!draft.trim() || isThinking" @click="polishDraft('oral')"><MessageCircleMore :size="14" /> 更口语</button>
-          <button type="button" :disabled="!draft.trim() || isThinking" @click="polishDraft('short')"><Scissors :size="14" /> 再精简</button>
-          <button type="button" :disabled="!draft.trim() || isThinking" @click="polishDraft('emotional')"><Heart :size="14" /> 更有感染力</button>
-        </div>
-        <div class="script-editor-wrap">
-          <span class="quote-mark">“</span>
-          <textarea v-model="draft" class="script-editor" aria-label="编辑口播稿" placeholder="先在左侧告诉 Moon 你想讲什么。选择建议后，真实模型生成的口播稿会出现在这里。" />
-        </div>
-        <div class="script-footer">
-          <p><Check :size="14" /> {{ draft.trim() ? '已自动保存到当前账户' : '等待真实模型生成稿件' }}</p>
+      <!-- RIGHT: script document pane -->
+      <section class="script-card compose-pane" :class="{ 'mobile-panel-hidden': mobilePanel !== 'draft' }">
+        <header class="panel-header script-header compose-pane-header">
           <div>
-            <button class="copy-button" type="button" @click="copyDraft"><Copy :size="16" /> 复制稿件</button>
-            <button class="primary-button" type="button" :disabled="!draft.trim()" @click="enterTeleprompter">进入提词录制 <ArrowRight :size="17" /></button>
+            <span class="mini-label">口播稿</span>
+            <h2>{{ draft.trim() ? '可直接念 · 可继续改' : '等待成稿' }}</h2>
           </div>
+          <span class="script-metrics" :class="{ 'is-ready': Boolean(characterCount) }">
+            {{ characterCount ? `约 ${estimatedSeconds}s · ${characterCount} 字` : '空稿' }}
+          </span>
+        </header>
+
+        <div class="polish-tools" aria-label="稿件润色工具">
+          <span><Sparkles :size="14" /> 润色</span>
+          <button type="button" :disabled="!draft.trim() || isThinking" @click="polishDraft('oral')"><MessageCircleMore :size="13" /> 更口语</button>
+          <button type="button" :disabled="!draft.trim() || isThinking" @click="polishDraft('short')"><Scissors :size="13" /> 精简</button>
+          <button type="button" :disabled="!draft.trim() || isThinking" @click="polishDraft('emotional')"><Heart :size="13" /> 感染力</button>
         </div>
+
+        <div class="script-editor-wrap" :class="{ 'is-empty': !draft.trim() }">
+          <span class="quote-mark" aria-hidden="true">“</span>
+          <textarea
+            v-model="draft"
+            class="script-editor"
+            aria-label="编辑口播稿"
+            placeholder="在左侧聊清楚后，完整口播稿会出现在这里。你也可以直接手写/粘贴。"
+          />
+        </div>
+
+        <footer class="script-footer">
+          <p>
+            <Check :size="13" />
+            {{ draft.trim() ? '已自动保存到本机' : '成稿后可进提词录制' }}
+          </p>
+          <div>
+            <button class="copy-button" type="button" :disabled="!draft.trim()" @click="copyDraft">
+              <Copy :size="15" /> 复制
+            </button>
+            <button class="primary-button" type="button" :disabled="!draft.trim()" @click="enterTeleprompter">
+              进入提词录制 <ArrowRight :size="16" />
+            </button>
+          </div>
+        </footer>
       </section>
     </div>
     <ToastMessage :message="toast" />

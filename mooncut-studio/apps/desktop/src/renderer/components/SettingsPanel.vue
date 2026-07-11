@@ -14,6 +14,7 @@ import {
   profileFromCatalog,
   type ConnectionTestResult,
   type DependencyInfo,
+  type ExternalCliConfig,
   type ProviderCatalogEntry,
   type ProviderProfile,
   type ProviderProfileInput,
@@ -122,8 +123,10 @@ async function saveSettings(partial: Partial<StudioSettings>) {
   busy.value = true;
   error.value = "";
   try {
-    settings.value = await getMooncut().updateSettings(partial);
-    emit("updated", settings.value);
+    const updated = await getMooncut().updateSettings(partial);
+    if (!updated) throw new Error("设置保存后未返回最新配置");
+    settings.value = updated;
+    emit("updated", updated);
     message.value = "设置已保存";
   } catch (err) {
     error.value = err instanceof Error ? err.message : String(err);
@@ -557,9 +560,54 @@ onMounted(() => {
               @change="saveSettings({agentMode: ($event.target as HTMLSelectElement).value as StudioSettings['agentMode']})"
             >
               <option value="mock">mock（离线可验证任务流）</option>
-              <option value="real">real（mooncut-pi-agent Studio 模式）</option>
+              <option value="real">内置派 pi-agent（Studio 模式）</option>
+              <option value="external-cli">外部 CLI（Claude Code / OpenCode）</option>
             </select>
           </label>
+          <div v-if="settings.agentMode === 'external-cli'" class="agent-cli-subform">
+            <span class="mini-label">优先命令</span>
+            <div class="agent-cli-kinds">
+              <label class="onboard-toggle compact">
+                <div>
+                  <strong>Claude Code</strong>
+                  <small>自动探测 which claude</small>
+                </div>
+                <input
+                  type="radio"
+                  name="settings-cli-kind"
+                  :checked="(settings.externalCli?.kind ?? 'claude') === 'claude'"
+                  @change="saveSettings({externalCli: {kind: 'claude'}} as Partial<StudioSettings>)"
+                />
+              </label>
+              <label class="onboard-toggle compact">
+                <div>
+                  <strong>OpenCode</strong>
+                  <small>自动探测 which opencode</small>
+                </div>
+                <input
+                  type="radio"
+                  name="settings-cli-kind"
+                  :checked="settings.externalCli?.kind === 'opencode'"
+                  @change="saveSettings({externalCli: {kind: 'opencode'}} as Partial<StudioSettings>)"
+                />
+              </label>
+            </div>
+            <label class="agent-cli-path">
+              <span class="meta">命令绝对路径（留空将自动探测）</span>
+              <input
+                type="text"
+                :value="settings.externalCli?.commandPath ?? ''"
+                placeholder="例如 /opt/homebrew/bin/claude"
+                @change="saveSettings({externalCli: {
+                  kind: settings.externalCli?.kind ?? 'claude',
+                  commandPath: (($event.target as HTMLInputElement).value.trim()) || undefined,
+                }} as Partial<StudioSettings>)"
+              />
+            </label>
+            <p class="meta" style="margin: 8px 0 0">
+              没装这俩也能用——跑不通时自动切回内置派。
+            </p>
+          </div>
           <div class="row">
             <button type="button" @click="restartAgent">
               <UiIcon name="agent" :size="14" />
