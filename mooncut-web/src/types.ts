@@ -1,4 +1,12 @@
-export type WorkspacePage = 'landing' | 'public-community' | 'edit' | 'record' | 'community' | 'queue'
+export type WorkspacePage =
+  | 'landing'
+  | 'public-community'
+  | 'pricing'
+  | 'privacy'
+  | 'edit'
+  | 'record'
+  | 'me'
+  | 'queue'
 
 export type RenderQueueItem = {
   name: string
@@ -138,6 +146,8 @@ export type ScriptAssistantResponse = {
   petMessage: string
   suggestions: ScriptSuggestion[]
   model: string
+  /** Alias used when model returns plain script text */
+  content?: string
 }
 
 export type CoachAdviceResponse = {

@@ -7,26 +7,29 @@ import {
   resolvePostAuthPage,
 } from '../src/lib/navigation.ts'
 
-test('resolvePostAuthPage restores intent or falls back to landing', () => {
+test('resolvePostAuthPage restores intent, supports pricing, or falls back to landing', () => {
   assert.equal(resolvePostAuthPage('record'), 'record')
   assert.equal(resolvePostAuthPage('edit'), 'edit')
+  assert.equal(resolvePostAuthPage('pricing'), 'pricing')
   assert.equal(resolvePostAuthPage(null), 'landing')
   assert.equal(resolvePostAuthPage(undefined), 'landing')
   assert.equal(resolvePostAuthPage(null, 'queue'), 'queue')
 })
 
-test('requiresAuth leaves landing and public community open', () => {
+test('requiresAuth leaves landing, public community and pricing open', () => {
   assert.equal(requiresAuth('landing'), false)
   assert.equal(requiresAuth('public-community'), false)
+  assert.equal(requiresAuth('pricing'), false)
   assert.equal(requiresAuth('edit'), true)
   assert.equal(requiresAuth('record'), true)
-  assert.equal(requiresAuth('community'), true)
+  assert.equal(requiresAuth('me'), true)
   assert.equal(requiresAuth('queue'), true)
 })
 
 test('destinationLabel explains next step without exaggerating', () => {
   assert.match(destinationLabel('record') ?? '', /登录后进入录制间/)
   assert.match(destinationLabel('edit', 'register') ?? '', /注册后进入剪辑台/)
+  assert.match(destinationLabel('pricing') ?? '', /回到定价页/)
   assert.equal(destinationLabel(null), null)
 })
 

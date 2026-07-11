@@ -26,7 +26,7 @@ import {
   Zap,
 } from '@lucide/vue'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import { useSpeakingCoach } from '../composables/useSpeakingCoach'
+import { useSpeakingCoach, warmFaceLandmarker } from '../composables/useSpeakingCoach'
 import { useTheme } from '../composables/useTheme'
 import { requestCoachAdvice, requestScriptAssistant } from '../services/api'
 import type { PetAnimationState, ScriptSuggestion, VideoAsset } from '../types'
@@ -97,7 +97,8 @@ const {
   reset: resetCoach,
 } = useSpeakingCoach(draft)
 const toast = ref('')
-const cameraStatus = ref<CameraStatus>('requesting')
+/** idle = 尚未进入录制页；requesting/live/error 仅在提词器页使用 */
+const cameraStatus = ref<CameraStatus | 'idle'>('idle')
 const cameraError = ref('')
 const recordState = ref<RecordState>('idle')
 const countdown = ref<number | null>(null)
@@ -132,18 +133,40 @@ let lastLocalAdviceAt = 0
 
 const characterCount = computed(() => draft.value.replace(/\s/g, '').length)
 const estimatedSeconds = computed(() => characterCount.value ? Math.max(8, Math.round(characterCount.value / 4.1)) : 0)
-const sentences = computed(() => draft.value.split(/(?<=[。！？])/).map((sentence) => sentence.trim()).filter(Boolean))
+/** Split on sentence ends + newlines so teleprompter has usable line chunks. */
+const sentences = computed(() =>
+  draft.value
+    .split(/(?<=[。！？!?；;])|\n+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean),
+)
 const timedSentence = computed(() => {
   if (!sentences.value.length) return 0
-  return Math.min(sentences.value.length - 1, Math.floor(elapsed.value / Math.max(3, 9 - scrollSpeed.value)))
+  // scrollSpeed 1→慢, 5→快：每句约 7s…3s
+  const secondsPerLine = Math.max(2.8, 8.2 - scrollSpeed.value * 1.05)
+  return Math.min(sentences.value.length - 1, Math.floor(elapsed.value / secondsPerLine))
 })
+/**
+ * Hybrid teleprompter cursor:
+ * - ASR/acoustic index from coach (follows speech when available)
+ * - timed fallback so it NEVER freezes if ASR is empty
+ * Always take the furthest progress (never jump backward mid-take).
+ */
 const currentSentence = computed(() => {
-  if ((recordState.value === 'recording' || recordState.value === 'paused') && coachTranscript.value) return coachSentenceIndex.value
-  return timedSentence.value
+  if (!sentences.value.length) return 0
+  const timed = timedSentence.value
+  if (recordState.value !== 'recording' && recordState.value !== 'paused') return timed
+  const live = coachSentenceIndex.value
+  return Math.min(sentences.value.length - 1, Math.max(timed, live))
 })
 const previousSentenceText = computed(() => sentences.value[Math.max(0, currentSentence.value - 1)] ?? '')
 const currentSentenceText = computed(() => sentences.value[currentSentence.value] ?? '准备好后，从第一句自然开口。')
-const nextSentenceText = computed(() => sentences.value[Math.min(sentences.value.length - 1, currentSentence.value + 1)] ?? '')
+const nextSentenceText = computed(() => {
+  const next = currentSentence.value + 1
+  if (next >= sentences.value.length) return ''
+  return sentences.value[next] ?? ''
+})
+const hasNextSentence = computed(() => currentSentence.value < sentences.value.length - 1)
 const visibleCoachTranscript = computed(() => {
   const text = coachTranscript.value.trim()
   return text.length > 120 ? `…${text.slice(-120)}` : text
@@ -170,6 +193,21 @@ watch([messages, isThinking], async () => {
   await nextTick()
   chatEndRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 })
+watch(currentSentence, (index, prev) => {
+  if (
+    (recordState.value === 'recording' || recordState.value === 'paused') &&
+    typeof prev === 'number' &&
+    index > prev
+  ) {
+    const upcoming = sentences.value[index + 1]
+    emit(
+      'pet-message',
+      upcoming
+        ? '往下瞄一眼下一句，可以先抛冲突再给答案。'
+        : '最后一句了，把金句钉稳一点。',
+    )
+  }
+})
 watch(coachLocalAdvice, (message) => {
   lastLocalAdviceAt = Date.now()
   liveAdvice.value = message
@@ -189,97 +227,236 @@ function secondsToClock(seconds: number) {
   return `${minutes}:${rest}`
 }
 
+function releaseStreamTracks(media: MediaStream | null) {
+  media?.getTracks().forEach((track) => {
+    track.onended = null
+    try {
+      track.stop()
+    } catch {
+      // ignore
+    }
+  })
+}
+
+function clearVideoElement() {
+  const video = cameraVideoRef.value
+  if (!video) return
+  try {
+    video.pause()
+  } catch {
+    // ignore
+  }
+  video.srcObject = null
+  video.removeAttribute('src')
+  video.load()
+}
+
+/** Stop hardware and invalidate in-flight openCamera requests. */
 function stopCamera() {
   cameraRequestId += 1
-  stream?.getTracks().forEach((track) => {
-    track.onended = null
-    track.stop()
-  })
+  releaseStreamTracks(stream)
   stream = null
-  if (cameraVideoRef.value) cameraVideoRef.value.srcObject = null
+  clearVideoElement()
 }
 
 function cameraErrorMessage(error: unknown) {
-  if (!(error instanceof DOMException)) return '摄像头连接失败，请重新连接。'
-  if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-    return '摄像头或麦克风权限未开启。请在浏览器地址栏的网站设置中允许访问，然后重新连接。'
+  if (error instanceof DOMException || (error && typeof error === 'object' && 'name' in error)) {
+    const name = String((error as { name?: string }).name || '')
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+      return '摄像头或麦克风权限未开启。请点击地址栏左侧的锁/摄像头图标，允许本站访问后点「重新连接」。'
+    }
+    if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+      return '没有检测到可用的摄像头或麦克风，请检查设备连接后重试。'
+    }
+    if (name === 'NotReadableError' || name === 'TrackStartError') {
+      return '摄像头可能正被 Zoom/会议软件或其他标签页占用。关掉占用后点「重新连接」。'
+    }
+    if (name === 'OverconstrainedError' || name === 'ConstraintNotSatisfiedError') {
+      return '当前摄像头参数不兼容，请点「重新连接」使用兼容模式。'
+    }
+    if (name === 'SecurityError') {
+      return '浏览器阻止了摄像头访问。请使用 https://mooncut.me 打开（不要用文件协议）。'
+    }
+    if (name === 'AbortError') {
+      return '摄像头请求被中断，请再点一次「重新连接摄像头」。'
+    }
+    if (name) return `摄像头连接失败（${name}），请重新连接。`
   }
-  if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-    return '没有检测到可用的摄像头或麦克风，请检查设备连接。'
+  if (error instanceof Error && error.message) {
+    if (/preview is unavailable|video element/i.test(error.message)) {
+      return '预览画面还没准备好，请再点一次「重新连接摄像头」。'
+    }
+    if (/no video frames|timed out/i.test(error.message)) {
+      return '已拿到摄像头权限，但预览没有出画。请关闭其他占用摄像头的应用后重试。'
+    }
   }
-  if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-    return '摄像头可能正被其他应用占用。关闭占用它的应用后重新连接。'
+  return '摄像头连接失败，请重新连接。'
+}
+
+const AUDIO_CONSTRAINTS: MediaTrackConstraints = {
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true,
+}
+
+/** Progressive fallbacks — high ideal resolution often fails or blacks out on some devices. */
+const MEDIA_CONSTRAINT_ATTEMPTS: MediaStreamConstraints[] = [
+  {
+    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+    audio: AUDIO_CONSTRAINTS,
+  },
+  {
+    video: { facingMode: { ideal: 'user' } },
+    audio: AUDIO_CONSTRAINTS,
+  },
+  { video: true, audio: true },
+  { video: { facingMode: 'user' }, audio: false },
+  { video: true, audio: false },
+]
+
+/**
+ * IMPORTANT: Call this without any `await` before it in the click handler chain.
+ * Safari / some Chromium builds only show the permission prompt when getUserMedia
+ * is invoked synchronously from a user gesture.
+ */
+function beginMediaRequest(): Promise<MediaStream> {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    return Promise.reject(
+      new DOMException('getUserMedia unsupported', 'NotSupportedError'),
+    )
   }
-  if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
-    return '当前摄像头不支持所需的视频参数，请重新连接。'
+  // Kick off the first attempt synchronously for the user-gesture token.
+  const first = MEDIA_CONSTRAINT_ATTEMPTS[0]
+  return navigator.mediaDevices.getUserMedia(first).catch(async (firstError) => {
+    let lastError: unknown = firstError
+    for (let i = 1; i < MEDIA_CONSTRAINT_ATTEMPTS.length; i += 1) {
+      try {
+        return await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINT_ATTEMPTS[i])
+      } catch (error) {
+        lastError = error
+      }
+    }
+    throw lastError instanceof Error
+      ? lastError
+      : new DOMException('Unable to open camera', 'NotReadableError')
+  })
+}
+
+async function waitForCameraVideoElement(requestId: number, attempts = 30) {
+  for (let i = 0; i < attempts; i += 1) {
+    if (requestId !== cameraRequestId) return null
+    if (mode.value === 'teleprompter' && cameraVideoRef.value) return cameraVideoRef.value
+    await nextTick()
+    await new Promise((resolve) => window.setTimeout(resolve, 32))
   }
-  if (error.name === 'SecurityError') return '浏览器阻止了摄像头访问，请使用 HTTPS 或本机 localhost 打开。'
-  return `摄像头连接失败（${error.name}），请重新连接。`
+  return cameraVideoRef.value
+}
+
+function prepareVideoElement(video: HTMLVideoElement) {
+  video.muted = true
+  video.defaultMuted = true
+  video.autoplay = true
+  video.playsInline = true
+  video.setAttribute('muted', '')
+  video.setAttribute('playsinline', '')
+  video.setAttribute('webkit-playsinline', 'true')
 }
 
 async function waitForVideoPlayback(video: HTMLVideoElement) {
-  if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+  if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
     await new Promise<void>((resolve, reject) => {
-      const timer = window.setTimeout(() => reject(new DOMException('Camera preview timed out', 'NotReadableError')), 10_000)
+      const timer = window.setTimeout(() => {
+        cleanup()
+        // Don't hard-fail if we already have metadata — some devices report frames late.
+        if (video.readyState >= HTMLMediaElement.HAVE_METADATA) resolve()
+        else reject(new DOMException('Camera preview timed out', 'NotReadableError'))
+      }, 12_000)
       const ready = () => {
-        window.clearTimeout(timer)
-        video.removeEventListener('error', failed)
+        cleanup()
         resolve()
       }
       const failed = () => {
-        window.clearTimeout(timer)
-        video.removeEventListener('loadedmetadata', ready)
+        cleanup()
         reject(video.error ?? new DOMException('Camera preview failed', 'NotReadableError'))
       }
+      const cleanup = () => {
+        window.clearTimeout(timer)
+        video.removeEventListener('loadeddata', ready)
+        video.removeEventListener('loadedmetadata', ready)
+        video.removeEventListener('error', failed)
+      }
+      video.addEventListener('loadeddata', ready, { once: true })
       video.addEventListener('loadedmetadata', ready, { once: true })
       video.addEventListener('error', failed, { once: true })
     })
   }
-  await video.play()
+  try {
+    await video.play()
+  } catch (error) {
+    // Autoplay may reject once; muted + playsInline usually works on retry.
+    video.muted = true
+    await video.play().catch(() => {
+      throw error instanceof Error
+        ? error
+        : new DOMException('Camera preview play failed', 'NotReadableError')
+    })
+  }
+  // Give the decoder a moment; black first frame is common.
+  if (!video.videoWidth || !video.videoHeight) {
+    await new Promise((resolve) => window.setTimeout(resolve, 250))
+  }
   if (!video.videoWidth || !video.videoHeight) {
     throw new DOMException('Camera returned no video frames', 'NotReadableError')
   }
 }
 
 async function openCamera() {
-  stopCamera()
-  const requestId = ++cameraRequestId
-  cameraStatus.value = 'requesting'
-  cameraError.value = ''
   if (!navigator.mediaDevices?.getUserMedia) {
     cameraStatus.value = 'error'
     cameraError.value = '当前浏览器不支持摄像头录制，请使用最新版 Chrome、Edge 或 Safari。'
     return
   }
+
+  // Invalidate previous attempts and free hardware, then start a new request id.
+  releaseStreamTracks(stream)
+  stream = null
+  clearVideoElement()
+  const requestId = ++cameraRequestId
+  cameraStatus.value = 'requesting'
+  cameraError.value = ''
+
+  // Start getUserMedia NOW (still inside the caller's user-gesture stack if no await before openCamera).
+  const mediaPromise = beginMediaRequest()
+
   let requestedStream: MediaStream | null = null
   try {
-    requestedStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: 'user' },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
-      },
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      },
-    })
+    requestedStream = await mediaPromise
     if (requestId !== cameraRequestId) {
-      requestedStream.getTracks().forEach((track) => track.stop())
+      releaseStreamTracks(requestedStream)
       return
     }
     const videoTrack = requestedStream.getVideoTracks()[0]
+    if (!videoTrack || videoTrack.readyState !== 'live') {
+      throw new DOMException('No live camera track', 'NotReadableError')
+    }
+    // Mic is preferred for recording, but preview should still work without it.
     const audioTrack = requestedStream.getAudioTracks()[0]
-    if (!videoTrack || videoTrack.readyState !== 'live') throw new DOMException('No live camera track', 'NotReadableError')
-    if (!audioTrack || audioTrack.readyState !== 'live') throw new DOMException('No live microphone track', 'NotReadableError')
+    if (!audioTrack) {
+      toast.value = '未拿到麦克风，预览可用；录制口播需要允许麦克风权限。'
+    }
+
     stream = requestedStream
-    await nextTick()
-    const video = cameraVideoRef.value
+    const video = await waitForCameraVideoElement(requestId)
+    if (requestId !== cameraRequestId) return
     if (!video) throw new DOMException('Camera preview is unavailable', 'NotReadableError')
+
+    prepareVideoElement(video)
     video.srcObject = stream
+    // Show the element as soon as stream is attached — avoids "black forever" if status lags.
+    cameraStatus.value = 'live'
     await waitForVideoPlayback(video)
     if (requestId !== cameraRequestId) return
+
     for (const track of stream.getTracks()) {
       track.onended = () => {
         if (requestId !== cameraRequestId) return
@@ -289,11 +466,20 @@ async function openCamera() {
       }
     }
     cameraStatus.value = 'live'
+    cameraError.value = ''
+    // Warm Face Landmarker (注视模型) while user is still on the teleprompter setup
+    // screen so the ~10MB WASM+model is ready before they hit Record.
+    void warmFaceLandmarker().then((result) => {
+      if (requestId !== cameraRequestId) return
+      if (!result.ok) {
+        console.warn('[mooncut] face landmarker warm-up:', result.detail)
+      }
+    })
   } catch (error) {
-    requestedStream?.getTracks().forEach((track) => track.stop())
+    releaseStreamTracks(requestedStream)
     if (requestId === cameraRequestId) {
       stream = null
-      if (cameraVideoRef.value) cameraVideoRef.value.srcObject = null
+      clearVideoElement()
       cameraStatus.value = 'error'
       cameraError.value = cameraErrorMessage(error)
     }
@@ -309,24 +495,37 @@ async function sendMessage(preset?: string, retry = false) {
   assistantError.value = ''
   try {
     const response = await requestScriptAssistant({ action: 'guide', messages: messages.value, draft: draft.value })
-    if (response.suggestions.length !== 3) throw new Error('模型没有返回完整的三条创作建议')
+    const suggestions = Array.isArray(response.suggestions) ? response.suggestions : []
+    if (suggestions.length < 1) throw new Error('模型没有返回创作建议，请重试')
+    const reply = (response.reply || '').trim() || '我想到了几个角度，点选后就能成稿。'
     messages.value.push({
       id: Date.now() + 1,
       role: 'assistant',
-      content: response.reply,
+      content: reply,
     })
-    suggestionOptions.value = response.suggestions.map((suggestion, index) => ({
-      ...suggestion,
+    // Pad to 3 cards so the UI always has selectable options.
+    const padded = [...suggestions]
+    while (padded.length < 3) {
+      padded.push({
+        eyebrow: `角度 ${padded.length + 1}`,
+        title: '换一个更具体的说法',
+        detail: '补充一个真实场景或证据，让观点落地。',
+      })
+    }
+    suggestionOptions.value = padded.slice(0, 3).map((suggestion, index) => ({
+      eyebrow: suggestion.eyebrow || `角度 ${index + 1}`,
+      title: suggestion.title || '继续展开这个方向',
+      detail: suggestion.detail || '再具体一点，我就能帮你写成稿。',
       icon: [Zap, Lightbulb, ArrowRight][index] ?? Sparkles,
     }))
     selectedSuggestions.value = new Set([0])
-    lastResponseModel.value = response.model
+    lastResponseModel.value = response.model || ''
     lastFailedMessage.value = ''
     if (response.draft) {
       draft.value = response.draft
       mobilePanel.value = 'draft'
     }
-    emit('pet-message', response.petMessage)
+    emit('pet-message', response.petMessage || '这个方向有感觉，再具体一点吧。')
   } catch (error) {
     suggestionOptions.value = []
     lastFailedMessage.value = content
@@ -375,13 +574,18 @@ async function applySuggestions() {
       }],
       draft: draft.value,
     })
-    if (response.draft) draft.value = response.draft
-    else throw new Error('模型没有返回完整稿件')
-    messages.value.push({ id: Date.now(), role: 'assistant', content: response.reply })
-    lastResponseModel.value = response.model
-    emit('pet-message', response.petMessage)
+    const nextDraft = (response.draft || response.content || '').trim()
+    if (!nextDraft) throw new Error('模型没有返回完整稿件')
+    draft.value = nextDraft
+    messages.value.push({
+      id: Date.now(),
+      role: 'assistant',
+      content: (response.reply || '').trim() || '稿件已经写好，右侧可继续润色。',
+    })
+    lastResponseModel.value = response.model || ''
+    emit('pet-message', response.petMessage || '稿子出来了，去念一遍试试！')
     mobilePanel.value = 'draft'
-    toast.value = `${response.model} 已整理成完整口播稿`
+    toast.value = `${response.model || '模型'} 已整理成完整口播稿`
   } catch (error) {
     assistantError.value = error instanceof Error ? error.message : '模型没有生成稿件'
     toast.value = `成稿失败：${assistantError.value}`
@@ -401,12 +605,13 @@ async function polishDraft(style: 'oral' | 'short' | 'emotional') {
       messages: messages.value,
       draft: draft.value,
     })
-    if (!response.draft) throw new Error('模型没有返回润色稿')
-    draft.value = response.draft
-    lastResponseModel.value = response.model
-    emit('pet-message', response.petMessage)
+    const nextDraft = (response.draft || response.content || '').trim()
+    if (!nextDraft) throw new Error('模型没有返回润色稿')
+    draft.value = nextDraft
+    lastResponseModel.value = response.model || ''
+    emit('pet-message', response.petMessage || '改得更顺了，再读一遍！')
     const result = style === 'oral' ? '调得更口语' : style === 'short' ? '精简了重复信息' : '加强了感染力'
-    toast.value = `${response.model} 已${result}`
+    toast.value = `${response.model || '模型'} 已${result}`
   } catch (error) {
     assistantError.value = error instanceof Error ? error.message : '模型润色失败'
     toast.value = `润色失败：${assistantError.value}`
@@ -420,10 +625,13 @@ async function enterTeleprompter() {
     toast.value = '请先通过真实对话生成口播稿'
     return
   }
+  // Do NOT await anything before openCamera() — Safari drops the user-gesture
+  // token after the first await, so the permission dialog never appears.
   elapsed.value = 0
   recordState.value = 'idle'
   mode.value = 'teleprompter'
-  await nextTick()
+  cameraStatus.value = 'requesting'
+  cameraError.value = ''
   await openCamera()
 }
 
@@ -474,11 +682,12 @@ async function requestLiveCoachAdvice() {
         elapsedSeconds: elapsed.value,
       },
     })
+    if (!response.advice) return
     liveAdvice.value = response.advice
-    liveAdviceCategory.value = response.category
-    liveAdvicePositive.value = response.positive
-    liveAdviceModel.value = response.model
-    emit('pet-message', response.petMessage)
+    liveAdviceCategory.value = response.category || 'steady'
+    liveAdvicePositive.value = response.positive === true
+    liveAdviceModel.value = response.model || ''
+    emit('pet-message', response.petMessage || response.advice)
   } catch {
     // Local real-time rules remain active when the low-latency model is unavailable.
   } finally {
@@ -498,14 +707,24 @@ function startCoachAdviceTimer() {
 function beginRecording() {
   chunks = []
   reviewAfterStop = true
-  const hasLiveStream = cameraStatus.value === 'live' && stream?.getVideoTracks().some((track) => track.readyState === 'live') && stream?.getAudioTracks().some((track) => track.readyState === 'live')
-  if (!hasLiveStream || typeof MediaRecorder === 'undefined') {
+  const hasVideo =
+    cameraStatus.value === 'live' &&
+    Boolean(stream?.getVideoTracks().some((track) => track.readyState === 'live'))
+  const hasAudio = Boolean(stream?.getAudioTracks().some((track) => track.readyState === 'live'))
+  if (!hasVideo || typeof MediaRecorder === 'undefined') {
     countdown.value = null
     recordState.value = 'idle'
     cameraStatus.value = 'error'
     cameraError.value = typeof MediaRecorder === 'undefined'
       ? '当前浏览器不支持视频录制，请使用最新版 Chrome、Edge 或 Safari。'
-      : '摄像头或麦克风尚未就绪，请重新连接后再录制。'
+      : '摄像头尚未就绪，请重新连接后再录制。'
+    return
+  }
+  if (!hasAudio) {
+    countdown.value = null
+    recordState.value = 'idle'
+    cameraStatus.value = 'error'
+    cameraError.value = '录制需要麦克风权限。请允许麦克风后点「重新连接摄像头」。'
     return
   }
   try {
@@ -552,8 +771,12 @@ function beginRecording() {
   countdown.value = null
   recordState.value = 'recording'
   startElapsedTimer()
-  void startCoach(stream!, cameraVideoRef.value)
-  startCoachAdviceTimer()
+  // Small delay: lets MediaRecorder claim the mic, then ASR + MediaPipe attach cleanly.
+  window.setTimeout(() => {
+    if (recordState.value !== 'recording' || !stream) return
+    void startCoach(stream, cameraVideoRef.value)
+    startCoachAdviceTimer()
+  }, 120)
 }
 
 function tickCountdown() {
@@ -621,6 +844,8 @@ function leaveTeleprompter() {
     stopCoach()
     stopCamera()
     recordState.value = 'idle'
+    cameraStatus.value = 'idle'
+    cameraError.value = ''
     mode.value = 'compose'
   }
 }
@@ -633,7 +858,9 @@ async function rerecord() {
   elapsed.value = 0
   recordState.value = 'idle'
   mode.value = 'teleprompter'
-  await nextTick()
+  cameraStatus.value = 'requesting'
+  cameraError.value = ''
+  // Same rule as enterTeleprompter: openCamera before any await.
   await openCamera()
 }
 
@@ -690,45 +917,46 @@ onBeforeUnmount(() => {
         </template>
         <template v-else>
           <span class="status-dot" :class="{ amber: cameraStatus !== 'live' }" />
-          {{ cameraStatus === 'live' ? '镜头已就绪' : cameraStatus === 'requesting' ? '等待摄像头权限' : '镜头未连接' }}
+          {{
+            cameraStatus === 'live'
+              ? '镜头已就绪'
+              : cameraStatus === 'requesting'
+                ? '等待摄像头权限'
+                : '镜头未连接'
+          }}
         </template>
       </div>
       <span class="teleprompter-brand">MOONCUT <img v-if="currentTheme === 'memphis'" class="memphis-sticker brand-sticker" src="/memphis-icons/camera-line.png" alt="" width="16" height="16">✦</span>
     </div>
 
-    <div class="teleprompter-layout">
-      <div class="camera-stage" :class="{ 'is-mirrored': mirror, 'is-coaching': recordState === 'recording' || recordState === 'paused' }">
-        <video ref="cameraVideoRef" class="camera-video" :class="{ 'is-visible': cameraStatus === 'live' }" autoplay muted playsinline />
+    <div class="teleprompter-layout is-pro-layout">
+      <!-- Left: large camera — eye contact is the product, keep it dominant -->
+      <div class="camera-stage is-hero" :class="{ 'is-mirrored': mirror, 'is-coaching': recordState === 'recording' || recordState === 'paused' }">
+        <video
+          ref="cameraVideoRef"
+          class="camera-video"
+          :class="{ 'is-visible': cameraStatus === 'live' }"
+          autoplay
+          muted
+          playsinline
+          webkit-playsinline
+        />
         <div v-if="cameraStatus !== 'live'" class="camera-fallback camera-connection-state">
           <template v-if="cameraStatus === 'requesting'">
             <LoaderCircle class="camera-loader" :size="28" />
             <strong>正在连接摄像头和麦克风</strong>
-            <p>如果浏览器弹出权限提示，请选择“允许”。授权完成前这里会一直等待。</p>
+            <p>请在浏览器弹窗里点「允许」。若没有弹窗，点地址栏的摄像头图标开启权限，再点下方重新连接。</p>
           </template>
           <template v-else>
             <span class="camera-error-icon"><Video :size="28" /></span>
             <strong>暂时没有真实画面</strong>
-            <p>{{ cameraError }}</p>
+            <p>{{ cameraError || '摄像头尚未连接。' }}</p>
             <button type="button" @click="openCamera"><RotateCcw :size="15" /> 重新连接摄像头</button>
           </template>
         </div>
         <div class="camera-vignette" />
-        <div v-if="recordState === 'recording' || recordState === 'paused'" class="live-script-ribbon" aria-live="polite">
-          <div class="live-script-meta"><span><Sparkles :size="13" /> 实时对稿</span><em>{{ coachSpeechStatus }}</em></div>
-          <p>{{ previousSentenceText }}</p>
-          <strong>{{ currentSentenceText }}</strong>
-          <p>{{ nextSentenceText }}</p>
-        </div>
-        <div class="teleprompter-copy" :style="{ fontSize: `${fontSize}px` }">
-          <span
-            v-for="(sentence, index) in sentences"
-            :key="`${sentence}-${index}`"
-            :class="{ 'is-current': index === currentSentence, 'is-past': index < currentSentence }"
-          >{{ sentence }}</span>
-        </div>
-        <div v-if="recordState === 'recording' || recordState === 'paused'" :key="liveAdvice" class="live-coach-advice" :class="[`category-${liveAdviceCategory}`, { 'is-positive': liveAdvicePositive }]" aria-live="polite">
-          <span><Bot :size="16" /></span>
-          <div><small>{{ liveAdviceModel }}</small><strong>{{ liveAdvice }}</strong></div>
+        <div v-if="recordState === 'recording' || recordState === 'paused'" class="camera-live-badge">
+          <span class="record-dot" /> 跟读 {{ currentSentence + 1 }}/{{ sentences.length || 1 }}
         </div>
         <div v-if="recordState === 'recording' || recordState === 'paused'" class="coach-metrics-hud" aria-label="实时口播指标">
           <div><span>语速</span><strong>{{ coachPace || '—' }}<small>字/分</small></strong><i :class="{ warn: coachPace > 295 }" /></div>
@@ -739,45 +967,116 @@ onBeforeUnmount(() => {
         </div>
         <div v-if="recordState === 'recording' || recordState === 'paused'" class="asr-caption" :class="{ 'is-empty': !coachTranscript }" aria-live="polite">
           <span class="asr-live-dot" />
-          <p>{{ visibleCoachTranscript || '正在等你开口，实时识别结果会显示在这里。' }}</p>
+          <p>{{ visibleCoachTranscript || '正在听你说…' }}</p>
         </div>
         <div v-if="recordState === 'countdown' && countdown !== null" class="countdown-overlay" aria-live="assertive">
           <strong>{{ countdown || '开始' }}</strong>
         </div>
       </div>
 
-      <aside class="prompt-controls">
-        <div class="controls-heading">
-          <span class="mini-label">{{ recordState === 'recording' || recordState === 'paused' ? '实时陪练' : '提词设置' }}</span><h2>{{ recordState === 'recording' || recordState === 'paused' ? '小月正在听你说。' : '看镜头，慢慢说。' }}</h2><p>{{ recordState === 'recording' || recordState === 'paused' ? `${coachVisionStatus} · ${coachSpeechStatus}` : '稿子会按你的设置推进，录制后可以直接送去剪辑。' }}</p>
+      <!-- Right rail: teleprompter + coach + controls (misalignment is less critical off-camera) -->
+      <aside class="prompt-rail">
+        <div class="prompt-rail-head">
+          <span class="mini-label">{{ recordState === 'recording' || recordState === 'paused' ? '侧边提词' : '提词设置' }}</span>
+          <h2>{{ recordState === 'recording' || recordState === 'paused' ? '看镜头，侧眼扫词。' : '看镜头，慢慢说。' }}</h2>
+          <p class="prompt-rail-status">
+            <template v-if="recordState === 'recording' || recordState === 'paused'">
+              {{ coachVisionStatus }} · {{ coachSpeechStatus }}
+            </template>
+            <template v-else>提词在右侧，画面尽量铺满左侧，对不齐也没关系。</template>
+          </p>
         </div>
-        <div v-if="recordState === 'recording' || recordState === 'paused'" class="coach-side-summary">
-          <span>当前台词</span>
-          <strong>{{ currentSentenceText }}</strong>
-          <p>{{ liveAdvice }}</p>
+
+        <div
+          class="side-teleprompter"
+          :class="{ 'is-live': recordState === 'recording' || recordState === 'paused' }"
+          :style="{ fontSize: `${Math.min(fontSize, 28)}px` }"
+          aria-live="polite"
+        >
+          <div class="side-tele-progress">
+            <Sparkles :size="13" />
+            {{ currentSentence + 1 }} / {{ sentences.length || 1 }}
+          </div>
+          <p v-if="previousSentenceText" class="side-tele-prev">{{ previousSentenceText }}</p>
+          <strong class="side-tele-current">{{ currentSentenceText }}</strong>
+          <div v-if="hasNextSentence" class="side-tele-next">
+            <span>下一句</span>
+            <p>{{ nextSentenceText }}</p>
+          </div>
+          <p v-else class="side-tele-end">最后一句 · 说完点完成</p>
+          <div class="side-tele-list" aria-hidden="true">
+            <span
+              v-for="(sentence, index) in sentences"
+              :key="`${index}-${sentence.slice(0, 12)}`"
+              :class="{
+                'is-current': index === currentSentence,
+                'is-past': index < currentSentence,
+                'is-next': index === currentSentence + 1,
+              }"
+            >{{ sentence }}</span>
+          </div>
         </div>
-        <label class="range-setting">
-          <span><Type :size="17" /> 字号 <strong>{{ fontSize }}</strong></span>
-          <input v-model.number="fontSize" type="range" min="26" max="46">
-        </label>
-        <label class="range-setting">
-          <span><Gauge :size="17" /> 滚动速度 <strong>{{ scrollSpeed }}</strong></span>
-          <input v-model.number="scrollSpeed" type="range" min="1" max="5">
-        </label>
-        <button class="toggle-setting" :class="{ 'is-on': mirror }" type="button" aria-label="镜像画面" :aria-pressed="mirror" @click="mirror = !mirror">
-          <span><Video :size="17" /> 镜像画面</span><i><b /></i>
-        </button>
-        <div class="control-spacer" />
-        <button v-if="recordState === 'idle'" class="record-button" type="button" aria-label="3 秒后开始录制" :disabled="cameraStatus !== 'live'" @click="startRecording">
-          <span><Circle :size="18" fill="currentColor" /></span>{{ cameraStatus === 'live' ? '3 秒后开始录制' : cameraStatus === 'requesting' ? '等待镜头权限…' : '请先重新连接镜头' }}
-        </button>
-        <button v-else-if="recordState === 'countdown'" class="record-button" type="button" disabled><TimerReset :size="19" /> 准备好，看镜头</button>
-        <div v-else class="live-controls">
-          <button type="button" @click="pauseRecording">
-            <Play v-if="recordState === 'paused'" :size="18" /><Pause v-else :size="18" />{{ recordState === 'paused' ? '继续' : '暂停' }}
+
+        <div
+          v-if="recordState === 'recording' || recordState === 'paused'"
+          :key="liveAdvice"
+          class="side-coach-card"
+          :class="[`category-${liveAdviceCategory}`, { 'is-positive': liveAdvicePositive }]"
+        >
+          <span><Bot :size="16" /></span>
+          <div>
+            <small>{{ liveAdviceModel }} · 语气</small>
+            <strong>{{ liveAdvice }}</strong>
+          </div>
+        </div>
+
+        <div class="prompt-controls prompt-controls-compact">
+          <label class="range-setting">
+            <span><Type :size="17" /> 字号 <strong>{{ fontSize }}</strong></span>
+            <input v-model.number="fontSize" type="range" min="22" max="40">
+          </label>
+          <label class="range-setting">
+            <span><Gauge :size="17" /> 滚动速度 <strong>{{ scrollSpeed }}</strong></span>
+            <input v-model.number="scrollSpeed" type="range" min="1" max="5">
+          </label>
+          <button class="toggle-setting" :class="{ 'is-on': mirror }" type="button" aria-label="镜像画面" :aria-pressed="mirror" @click="mirror = !mirror">
+            <span><Video :size="17" /> 镜像画面</span><i><b /></i>
           </button>
-          <button class="finish-button" type="button" @click="finishRecording"><Square :size="16" fill="currentColor" /> 完成录制</button>
+          <div class="control-spacer" />
+          <button
+            v-if="recordState === 'idle'"
+            class="record-button"
+            type="button"
+            aria-label="3 秒后开始录制"
+            :disabled="cameraStatus !== 'live'"
+            @click="startRecording"
+          >
+            <span><Circle :size="18" fill="currentColor" /></span>
+            {{
+              cameraStatus === 'live'
+                ? '3 秒后开始录制'
+                : cameraStatus === 'requesting'
+                  ? '等待镜头权限…'
+                  : '请先重新连接镜头'
+            }}
+          </button>
+          <button
+            v-if="recordState === 'idle' && cameraStatus === 'error'"
+            class="record-button secondary-record-button"
+            type="button"
+            @click="openCamera"
+          >
+            <RotateCcw :size="17" /> 重新连接摄像头
+          </button>
+          <button v-else-if="recordState === 'countdown'" class="record-button" type="button" disabled><TimerReset :size="19" /> 准备好，看镜头</button>
+          <div v-else-if="recordState === 'recording' || recordState === 'paused'" class="live-controls">
+            <button type="button" @click="pauseRecording">
+              <Play v-if="recordState === 'paused'" :size="18" /><Pause v-else :size="18" />{{ recordState === 'paused' ? '继续' : '暂停' }}
+            </button>
+            <button class="finish-button" type="button" @click="finishRecording"><Square :size="16" fill="currentColor" /> 完成录制</button>
+          </div>
+          <p v-if="cameraStatus === 'error'" class="camera-note">录制只会使用真实摄像头和麦克风，不会进入演示模式。</p>
         </div>
-        <p v-if="cameraStatus === 'error'" class="camera-note">录制只会使用真实摄像头和麦克风，不会进入演示模式。</p>
       </aside>
     </div>
     <ToastMessage :message="toast" />

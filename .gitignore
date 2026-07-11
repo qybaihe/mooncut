@@ -29,6 +29,7 @@
 /remotion-studio/public/audio/bgm/generated/
 /mooncut-pi-agent/data/pi-runtime/
 /mooncut-pi-agent/data/runtime-logs/
+/mooncut-web/.wrangler/
 
 # Local browser automation artifacts
 **/.playwright-cli/

@@ -1,12 +1,90 @@
 import type { AuthUser, CapabilityCatalogItem, CapabilityInstallation, CapabilityInvocation, CoachAdviceResponse, CommunityPost, EditJob, RenderQueueSnapshot, ScriptAssistantResponse } from '../types'
 
-const apiBase = (import.meta.env.VITE_MOONCUT_API_BASE_URL || 'http://127.0.0.1:4317').replace(/\/$/, '')
+// 生产（Cloudflare Pages）：同域 /api/* → Pages Functions（auth/助手）+ 剪辑走 Tunnel。
+// 本地开发：可设 VITE_MOONCUT_API_BASE_URL=http://127.0.0.1:4317
+const apiBase = (import.meta.env.VITE_MOONCUT_API_BASE_URL || '/api').replace(/\/$/, '')
+
+function friendlyNetworkError(error: unknown): Error {
+  if (!(error instanceof Error)) return new Error('网络异常，请稍后再试')
+  const msg = error.message || ''
+  // Safari: TypeError "Load failed"; Chromium: "Failed to fetch"
+  if (
+    error.name === 'TypeError' ||
+    /load failed|failed to fetch|networkerror|network request failed/i.test(msg)
+  ) {
+    return new Error('网络连接失败，请检查网络后重试。若刚部署站点，请强制刷新页面（⌘⇧R）。')
+  }
+  if (/unexpected token|json|not valid json/i.test(msg)) {
+    return new Error('服务返回了异常页面，请稍后重试或强制刷新。')
+  }
+  return error
+}
+
+function isRetryableNetworkError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  const msg = error.message || ''
+  return (
+    error.name === 'TypeError' ||
+    /load failed|failed to fetch|networkerror|network request failed/i.test(msg)
+  )
+}
+
+async function rawFetch(path: string, init?: RequestInit): Promise<Response> {
+  return fetch(`${apiBase}${path}`, {
+    credentials: 'include',
+    ...init,
+    headers: {
+      Accept: 'application/json',
+      ...(init?.headers || {}),
+    },
+  })
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${apiBase}${path}`, { credentials: 'include', ...init })
+  let response: Response
+  try {
+    response = await rawFetch(path, init)
+  } catch (error) {
+    // One quiet retry for auth/session — Safari "Load failed" is often a transient blip during deploys.
+    const method = (init?.method || 'GET').toUpperCase()
+    const isAuth = path.startsWith('/v1/auth/')
+    if (isAuth && isRetryableNetworkError(error) && method !== 'GET' && method !== 'HEAD') {
+      try {
+        await new Promise((r) => setTimeout(r, 350))
+        response = await rawFetch(path, init)
+      } catch (retryError) {
+        throw friendlyNetworkError(retryError)
+      }
+    } else if (isAuth && isRetryableNetworkError(error) && (method === 'GET' || method === 'HEAD')) {
+      try {
+        await new Promise((r) => setTimeout(r, 250))
+        response = await rawFetch(path, init)
+      } catch (retryError) {
+        throw friendlyNetworkError(retryError)
+      }
+    } else {
+      throw friendlyNetworkError(error)
+    }
+  }
+
   const text = await response.text()
-  const body = text ? JSON.parse(text) : {}
-  if (!response.ok) throw new Error(body.error || `请求失败（${response.status}）`)
+  let body: Record<string, unknown> = {}
+  if (text) {
+    try {
+      body = JSON.parse(text) as Record<string, unknown>
+    } catch {
+      // SPA fallback HTML or empty edge error — common right after a partial deploy
+      if (!response.ok) {
+        throw new Error(`请求失败（${response.status}），接口暂时不可用，请强制刷新后重试`)
+      }
+      throw new Error('服务返回了非 JSON 响应，请强制刷新后重试')
+    }
+  }
+
+  if (!response.ok) {
+    const err = typeof body.error === 'string' ? body.error : `请求失败（${response.status}）`
+    throw new Error(err)
+  }
   return body as T
 }
 
@@ -14,14 +92,41 @@ export async function getCurrentUser() {
   return request<{ user: AuthUser | null }>('/v1/auth/session')
 }
 
-export async function register(email: string, password: string) {
-  return request<{ user: AuthUser }>('/v1/auth/register', {
+export type AuthOtpPurpose = 'login' | 'register'
+
+export async function sendAuthOtp(email: string, purpose: AuthOtpPurpose) {
+  return request<{
+    ok: true
+    email: string
+    purpose: AuthOtpPurpose
+    expiresInSec: number
+    resendAfterSec: number
+  }>('/v1/auth/otp/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, purpose }),
   })
 }
 
+/** Register with password + email verification code. */
+export async function register(email: string, password: string, code: string) {
+  return request<{ user: AuthUser }>('/v1/auth/otp/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, code, purpose: 'register' }),
+  })
+}
+
+/** Login with email verification code. */
+export async function loginWithOtp(email: string, code: string) {
+  return request<{ user: AuthUser }>('/v1/auth/otp/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, code, purpose: 'login' }),
+  })
+}
+
+/** Login with password (legacy / alternate). */
 export async function login(email: string, password: string) {
   return request<{ user: AuthUser }>('/v1/auth/login', {
     method: 'POST',
@@ -55,7 +160,7 @@ export async function getMailStatus() {
   return request<{
     authorized: boolean
     aliases: Array<{ email: string; is_primary: boolean; name: string }>
-    transport: 'agently-cli' | 'webhook'
+    transport: 'agently-cli' | 'webhook' | 'local-agent'
     automatic: boolean
     requiresConfirmation: boolean
   }>('/v1/mail/status')
@@ -137,6 +242,51 @@ export async function requestScriptAssistant(payload: {
   })
 }
 
+export async function getAsrStatus() {
+  return request<{
+    configured: boolean
+    provider: string
+    model: string
+    language: string
+    mode: string
+    note?: string
+  }>('/v1/asr/status')
+}
+
+/** Send a short live audio chunk to edge → Deepgram. */
+export async function transcribeAudioChunk(
+  audio: Blob | ArrayBuffer,
+  options?: {
+    contentType?: string
+    encoding?: string
+    sampleRate?: number
+    language?: string
+    model?: string
+  },
+) {
+  const params = new URLSearchParams()
+  if (options?.encoding) params.set('encoding', options.encoding)
+  if (options?.sampleRate) params.set('sample_rate', String(options.sampleRate))
+  if (options?.language) params.set('language', options.language)
+  if (options?.model) params.set('model', options.model)
+  const query = params.size ? `?${params}` : ''
+  const body = audio instanceof Blob ? audio : new Blob([audio])
+  return request<{
+    transcript: string
+    confidence: number | null
+    duration: number | null
+    provider: string
+    model: string
+    language: string
+  }>(`/v1/asr/transcribe${query}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': options?.contentType || (audio instanceof Blob ? audio.type || 'application/octet-stream' : 'application/octet-stream'),
+    },
+    body,
+  })
+}
+
 export async function requestCoachAdvice(payload: {
   transcript: string
   currentScript: string
@@ -207,14 +357,25 @@ export async function reconfirmCapability(id: string) {
   return request<{ installation: CapabilityInstallation }>(`/v1/me/capability-installations/${id}/reconfirm`, { method: 'POST' })
 }
 
-export async function preflightCapability(id: string) {
-  return request<{ checkedAt: string; ok: boolean; message: string }>(`/v1/me/capability-installations/${id}/preflight`, { method: 'POST' })
+export async function preflightCapability(id: string, input: unknown = {}) {
+  const result = await request<{ ok: boolean; detail?: string; message?: string }>(
+    `/v1/me/capability-installations/${id}/preflight`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input ?? {}),
+    },
+  )
+  return {
+    ok: result.ok,
+    message: result.message || result.detail || (result.ok ? '预检通过' : '预检未通过'),
+  }
 }
 
-export async function invokeCapability(id: string, payload: { tool: 'fifa_find_highlights'; input: { query: string } } | { tool: 'fifa_match_context'; input: { matchId: string; includeChineseContext?: boolean; screenshotView?: 'ratings' | 'match' | 'chat' }; confirmedArtifact?: boolean }) {
-  return request<CapabilityInvocation>(`/v1/me/capability-installations/${id}/invoke`, {
+export async function invokeCapability(id: string, input: unknown) {
+  return request<{ invocation: CapabilityInvocation }>(`/v1/me/capability-installations/${id}/invoke`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(input ?? {}),
   })
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, Home, LogOut, Mic2, PackageCheck, Scissors, UsersRound } from '@lucide/vue'
+import { Activity, Home, LogOut, Mic2, Scissors, UserRound, UsersRound } from '@lucide/vue'
 import { onMounted, ref } from 'vue'
 import { getServiceModels } from '../services/api'
 import type { WorkspacePage } from '../types'
@@ -24,8 +24,8 @@ const destinations = [
   { id: 'edit' as const, label: '剪辑台', icon: Scissors },
   { id: 'record' as const, label: '录制间', icon: Mic2 },
   { id: 'public-community' as const, label: '社区', icon: UsersRound },
-  { id: 'community' as const, label: '能力', icon: PackageCheck },
   { id: 'queue' as const, label: '队列', icon: Activity },
+  { id: 'me' as const, label: '我的', icon: UserRound },
 ]
 const userInitial = props.userEmail.slice(0, 1).toUpperCase() || 'M'
 </script>
@@ -53,10 +53,16 @@ const userInitial = props.userEmail.slice(0, 1).toUpperCase() || 'M'
       <div class="header-meta">
         <span class="local-pill"><span class="status-dot" :class="{ amber: !agentOnline }" /> {{ agentOnline ? 'Agent 已连接' : '连接 Agent' }}</span>
         <ThemeToggle />
-        <div class="account-summary" :title="userEmail">
+        <button
+          class="account-summary account-summary-button"
+          type="button"
+          :title="`${userEmail} · 打开我的`"
+          :class="{ 'is-active': activePage === 'me' }"
+          @click="activePage = 'me'"
+        >
           <span class="avatar" aria-hidden="true">{{ userInitial }}</span>
           <span class="account-email">{{ userEmail }}</span>
-        </div>
+        </button>
         <button class="header-icon-button" type="button" aria-label="退出登录" title="退出登录" @click="emit('logout')">
           <LogOut :size="16" />
         </button>

@@ -26,6 +26,8 @@ const emit = defineEmits<{
   navigateEdit: []
   openAuth: [mode: AuthMode]
   openCommunity: []
+  openPricing: []
+  openPrivacy: []
   logout: []
 }>()
 
@@ -90,28 +92,40 @@ const valueItems = [
   { icon: ShieldCheck, label: '账户任务与邮件通知' },
 ]
 
-const capabilityPrimary = {
-  index: '01',
-  title: '聊想法，长成一篇能说的话',
-  detail: '从主题、观点和语气出发，整理成自然口语脚本。助手帮你把零散的思路组织成可以直接念的稿子。',
-  tags: ['主题', '观点', '语气'],
-  kind: 'script' as const,
+/** Real finished cuts made with MoonCut — compressed for web playback. */
+const finishedWorks = [
+  {
+    id: 'football',
+    kicker: '足球剪辑成片',
+    title: '阿根廷 vs 埃及 · 比赛解读',
+    detail: '仓库最新足球向成片：赛事分析口播，字幕与证据镜头已打包。',
+    src: '/showcase/football-argentina-egypt.mp4',
+    poster: '/showcase/football-argentina-egypt-poster.jpg',
+    meta: '约 1:37 · 16:9',
+  },
+  {
+    id: 'koubo-raw',
+    kicker: '口播成片',
+    title: '真实口播导出',
+    detail: '用 MoonCut 路径产出的口播成片，可直接在页面里观看完整节奏与成片效果。',
+    src: '/showcase/koubo-raw-sample.mp4',
+    poster: '/showcase/koubo-raw-sample-poster.jpg',
+    meta: '约 1:23 · 16:9',
+  },
+] as const
+
+const workVideoRefs = ref<Record<string, HTMLVideoElement | null>>({})
+
+function setWorkVideoRef(id: string, el: unknown) {
+  workVideoRefs.value[id] = el instanceof HTMLVideoElement ? el : null
 }
 
-const capabilitySide = [
-  {
-    index: '02',
-    title: '看着稿，也像在和人说话',
-    detail: '提词器、镜像、倒计时和摄像头录制连成一条路。一个镜头，一稿到底。',
-    kind: 'teleprompter' as const,
-  },
-  {
-    index: '03',
-    title: '只剪影响节奏的部分',
-    detail: '识别停顿、重复与口头语，保留表达，完成字幕和节奏包装。',
-    kind: 'timeline' as const,
-  },
-]
+/** Only one showcase clip plays at a time. */
+function onWorkPlay(id: string) {
+  for (const [key, video] of Object.entries(workVideoRefs.value)) {
+    if (key !== id && video && !video.paused) video.pause()
+  }
+}
 
 const workflowSteps = [
   { num: '01', label: '说出想法', hint: '和助手聊清楚要讲什么' },
@@ -281,10 +295,11 @@ function handleAnchorClick(event: MouseEvent, id: string) {
         </div>
 
         <nav class="landing-anchors" aria-label="Landing 页内导航">
-          <a href="#features" @click="handleAnchorClick($event, 'features')">功能</a>
+          <a href="#works" @click="handleAnchorClick($event, 'works')">成片</a>
           <a href="#workflow" @click="handleAnchorClick($event, 'workflow')">工作流</a>
+          <button type="button" @click="emit('openPricing')">定价</button>
           <button type="button" @click="emit('openCommunity')">社区</button>
-          <a href="#demo" @click="handleAnchorClick($event, 'demo')">隐私与边界</a>
+          <button type="button" @click="emit('openPrivacy')">隐私与政策</button>
           <button
             v-if="userEmail"
             type="button"
@@ -483,89 +498,39 @@ function handleAnchorClick(event: MouseEvent, id: string) {
         </div>
       </section>
 
-      <section id="features" class="capability" aria-labelledby="capability-title">
+      <section id="works" class="works" aria-labelledby="works-title">
         <header class="section-head section-head--left">
-          <span class="section-eyebrow">核心能力</span>
-          <h2 id="capability-title" class="section-title">想清楚、说自然、只剪该剪的</h2>
-          <p class="section-desc">不是三个不相干的功能，而是一条顺着口播创作走的连贯路径。</p>
+          <span class="section-eyebrow">真实成片</span>
+          <h2 id="works-title" class="section-title">用 MoonCut 做出的口播，长这样</h2>
+          <p class="section-desc">两段已经剪好的成品，可直接在页面里观看——不是示意 mock，是真实导出。</p>
         </header>
 
-        <div class="capability-grid">
-          <article class="capability-main">
-            <div class="capability-main-head">
-              <span class="capability-index">{{ capabilityPrimary.index }}</span>
-              <div>
-                <h3>{{ capabilityPrimary.title }}</h3>
-                <p>{{ capabilityPrimary.detail }}</p>
-              </div>
-            </div>
-            <div class="capability-tags">
-              <span v-for="tag in capabilityPrimary.tags" :key="tag">{{ tag }}</span>
-            </div>
-
-            <div class="mini-script" aria-hidden="true">
-              <div class="mini-script-head">
-                <span><MessagesSquare :size="14" /> 助手构思</span>
-                <span class="mini-tag">口播稿</span>
-              </div>
-              <div class="mini-chat">
-                <div class="mini-bubble assistant">
-                  <small>助手</small>
-                  <p>这条口播，最想让观众记住什么？</p>
-                </div>
-                <div class="mini-bubble user">
-                  <small>你</small>
-                  <p>先说一个常见误区，再给一个能做的事。</p>
-                </div>
-              </div>
-              <div class="mini-draft">
-                <span class="mini-draft-label">成稿</span>
-                <p>很多人开头讲得太慢。先把观众最想知道的一句话放最前——先说结果，再解释原因。</p>
-              </div>
-            </div>
-          </article>
-
+        <div class="works-grid">
           <article
-            v-for="capability in capabilitySide"
-            :key="capability.index"
-            class="capability-side"
+            v-for="work in finishedWorks"
+            :key="work.id"
+            class="work-card"
           >
-            <div class="capability-side-head">
-              <span class="capability-index">{{ capability.index }}</span>
-              <div>
-                <h3>{{ capability.title }}</h3>
-                <p>{{ capability.detail }}</p>
-              </div>
+            <div class="work-player">
+              <video
+                :ref="(el) => setWorkVideoRef(work.id, el)"
+                class="work-video"
+                :src="work.src"
+                :poster="work.poster"
+                controls
+                playsinline
+                preload="metadata"
+                controlslist="nodownload"
+                @play="onWorkPlay(work.id)"
+              >
+                你的浏览器暂不支持视频播放。
+              </video>
             </div>
-
-            <div v-if="capability.kind === 'teleprompter'" class="mini-teleprompter" aria-hidden="true">
-              <div class="mini-tele-head">
-                <span class="mini-rec"><i /> 录制中</span>
-                <span>00:12</span>
-              </div>
-              <div class="mini-tele-copy">
-                <p class="is-current">先说一个常见误区，</p>
-                <p>观众才有代入感。</p>
-                <p>先说结果，再解释原因。</p>
-              </div>
-              <div class="mini-tele-controls">
-                <span><Mic2 :size="13" /> 镜头</span>
-                <span><Captions :size="13" /> 提词</span>
-              </div>
-            </div>
-
-            <div v-else class="mini-timeline" aria-hidden="true">
-              <div class="mini-tl-track">
-                <span class="mini-tl-seg seg-keep" />
-                <span class="mini-tl-seg seg-cut" />
-                <span class="mini-tl-seg seg-keep" />
-                <span class="mini-tl-seg seg-sub" />
-              </div>
-              <div class="mini-tl-legend">
-                <span><i class="keep" /> 保留</span>
-                <span><i class="cut" /> 精简</span>
-                <span><i class="sub" /> 字幕</span>
-              </div>
+            <div class="work-meta">
+              <span class="work-kicker">{{ work.kicker }}</span>
+              <h3>{{ work.title }}</h3>
+              <p>{{ work.detail }}</p>
+              <small>{{ work.meta }}</small>
             </div>
           </article>
         </div>
@@ -596,87 +561,6 @@ function handleAnchorClick(event: MouseEvent, id: string) {
         </ol>
       </section>
 
-      <section class="showcase" aria-labelledby="showcase-title">
-        <header class="section-head section-head--left">
-          <span class="section-eyebrow">产品实景</span>
-          <h2 id="showcase-title" class="section-title">两段创作路径的真实样子</h2>
-        </header>
-
-        <div class="showcase-grid">
-          <article class="showcase-card showcase-a">
-            <header>
-              <span class="showcase-kicker"><MessagesSquare :size="14" aria-hidden="true" /> 口播助手 · 提词录制</span>
-              <h3>从聊明白，到看着稿念</h3>
-            </header>
-            <div class="showcase-mock" aria-hidden="true">
-              <div class="mock-chat">
-                <div class="mock-bubble assistant">
-                  <span class="mock-avatar"><Sparkles :size="12" /></span>
-                  <p>先把要讲的事缩成一句话。</p>
-                </div>
-                <div class="mock-bubble user"><p>讲为什么开头 3 秒很关键。</p></div>
-              </div>
-              <div class="mock-divider" />
-              <div class="mock-tele">
-                <div class="mock-tele-head"><span class="mock-rec" /><span>RECORDING</span><span>00:09</span></div>
-                <div class="mock-tele-copy">
-                  <p class="is-current">如果你的口播总没人看，</p>
-                  <p>先检查开头这句话。</p>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="showcase-card showcase-b">
-            <header>
-              <span class="showcase-kicker"><Scissors :size="14" aria-hidden="true" /> 上传素材 · 剪辑时间线</span>
-              <h3>只动节奏，不动表达</h3>
-            </header>
-            <div class="showcase-mock" aria-hidden="true">
-              <div class="mock-upload">
-                <span class="mock-upload-icon"><Upload :size="18" /></span>
-                <div>
-                  <strong>koubo_demo.webm</strong>
-                  <small>本地素材 · 已就绪</small>
-                </div>
-              </div>
-              <div class="mock-timeline">
-                <span class="mock-seg seg-keep" />
-                <span class="mock-seg seg-cut" />
-                <span class="mock-seg seg-keep" />
-                <span class="mock-seg seg-cut" />
-                <span class="mock-seg seg-keep" />
-              </div>
-              <div class="mock-caption-row">
-                <span class="mock-caption">先说一个常见误区</span>
-                <span class="mock-caption is-active">再给一个能做的事</span>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="demo" class="privacy" aria-labelledby="privacy-title">
-        <header class="section-head section-head--left">
-          <span class="section-eyebrow">隐私与服务边界</span>
-          <h2 id="privacy-title" class="section-title">哪些留在浏览器，哪些交给 Agent</h2>
-        </header>
-        <div class="privacy-grid">
-          <div class="privacy-card">
-            <ShieldCheck :size="20" aria-hidden="true" />
-            <p>脚本草稿保存在<strong>当前浏览器</strong>，模型密钥始终留在服务端。</p>
-          </div>
-          <div class="privacy-card">
-            <Sparkles :size="20" aria-hidden="true" />
-            <p>你可以先完整体验<strong>脚本、录制和剪辑</strong>的路径，再决定怎么用。</p>
-          </div>
-          <div class="privacy-card">
-            <Captions :size="20" aria-hidden="true" />
-            <p>上传视频进入你配置的<strong>MoonCut Agent</strong>，任务状态与产物由服务端持久化。</p>
-          </div>
-        </div>
-      </section>
-
       <section class="final-cta" aria-labelledby="final-title">
         <div class="final-cta-inner">
           <h2 id="final-title" class="final-title">下一条口播，从一句还没想完整的话开始。</h2>
@@ -700,10 +584,14 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <footer class="landing-footer">
-        <div class="footer-brand">
-          <BrandLogo variant="lockup" labeled class="footer-logo-lockup" />
+        <div class="footer-brand" aria-label="MoonCut">
+          <BrandLogo variant="mark" class="footer-logo-mark" />
+          <span class="footer-brand-name">MoonCut</span>
         </div>
         <p class="footer-note">从一句话开始，陪你走到一条能发的口播。</p>
+        <p class="landing-footer-links">
+          <button type="button" @click="emit('openPrivacy')">隐私与政策</button>
+        </p>
       </footer>
     </main>
   </div>

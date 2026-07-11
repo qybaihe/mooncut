@@ -3,9 +3,11 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import AppNavigation from './components/AppNavigation.vue'
 import AuthStudio from './components/AuthStudio.vue'
 import ClipStudio from './components/ClipStudio.vue'
-import CommunityStudio from './components/CommunityStudio.vue'
 import LandingPage from './components/LandingPage.vue'
+import MeStudio from './components/MeStudio.vue'
 import PetCompanion from './components/PetCompanion.vue'
+import PricingPage from './components/PricingPage.vue'
+import PrivacyPage from './components/PrivacyPage.vue'
 import PublicCommunity from './components/PublicCommunity.vue'
 import RecordStudio from './components/RecordStudio.vue'
 import QueueStudio from './components/QueueStudio.vue'
@@ -13,6 +15,7 @@ import {
   authModeForEntry,
   resolvePostAuthPage,
   type AuthMode,
+  type PostAuthIntent,
   type WorkspaceDestination,
 } from './lib/navigation'
 import { getCurrentUser, logout } from './services/api'
@@ -30,20 +33,22 @@ const authLoading = ref(true)
 /** Auth is a deliberate gate, not the default public entry. */
 const authView = ref(false)
 const authMode = ref<AuthMode>('login')
-const pendingDestination = ref<WorkspaceDestination | null>(null)
+const pendingDestination = ref<PostAuthIntent | null>(null)
 
 const immersive = computed(() => activePage.value === 'record' && recordMode.value === 'teleprompter')
 const activePetState = computed(() => {
   if (activePage.value === 'edit') return clipPetState.value
   if (activePage.value === 'record') return recordPetState.value
-  if (activePage.value === 'community') return 'review'
+  if (activePage.value === 'me') return 'idle'
+  if (activePage.value === 'pricing') return 'idle'
+  if (activePage.value === 'privacy') return 'idle'
   if (activePage.value === 'public-community') return 'review'
   if (activePage.value === 'queue') return 'running'
   return 'idle'
 })
 
 watch(activePage, (page) => {
-  if (page === 'edit' || page === 'record' || page === 'community' || page === 'queue') {
+  if (page === 'edit' || page === 'record' || page === 'me' || page === 'queue') {
     localStorage.setItem('mooncut:page', page)
   } else {
     localStorage.removeItem('mooncut:page')
@@ -65,7 +70,7 @@ function clearHandoff() {
 
 function openAuth(
   mode: AuthMode,
-  destination: WorkspaceDestination | null = null,
+  destination: PostAuthIntent | null = null,
   { pushHistory = true }: { pushHistory?: boolean } = {},
 ) {
   authMode.value = mode
@@ -105,6 +110,10 @@ function requestNavigate(page: WorkspaceDestination, entry: 'cta-create' | 'cta-
 
 function openAccount(mode: AuthMode) {
   openAuth(mode, null)
+}
+
+function onPricingOpenAuth(payload: { mode: AuthMode; destination: PostAuthIntent }) {
+  openAuth(payload.mode, payload.destination)
 }
 
 function handleAuthenticated(user: AuthUser) {
@@ -170,16 +179,26 @@ onBeforeUnmount(() => {
   <div
     v-else
     class="app-shell"
-    :class="{ 'is-landing': activePage === 'landing' }"
+    :class="{
+      'is-landing': activePage === 'landing',
+      'is-pricing': activePage === 'pricing',
+      'is-privacy': activePage === 'privacy',
+    }"
   >
     <AppNavigation
-      v-if="authUser && activePage !== 'landing'"
+      v-if="authUser && activePage !== 'landing' && activePage !== 'pricing' && activePage !== 'privacy'"
       v-model="activePage"
       :immersive="immersive"
       :user-email="authUser.email"
       @logout="handleLogout"
     />
-    <main class="app-main" :class="{ 'landing-main': activePage === 'landing' }">
+    <main
+      class="app-main"
+      :class="{
+        'landing-main':
+          activePage === 'landing' || activePage === 'pricing' || activePage === 'privacy',
+      }"
+    >
       <LandingPage
         v-show="activePage === 'landing'"
         :user-email="authUser?.email ?? null"
@@ -188,6 +207,8 @@ onBeforeUnmount(() => {
         @navigate-edit="requestNavigate('edit', 'cta-edit')"
         @open-auth="openAccount"
         @open-community="activePage = 'public-community'"
+        @open-pricing="activePage = 'pricing'"
+        @open-privacy="activePage = 'privacy'"
         @logout="handleLogout"
       />
       <PublicCommunity
@@ -195,6 +216,26 @@ onBeforeUnmount(() => {
         :signed-in="Boolean(authUser)"
         @home="activePage = 'landing'"
         @open-auth="openAccount('login')"
+        @create="requestNavigate('record', 'cta-create')"
+      />
+      <PricingPage
+        v-show="activePage === 'pricing'"
+        :signed-in="Boolean(authUser)"
+        :user-email="authUser?.email ?? null"
+        @home="activePage = 'landing'"
+        @navigate="requestNavigate($event)"
+        @open-auth="onPricingOpenAuth"
+        @open-community="activePage = 'public-community'"
+        @open-privacy="activePage = 'privacy'"
+      />
+      <PrivacyPage
+        v-show="activePage === 'privacy'"
+        :signed-in="Boolean(authUser)"
+        :user-email="authUser?.email ?? null"
+        @home="activePage = 'landing'"
+        @open-pricing="activePage = 'pricing'"
+        @open-community="activePage = 'public-community'"
+        @open-auth="openAccount"
         @create="requestNavigate('record', 'cta-create')"
       />
       <template v-if="authUser">
@@ -205,7 +246,7 @@ onBeforeUnmount(() => {
           @clear-handoff="clearHandoff"
           @pet-state="clipPetState = $event"
           @pet-message="petMessage = $event"
-          @open-community="activePage = 'community'"
+          @open-community="activePage = 'public-community'"
         />
         <RecordStudio
           v-show="activePage === 'record'"
@@ -215,9 +256,14 @@ onBeforeUnmount(() => {
           @pet-state="recordPetState = $event"
           @pet-message="petMessage = $event"
         />
-        <CommunityStudio
-          v-show="activePage === 'community'"
-          @create="activePage = 'record'"
+        <MeStudio
+          v-show="activePage === 'me'"
+          :user="authUser"
+          @logout="handleLogout"
+          @open-community="activePage = 'public-community'"
+          @open-privacy="activePage = 'privacy'"
+          @open-pricing="activePage = 'pricing'"
+          @open-queue="activePage = 'queue'"
           @pet-message="petMessage = $event"
         />
         <QueueStudio
@@ -230,7 +276,7 @@ onBeforeUnmount(() => {
       :state="activePetState"
       :message="petMessage"
       :immersive="immersive"
-      :landing="activePage === 'landing'"
+      :landing="activePage === 'landing' || activePage === 'pricing' || activePage === 'privacy'"
     />
   </div>
 </template>
