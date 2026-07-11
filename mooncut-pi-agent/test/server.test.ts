@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {canAccessOwnedResource, isAuthorized, redactInternalPaths} from "../src/server.ts";
+import {canAccessOwnedResource, isAuthorized, notificationEmailForPrincipal, redactInternalPaths} from "../src/server.ts";
 
 test("requires an exact Bearer API key when deployment keys are configured", () => {
   const keys = ["mooncut_test_key_0123456789abcdef"];
@@ -10,8 +10,8 @@ test("requires an exact Bearer API key when deployment keys are configured", () 
   assert.equal(isAuthorized(`Bearer ${keys[0]}`, keys), true);
 });
 
-test("keeps local development backwards-compatible when no API key is configured", () => {
-  assert.equal(isAuthorized(undefined, []), true);
+test("fails closed for service authorization when no API key is configured", () => {
+  assert.equal(isAuthorized(undefined, []), false);
 });
 
 test("isolates user-owned resources while service credentials retain operator access", () => {
@@ -21,6 +21,12 @@ test("isolates user-owned resources while service credentials retain operator ac
   assert.equal(canAccessOwnedResource("alice", bob), false);
   assert.equal(canAccessOwnedResource(undefined, alice), false);
   assert.equal(canAccessOwnedResource(undefined, {kind: "service"}), true);
+});
+
+test("user jobs cannot choose a different mail recipient", () => {
+  const user = {kind: "user" as const, user: {id: "alice", email: "alice@example.com", createdAt: "2026-01-01T00:00:00.000Z"}};
+  assert.equal(notificationEmailForPrincipal(user, "victim@example.com"), "alice@example.com");
+  assert.equal(notificationEmailForPrincipal({kind: "service"}, "ops@example.com"), "ops@example.com");
 });
 
 test("redacts absolute server paths repeated by an Agent summary", () => {

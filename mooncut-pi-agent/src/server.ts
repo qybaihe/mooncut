@@ -36,7 +36,9 @@ const safeEqual = (left: string, right: string) => {
 };
 
 export const isAuthorized = (authorization: string | undefined, apiKeys = config.apiKeys) => {
-  if (apiKeys.length === 0) return true;
+  // An empty key list must never become an implicit allow-all. Local browser
+  // sessions are handled separately below; service-to-service calls require a key.
+  if (apiKeys.length === 0) return false;
   const match = authorization?.match(/^Bearer\s+([^\s]{16,256})$/u);
   return Boolean(match && apiKeys.some((key) => safeEqual(match[1], key)));
 };
@@ -45,6 +47,12 @@ const isServiceAuthorized = (authorization: string | undefined) =>
   config.apiKeys.length > 0 && isAuthorized(authorization, config.apiKeys);
 
 type RequestPrincipal = {kind: "service"} | {kind: "user"; user: AuthUser};
+
+/** User jobs always deliver to their authenticated owner, never client input. */
+export const notificationEmailForPrincipal = (
+  principal: RequestPrincipal | undefined,
+  requested: string | undefined,
+) => principal?.kind === "user" ? principal.user.email : requested;
 
 export const canAccessOwnedResource = (ownerUserId: string | undefined, principal: RequestPrincipal) =>
   principal.kind === "service" || (Boolean(ownerUserId) && ownerUserId === principal.user.id);
@@ -69,6 +77,37 @@ export class RequestRateLimiter {
 }
 
 const authRateLimiter = new RequestRateLimiter();
+
+const isLoopbackHost = (host: string) =>
+  host === "127.0.0.1" || host === "::1" || host === "localhost";
+
+/** Fail closed when an Agent is intentionally deployed beyond the local desktop. */
+export const assertSecureDeploymentConfiguration = () => {
+  const publicDeployment = config.publicDeployment || !isLoopbackHost(config.host) ||
+    config.publicBaseUrl.startsWith("https://");
+  if (!publicDeployment) return;
+  if (!config.edgeAuthOnly) {
+    throw new Error("MOONCUT_EDGE_AUTH_ONLY=true is required for a public Agent deployment");
+  }
+  if (config.apiKeys.length === 0) {
+    throw new Error("MOONCUT_API_KEY or MOONCUT_API_KEYS is required for a public Agent deployment");
+  }
+  if (!config.cookieSecure) {
+    throw new Error("MOONCUT_COOKIE_SECURE=true is required for a public Agent deployment");
+  }
+  if (!config.publicBaseUrl.startsWith("https://")) {
+    throw new Error("MOONCUT_PUBLIC_BASE_URL must be an HTTPS URL for a public Agent deployment");
+  }
+  if (!config.mailDownloadSecret) {
+    throw new Error("MOONCUT_MAIL_DOWNLOAD_SECRET is required for a public Agent deployment");
+  }
+  if (config.allowLocalInputPath) {
+    throw new Error("MOONCUT_ALLOW_INPUT_PATH must stay disabled for a public Agent deployment");
+  }
+  if (config.capabilitySigningKey === "mooncut-development-capability-signing-key") {
+    throw new Error("MOONCUT_CAPABILITY_SIGNING_KEY must be replaced for a public Agent deployment");
+  }
+};
 
 const json = (response: ServerResponse, status: number, value: unknown) => {
   response.setHeader("Cache-Control", "no-store");
@@ -359,6 +398,7 @@ const streamArtifact = async (request: IncomingMessage, response: ServerResponse
 };
 
 export const startServer = async () => {
+  assertSecureDeploymentConfiguration();
   await jobManager.recoverInterruptedJobs();
   const server = createServer(async (request, response) => {
     try {
@@ -760,10 +800,13 @@ export const startServer = async () => {
       }
       if (request.method === "POST" && url.pathname === "/v1/edits") {
         if (!jobManager.canAccept()) throw new HttpError(429, "Editing queue is full; retry later");
-        // Edge path: prefer explicit notify email, else authenticated edge user email.
-        const notificationEmail = (url.searchParams.get("notificationEmail")
-          ?? (edgeUserEmail.includes("@") ? edgeUserEmail : undefined))?.trim() || undefined;
-        if (notificationEmail && !isEmail(notificationEmail)) throw new HttpError(400, "notificationEmail is invalid");
+        const requestedNotificationEmail = url.searchParams.get("notificationEmail")?.trim() || undefined;
+        if (requestedNotificationEmail && !isEmail(requestedNotificationEmail)) {
+          throw new HttpError(400, "notificationEmail is invalid");
+        }
+        // A user-created job may only notify the authenticated owner. Service
+        // callers retain explicit control for operator-managed automation.
+        const notificationEmail = notificationEmailForPrincipal(principal, requestedNotificationEmail);
         if (config.edgeAuthOnly && !notificationEmail) {
           throw new HttpError(400, "notificationEmail is required so the finished video can be emailed from this machine");
         }
@@ -800,8 +843,10 @@ export const startServer = async () => {
           json(response, 400, {error: "notificationEmail is invalid"});
           return;
         }
-        if (!payload.notificationEmail && edgeUserEmail.includes("@")) {
-          payload.notificationEmail = edgeUserEmail;
+        if (principal?.kind === "user") {
+          // Do not let a browser turn the render service into an arbitrary
+          // recipient mailer. The verified session identity is authoritative.
+          payload.notificationEmail = notificationEmailForPrincipal(principal, payload.notificationEmail);
         }
         if (config.edgeAuthOnly && !payload.notificationEmail) {
           json(response, 400, {error: "notificationEmail is required so the finished video can be emailed from this machine"});
