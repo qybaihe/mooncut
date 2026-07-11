@@ -46,13 +46,20 @@ jobs:
 
       - name: Install Studio workspaces
         working-directory: mooncut-studio
-        run: npm ci || npm install
+        run: |
+          # Prefer install over ci so platform-specific optional deps (rollup native) resolve on Linux.
+          rm -rf node_modules
+          npm install --no-audit --no-fund
+          # Guard against npm optional-deps bug for rollup on linux runners
+          if [[ "$(uname -s)" == "Linux" ]]; then
+            npm install --no-save @rollup/rollup-linux-x64-gnu || true
+          fi
 
       - name: Build pi-agent studio entry
         working-directory: mooncut-pi-agent
         run: |
-          npm ci || npm install
-          # Fail clearly if required modules are missing from the tree
+          rm -rf node_modules
+          npm install --no-audit --no-fund
           test -f src/capabilities.ts
           test -f src/cli.ts
           npm run build:studio
@@ -74,12 +81,19 @@ jobs:
           npm run test -w @mooncut/studio-bootstrapper
           npm run test -w @mooncut/studio-agent-host
 
-      - name: Desktop unit tests (build + node:test)
+      - name: Desktop unit tests
         working-directory: mooncut-studio
-        run: npm run test -w @mooncut/studio-desktop
+        run: |
+          # Packages already built; rebuild desktop then run node:test
+          npm run build -w @mooncut/studio-desktop
+          npm run test -w @mooncut/studio-desktop --if-present
+          # explicit: avoid double full rebuild confusion
+          (cd apps/desktop && node --test test/*.test.js)
 
       - name: Pi-agent studio gates
         working-directory: mooncut-pi-agent
         run: |
-          node --experimental-strip-types --test test/studio-data-root.test.ts test/capabilities.test.ts test/speech-cleanup.test.ts || \
-          node --experimental-strip-types --test test/studio-data-root.test.ts
+          node --experimental-strip-types --test \
+            test/studio-data-root.test.ts \
+            test/capabilities.test.ts \
+            test/speech-cleanup.test.ts

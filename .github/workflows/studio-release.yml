@@ -72,12 +72,23 @@ jobs:
 
       - name: Install Studio workspaces
         working-directory: mooncut-studio
-        run: npm ci || npm install
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf node_modules
+          npm install --no-audit --no-fund
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            npm install --no-save @rollup/rollup-linux-x64-gnu || true
+          fi
 
       - name: Install pi-agent + prebuild dist/cli.mjs
         working-directory: mooncut-pi-agent
+        shell: bash
         run: |
-          npm ci || npm install
+          set -euo pipefail
+          rm -rf node_modules
+          npm install --no-audit --no-fund
+          test -f src/capabilities.ts
           npm run build:studio
           test -f dist/cli.mjs
 
@@ -99,10 +110,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Ensure electron-builder binary is available from workspace root install
+          EB="../../node_modules/.bin/electron-builder"
+          if [[ ! -x "$EB" ]]; then EB="npx electron-builder"; fi
           case "${{ matrix.platform }}" in
-            mac)   npx electron-builder --mac --publish never -c.mac.identity=null ;;
-            win)   npx electron-builder --win --publish never ;;
-            linux) npx electron-builder --linux --publish never ;;
+            mac)   $EB --mac --publish never -c.mac.identity=null ;;
+            win)   $EB --win --publish never ;;
+            linux) $EB --linux --publish never ;;
           esac
 
       - name: Collect artifacts
