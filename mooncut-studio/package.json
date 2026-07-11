@@ -1,0 +1,33 @@
+{
+  "name": "mooncut-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MoonCut Studio \u2014 local-first professional desktop editing workstation",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @mooncut/studio-shared && npm run build -w @mooncut/studio-project-format && npm run build -w @mooncut/studio-bootstrapper && npm run build -w @mooncut/studio-agent-host && npm run build -w @mooncut/studio-desktop",
+    "typecheck": "npm run typecheck -w @mooncut/studio-shared && npm run typecheck -w @mooncut/studio-project-format && npm run typecheck -w @mooncut/studio-bootstrapper && npm run typecheck -w @mooncut/studio-agent-host && npm run typecheck -w @mooncut/studio-desktop",
+    "test": "npm run test -w @mooncut/studio-shared && npm run test -w @mooncut/studio-project-format && npm run test -w @mooncut/studio-bootstrapper && npm run test -w @mooncut/studio-agent-host && npm run test -w @mooncut/studio-desktop",
+    "dev": "npm run dev -w @mooncut/studio-desktop",
+    "prepare:runtime": "node scripts/prepare-runtime-bundle.mjs",
+    "pack:mac": "npm run pack:mac -w @mooncut/studio-desktop",
+    "pack:win": "npm run pack:win -w @mooncut/studio-desktop",
+    "verify": "node scripts/verify-baseline.mjs",
+    "ensure-electron": "node scripts/ensure-electron.mjs",
+    "postinstall": "node scripts/ensure-workspace.mjs && node scripts/ensure-electron.mjs || true",
+    "pack:linux": "npm run pack:linux -w @mooncut/studio-desktop",
+    "pack:ci": "npm run pack:ci -w @mooncut/studio-desktop",
+    "release:dry": "MOONCUT_RUNTIME_PROFILE=minimal npm run pack:ci"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "license": "UNLICENSED",
+  "allowScripts": {
+    "electron@35.1.2": true
+  }
+}
