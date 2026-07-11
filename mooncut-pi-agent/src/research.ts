@@ -1,6 +1,8 @@
 import {randomUUID} from "node:crypto";
+import {lookup} from "node:dns/promises";
 import {existsSync} from "node:fs";
 import {copyFile, mkdir, readFile, writeFile} from "node:fs/promises";
+import {isIP} from "node:net";
 import {basename, dirname, extname, join} from "node:path";
 import {config} from "./config.ts";
 import {sha256File} from "./media.ts";
@@ -14,10 +16,60 @@ const slug = (value: string) => value
   .toLowerCase()
   .slice(0, 48) || "evidence";
 
-const assertHttpUrl = (value: string) => {
+type AddressLookup = (hostname: string, options: {all: true; verbatim: true}) => Promise<Array<{address: string}>>;
+
+const isPrivateIpv4 = (address: string) => {
+  const octets = address.split(".").map(Number);
+  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)) return true;
+  const [a, b] = octets;
+  return a === 0 || a === 10 || a === 127 ||
+    (a === 100 && b >= 64 && b <= 127) ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 198 && (b === 18 || b === 19)) ||
+    a >= 224;
+};
+
+const isPrivateIp = (address: string) => {
+  const normalized = address.toLowerCase().replace(/^::ffff:/u, "");
+  if (isIP(normalized) === 4) return isPrivateIpv4(normalized);
+  if (isIP(normalized) !== 6) return true;
+  return normalized === "::" || normalized === "::1" ||
+    normalized.startsWith("fc") || normalized.startsWith("fd") ||
+    normalized.startsWith("fe80:") || normalized.startsWith("ff");
+};
+
+export const validatePublicResearchUrl = async (
+  value: string,
+  resolveAddresses: AddressLookup = lookup,
+) => {
   const parsed = new URL(value);
-  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    throw new Error("Only public HTTP(S) pages can be captured");
+  const hostname = parsed.hostname.toLowerCase();
+  if (parsed.protocol !== "https:") {
+    throw new Error("Only public HTTPS pages can be captured");
+  }
+  if (parsed.username || parsed.password || (parsed.port && parsed.port !== "443")) {
+    throw new Error("Research URLs must not include credentials or non-standard ports");
+  }
+  if (hostname === "localhost" || hostname.endsWith(".localhost") ||
+    (isIP(hostname) !== 0 && isPrivateIp(hostname))) {
+    throw new Error("Private, loopback, and link-local addresses cannot be captured");
+  }
+  const addresses = await resolveAddresses(hostname, {all: true, verbatim: true});
+  if (!addresses.length || addresses.some((entry) => isPrivateIp(entry.address))) {
+    throw new Error("Research URL must resolve only to public addresses");
+  }
+  return parsed.toString();
+};
+
+const assertTrustedXUrl = (value: string) => {
+  const parsed = new URL(value);
+  const hostname = parsed.hostname.toLowerCase();
+  const trusted = hostname === "x.com" || hostname === "www.x.com" ||
+    hostname === "twitter.com" || hostname === "www.twitter.com";
+  if (parsed.protocol !== "https:" || !trusted || parsed.username || parsed.password || parsed.port) {
+    throw new Error("X evidence URLs must be canonical HTTPS x.com or twitter.com links");
   }
   return parsed.toString();
 };
@@ -78,7 +130,7 @@ export const captureXPost = async (
   const outputDirectory = await researchDirectory(context, `x-${slug(sourceLabel)}`);
   const args = [config.xPostCaptureScript];
   if (request.topic) args.push("--topic", request.topic);
-  if (request.url) args.push("--url", assertHttpUrl(request.url));
+  if (request.url) args.push("--url", assertTrustedXUrl(request.url));
   for (const account of request.trustedAccounts) args.push("--trusted-account", account);
   for (const domain of request.officialDomains) args.push("--official-domain", domain);
   args.push("--output-dir", outputDirectory);
@@ -101,7 +153,7 @@ export const captureWebPage = async (
   context: RunContext,
   request: {url: string; label: string; fullPage: boolean},
 ) => {
-  const url = assertHttpUrl(request.url);
+  const url = await validatePublicResearchUrl(request.url);
   if (!existsSync(config.playwrightCli)) {
     throw new Error(`Playwright CLI wrapper not found: ${config.playwrightCli}`);
   }
