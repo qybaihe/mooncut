@@ -36,7 +36,8 @@ const handleAuth = async (request: Request, env: FullEnv, pathname: string) => {
 
   if (request.method === 'POST' && pathname === '/v1/auth/otp/send') {
     const body = (await readJson(request)) as { email?: unknown; purpose?: unknown } | null
-    const result = await sendEmailOtp(env, body?.email, body?.purpose)
+    const clientIp = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For')
+    const result = await sendEmailOtp(env, body?.email, body?.purpose, clientIp)
     return json(result, 200)
   }
 
@@ -252,7 +253,11 @@ export const onRequest: PagesFunction<FullEnv> = async (context) => {
       }
       const agentPath =
         pathname === '/v1/agent/health' ? '/healthz' + url.search : targetPath
-      return await proxyToAgent(request, env, agentPath, user)
+      const upstream = await proxyToAgent(request, env, agentPath, user)
+      // A public liveness endpoint must not disclose models, gateway state, or
+      // installed capabilities from the local render machine.
+      if (isHealth) return json({ ok: upstream.ok, service: 'mooncut-render-agent' }, upstream.ok ? 200 : 503)
+      return upstream
     }
 
     return json(
@@ -267,7 +272,8 @@ export const onRequest: PagesFunction<FullEnv> = async (context) => {
     if (error instanceof AuthHttpError) {
       return json({ error: error.message, code: error.code }, error.status)
     }
-    const message = error instanceof Error ? error.message : 'Internal error'
-    return json({ error: message, code: 'EDGE_ERROR' }, 500)
+    const requestId = crypto.randomUUID()
+    console.error(`[edge:${requestId}]`, error)
+    return json({ error: '服务暂时不可用，请稍后重试', code: 'EDGE_ERROR', requestId }, 500)
   }
 }
