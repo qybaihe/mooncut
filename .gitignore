@@ -26,7 +26,9 @@
 /remotion-studio/public/agent-jobs/*
 !/remotion-studio/public/agent-jobs/763e8d-perfect-v1/
 !/remotion-studio/public/agent-jobs/763e8d-perfect-v1/**
+/remotion-studio/public/audio/bgm/generated/
 /mooncut-pi-agent/data/pi-runtime/
+/mooncut-pi-agent/data/runtime-logs/
 
 # Local browser automation artifacts
 **/.playwright-cli/
