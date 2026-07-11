@@ -26,6 +26,8 @@
 	<string>$(MOONCUT_API_BASE_URL)</string>
 	<key>MoonCutTrustedHost</key>
 	<string>$(MOONCUT_TRUSTED_HOST)</string>
+	<key>MoonCutDistributionMode</key>
+	<string>$(MOONCUT_DISTRIBUTION_MODE)</string>
 	<key>NSCameraUsageDescription</key>
 	<string>MoonCut 使用前置相机录制你的口播视频，并用于镜头朝向估算。</string>
 	<key>NSMicrophoneUsageDescription</key>

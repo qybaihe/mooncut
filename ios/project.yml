@@ -16,10 +16,12 @@ settings:
 configs:
   Debug: debug
   Release: release
+  Public: release
 
 configFiles:
   Debug: Config/Debug.xcconfig
   Release: Config/Release.xcconfig
+  Public: Config/Public.xcconfig
 
 targets:
   MoonCut:
@@ -39,9 +41,12 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         MOONCUT_API_BASE_URL: $(MOONCUT_API_BASE_URL)
         MOONCUT_TRUSTED_HOST: $(MOONCUT_TRUSTED_HOST)
+        MOONCUT_DISTRIBUTION_MODE: $(MOONCUT_DISTRIBUTION_MODE)
       configs:
         Debug:
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        Public:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: PUBLIC_DISTRIBUTION
     scheme:
       testTargets:
         - MoonCutTests

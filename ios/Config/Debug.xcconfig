@@ -1,4 +1,6 @@
 // Debug — 模拟器默认连本机服务；真机请改为可访问的局域网地址。
+// 切勿在公开仓库 CI 使用本配置指向内网生产端口。
 MOONCUT_API_BASE_URL = http:/$()/127.0.0.1:4317
 MOONCUT_TRUSTED_HOST = 42.194.219.172
+MOONCUT_DISTRIBUTION_MODE = debug
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) DEBUG

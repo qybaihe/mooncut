@@ -46,7 +46,12 @@ actor MoonCutAPIClient {
     // MARK: - Health
 
     func healthz() async throws -> HealthzDTO {
-        try await get("/healthz")
+        guard configuration.isConfigured else {
+            throw APIError.notConfigured(
+                "当前安装包未配置可用服务地址（公开预览包）。请自建 mooncut-pi-agent 并使用受控 Release/Debug 配置，勿把内网端口打进公开 IPA。"
+            )
+        }
+        return try await get("/healthz")
     }
 
     // MARK: - Auth (Cookie session)
@@ -145,6 +150,7 @@ actor MoonCutAPIClient {
     }
 
     func downloadArtifact(jobId: String, name: String = "video", to destination: URL) async throws -> URL {
+        try ensureConfigured()
         let url = configuration.url(path: "/v1/edit-jobs/\(jobId)/artifacts/\(name)")
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -192,7 +198,16 @@ actor MoonCutAPIClient {
 
     // MARK: - Core HTTP
 
+    private func ensureConfigured() throws {
+        guard configuration.isConfigured else {
+            throw APIError.notConfigured(
+                "服务地址未配置。公开 IPA 不能直接连接内部环境；请部署自有 agent 后使用私有构建。"
+            )
+        }
+    }
+
     private func get<T: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> T {
+        try ensureConfigured()
         var request = URLRequest(url: configuration.url(path: path, query: query))
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -200,6 +215,7 @@ actor MoonCutAPIClient {
     }
 
     private func postJSON<T: Decodable>(_ path: String, body: [String: Any]) async throws -> T {
+        try ensureConfigured()
         var request = URLRequest(url: configuration.url(path: path))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -209,6 +225,7 @@ actor MoonCutAPIClient {
     }
 
     private func postCodable<Body: Encodable, T: Decodable>(_ path: String, body: Body) async throws -> T {
+        try ensureConfigured()
         var request = URLRequest(url: configuration.url(path: path))
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -238,6 +255,7 @@ actor MoonCutAPIClient {
     }
 
     private func performUpload<T: Decodable>(_ request: URLRequest, fromFile fileURL: URL) async throws -> T {
+        try ensureConfigured()
         do {
             let (data, response) = try await session.upload(for: request, fromFile: fileURL)
             try validate(response: response, data: data)
@@ -327,7 +345,9 @@ extension MoonCutAPIClient {
                 requestTimeout: 5,
                 resourceTimeout: 10,
                 uploadTimeout: 10,
-                pollInterval: 0.1
+                pollInterval: 0.1,
+                isConfigured: true,
+                distributionMode: "test"
             ),
             session: session
         )

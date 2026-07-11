@@ -133,8 +133,13 @@ final class AppEnvironment {
 
     var serviceBadge: ServiceStatusBadge.Kind {
         if isRestoringSession { return .loading }
+        if !APIConfiguration.current.isConfigured { return .unconfigured }
         if let serviceHealth, serviceHealth.ok { return .connected }
         if serviceError != nil { return .unavailable }
         return .unconfigured
+    }
+
+    var isPublicPreviewBuild: Bool {
+        APIConfiguration.current.isPublicDistribution
     }
 }

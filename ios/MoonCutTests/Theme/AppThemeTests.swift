@@ -35,6 +35,11 @@ final class AppThemeTests: XCTestCase {
         XCTAssertNotEqual(dark.canvas, memphis.canvas)
     }
 
+    func testPublicDistributionConfigIsNotConfiguredByDefaultToken() {
+        // 结构字段存在性：公开模式语义由 APIConfiguration 负责
+        XCTAssertEqual(APIConfiguration.unconfiguredPlaceholder.contains("unconfigured"), true)
+    }
+
     func testThemePersistenceKeyRoundTrip() {
         let key = "mooncut:theme"
         let previous = UserDefaults.standard.string(forKey: key)

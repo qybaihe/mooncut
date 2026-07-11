@@ -64,7 +64,12 @@ struct AuthView: View {
                 Spacer()
                 ServiceStatusBadge(kind: env.serviceBadge)
             }
-            if let health = env.serviceHealth, health.ok {
+            if env.isPublicPreviewBuild || !APIConfiguration.current.isConfigured {
+                Text("这是公开预览包：未绑定可用服务地址，也不能连接内部端口。安装后仅可浏览本地 UI；完整能力需自建 agent 并使用受控私有构建。")
+                    .font(.caption)
+                    .foregroundStyle(theme.warning)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if let health = env.serviceHealth, health.ok {
                 Text("规划模型：\(health.plannerModel ?? "—") · 网关\(health.gatewayReachable == true ? "可达" : "不可达")")
                     .font(.caption)
                     .foregroundStyle(theme.textSecondary)
@@ -73,11 +78,11 @@ struct AuthView: View {
                     .font(.caption)
                     .foregroundStyle(theme.warning)
             } else {
-                Text("正在检查 \(APIConfiguration.current.baseURL.absoluteString)")
+                Text("正在检查服务…")
                     .font(.caption)
                     .foregroundStyle(theme.textTertiary)
             }
-            Text("认证方式：邮箱会话 Cookie（不使用 API Key）")
+            Text("认证方式：邮箱会话 Cookie（不使用 API Key）· 分发：\(APIConfiguration.current.distributionMode)")
                 .font(.caption2)
                 .foregroundStyle(theme.textTertiary)
         }

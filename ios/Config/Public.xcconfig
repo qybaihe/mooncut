@@ -1,0 +1,8 @@
+// Public CI / 可下载预览包：故意不配置可用服务地址。
+// 防止公开 IPA 默认连上内网或生产端口；用户需自建 agent 并自行改配置后重签。
+// 禁止在此文件写入 API Key、账号、密码或真实内网 URL。
+
+MOONCUT_API_BASE_URL = UNCONFIGURED
+MOONCUT_TRUSTED_HOST =
+MOONCUT_DISTRIBUTION_MODE = public
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) PUBLIC_DISTRIBUTION
