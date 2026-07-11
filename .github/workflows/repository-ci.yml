@@ -78,8 +78,8 @@ jobs:
               npm run check
               npm test
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
@@ -116,8 +116,8 @@ jobs:
               uv run pytest -q
               uv build
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v8
         with:
           enable-cache: true
           cache-dependency-glob: ${{ matrix.directory }}/uv.lock
@@ -133,7 +133,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Compile app and test targets without a signing identity
         working-directory: ios
         run: >-
@@ -147,6 +147,6 @@ jobs:
     name: Git LFS pointer integrity
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Verify every LFS-managed path is a canonical pointer
         run: git lfs fsck --pointers
