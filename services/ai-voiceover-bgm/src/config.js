@@ -38,13 +38,21 @@ function trimSlash(value) {
   return value.replace(/\/+$/, "");
 }
 
+function requiredSecret(name) {
+  const value = process.env[name]?.trim();
+  if (!value) {
+    throw new Error(`${name} 必须通过未提交的环境变量或 .env 配置，服务拒绝以无鉴权模式启动`);
+  }
+  return value;
+}
+
 export function loadConfig() {
   loadDotEnv();
   const dataDir = path.resolve(process.env.DATA_DIR || "./data");
   return {
     host: process.env.HOST || "0.0.0.0",
     port: integer("PORT", 8787, 1),
-    serviceApiKey: process.env.SERVICE_API_KEY || "",
+    serviceApiKey: requiredSecret("SERVICE_API_KEY"),
     publicBaseUrl: trimSlash(process.env.PUBLIC_BASE_URL || ""),
     dataDir,
     audioDir: path.join(dataDir, "audio"),
@@ -67,6 +75,7 @@ export function loadConfig() {
     fadeSeconds: Math.max(0, number("FADE_SECONDS", 1.5)),
     audioProcessingRequired: bool("AUDIO_PROCESSING_REQUIRED", false),
     downloadTimeoutMs: integer("DOWNLOAD_TIMEOUT_MS", 60000, 1000),
+    providerFetchTimeoutMs: integer("YUNWU_FETCH_TIMEOUT_MS", 90000, 10000),
     maxAudioBytes: integer("MAX_AUDIO_BYTES", 50 * 1024 * 1024, 1024),
   };
 }

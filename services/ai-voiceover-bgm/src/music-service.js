@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { AppError } from "./errors.js";
 import { isoNow } from "./utils.js";
 
 export class MusicService {
@@ -10,6 +11,7 @@ export class MusicService {
     this.audioProcessor = audioProcessor;
     this.pending = [];
     this.active = 0;
+    this.recovering = new Set();
   }
 
   async createJob(input) {
@@ -35,6 +37,21 @@ export class MusicService {
 
   async previewPlan(input) {
     return this.analyzer.analyze(input);
+  }
+
+  async recoverJob(id) {
+    const job = this.store.get(id);
+    if (!job) throw new AppError("任务不存在", { statusCode: 404, code: "NOT_FOUND" });
+    if (job.status === "SUCCEEDED") return job;
+    if (!job.providerTaskId) {
+      throw new AppError("任务尚未提交到云雾，无法恢复", { statusCode: 409, code: "NOT_RECOVERABLE" });
+    }
+    if (this.recovering.has(id)) return job;
+
+    this.recovering.add(id);
+    await this.store.update(id, { status: "GENERATING", error: null, progress: Math.max(job.progress || 0, 20) });
+    this.#resume(id, job.providerTaskId).finally(() => this.recovering.delete(id));
+    return this.store.get(id);
   }
 
   #drain() {
@@ -64,12 +81,22 @@ export class MusicService {
         progress: 20,
       });
 
-      const providerTask = await this.client.waitForTask(submitted.taskId, async (task) => {
+      await this.#resume(id, submitted.taskId);
+    } catch (error) {
+      await this.#markFailed(id, error);
+    }
+  }
+
+  async #resume(id, providerTaskId) {
+    try {
+      const providerTask = await this.client.waitForTask(providerTaskId, async (task) => {
         const parsed = Number.parseInt(String(task.progress || "").replace("%", ""), 10);
         const progress = Number.isFinite(parsed) ? 20 + Math.round(parsed * 0.65) : 45;
         await this.store.update(id, { providerStatus: task.providerStatus, progress: Math.min(progress, 85) });
       });
 
+      const job = this.store.get(id);
+      if (!job) throw new AppError("任务不存在", { statusCode: 404, code: "NOT_FOUND" });
       await this.store.update(id, { status: "PROCESSING", progress: 88 });
       const selectedTrack = providerTask.tracks[0];
       const prepared = await this.audioProcessor.prepare(
@@ -96,14 +123,18 @@ export class MusicService {
         },
       });
     } catch (error) {
-      await this.store.update(id, {
-        status: "FAILED",
-        error: {
-          code: error.code || "GENERATION_FAILED",
-          message: error.message || "音乐生成失败",
-          details: error.details,
-        },
-      });
+      await this.#markFailed(id, error);
     }
+  }
+
+  async #markFailed(id, error) {
+    await this.store.update(id, {
+      status: "FAILED",
+      error: {
+        code: error.code || "GENERATION_FAILED",
+        message: error.message || "音乐生成失败",
+        details: error.details,
+      },
+    });
   }
 }

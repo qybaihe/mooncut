@@ -21,7 +21,6 @@ const server = createServer({ config, service, store });
 server.listen(config.port, config.host, () => {
   console.log(`AI 口播配乐服务已启动：http://${config.host}:${config.port}`);
   if (!config.yunwu.apiKey) console.warn("警告：尚未设置 YUNWU_API_KEY，生成接口会失败。健康检查仍可使用。");
-  if (!config.serviceApiKey) console.warn("警告：尚未设置 SERVICE_API_KEY，请勿直接暴露到公网。");
 });
 
 function shutdown() {

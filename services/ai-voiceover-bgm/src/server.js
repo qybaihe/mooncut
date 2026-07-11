@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
+import { timingSafeEqual } from "node:crypto";
 import { AppError } from "./errors.js";
 
 const MAX_BODY_BYTES = 1024 * 1024;
@@ -56,8 +57,12 @@ function validateInput(body) {
 }
 
 function authorized(request, apiKey) {
-  if (!apiKey) return true;
-  return request.headers.authorization === `Bearer ${apiKey}`;
+  const received = request.headers.authorization;
+  const expected = `Bearer ${apiKey}`;
+  if (typeof received !== "string") return false;
+  const receivedBytes = Buffer.from(received);
+  const expectedBytes = Buffer.from(expected);
+  return receivedBytes.length === expectedBytes.length && timingSafeEqual(receivedBytes, expectedBytes);
 }
 
 export function createServer({ config, service, store }) {
@@ -114,6 +119,16 @@ export function createServer({ config, service, store }) {
         const job = store.get(jobMatch[1]);
         if (!job) return json(response, 404, { error: { code: "NOT_FOUND", message: "任务不存在" } });
         return json(response, 200, job);
+      }
+
+      const recoverMatch = url.pathname.match(/^\/api\/v1\/bgm\/jobs\/([a-f0-9-]+)\/recover$/i);
+      if (request.method === "POST" && recoverMatch) {
+        const job = await service.recoverJob(recoverMatch[1]);
+        return json(response, 202, {
+          jobId: job.id,
+          status: job.status,
+          statusUrl: `/api/v1/bgm/jobs/${job.id}`,
+        });
       }
 
       return json(response, 404, { error: { code: "NOT_FOUND", message: "接口不存在" } });

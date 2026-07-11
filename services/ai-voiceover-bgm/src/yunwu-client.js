@@ -32,14 +32,20 @@ export function normalizeTask(body) {
   if (Array.isArray(nested)) tracks = nested;
   else if (Array.isArray(task.tracks)) tracks = task.tracks;
   else if (Array.isArray(task.clips)) tracks = task.clips;
-  else if (nested && typeof nested === "object" && (nested.audio_url || nested.audioUrl)) tracks = [nested];
+  else if (
+    nested &&
+    typeof nested === "object" &&
+    (nested.audio_url || nested.audioUrl || nested.cld2AudioUrl)
+  ) {
+    tracks = [nested];
+  }
   const normalizedTracks = tracks
     .map((track) => ({
       id: track.id ?? track.clip_id ?? track.clipId ?? null,
       title: track.title ?? "",
-      audioUrl: track.audio_url ?? track.audioUrl ?? track.url ?? null,
-      imageUrl: track.image_url ?? track.imageUrl ?? null,
-      videoUrl: track.video_url ?? track.videoUrl ?? null,
+      audioUrl: track.audio_url ?? track.audioUrl ?? track.cld2AudioUrl ?? track.url ?? null,
+      imageUrl: track.image_url ?? track.imageUrl ?? track.cld2ImageUrl ?? null,
+      videoUrl: track.video_url ?? track.videoUrl ?? track.cld2VideoUrl ?? null,
       durationSeconds: Number(track.duration ?? track.duration_seconds) || null,
       raw: track,
     }))
@@ -105,7 +111,7 @@ export class YunwuClient {
     const response = await this.fetch(joinUrl(this.config.yunwu.baseUrl, pathname), {
       method: "GET",
       headers: this.#headers(),
-      signal: AbortSignal.timeout(30000),
+      signal: AbortSignal.timeout(this.config.providerFetchTimeoutMs),
     });
     const text = await response.text();
     const body = safeJsonParse(text);

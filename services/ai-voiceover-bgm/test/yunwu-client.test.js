@@ -23,6 +23,27 @@ test("归一化成功任务和音频字段", () => {
   assert.equal(result.tracks[0].durationSeconds, 120);
 });
 
+test("归一化云雾 cld2 媒体字段", () => {
+  const result = normalizeTask({
+    data: {
+      task_id: "task-cld2",
+      status: "SUCCESS",
+      data: [
+        {
+          id: "clip-cld2",
+          cld2AudioUrl: "https://cdn.example.com/clip.mp3",
+          cld2ImageUrl: "https://cdn.example.com/cover.webp",
+          cld2VideoUrl: "https://cdn.example.com/video.mp4",
+        },
+      ],
+    },
+  });
+  assert.equal(result.status, "SUCCEEDED");
+  assert.equal(result.tracks[0].audioUrl, "https://cdn.example.com/clip.mp3");
+  assert.equal(result.tracks[0].imageUrl, "https://cdn.example.com/cover.webp");
+  assert.equal(result.tracks[0].videoUrl, "https://cdn.example.com/video.mp4");
+});
+
 test("归一化失败任务", () => {
   const result = normalizeTask({ data: { status: "FAILURE", fail_reason: "bad prompt" } });
   assert.equal(result.status, "FAILED");

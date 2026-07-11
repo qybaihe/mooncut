@@ -16,7 +16,7 @@
 
 ```bash
 cp .env.example .env
-# 编辑 .env，至少填写 YUNWU_API_KEY 和 SERVICE_API_KEY
+# 编辑未跟踪的 .env，至少填写 YUNWU_API_KEY 和 32 位以上随机 SERVICE_API_KEY
 docker compose up -d --build
 curl http://localhost:8787/health
 ```
@@ -173,7 +173,8 @@ YUNWU_SUNO_MODEL=控制台中可用的模型名
 ## 生产注意事项
 
 - `YUNWU_API_KEY` 永远只存后端环境变量，不要下发给浏览器或客户端 App。
-- 设置强随机 `SERVICE_API_KEY`，并通过内网、API 网关或反向代理限制访问。
+- `SERVICE_API_KEY` 是启动必填项，缺失时服务会拒绝启动；它和 `YUNWU_API_KEY` 只能保存在服务端环境变量或未跟踪的 `.env` 中。
+- Docker Compose 默认只绑定 `127.0.0.1:8787`。如需外部访问，使用带鉴权的反向代理或私网服务发现，不要直接把端口公开到互联网。
 - 任务当前持久化到 `data/jobs.json`。单机足够；多实例部署时应替换为 Redis/PostgreSQL 队列。
 - 默认只选第一个 Suno 候选音轨，第二个候选保留在 `result.alternatives`，可在业务 UI 中提供换一首功能。
 - 上线商用前，请在云雾/Suno 当前套餐条款中确认生成音乐的商用授权、归属和使用限制。
