@@ -33,3 +33,6 @@
 
 # Operating-system metadata
 .DS_Store
+
+# Generated web shot/output artifacts
+/mooncut-web/output/
