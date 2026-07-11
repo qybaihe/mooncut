@@ -1,12 +1,17 @@
 import {mkdir, writeFile} from "node:fs/promises";
 import {join} from "node:path";
-import {reviewEvidenceSequence, reviewImpactSequence} from "./gateway.ts";
+import {reviewEvidenceSequence, reviewGeneratedVisualSequence, reviewImpactSequence} from "./gateway.ts";
 import {runProcess} from "./process.ts";
 import {DEFAULT_CAMERA_POLICY, expectedSpeakerLayout, shortSpeakerLayoutRuns} from "./camera-policy.ts";
 import type {AgentEditSpec, EditBeat, QualityFinding, QualityReview} from "./types.ts";
 
 const clamp = (value: number, minimum: number, maximum: number) =>
   Math.min(maximum, Math.max(minimum, value));
+
+export const isVisionGateProtocolOnlyFailure = (findings: QualityFinding[]) => {
+  const hardFindings = findings.filter((finding) => finding.severity === "error");
+  return hardFindings.length > 0 && hardFindings.every((finding) => finding.id === "vision-gate-unavailable");
+};
 
 export const buildQaSampleTimes = (beat: EditBeat) => {
   const duration = Math.max(1, beat.endMs - beat.startMs);
@@ -63,6 +68,12 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
   const evidenceAssets = spec.evidenceAssets ?? [];
   const evidenceById = new Map(evidenceAssets.map((asset) => [asset.id, asset]));
   const usedEvidenceIds = new Set<string>();
+  const generatedVisuals = spec.generatedVisuals ?? [];
+  const generatedById = new Map(generatedVisuals.map((asset) => [asset.id, asset]));
+  const usedGeneratedIds = new Set<string>();
+  if (generatedVisuals.length > 2) {
+    findings.push({id: "generated-visual-budget-exceeded", severity: "error", message: `Edit spec contains ${generatedVisuals.length} generated images; maximum is 2.`});
+  }
   for (const [index, beat] of spec.beats.entries()) {
     const expectedLayout = expectedSpeakerLayout(beat);
     if (beat.speakerLayout && beat.speakerLayout !== expectedLayout) {
@@ -93,6 +104,21 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
         findings.push({id: "evidence-wrong-beat", severity: "warning", beatIndex: index, message: "evidenceId is attached to a non-evidence beat."});
       }
     }
+    if (beat.generatedVisualId) {
+      usedGeneratedIds.add(beat.generatedVisualId);
+      if (!generatedById.has(beat.generatedVisualId)) {
+        findings.push({id: "generated-visual-missing", severity: "error", beatIndex: index, message: `Unknown generatedVisualId: ${beat.generatedVisualId}`});
+      }
+      if (beat.kind !== "illustration") {
+        findings.push({id: "generated-visual-wrong-beat", severity: "error", beatIndex: index, message: "generatedVisualId is allowed only on an illustration beat."});
+      }
+    }
+    if (beat.kind === "illustration" && !beat.generatedVisualId) {
+      findings.push({id: "illustration-asset-missing", severity: "error", beatIndex: index, message: "Illustration beat must reference a generatedVisualId returned by the scheduler."});
+    }
+    if (beat.evidenceId && beat.generatedVisualId) {
+      findings.push({id: "generated-evidence-confusion", severity: "error", beatIndex: index, message: "A generated illustration can never be attached as factual evidence."});
+    }
   }
   const minimumHoldMs = spec.cameraPolicy?.minimumLayoutHoldMs ?? DEFAULT_CAMERA_POLICY.minimumLayoutHoldMs;
   for (const run of shortSpeakerLayoutRuns(spec.beats, minimumHoldMs)) {
@@ -106,6 +132,11 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
   for (const asset of evidenceAssets) {
     if (!usedEvidenceIds.has(asset.id)) {
       findings.push({id: "captured-evidence-unused", severity: "error", message: `Captured evidence is not used by any beat: ${asset.label}`});
+    }
+  }
+  for (const asset of generatedVisuals) {
+    if (!usedGeneratedIds.has(asset.id)) {
+      findings.push({id: "generated-visual-unused", severity: "error", message: `Generated image is not used by any illustration beat: ${asset.label}`});
     }
   }
   if (/真实|官网|网页|X\s*原帖|官方原帖|证据/iu.test(requestPrompt) && evidenceAssets.length === 0) {
@@ -136,9 +167,10 @@ export const reviewRenderedVideo = async ({
   const findings = validateSpecQuality(spec, requestPrompt);
   const qaAssets: Record<string, string> = {};
   const evidenceById = new Map((spec.evidenceAssets ?? []).map((asset) => [asset.id, asset]));
+  const generatedById = new Map((spec.generatedVisuals ?? []).map((asset) => [asset.id, asset]));
 
   const visualResults = await Promise.all(spec.beats.map(async (beat, index) => {
-    if (beat.kind !== "impact" && !(beat.kind === "evidence" && beat.evidenceId)) return null;
+    if (beat.kind !== "impact" && !(beat.kind === "evidence" && beat.evidenceId) && !(beat.kind === "illustration" && beat.generatedVisualId)) return null;
     const label = `${String(index + 1).padStart(2, "0")}-${beat.kind}`;
     const stripPath = await makeStrip(videoPath, buildQaSampleTimes(beat), qaDirectory, label);
     try {
@@ -152,6 +184,24 @@ export const reviewRenderedVideo = async ({
             severity: review.result.confidence >= 0.5 ? "error" as const : "warning" as const,
             beatIndex: index,
             message: review.result.summary || review.result.issues.join("; ") || "Impact text was not visually confirmed.",
+            evidencePath: stripPath,
+            model: review.model,
+            confidence: review.result.confidence,
+          },
+        };
+      }
+      if (beat.kind === "illustration") {
+        const asset = beat.generatedVisualId ? generatedById.get(beat.generatedVisualId) : undefined;
+        if (!asset) return {label, stripPath};
+        const review = await reviewGeneratedVisualSequence(stripPath, asset.label);
+        return {
+          label,
+          stripPath,
+          finding: review.result.pass ? undefined : {
+            id: "generated-visual-display-failed",
+            severity: review.result.confidence >= 0.5 ? "error" as const : "warning" as const,
+            beatIndex: index,
+            message: review.result.summary || review.result.issues.join("; ") || "AI example image or its disclosure was not visually confirmed.",
             evidencePath: stripPath,
             model: review.model,
             confidence: review.result.confidence,

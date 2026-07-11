@@ -2,11 +2,12 @@ import {mkdir, readFile, writeFile} from "node:fs/promises";
 import {join} from "node:path";
 import {Type} from "typebox";
 import {defineTool} from "@earendil-works/pi-coding-agent";
-import {remotionRoot} from "./config.ts";
+import {config, remotionRoot} from "./config.ts";
 import {inspectVideo, makeContactSheet, probeVideo, trackFace, transcribeVideo} from "./media.ts";
 import {runProcess} from "./process.ts";
 import {captureWebPage, captureXPost} from "./research.ts";
-import {reviewRenderedVideo} from "./quality.ts";
+import {scheduleGeneratedVisuals} from "./visuals.ts";
+import {isVisionGateProtocolOnlyFailure, reviewRenderedVideo} from "./quality.ts";
 import {DEFAULT_CAMERA_POLICY, expectedSpeakerLayout, shortSpeakerLayoutRuns} from "./camera-policy.ts";
 import type {AgentEditSpec, EditBeat, EditBeatKind, RunContext, SubtitleWord} from "./types.ts";
 
@@ -36,6 +37,7 @@ export const normalizeBeats = (
     impactText?: string;
     impactAtMs?: number;
     evidenceId?: string;
+    generatedVisualId?: string;
   }>,
   durationMs: number,
 ): EditBeat[] => {
@@ -81,7 +83,12 @@ export const normalizeBeats = (
         ? {impactAtMs: clampNumber(Math.round(beat.impactAtMs!), startMs, endMs - 1)}
         : {}),
       ...(beat.evidenceId ? {evidenceId: beat.evidenceId} : {}),
-      speakerLayout: expectedSpeakerLayout({kind, evidenceId: beat.evidenceId}),
+      ...(beat.generatedVisualId ? {generatedVisualId: beat.generatedVisualId} : {}),
+      speakerLayout: expectedSpeakerLayout({
+        kind,
+        evidenceId: beat.evidenceId,
+        generatedVisualId: beat.generatedVisualId,
+      }),
     });
   }
   return normalized;
@@ -164,6 +171,27 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         note: context.subtitles.segments.length === 0
           ? "Timed subtitles unavailable. Continue with visual analysis and do not invent quotations."
           : "Use these segment times as the source of truth for beats.",
+      });
+    },
+  });
+
+  const scheduleVisuals = defineTool({
+    name: "schedule_generated_visuals",
+    label: "Schedule optional AI example visuals",
+    description: "Run the conservative zero-to-two image scheduler. It defaults to no generated images and never substitutes generated art for factual evidence.",
+    parameters: Type.Object({}),
+    execute: async () => {
+      if (!context.probe || !context.subtitles) {
+        throw new Error("inspect_source and transcribe_source must run before schedule_generated_visuals");
+      }
+      await update("scheduling-visuals", 0.35);
+      const schedule = await scheduleGeneratedVisuals(context);
+      await update(schedule.mode === "generated" ? "visuals-generated" : "visuals-scheduled", 0.44);
+      return textResult({
+        ...schedule,
+        instruction: schedule.assets.length > 0
+          ? "Use generatedVisualId only on matching illustration beats. Always present these as AI-generated examples, never as evidence."
+          : "Do not invent generatedVisualId values. Continue without generated imagery.",
       });
     },
   });
@@ -263,6 +291,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
           Type.Literal("quote"),
           Type.Literal("impact"),
           Type.Literal("evidence"),
+          Type.Literal("illustration"),
         ]),
         headline: Type.String({minLength: 1, maxLength: 30}),
         body: Type.String({maxLength: 100}),
@@ -270,6 +299,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         impactText: Type.Optional(Type.String({maxLength: 20})),
         impactAtMs: Type.Optional(Type.Number({minimum: 0, description: "Absolute word timestamp where the visual pulse should land"})),
         evidenceId: Type.Optional(Type.String({maxLength: 100})),
+        generatedVisualId: Type.Optional(Type.String({maxLength: 100})),
       }), {minItems: 1, maxItems: 12}),
     }),
     execute: async (_toolCallId, params) => {
@@ -287,7 +317,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
           `Speaker layout changes too quickly. Keep each native/circle run for at least ${DEFAULT_CAMERA_POLICY.minimumLayoutHoldMs}ms: ${shortCameraRuns.map((run) => `${run.layout} ${run.startMs}-${run.endMs}ms`).join(', ')}`,
         );
       }
-      const fps = 30;
+      const fps = config.renderFps;
       const spec: AgentEditSpec = {
         schemaVersion: "mooncut.edit.v1",
         title: params.title.trim(),
@@ -295,8 +325,8 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         accent: normalizeAccent(params.accent),
         fps,
         durationInFrames: Math.max(1, Math.ceil(context.probe.durationMs / 1000 * fps)),
-        width: 1920,
-        height: 1080,
+        width: config.renderWidth,
+        height: config.renderHeight,
         source: {
           src: context.publicMediaSrc,
           aspectRatio: context.probe.width / context.probe.height,
@@ -305,6 +335,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         subtitles: context.subtitles.segments,
         beats,
         evidenceAssets: context.evidenceAssets,
+        generatedVisuals: context.generatedVisuals,
         generationPreset: "macos-sonoma-native",
         cameraPolicy: DEFAULT_CAMERA_POLICY,
       };
@@ -336,8 +367,10 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         outputPath,
         `--props=${propsPath}`,
         "--codec=h264",
+        `--concurrency=${Math.max(1, config.renderConcurrency)}`,
+        ...(config.browserExecutable ? [`--browser-executable=${config.browserExecutable}`] : []),
         "--overwrite",
-      ], {cwd: remotionRoot, timeoutMs: 45 * 60_000});
+      ], {cwd: remotionRoot, timeoutMs: config.renderTimeoutMs});
       context.renderPath = outputPath;
       await writeFile(join(context.jobDir, "render.log"), `${result.stdout}\n${result.stderr}`);
       await update("rendered", 0.92);
@@ -364,14 +397,21 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
       const contactSheetPath = join(context.jobDir, "final-contact-sheet.jpg");
       await makeContactSheet(context.renderPath, probe, contactSheetPath);
       await update("visual-quality-review", 0.97);
-      const qualityReview = await reviewRenderedVideo({
-        jobDir: context.jobDir,
-        requestPrompt: context.job.request.prompt ?? "",
-        spec: context.spec,
-        videoPath: context.renderPath,
-      });
-      context.qualityReviews.push(qualityReview);
-      await writeJson(join(context.jobDir, `quality-review-${context.qualityReviews.length}.json`), qualityReview);
+      let qualityReview;
+      for (let qaAttempt = 0; qaAttempt < 2; qaAttempt += 1) {
+        qualityReview = await reviewRenderedVideo({
+          jobDir: context.jobDir,
+          requestPrompt: context.job.request.prompt ?? "",
+          spec: context.spec,
+          videoPath: context.renderPath,
+        });
+        context.qualityReviews.push(qualityReview);
+        await writeJson(join(context.jobDir, `quality-review-${context.qualityReviews.length}.json`), qualityReview);
+        const protocolOnlyFailure = isVisionGateProtocolOnlyFailure(qualityReview.findings);
+        if (qualityReview.ok || !protocolOnlyFailure) break;
+        await update("visual-quality-retry", 0.97);
+      }
+      if (!qualityReview) throw new Error("Visual quality review did not run");
       const verification = {
         ok: qualityReview.ok,
         video: context.renderPath,
@@ -384,11 +424,14 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
       await writeJson(verificationPath, verification);
       context.contactSheetPath = contactSheetPath;
       if (!qualityReview.ok) {
-        const errors = qualityReview.findings
-          .filter((finding) => finding.severity === "error")
+        const hardFindings = qualityReview.findings.filter((finding) => finding.severity === "error");
+        const protocolOnlyFailure = isVisionGateProtocolOnlyFailure(qualityReview.findings);
+        const errors = hardFindings
           .map((finding) => `${finding.id}: ${finding.message}`)
           .join("; ");
-        throw new Error(`Visual quality gate failed. Revise the edit spec and rerender: ${errors}`);
+        throw new Error(protocolOnlyFailure
+          ? `Visual quality service was unavailable after retry. Keep the current render and retry verify_render: ${errors}`
+          : `Visual quality gate failed. Revise the edit spec and rerender: ${errors}`);
       }
       context.verificationPath = verificationPath;
       await update("verified", 0.99);
@@ -399,6 +442,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
   return [
     inspectSource,
     transcribeSource,
+    scheduleVisuals,
     captureXPostEvidence,
     captureWebEvidence,
     trackSpeaker,

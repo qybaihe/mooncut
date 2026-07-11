@@ -52,7 +52,40 @@ export type SubtitleData = {
   provider: string;
 };
 
-export type EditBeatKind = "speaker" | "desktop" | "quote" | "impact" | "evidence";
+/** A deliberately narrow human instruction for a completed video's subtitles. */
+export type SubtitleRepairFeedback = {
+  instruction: string;
+  /** Optional cue point from the preview player, in source-timeline milliseconds. */
+  atMs?: number;
+  /** Optional exact wording supplied by the editor. */
+  replacementText?: string;
+};
+
+export type SubtitleRepairChange = {
+  segmentIndex: number;
+  before: string;
+  after: string;
+  startMs: number;
+  endMs: number;
+  reason: string;
+};
+
+export type SubtitleRepairAnalysis = {
+  summary: string;
+  changes: SubtitleRepairChange[];
+  model: string;
+};
+
+export type SubtitleRepairRecord = {
+  /** Immediate version this repair was made from. */
+  parentJobId: string;
+  /** Stable initial version used to retrieve a complete repair history. */
+  rootJobId: string;
+  feedback: SubtitleRepairFeedback;
+  analysis?: SubtitleRepairAnalysis;
+};
+
+export type EditBeatKind = "speaker" | "desktop" | "quote" | "impact" | "evidence" | "illustration";
 export type SpeakerLayout = "native" | "circle";
 
 export type EditBeat = {
@@ -66,6 +99,7 @@ export type EditBeat = {
   /** Absolute source-timeline time where the impact pulse must land. */
   impactAtMs?: number;
   evidenceId?: string;
+  generatedVisualId?: string;
   speakerLayout?: SpeakerLayout;
 };
 
@@ -77,6 +111,38 @@ export type EvidenceAsset = {
   src: string;
   localPath: string;
   evidencePath: string;
+};
+
+export type GeneratedVisualAsset = {
+  id: string;
+  kind: "generated-illustration";
+  label: string;
+  purpose: string;
+  prompt: string;
+  src: string;
+  localPath: string;
+  metadataPath: string;
+  model: string;
+  generatedAt: string;
+};
+
+export type ImageGenerationPlanItem = {
+  label: string;
+  purpose: string;
+  prompt: string;
+  avoid: string;
+  relatedQuote: string;
+};
+
+export type ImageGenerationSchedule = {
+  mode: "off" | "none" | "generated" | "unavailable";
+  reason: string;
+  maxImages: number;
+  requestedCount: number;
+  providerConfigured: boolean;
+  plan: ImageGenerationPlanItem[];
+  assets: GeneratedVisualAsset[];
+  errors: string[];
 };
 
 export type AgentEditSpec = {
@@ -96,6 +162,7 @@ export type AgentEditSpec = {
   subtitles: SubtitleSegment[];
   beats: EditBeat[];
   evidenceAssets: EvidenceAsset[];
+  generatedVisuals?: GeneratedVisualAsset[];
   generationPreset: "macos-sonoma-native";
   cameraPolicy?: {
     mode: "track-small-overlays-only";
@@ -103,6 +170,7 @@ export type AgentEditSpec = {
     nativeReframe: "preserve-source";
     minimumLayoutHoldMs: number;
     transitionMs: number;
+    recenterDurationMs: number;
   };
 };
 
@@ -136,18 +204,39 @@ export type EditJobRequest = {
   inputPath?: string;
   prompt?: string;
   title?: string;
+  notificationEmail?: string;
+  imageGeneration?: "auto" | "off";
+};
+
+export type MailDeliveryStatus = "scheduled" | "ready" | "awaiting-confirmation" | "sent" | "failed";
+
+export type MailDelivery = {
+  recipient: string;
+  status: MailDeliveryStatus;
+  updatedAt: string;
+  sentAt?: string;
+  error?: string;
 };
 
 export type EditJobRecord = {
   id: string;
+  /** Privacy-safe, human-friendly name used by the shared render queue. */
+  displayName?: string;
+  /** User account that owns this job. Missing only for trusted service jobs created before authentication. */
+  ownerUserId?: string;
   status: JobStatus;
   stage: string;
   progress: number;
   createdAt: string;
   updatedAt: string;
+  /** Local worker process that owns queued/running state. */
+  ownerPid?: number;
   inputPath: string;
   originalName: string;
   request: EditJobRequest;
+  /** Present only on a non-destructive human subtitle-repair version. */
+  subtitleRepair?: SubtitleRepairRecord;
+  mail?: MailDelivery;
   error?: string;
   result?: {
     summary: string;
@@ -156,7 +245,9 @@ export type EditJobRecord = {
     models: {
       planner: string;
       vision: string;
+      image?: string;
     };
+    visuals?: ImageGenerationSchedule;
     quality?: QualityReview;
   };
 };
@@ -176,5 +267,7 @@ export type RunContext = {
   verificationPath?: string;
   contactSheetPath?: string;
   evidenceAssets: EvidenceAsset[];
+  generatedVisuals: GeneratedVisualAsset[];
+  imageSchedule?: ImageGenerationSchedule;
   qualityReviews: QualityReview[];
 };

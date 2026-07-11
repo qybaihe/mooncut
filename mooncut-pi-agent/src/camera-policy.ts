@@ -6,13 +6,19 @@ export const DEFAULT_CAMERA_POLICY = {
   nativeReframe: 'preserve-source' as const,
   minimumLayoutHoldMs: 2500,
   transitionMs: 220,
+  recenterDurationMs: 650,
 };
 
 export const expectedSpeakerLayout = (
-  beat: Pick<EditBeat, 'kind' | 'evidenceId'> | {kind: EditBeatKind; evidenceId?: string},
+  beat: Pick<EditBeat, 'kind' | 'evidenceId' | 'generatedVisualId'> | {
+    kind: EditBeatKind;
+    evidenceId?: string;
+    generatedVisualId?: string;
+  },
 ): SpeakerLayout => {
   if (beat.kind === 'desktop' || beat.kind === 'quote') return 'circle';
   if (beat.kind === 'evidence' && beat.evidenceId) return 'circle';
+  if (beat.kind === 'illustration') return 'circle';
   return 'native';
 };
 

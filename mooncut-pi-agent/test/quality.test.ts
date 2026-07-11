@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {buildQaSampleTimes, validateSpecQuality} from "../src/quality.ts";
+import {hasDisqualifyingVisualContradiction, hasPositiveImpactConfirmation} from "../src/gateway.ts";
+import {buildQaSampleTimes, isVisionGateProtocolOnlyFailure, validateSpecQuality} from "../src/quality.ts";
 import type {AgentEditSpec, EditBeat} from "../src/types.ts";
 
 const spec = (overrides: Partial<AgentEditSpec> = {}): AgentEditSpec => ({
@@ -83,6 +84,52 @@ test("requires every captured evidence asset to be used by an evidence beat", ()
   assert.equal(used.filter((finding) => finding.severity === "error").length, 0);
 });
 
+test("keeps generated illustrations separate from factual evidence and within budget", () => {
+  const generated = {
+    id: "generated-01",
+    kind: "generated-illustration" as const,
+    label: "抽象示例",
+    purpose: "解释抽象流程",
+    prompt: "editorial illustration",
+    src: "media/generated.png",
+    localPath: "/tmp/generated.png",
+    metadataPath: "/tmp/generated.json",
+    model: "image-model",
+    generatedAt: new Date(0).toISOString(),
+  };
+  const valid = validateSpecQuality(spec({
+    generatedVisuals: [generated],
+    beats: [{
+      startMs: 0,
+      endMs: 10_000,
+      kind: "illustration",
+      headline: "示例",
+      body: "只用于帮助理解",
+      keywords: [],
+      generatedVisualId: generated.id,
+      speakerLayout: "circle",
+    }],
+  }));
+  assert.equal(valid.some((finding) => finding.severity === "error"), false);
+
+  const confused = validateSpecQuality(spec({
+    generatedVisuals: [generated],
+    beats: [{
+      startMs: 0,
+      endMs: 10_000,
+      kind: "evidence",
+      headline: "错误证据",
+      body: "",
+      keywords: [],
+      evidenceId: "official-source",
+      generatedVisualId: generated.id,
+      speakerLayout: "circle",
+    }],
+  }));
+  assert.ok(confused.some((finding) => finding.id === "generated-evidence-confusion"));
+  assert.ok(confused.some((finding) => finding.id === "generated-visual-wrong-beat"));
+});
+
 test("rejects face tracking on a main speaker shot", () => {
   const findings = validateSpecQuality(spec({
     beats: [{
@@ -107,4 +154,30 @@ test("rejects a short circle island between native camera runs", () => {
     ],
   }));
   assert.ok(findings.some((finding) => finding.id === "speaker-layout-run-too-short"));
+});
+
+test("distinguishes a QA protocol outage from a real visual edit failure", () => {
+  assert.equal(isVisionGateProtocolOnlyFailure([{
+    id: "vision-gate-unavailable",
+    severity: "error",
+    message: "gateway timeout",
+  }]), true);
+  assert.equal(isVisionGateProtocolOnlyFailure([
+    {id: "vision-gate-unavailable", severity: "error", message: "gateway timeout"},
+    {id: "impact-visual-failed", severity: "error", message: "missing text"},
+  ]), false);
+});
+
+test("does not reject a valid impact merely because normal subtitles remain visible", () => {
+  const summary = "重点短语在中间和右侧帧以大号白色加粗字体全屏清晰呈现，符合通过条件。底部字幕在所有三帧均一致可见。";
+  assert.equal(hasDisqualifyingVisualContradiction(summary, []), false);
+  assert.equal(hasDisqualifyingVisualContradiction("只有人物全屏，预期大字缺失。", []), true);
+});
+
+test("recognizes an explicit visual-impact pass even when a compatible model missets its boolean", () => {
+  const passing = "三帧连续显示重点短语全屏大字：左帧淡入，中间和右侧为稳定冲击呈现，文字完整、未被裁切，满足所有通过条件。";
+  assert.equal(hasPositiveImpactConfirmation(passing, []), true);
+  assert.equal(hasDisqualifyingVisualContradiction(passing, []), false);
+  assert.equal(hasDisqualifyingVisualContradiction("重点大字被裁切，无法看清。", []), true);
+  assert.equal(hasPositiveImpactConfirmation("重点文字缺失，三帧完全相同。", []), false);
 });
