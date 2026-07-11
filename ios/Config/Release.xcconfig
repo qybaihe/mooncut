@@ -1,3 +1,7 @@
-// Release — 生产 HTTPS；禁止明文 HTTP。
+// Release — 仅供受控内部分发 / 自有设备。
+// 注意：公开 GitHub IPA 请用 Public.xcconfig，不要用本文件的默认生产地址。
+// 机密仍不得写入本文件；API Key 禁止进入客户端。
+
 MOONCUT_API_BASE_URL = https:/$()/42.194.219.172
 MOONCUT_TRUSTED_HOST = 42.194.219.172
+MOONCUT_DISTRIBUTION_MODE = internal

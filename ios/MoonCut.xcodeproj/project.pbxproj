@@ -72,6 +72,7 @@
 		0087B064CFF8F1D365BB0E1A /* CameraRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecorder.swift; sourceTree = "<group>"; };
 		02328A7CA4470CF1B32D6DA5 /* RecordStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordStudioView.swift; sourceTree = "<group>"; };
 		0469AE1DFE46F3726C4275A9 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
+		05E20CDF5E093537C0C2BD13 /* Public.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Public.xcconfig; sourceTree = "<group>"; };
 		0951B623E5A89A0034B120EF /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		1B5929C62562DE188F96F170 /* mooncut-ca.crt */ = {isa = PBXFileReference; path = "mooncut-ca.crt"; sourceTree = "<group>"; };
 		1F0E4D82D08FD82786752E3B /* CoachMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachMetrics.swift; sourceTree = "<group>"; };
@@ -328,6 +329,7 @@
 			isa = PBXGroup;
 			children = (
 				587774D4C70B689ABFBDD47F /* Debug.xcconfig */,
+				05E20CDF5E093537C0C2BD13 /* Public.xcconfig */,
 				D00A28F6676057F8866020E2 /* Release.xcconfig */,
 			);
 			path = Config;
@@ -621,6 +623,23 @@
 			};
 			name = Debug;
 		};
+		35F98E18BC2FDF3DFAE4718C /* Public */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mooncut.demo.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MoonCut;
+			};
+			name = Public;
+		};
 		4BBFC66BBECCA26BABE3D8B5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D00A28F6676057F8866020E2 /* Release.xcconfig */;
@@ -696,6 +715,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				MOONCUT_API_BASE_URL = "$(MOONCUT_API_BASE_URL)";
+				MOONCUT_DISTRIBUTION_MODE = "$(MOONCUT_DISTRIBUTION_MODE)";
 				MOONCUT_TRUSTED_HOST = "$(MOONCUT_TRUSTED_HOST)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mooncut.demo;
 				PRODUCT_NAME = MoonCut;
@@ -704,6 +724,23 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		709114BE1F132C78AA7AECE1 /* Public */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mooncut.demo.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoonCut.app/MoonCut";
+			};
+			name = Public;
 		};
 		87BFB34E922180B27CBCDBD2 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -722,6 +759,67 @@
 			};
 			name = Release;
 		};
+		C76AEBFC46CA6FB41756366B /* Public */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 05E20CDF5E093537C0C2BD13 /* Public.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Public;
+		};
 		C89C829F42896E4D62DB858C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -739,6 +837,30 @@
 			};
 			name = Release;
 		};
+		D12D550F23B0AA4A0373EA5E /* Public */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MoonCut/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				MOONCUT_API_BASE_URL = "$(MOONCUT_API_BASE_URL)";
+				MOONCUT_DISTRIBUTION_MODE = "$(MOONCUT_DISTRIBUTION_MODE)";
+				MOONCUT_TRUSTED_HOST = "$(MOONCUT_TRUSTED_HOST)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mooncut.demo;
+				PRODUCT_NAME = MoonCut;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PUBLIC_DISTRIBUTION;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Public;
+		};
 		F1798BD895900327B0DB7DAF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -753,6 +875,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				MOONCUT_API_BASE_URL = "$(MOONCUT_API_BASE_URL)";
+				MOONCUT_DISTRIBUTION_MODE = "$(MOONCUT_DISTRIBUTION_MODE)";
 				MOONCUT_TRUSTED_HOST = "$(MOONCUT_TRUSTED_HOST)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mooncut.demo;
 				PRODUCT_NAME = MoonCut;
@@ -852,6 +975,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5FCF40163BCD2F26262183C9 /* Debug */,
+				D12D550F23B0AA4A0373EA5E /* Public */,
 				F1798BD895900327B0DB7DAF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -861,6 +985,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F1AEE5B7D85C3D6E825240C7 /* Debug */,
+				709114BE1F132C78AA7AECE1 /* Public */,
 				C89C829F42896E4D62DB858C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -870,6 +995,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F31C21D41303BC5473B9FAC9 /* Debug */,
+				C76AEBFC46CA6FB41756366B /* Public */,
 				4BBFC66BBECCA26BABE3D8B5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -879,6 +1005,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1B48351D83BB799ACB9FC3D4 /* Debug */,
+				35F98E18BC2FDF3DFAE4718C /* Public */,
 				87BFB34E922180B27CBCDBD2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

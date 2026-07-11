@@ -49,3 +49,23 @@ xcodebuild -project MoonCut.xcodeproj -scheme MoonCut \
 - 不写入 `MOONCUT_API_KEY`
 - 不关闭 ATS 全局校验；仅 Debug 对本机 HTTP 最小例外
 - 生产私有 CA 锚定在受信 host；证书缺失时阻断并提示
+
+## 功能真实度
+
+见仓库文档：[docs/IOS_FEATURE_ANALYSIS.md](../docs/IOS_FEATURE_ANALYSIS.md)（真实 API / 系统能力 / 后端依赖 / 公开包限制）。
+
+## 公开 IPA（GitHub Actions）
+
+- Workflow：`.github/workflows/ios-ipa.yml`
+- 配置：`Config/Public.xcconfig`（`MOONCUT_API_BASE_URL=UNCONFIGURED`）
+- 产物：**未签名** `MoonCut-public-unsigned.ipa`，在 Actions Artifacts（或 `ios-v*` Release）下载
+- **不能开箱直连内部服务**；需自建 agent + 私有构建 + 自行重签安装
+
+手动打包 Public（本机）：
+
+```bash
+cd ios && xcodegen generate
+xcodebuild -project MoonCut.xcodeproj -scheme MoonCut -configuration Public \
+  -sdk iphoneos CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+# 再对 .app 运行 scripts/package-unsigned-ipa.sh
+```
