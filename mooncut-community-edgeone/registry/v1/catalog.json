@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "registry": "mooncut-community",
+  "service": "edgeone-registry-api",
+  "mode": "public-read-only",
+  "generatedAt": "2026-07-11T00:00:00.000Z",
+  "packages": [
+    {
+      "slug": "fifa-official-highlights",
+      "publisher": {"id": "com.mooncut.official", "label": "MoonCut 官方", "trust": "official"},
+      "display": {"name": "FIFA 赛事资料", "tagline": "为 Pi 提供官方集锦、赛况与可引用截图的受控能力。", "category": "体育 / 事实资料"},
+      "kinds": ["skill", "connector"],
+      "permissions": [
+        {"name": "network", "reason": "仅查询 FIFA、FIFA+ 与中文赛况来源"},
+        {"name": "artifact.write", "reason": "保存任务私有的研究 JSON 与截图证据"}
+      ],
+      "release": {
+        "version": "1.0.0",
+        "publishedAt": "2026-07-11T00:00:00.000Z",
+        "files": {
+          "package": "/registry/v1/packages/fifa-official-highlights/1.0.0/fifa-official-highlights.mooncut-capability.json",
+          "manifest": "/registry/v1/packages/fifa-official-highlights/1.0.0/manifest.json",
+          "skill": "/registry/v1/packages/fifa-official-highlights/1.0.0/SKILL.md",
+          "connector": "/registry/v1/packages/fifa-official-highlights/1.0.0/connector.json"
+        },
+        "integrity": {
+          "manifestSha256": "08039f8ba24f9a5327603b51fb31ce368da2f2969f2bc62ab932e9b086b5ec5f",
+          "packageSha256": "df7e397d9b01918f1f0460cb299e5e0c0d046c1819caaa02f534b86fe29b248d"
+        }
+      }
+    }
+  ]
+}

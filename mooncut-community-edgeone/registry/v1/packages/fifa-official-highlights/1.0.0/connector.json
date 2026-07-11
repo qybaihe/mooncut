@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "mooncut.connector.v1",
+  "id": "com.mooncut.fifa-highlights.connector",
+  "mode": "builtin-adapter-reference",
+  "adapter": "fifa-highlights",
+  "execution": "local-reviewed-adapter-only",
+  "toolBindings": [
+    {"tool": "fifa_find_highlights", "operation": "searchOfficialHighlights"},
+    {"tool": "fifa_match_context", "operation": "getMatchContext"}
+  ],
+  "networkAllowlist": ["fifa.com", "fifaplus.com", "sports.baidu.com"],
+  "security": {
+    "neverExecutePackageCode": true,
+    "requiresLocalAdapter": true,
+    "requiresUserConfirmationFor": ["artifact.write"]
+  }
+}

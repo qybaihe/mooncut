@@ -1,0 +1,19 @@
+{
+  "format": "mooncut-community-capability",
+  "formatVersion": 1,
+  "publisher": {"id": "com.mooncut.official", "trust": "official"},
+  "release": {"slug": "fifa-official-highlights", "version": "1.0.0"},
+  "manifest": "/registry/v1/packages/fifa-official-highlights/1.0.0/manifest.json",
+  "skill": "/registry/v1/packages/fifa-official-highlights/1.0.0/SKILL.md",
+  "connector": "/registry/v1/packages/fifa-official-highlights/1.0.0/connector.json",
+  "install": {
+    "mode": "builtin-adapter-reference",
+    "adapter": "fifa-highlights",
+    "requires": ["mooncut-pi-agent>=0.1.0"],
+    "neverExecuteDownloadedCode": true
+  },
+  "integrity": {
+    "skillSha256": "ab73fbaf0347d19d74a6852876e2ad68e63324204abd7e8295b1b13ba2381f2b",
+    "connectorSha256": "a106c666fe312e69b341d84df330b1bf292f950a834f4f45361ce9d1e7b8fcbe"
+  }
+}
