@@ -56,7 +56,7 @@ xcodebuild -project MoonCut.xcodeproj -scheme MoonCut \
 
 ## 公开 IPA（GitHub Actions）
 
-- Workflow：`.github/workflows/ios-ipa.yml`
+- 工作流模板：[`docs/ci/ios-ipa.yml`](../docs/ci/ios-ipa.yml)（复制到 `.github/workflows/ios-ipa.yml` 后启用）
 - 配置：`Config/Public.xcconfig`（`MOONCUT_API_BASE_URL=UNCONFIGURED`）
 - 产物：**未签名** `MoonCut-public-unsigned.ipa`，在 Actions Artifacts（或 `ios-v*` Release）下载
 - **不能开箱直连内部服务**；需自建 agent + 私有构建 + 自行重签安装
