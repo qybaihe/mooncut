@@ -60,6 +60,7 @@ export type PerfectTalkingHeadSpec = {
     nativeReframe: 'preserve-source';
     minimumLayoutHoldMs: number;
     transitionMs: number;
+    recenterDurationMs: number;
   };
 };
 
@@ -119,9 +120,10 @@ const NativeSpeaker = ({spec}: {spec: PerfectTalkingHeadSpec}) => (
   </div>
 );
 
-const CircleSpeaker = ({faceTrack, spec}: {
+const CircleSpeaker = ({faceTrack, spec, trackingElapsedMs}: {
   faceTrack: FaceTrackManifest | null;
   spec: PerfectTalkingHeadSpec;
+  trackingElapsedMs: number;
 }) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -136,9 +138,11 @@ const CircleSpeaker = ({faceTrack, spec}: {
         maxZoom: 4,
         edgeMode: 'pad',
       }}
+      motion={{recenterDurationMs: spec.cameraPolicy?.recenterDurationMs ?? 650}}
       sourceAspectRatio={spec.source.aspectRatio}
       sourceTimeMs={frame / fps * 1000}
       src={staticFile(spec.source.src)}
+      trackingElapsedMs={trackingElapsedMs}
       volume={0}
     />
   );
@@ -523,7 +527,11 @@ export const PerfectTalkingHeadVideo: React.FC<PerfectTalkingHeadVideoProps> = (
           width: 238,
           zIndex: 24,
         }}>
-          <CircleSpeaker faceTrack={faceTrack} spec={spec} />
+          <CircleSpeaker
+            faceTrack={faceTrack}
+            spec={spec}
+            trackingElapsedMs={layoutLocalFrame / fps * 1000}
+          />
         </div>
       ) : null}
 

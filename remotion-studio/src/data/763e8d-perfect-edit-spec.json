@@ -202,6 +202,7 @@
     "trackedLayout": "circle",
     "nativeReframe": "preserve-source",
     "minimumLayoutHoldMs": 2500,
-    "transitionMs": 220
+    "transitionMs": 220,
+    "recenterDurationMs": 650
   }
 }

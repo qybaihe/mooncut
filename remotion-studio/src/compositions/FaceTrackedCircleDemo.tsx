@@ -58,6 +58,7 @@ export const FaceTrackedCircleDemo: React.FC<FaceTrackedCircleDemoProps> = ({
           sourceTimeMs={sourceTimeMs}
           src={staticFile(talkingHeadSrc)}
           style={{width: '100%', height: '100%'}}
+          trackingElapsedMs={sourceTimeMs}
         />
       </div>
       <div style={{marginTop: 44, textAlign: 'center'}}>
