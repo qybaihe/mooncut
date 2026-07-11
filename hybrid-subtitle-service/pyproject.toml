@@ -5,6 +5,7 @@ description = "Hybrid MiMo + Deepgram subtitle alignment API"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+  "faster-whisper>=1.2,<2",
   "fastapi>=0.115,<1",
   "httpx>=0.28,<1",
   "jieba>=0.42.1,<1",
@@ -30,4 +31,3 @@ packages = ["src/hybrid_subtitle"]
 pythonpath = ["src"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-

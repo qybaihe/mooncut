@@ -55,7 +55,7 @@ class TimedCharacter(BaseModel):
     start_ms: int
     end_ms: int
     confidence: float = Field(ge=0, le=1)
-    source: Literal["deepgram", "substitution", "interpolated"]
+    source: Literal["deepgram", "faster-whisper", "substitution", "interpolated"]
 
 
 class TimedWord(BaseModel):

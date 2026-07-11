@@ -1,14 +1,14 @@
 # Hybrid Subtitle API
 
-一个可独立部署的异步字幕服务：MiMo 负责更准确的转写文本，Deepgram Nova-3 负责声学时间戳，服务再将两者对齐成逐字、分词和字幕段三层时间轴。
+一个可独立部署的异步字幕服务：MiMo 负责更准确的转写文本，Deepgram Nova-3 或本地 Faster Whisper 负责声学时间戳，服务再将两者对齐成逐字、分词和字幕段三层时间轴。
 
 ## 能力
 
 - 上传 FFmpeg 可读取的音频或视频
 - 自动转成 16 kHz、单声道 WAV
 - 按静音切分长音频，并在切口两侧保留上下文
-- MiMo 与 Deepgram 按片段并行识别
-- 将 MiMo 文本投影到 Deepgram 时间戳
+- MiMo 与 Deepgram 或本地 Faster Whisper 按片段并行识别
+- 将 MiMo 文本投影到声学时间戳
 - 术语表增强，例如 `Codex,Codec,Remotion,ASR,TTS`
 - 输出完整 JSON、SRT、WebVTT
 - 异步任务查询、结果下载和可选服务 API Key 鉴权
@@ -126,6 +126,8 @@ docker compose up --build -d
 | `CHUNK_CONCURRENCY` | `2` | 每个任务同时处理的片段数 |
 | `JOB_CONCURRENCY` | `2` | 同时处理的长视频任务数 |
 | `DEEPGRAM_MIP_OPT_OUT` | `false` | 是否退出 Deepgram 模型改进计划；可能影响计费 |
+| `TIMESTAMP_PROVIDER` | `auto` | `auto`、`deepgram` 或 `faster-whisper`；后者只提供时间轴，文本仍由 MiMo 生成 |
+| `FASTER_WHISPER_MODEL` | 空 | 本地 Faster Whisper 模型目录；使用 `faster-whisper` 时必填 |
 | `CORS_ORIGINS` | 空 | 允许的浏览器来源，逗号分隔 |
 
 不要将真实供应商 Key 或 `SERVICE_API_KEY` 提交到仓库。对公网部署时必须设置 `SERVICE_API_KEY`，并建议在 HTTPS 反向代理后运行。
