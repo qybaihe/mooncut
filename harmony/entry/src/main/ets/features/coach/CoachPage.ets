@@ -1,6 +1,9 @@
 import { AppStore } from '../../app/AppStore';
 import { PetCompanion } from '../../components/PetCompanion';
 import { themeTokens } from '../../core/design/AppTheme';
+import {
+  PrimaryButton, SecondaryButton, StudioEmptyState, StudioSectionHeader, cardBorderWidth, cardShadow
+} from '../../core/design/DesignSystem';
 import { PetEvent, petMessage, splitDraftSentences } from '../../core/models/AppModels';
 
 @Component
@@ -20,17 +23,24 @@ export struct CoachPage {
     Scroll() {
       Column({ space: 18 }) {
         Row() {
-          Blank(); Text('陪练').fontSize(20).fontWeight(FontWeight.Bold); Blank()
-          Button('☼').backgroundColor(Color.Transparent).fontSize(27).fontColor(themeTokens(this.store.themeMode).accent)
+          Blank()
+          Text('陪练').fontSize(20).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary)
+          Blank()
+          Button('☼').backgroundColor(themeTokens(this.store.themeMode).inset).width(40).height(40).borderRadius(20)
+            .fontSize(20).fontColor(themeTokens(this.store.themeMode).accent)
             .accessibilityText('切换主题').onClick(() => this.store.cycleTheme())
-          Button('⚙').backgroundColor(Color.Transparent).fontSize(24).fontColor(themeTokens(this.store.themeMode).accent)
+          Button('⚙').backgroundColor(themeTokens(this.store.themeMode).inset).width(40).height(40).borderRadius(20).margin({ left: 6 })
+            .fontSize(18).fontColor(themeTokens(this.store.themeMode).accent)
             .accessibilityText('打开设置').onClick(() => this.onOpenSettings())
         }
           .width('100%').height(54)
-        Text('实时口播陪练').fontSize(14).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).accent).width('100%')
-        Text('中间是你，周围是指标。').fontSize(30).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary).width('100%')
-        Text('进入沉浸台后：前摄画面居中，语速 / 词量 / 音量 / 停顿 / 镜头朝向围绕显示；建议来自真实教练接口。')
-          .fontSize(16).lineHeight(25).fontColor(themeTokens(this.store.themeMode).textSecondary).width('100%')
+        StudioSectionHeader({
+          theme: themeTokens(this.store.themeMode),
+          eyebrow: '实时口播陪练',
+          icon: '♩',
+          title: '中间是你，周围是指标。',
+          subtitle: '进入沉浸台后：前摄画面居中，语速 / 词量 / 音量 / 停顿 / 镜头朝向围绕显示；建议来自真实教练接口。'
+        })
 
         Column({ space: 12 }) {
           Text('系统原生能力').fontSize(18).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary).width('100%')
@@ -42,7 +52,9 @@ export struct CoachPage {
           Text('镜头朝向为视觉估算（姿态/框位置），不是精确“眼神接触率”。权限或硬件不可用时会明确标“不可用”。')
             .fontSize(12).lineHeight(18).fontColor(themeTokens(this.store.themeMode).textTertiary).width('100%')
         }.padding(18).width('100%').backgroundColor(themeTokens(this.store.themeMode).surface)
-          .borderRadius(themeTokens(this.store.themeMode).cardRadius).border({ width: 1, color: themeTokens(this.store.themeMode).hairline })
+          .borderRadius(themeTokens(this.store.themeMode).cardRadius)
+          .border({ width: cardBorderWidth(themeTokens(this.store.themeMode)), color: themeTokens(this.store.themeMode).hairline })
+          .shadow(cardShadow(themeTokens(this.store.themeMode)))
 
         Column({ space: 16 }) {
           Text('当前稿件').fontSize(18).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary).width('100%')
@@ -55,21 +67,31 @@ export struct CoachPage {
               Text(`${this.sentenceCount()} 句`).fontSize(12).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).accent)
                 .padding({ left: 8, right: 8, top: 4, bottom: 4 }).backgroundColor(themeTokens(this.store.themeMode).accentSoft).borderRadius(10)
             }.width('100%')
-            Button('进入镜头陪练台').width('100%').height(54).borderRadius(14).fontSize(18).fontWeight(FontWeight.Bold)
-              .fontColor('#FFFFFF').backgroundColor(themeTokens(this.store.themeMode).accent)
-              .onClick(() => this.onStartPractice(this.store.currentDraft))
-            Button('编辑稿件').width('100%').height(46).fontColor(themeTokens(this.store.themeMode).accent)
-              .backgroundColor(themeTokens(this.store.themeMode).accentSoft).onClick(() => this.onOpenScript())
+            PrimaryButton({
+              theme: themeTokens(this.store.themeMode),
+              label: '进入镜头陪练台',
+              onTap: () => this.onStartPractice(this.store.currentDraft)
+            })
+            SecondaryButton({
+              theme: themeTokens(this.store.themeMode),
+              label: '编辑稿件',
+              onTap: () => this.onOpenScript()
+            })
           } else {
-            Text('▱').fontSize(58).fontColor(themeTokens(this.store.themeMode).textTertiary)
-            Text('还没有口播稿').fontSize(23).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary)
-            Text('先在脚本助手生成稿件，再进入提词陪练。').fontSize(15).fontColor(themeTokens(this.store.themeMode).textTertiary).textAlign(TextAlign.Center)
-            Button('去写稿').width('100%').height(54).borderRadius(14).fontSize(18).fontWeight(FontWeight.Bold)
-              .fontColor('#FFFFFF').backgroundColor(themeTokens(this.store.themeMode).accent).onClick(() => this.onOpenScript())
+            StudioEmptyState({
+              theme: themeTokens(this.store.themeMode),
+              icon: '▱',
+              title: '还没有口播稿',
+              description: '先在脚本助手生成稿件，再进入提词陪练。',
+              actionTitle: '去写稿',
+              onAction: () => this.onOpenScript()
+            })
           }
         }
         .padding(20).width('100%').backgroundColor(themeTokens(this.store.themeMode).surface)
-        .borderRadius(themeTokens(this.store.themeMode).cardRadius).border({ width: 1, color: themeTokens(this.store.themeMode).hairline })
+        .borderRadius(themeTokens(this.store.themeMode).cardRadius)
+        .border({ width: cardBorderWidth(themeTokens(this.store.themeMode)), color: themeTokens(this.store.themeMode).hairline })
+        .shadow(cardShadow(themeTokens(this.store.themeMode)))
 
         Column({ space: 14 }) {
           Text('沉浸台里你会看到').fontSize(18).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary).width('100%')
@@ -79,7 +101,9 @@ export struct CoachPage {
           this.pipeline(4, '下方：教练建议 + 小月', '真实 /v1/assistant/coach + 宠物状态')
         }
         .padding(20).width('100%').backgroundColor(themeTokens(this.store.themeMode).surface)
-        .borderRadius(themeTokens(this.store.themeMode).cardRadius).border({ width: 1, color: themeTokens(this.store.themeMode).hairline })
+        .borderRadius(themeTokens(this.store.themeMode).cardRadius)
+        .border({ width: cardBorderWidth(themeTokens(this.store.themeMode)), color: themeTokens(this.store.themeMode).hairline })
+        .shadow(cardShadow(themeTokens(this.store.themeMode)))
 
         this.petCard()
       }

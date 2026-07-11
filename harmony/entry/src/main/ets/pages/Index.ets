@@ -105,29 +105,52 @@ struct Index {
 
   @Builder
   private bottomBar() {
-    Row() {
-      this.tabButton(AppTab.CREATE, '✦', '创作')
-      this.tabButton(AppTab.COACH, '♩', '陪练')
-      this.tabButton(AppTab.JOBS, '▤', '任务')
-      this.tabButton(AppTab.COMMUNITY, '♟', '社区')
+    Column() {
+      Row() {
+        this.tabButton(AppTab.CREATE, '✦', '创作')
+        this.tabButton(AppTab.COACH, '♩', '陪练')
+        this.tabButton(AppTab.JOBS, '▤', '任务')
+        this.tabButton(AppTab.COMMUNITY, '♟', '社区')
+      }
+      .height(64)
+      .width('100%')
+      .padding({ left: 6, right: 6 })
     }
-    .height(76).width('100%').padding({ left: 8, right: 8, bottom: 8 })
+    .width('100%')
+    .padding({ left: 10, right: 10, top: 8, bottom: 10 })
     .backgroundColor(themeTokens(this.store.themeMode).surface)
-    .border({ width: { top: 1 }, color: themeTokens(this.store.themeMode).hairline })
+    .border({ width: { top: themeTokens(this.store.themeMode).usesMemphisChrome ? 1.5 : 1 }, color: themeTokens(this.store.themeMode).hairline })
+    .shadow({
+      radius: themeTokens(this.store.themeMode).usesMemphisChrome ? 0 : 16,
+      color: '#14000000',
+      offsetY: themeTokens(this.store.themeMode).usesMemphisChrome ? -2 : -4
+    })
   }
 
   @Builder
   private tabButton(tab: AppTab, icon: string, label: string) {
     Button() {
       Column({ space: 3 }) {
-        Text(icon).fontSize(25)
-        Text(label).fontSize(12).fontWeight(FontWeight.Medium)
+        Text(icon)
+          .fontSize(22)
+          .fontWeight(this.store.selectedTab === tab ? FontWeight.Bold : FontWeight.Medium)
+        Text(label)
+          .fontSize(11)
+          .fontWeight(this.store.selectedTab === tab ? FontWeight.Bold : FontWeight.Medium)
       }
     }
-    .layoutWeight(1).height(62).backgroundColor(Color.Transparent)
+    .layoutWeight(1)
+    .height(56)
+    .borderRadius(14)
+    .backgroundColor(this.store.selectedTab === tab ? themeTokens(this.store.themeMode).accentSoft : Color.Transparent)
     .accessibilityText(label)
     .accessibilityDescription(this.store.selectedTab === tab ? '已选择' : '')
     .fontColor(this.store.selectedTab === tab ? themeTokens(this.store.themeMode).accent : themeTokens(this.store.themeMode).textTertiary)
-    .onClick(() => { this.store.selectedTab = tab; if (tab === AppTab.CREATE) this.createScreen = 'home'; })
+    .onClick(() => {
+      this.store.selectedTab = tab;
+      if (tab === AppTab.CREATE) {
+        this.createScreen = 'home';
+      }
+    })
   }
 }

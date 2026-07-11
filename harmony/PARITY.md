@@ -48,3 +48,18 @@ service path, failure behavior and persisted state must match iOS.
 12. Practice-only and recording-plus-coaching are both available from the same teleprompter screen.
 13. A denied Camera/Microphone request can open native permission settings and automatically re-check the returned grant state.
 14. Recording drafts and community playback use cache storage; completed edits remain persistent until explicit reset.
+
+## Emulator verification log (2026-07-11)
+
+| Gate | Result | Evidence |
+| --- | --- | --- |
+| Preflight contracts | Pass | `scripts/preflight.ps1` |
+| ArkTS compile (debug/emulator) | Pass | `hvigor assembleHap -p product=emulator` |
+| Install signed HAP | Pass | `hdc install` → `com.mooncut.harmony` |
+| Launch EntryAbility | Pass | Mission `#com.mooncut.harmony:entry:EntryAbility` |
+| Hypium `onDeviceTest` | Pass | `scripts/device-test.ps1` exit 0 |
+| Auth gate UI polish | Pass | Screenshot `artifacts/emulator-ui.jpeg` — MoonLogo, service pill, segmented login/register, primary CTA, privacy copy |
+| `/healthz` reachability | Partial | Badge shows connected; gateway field may report unreachable when the planner gateway is down |
+| Camera / ASR / upload / share | Pending | Requires physical device + running MoonCut backend (`127.0.0.1:4317`) |
+
+UI polish added shared ArkUI chrome in `core/design/DesignSystem.ets` (cards, primary/secondary/destructive buttons, status pill, error banner, section header, stat tile, empty state, Memphis accents, progress track, MoonLogo) and applied it across Auth, Home, Jobs, Coach, Community, Settings and the tab bar.

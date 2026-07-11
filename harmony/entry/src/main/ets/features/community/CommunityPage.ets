@@ -3,6 +3,9 @@ import { CommunityPost } from '../../core/api/APIModels';
 import { APIError } from '../../core/api/APIError';
 import { presentError } from '../../core/api/ErrorPresentation';
 import { themeTokens } from '../../core/design/AppTheme';
+import {
+  ErrorBanner, StudioEmptyState, StudioSectionHeader, cardBorderWidth, cardShadow
+} from '../../core/design/DesignSystem';
 import { common } from '@kit.AbilityKit';
 import { PetEvent } from '../../core/models/AppModels';
 
@@ -41,41 +44,53 @@ export struct CommunityPage {
       Scroll() {
         Column({ space: 18 }) {
         Row() {
-          Blank(); Text('社区').fontSize(20).fontWeight(FontWeight.Bold); Blank()
-          Button('☼').fontSize(25).fontColor(themeTokens(this.store.themeMode).accent).backgroundColor(Color.Transparent)
+          Blank()
+          Text('社区').fontSize(20).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary)
+          Blank()
+          Button('☼').fontSize(20).fontColor(themeTokens(this.store.themeMode).accent)
+            .backgroundColor(themeTokens(this.store.themeMode).inset).width(40).height(40).borderRadius(20)
             .accessibilityText('切换主题').onClick(() => this.store.cycleTheme())
-          Button('⚙').fontSize(23).fontColor(themeTokens(this.store.themeMode).accent).backgroundColor(Color.Transparent)
+          Button('⚙').fontSize(18).fontColor(themeTokens(this.store.themeMode).accent)
+            .backgroundColor(themeTokens(this.store.themeMode).inset).width(40).height(40).borderRadius(20).margin({ left: 6 })
             .accessibilityText('打开设置').onClick(() => this.onOpenSettings())
-          Button('↻').fontSize(23).fontColor(themeTokens(this.store.themeMode).accent).backgroundColor(Color.Transparent)
+          Button('↻').fontSize(18).fontColor(themeTokens(this.store.themeMode).accent)
+            .backgroundColor(themeTokens(this.store.themeMode).inset).width(40).height(40).borderRadius(20).margin({ left: 6 })
             .accessibilityText('刷新社区').onClick(() => this.load(true))
         }
           .width('100%').height(54)
-        Text('♟  MoonCut 社区').fontSize(14).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).accent).width('100%')
-        Text('看看别人，怎么把话说出来。').fontSize(28).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary).width('100%')
-        Text('都是创作者主动分享的真实口播成片。找灵感，也欢迎把你的作品放进来。')
-          .fontSize(16).lineHeight(24).fontColor(themeTokens(this.store.themeMode).textSecondary).width('100%')
+        StudioSectionHeader({
+          theme: themeTokens(this.store.themeMode),
+          eyebrow: 'MoonCut 社区',
+          icon: '♟',
+          title: '看看别人，怎么把话说出来。',
+          subtitle: '都是创作者主动分享的真实口播成片。找灵感，也欢迎把你的作品放进来。'
+        })
         Row() {
           this.trustItem('✦', '仅主动发布'); this.trustItem('♙', '任务服务托管'); this.trustItem('✓', '质检通过可发')
-        }.padding(16).width('100%').backgroundColor(themeTokens(this.store.themeMode).surface).borderRadius(themeTokens(this.store.themeMode).cardRadius)
+        }
+        .padding(16)
+        .width('100%')
+        .backgroundColor(themeTokens(this.store.themeMode).surface)
+        .borderRadius(themeTokens(this.store.themeMode).cardRadius)
+        .border({ width: cardBorderWidth(themeTokens(this.store.themeMode)), color: themeTokens(this.store.themeMode).hairline })
+        .shadow(cardShadow(themeTokens(this.store.themeMode)))
 
         if (this.errorMessage) {
-          Column({ space: 8 }) {
-            Text(this.errorMessage).fontSize(14).fontColor(themeTokens(this.store.themeMode).danger).width('100%')
-            if (this.errorDiagnostic) {
-              Text(`诊断：${this.errorDiagnostic}`).fontSize(12).fontColor(themeTokens(this.store.themeMode).textTertiary).width('100%')
-            }
-            Button('重试真实请求').height(40).fontColor(themeTokens(this.store.themeMode).accent)
-              .backgroundColor(themeTokens(this.store.themeMode).accentSoft).onClick(() => this.load(true))
-          }.padding(14).width('100%').backgroundColor(themeTokens(this.store.themeMode).surface).borderRadius(12)
+          ErrorBanner({
+            theme: themeTokens(this.store.themeMode),
+            message: this.errorMessage,
+            diagnostic: this.errorDiagnostic,
+            retryTitle: '重试真实请求',
+            onRetry: () => this.load(true)
+          })
         }
         if (!this.loading && !this.errorMessage && this.posts.length === 0) {
-          Column({ space: 16 }) {
-            Text('♟').fontSize(62).fontColor(themeTokens(this.store.themeMode).accent)
-            Text('社区还没有作品').fontSize(23).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary)
-            Text('质检通过的成片可在剪辑完成后主动发布。这里只展示创作者自愿分享的真实口播。')
-              .fontSize(15).lineHeight(23).fontColor(themeTokens(this.store.themeMode).textSecondary).textAlign(TextAlign.Center)
-          }.padding({ left: 22, right: 22, top: 42, bottom: 42 }).width('100%').backgroundColor(themeTokens(this.store.themeMode).surface)
-            .borderRadius(themeTokens(this.store.themeMode).cardRadius).border({ width: 1, color: themeTokens(this.store.themeMode).hairline })
+          StudioEmptyState({
+            theme: themeTokens(this.store.themeMode),
+            icon: '♟',
+            title: '社区还没有作品',
+            description: '质检通过的成片可在剪辑完成后主动发布。这里只展示创作者自愿分享的真实口播。'
+          })
         }
         ForEach(this.posts, (post: CommunityPost, index: number) => {
           Column({ space: 0 }) {
@@ -116,7 +131,9 @@ export struct CommunityPage {
               .enabled(!this.downloadingPostId).onClick(() => this.openPost(post))
           }.width('100%').backgroundColor(themeTokens(this.store.themeMode).surface).borderRadius(themeTokens(this.store.themeMode).cardRadius)
             .accessibilityDescription(`作品 ${post.title}，作者 ${post.authorName}`)
-            .clip(true).border({ width: 1, color: themeTokens(this.store.themeMode).hairline })
+            .clip(true)
+            .border({ width: cardBorderWidth(themeTokens(this.store.themeMode)), color: themeTokens(this.store.themeMode).hairline })
+            .shadow(cardShadow(themeTokens(this.store.themeMode)))
             .onAppear(() => {
               if (post.id === this.posts[this.posts.length - 1]?.id && this.nextCursor) void this.load(false);
             })
