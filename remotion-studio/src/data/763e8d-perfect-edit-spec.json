@@ -39,6 +39,7 @@
   ],
   "beats": [
     {
+      "id": "opening",
       "startMs": 0,
       "endMs": 4590,
       "visual": "speaker-focus",
@@ -47,6 +48,7 @@
       "keywords": ["北京时间", "10 点半", "小贺"]
     },
     {
+      "id": "elapsed-time",
       "startMs": 4590,
       "endMs": 8510,
       "visual": "metrics",
@@ -59,6 +61,7 @@
       ]
     },
     {
+      "id": "craft",
       "startMs": 8510,
       "endMs": 15130,
       "visual": "pipeline",
@@ -67,6 +70,7 @@
       "keywords": ["连续开发", "效果打磨", "极致成片"]
     },
     {
+      "id": "system-proof",
       "startMs": 15130,
       "endMs": 22550,
       "visual": "speaker-focus",
@@ -75,6 +79,7 @@
       "keywords": ["口播视频", "系统", "效果"]
     },
     {
+      "id": "codex-running",
       "startMs": 22550,
       "endMs": 32130,
       "visual": "source-full",
@@ -87,6 +92,7 @@
       ]
     },
     {
+      "id": "system-built",
       "startMs": 32130,
       "endMs": 40690,
       "visual": "speaker-focus",
@@ -95,6 +101,7 @@
       "keywords": ["开发过程", "成就感", "系统"]
     },
     {
+      "id": "community-product",
       "startMs": 40690,
       "endMs": 48630,
       "visual": "pipeline",
@@ -103,6 +110,7 @@
       "keywords": ["探月计划", "具身智能", "Amazing 产品"]
     },
     {
+      "id": "classroom",
       "startMs": 48630,
       "endMs": 58530,
       "visual": "source-full",
@@ -115,6 +123,7 @@
       ]
     },
     {
+      "id": "effort-impact",
       "startMs": 58530,
       "endMs": 61110,
       "visual": "impact",
@@ -123,6 +132,7 @@
       "keywords": ["震惊", "努力"]
     },
     {
+      "id": "model-compare",
       "startMs": 61110,
       "endMs": 68750,
       "visual": "model-compare",
@@ -131,6 +141,7 @@
       "keywords": ["最新模型", "效果", "好很多"]
     },
     {
+      "id": "product-ui",
       "startMs": 68750,
       "endMs": 77810,
       "visual": "product-ui",
@@ -140,6 +151,7 @@
       "assetId": "mooncut-upload-ui"
     },
     {
+      "id": "auto-delivery",
       "startMs": 77810,
       "endMs": 85670,
       "visual": "distribution",
@@ -148,6 +160,7 @@
       "keywords": ["上传", "AI 剪辑", "邮箱送达"]
     },
     {
+      "id": "auto-publish",
       "startMs": 85670,
       "endMs": 94950,
       "visual": "distribution",
@@ -156,6 +169,7 @@
       "keywords": ["录制", "自动剪辑", "小红书", "抖音", "自动发布"]
     },
     {
+      "id": "closing",
       "startMs": 94950,
       "endMs": 100523,
       "visual": "closing",
@@ -181,21 +195,61 @@
   "bgm": {
     "src": "audio/bgm/tracks/dear-mr-super-computer.mp3",
     "title": "Dear Mr Super Computer",
-    "gainDb": -27,
+    "gainDb": -22,
     "fadeInMs": 900,
     "fadeOutMs": 1400
   },
-  "sfx": [
-    {"id": "emphasis-impact-soft", "src": "sfx/emphasis-impact-soft.mp3", "atMs": 7800, "gainDb": -25, "durationMs": 1440},
-    {"id": "transition-whoosh-tech", "src": "sfx/transition-whoosh-tech.mp3", "atMs": 22450, "gainDb": -26, "durationMs": 1992},
-    {"id": "transition-whoosh-quick", "src": "sfx/transition-whoosh-quick.mp3", "atMs": 32670, "gainDb": -25, "durationMs": 1032},
-    {"id": "transition-whoosh-quick", "src": "sfx/transition-whoosh-quick.mp3", "atMs": 48530, "gainDb": -25, "durationMs": 1032},
-    {"id": "emphasis-impact-cinematic", "src": "sfx/emphasis-impact-cinematic.mp3", "atMs": 59450, "gainDb": -28, "durationMs": 2088},
-    {"id": "transition-whoosh-tech", "src": "sfx/transition-whoosh-tech.mp3", "atMs": 68650, "gainDb": -26, "durationMs": 1992},
-    {"id": "ui-click-mouse", "src": "sfx/ui-click-mouse.mp3", "atMs": 72050, "gainDb": -27, "durationMs": 1056},
-    {"id": "status-correct-ding", "src": "sfx/status-correct-ding.mp3", "atMs": 84400, "gainDb": -25, "durationMs": 1320},
-    {"id": "text-pop-bubble", "src": "sfx/text-pop-bubble.mp3", "atMs": 87300, "gainDb": -23, "durationMs": 1080},
-    {"id": "emphasis-impact-soft", "src": "sfx/emphasis-impact-soft.mp3", "atMs": 94950, "gainDb": -26, "durationMs": 1440}
+  "audioVisualCues": [
+    {
+      "id": "elapsed-time-metrics-land",
+      "preset": "card-land",
+      "anchor": {"type": "beat", "beatId": "elapsed-time", "offsetMs": 233}
+    },
+    {
+      "id": "codex-running-tech-transition",
+      "preset": "scene-transition-tech",
+      "anchor": {"type": "beat", "beatId": "codex-running"}
+    },
+    {
+      "id": "system-built-fast-transition",
+      "preset": "scene-transition-fast",
+      "anchor": {"type": "beat", "beatId": "system-built"}
+    },
+    {
+      "id": "classroom-fast-transition",
+      "preset": "scene-transition-fast",
+      "anchor": {"type": "beat", "beatId": "classroom"}
+    },
+    {
+      "id": "effort-impact-pulse",
+      "preset": "impact-major",
+      "anchor": {"type": "beat", "beatId": "effort-impact", "offsetMs": 800}
+    },
+    {
+      "id": "product-ui-tech-transition",
+      "preset": "scene-transition-tech",
+      "anchor": {"type": "beat", "beatId": "product-ui"}
+    },
+    {
+      "id": "product-ui-cursor-click",
+      "preset": "cursor-click",
+      "anchor": {"type": "beat", "beatId": "product-ui", "offsetMs": 3333}
+    },
+    {
+      "id": "delivery-validated",
+      "preset": "status-correct",
+      "anchor": {"type": "beat", "beatId": "auto-delivery", "offsetMs": 2267}
+    },
+    {
+      "id": "publish-third-card",
+      "preset": "text-pop-bubble",
+      "anchor": {"type": "beat", "beatId": "auto-publish", "offsetMs": 1667}
+    },
+    {
+      "id": "closing-card-land",
+      "preset": "card-land",
+      "anchor": {"type": "beat", "beatId": "closing", "offsetMs": 167}
+    }
   ],
   "cameraPolicy": {
     "mode": "track-small-overlays-only",

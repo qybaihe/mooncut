@@ -6,13 +6,14 @@ import {
   Img,
   interpolate,
   OffthreadVideo,
-  Sequence,
   spring,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
+import type {AudioVisualCue} from '../audioVisualCues';
 import {FaceTrackedVideo, type FaceTrackManifest} from '../components/FaceTrackedVideo';
+import {AudioVisualCueTrack} from '../components/AudioVisualCueTrack';
 import {MacDesktop, MacFloatingVideoWindow, MacWindow} from '../extensions/community-motion/MacDesktop';
 
 export type PerfectBeatVisual =
@@ -27,6 +28,7 @@ export type PerfectBeatVisual =
   | 'closing';
 
 export type PerfectBeat = {
+  id: string;
   startMs: number;
   endMs: number;
   visual: PerfectBeatVisual;
@@ -53,7 +55,7 @@ export type PerfectTalkingHeadSpec = {
   beats: PerfectBeat[];
   assets: Array<{id: string; src: string; label: string}>;
   bgm?: {src: string; title: string; gainDb: number; fadeInMs: number; fadeOutMs: number};
-  sfx: Array<{id: string; src: string; atMs: number; gainDb: number; durationMs: number}>;
+  audioVisualCues: AudioVisualCue[];
   cameraPolicy?: {
     mode: 'track-small-overlays-only';
     trackedLayout: 'circle';
@@ -83,8 +85,8 @@ export const assertPerfectTalkingHeadSpec = (value: unknown): PerfectTalkingHead
   if (!Array.isArray(candidate.beats) || candidate.beats.length === 0) {
     throw new Error('Perfect talking-head spec requires timed beats');
   }
-  if (!Array.isArray(candidate.subtitles) || !Array.isArray(candidate.sfx)) {
-    throw new Error('Perfect talking-head spec requires subtitle and SFX arrays');
+  if (!Array.isArray(candidate.subtitles) || !Array.isArray(candidate.audioVisualCues)) {
+    throw new Error('Perfect talking-head spec requires subtitle and audioVisualCues arrays');
   }
   return candidate as PerfectTalkingHeadSpec;
 };
@@ -489,16 +491,7 @@ export const PerfectTalkingHeadVideo: React.FC<PerfectTalkingHeadVideoProps> = (
           volume={dbToVolume(spec.bgm.gainDb) * bgmEnvelope}
         />
       ) : null}
-      {spec.sfx.map((effect) => (
-        <Sequence
-          key={`${effect.id}-${effect.atMs}`}
-          from={Math.max(0, Math.round(effect.atMs / 1000 * fps))}
-          durationInFrames={Math.max(1, Math.ceil(effect.durationMs / 1000 * fps))}
-          name={`SFX · ${effect.id}`}
-        >
-          <Audio src={staticFile(effect.src)} volume={dbToVolume(effect.gainDb)} />
-        </Sequence>
-      ))}
+      <AudioVisualCueTrack beats={spec.beats} cues={spec.audioVisualCues} />
 
       {desktopScene ? <MacDesktop applicationName="MoonCut" clockText="22:30" shade={0.42} showDock={false} showMenuBar /> : null}
       {beat.visual === 'speaker-focus' ? <SpeakerFocusScene beat={beat} enter={enter} spec={spec} /> : null}
