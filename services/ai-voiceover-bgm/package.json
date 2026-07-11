@@ -1,0 +1,15 @@
+{
+  "name": "ai-voiceover-bgm-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generate and prepare instrumental background music for voice-over videos through Yunwu Suno API.",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
