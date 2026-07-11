@@ -26,7 +26,10 @@
 /remotion-studio/public/agent-jobs/*
 !/remotion-studio/public/agent-jobs/763e8d-perfect-v1/
 !/remotion-studio/public/agent-jobs/763e8d-perfect-v1/**
+/remotion-studio/public/audio/bgm/generated/
 /mooncut-pi-agent/data/pi-runtime/
+/mooncut-pi-agent/data/runtime-logs/
+/mooncut-web/.wrangler/
 
 # Local browser automation artifacts
 **/.playwright-cli/
@@ -37,10 +40,19 @@
 # Generated web shot/output artifacts
 /mooncut-web/output/
 
-# HarmonyOS generated dependencies and build products
+# MoonCut Studio generated / heavy local artifacts
+/mooncut-studio/apps/desktop/release/
+/mooncut-studio/apps/desktop/dist/
+/mooncut-studio/apps/desktop/dist-electron/
+/mooncut-studio/apps/desktop/resources/mooncut-runtime/
+/mooncut-studio/packages/*/dist/
+/mooncut-pi-agent/dist/
+
+# HarmonyOS local dependencies, build output, signing secrets, and test artifacts
 /.pnpm-store/
 /harmony/oh_modules/
 /harmony/.hvigor/
+/harmony/.local-user/
 /harmony/local.properties
 /harmony/entry/.test/
 /harmony/entry/build/

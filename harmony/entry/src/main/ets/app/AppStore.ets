@@ -1,4 +1,4 @@
-import { AuthUser, HealthResponse, ScriptMessage } from '../core/api/APIModels';
+import { AuthUser, HealthResponse, ModelsResponse, ScriptMessage } from '../core/api/APIModels';
 import { APIError } from '../core/api/APIError';
 import { presentError } from '../core/api/ErrorPresentation';
 import { MoonCutAPIClient } from '../core/api/MoonCutAPIClient';
@@ -10,13 +10,20 @@ import { ClientPreferences } from '../core/storage/ClientPreferences';
 import { SystemMotionPreference } from '../core/accessibility/SystemMotionPreference';
 import { setThemeSystemDarkMode } from '../core/design/AppTheme';
 
+interface HealthAttempt { value: HealthResponse | null; error: string; }
+interface ModelsAttempt { value: ModelsResponse | null; error: string; }
+interface SessionAttempt { value: AuthUser | null; error: string; }
+
 @Observed
 export class AppStore {
   readonly api: MoonCutAPIClient = new MoonCutAPIClient();
   user: AuthUser | null = null;
   health: HealthResponse | null = null;
+  models: ModelsResponse | null = null;
+  edgeOnline: boolean = false;
   restoringSession: boolean = true;
   serviceError: string = '';
+  agentError: string = '';
   selectedTab: AppTab = AppTab.CREATE;
   themeMode: ThemeMode = ThemeMode.LIGHT;
   promptFontSize: number = 30;
@@ -30,6 +37,7 @@ export class AppStore {
   toast: string = '';
   toastIsError: boolean = false;
   activeJobId: string = '';
+  sessionEpoch: number = 0;
   pendingAsset: VideoAsset | null = null;
   pendingAssetOwnerId: string = '';
   clipTitle: string = '';
@@ -42,11 +50,15 @@ export class AppStore {
   private petTouchUntilMs: number = 0;
   private readonly preferences: ClientPreferences = new ClientPreferences();
   private abilityContext?: common.UIAbilityContext;
+  private bootstrapGeneration: number = 0;
 
   get authenticated(): boolean { return this.user !== null; }
-  get serviceConnected(): boolean { return this.health?.ok === true; }
+  get serviceConnected(): boolean { return this.edgeOnline; }
+  get assistantAvailable(): boolean { return this.edgeOnline && this.models !== null; }
+  get editingAvailable(): boolean { return this.health?.ok === true; }
 
   async bootstrap(context: common.UIAbilityContext): Promise<void> {
+    const generation = ++this.bootstrapGeneration;
     this.abilityContext = context;
     this.restoringSession = true;
     this.refreshMotionPreference(context);
@@ -61,28 +73,41 @@ export class AppStore {
     } catch (_) {
       this.themeMode = this.systemDarkMode ? ThemeMode.DARK : ThemeMode.LIGHT;
     }
-    try {
-      await this.api.initialize(context);
-    } catch (error) {
-      this.serviceError = this.message(error);
+    if (!this.api.configuration.isConfigured) {
+      this.health = null;
+      this.models = null;
+      this.edgeOnline = false;
+      this.transitionUser(null);
+      this.serviceError = '公开预览包未配置服务地址，仅可浏览本地界面。';
       this.restoringSession = false;
       return;
     }
     try {
-      this.health = await this.api.health();
-      this.serviceError = '';
+      await this.withTimeout(this.api.initialize(context), 6_000, '初始化服务连接超时');
+      const attempts = await this.withTimeout(
+        Promise.all([this.fetchModels(), this.fetchHealth(), this.fetchSession()]), 8_000, '连接服务超时'
+      );
+      if (generation !== this.bootstrapGeneration) return;
+      const modelsAttempt = attempts[0] as ModelsAttempt;
+      const healthAttempt = attempts[1] as HealthAttempt;
+      const sessionAttempt = attempts[2] as SessionAttempt;
+      this.models = modelsAttempt.value;
+      this.edgeOnline = modelsAttempt.value !== null || sessionAttempt.error === '';
+      this.health = healthAttempt.value;
+      this.agentError = healthAttempt.error;
+      this.serviceError = modelsAttempt.error || sessionAttempt.error;
+      this.transitionUser(sessionAttempt.value);
+      if (sessionAttempt.value) await this.loadUserPreferences(sessionAttempt.value.id);
     } catch (error) {
+      if (generation !== this.bootstrapGeneration) return;
       this.health = null;
-      this.serviceError = this.message(error);
+      this.models = null;
+      this.edgeOnline = false;
+      this.transitionUser(null);
+      this.serviceError = this.message(error as object);
+    } finally {
+      if (generation === this.bootstrapGeneration) this.restoringSession = false;
     }
-    try {
-      this.user = await this.api.session();
-      if (this.user) await this.loadUserPreferences(this.user.id);
-    } catch (error) {
-      this.user = null;
-      if (!this.serviceError) this.serviceError = this.message(error);
-    }
-    this.restoringSession = false;
   }
 
   refreshMotionPreference(context: common.UIAbilityContext): void {
@@ -97,12 +122,12 @@ export class AppStore {
   }
 
   async applyAuthenticated(user: AuthUser): Promise<void> {
-    this.user = user;
+    this.transitionUser(user);
     try { await this.loadUserPreferences(user.id); } catch (_) {}
     try {
       const sessionUser = await this.api.session();
       if (sessionUser) {
-        this.user = sessionUser;
+        this.transitionUser(sessionUser);
       } else if (!this.api.hasSessionCookie()) {
         this.serviceError = '登录响应已收到，但会话 Cookie 尚未建立。请重试登录。';
       }
@@ -114,27 +139,32 @@ export class AppStore {
   }
 
   async refreshHealth(verifySession: boolean = false): Promise<void> {
-    try {
-      this.health = await this.api.health();
-      this.serviceError = '';
-    } catch (error) {
-      this.health = null;
-      this.serviceError = this.message(error);
-      this.applyPet(PetEvent.PERMISSION_OR_NETWORK_FAILURE);
-    }
+    const attempts = await Promise.all([this.fetchModels(), this.fetchHealth()]);
+    const modelsAttempt = attempts[0] as ModelsAttempt;
+    const healthAttempt = attempts[1] as HealthAttempt;
+    this.models = modelsAttempt.value;
+    this.edgeOnline = modelsAttempt.value !== null;
+    this.health = healthAttempt.value;
+    this.serviceError = modelsAttempt.error;
+    this.agentError = healthAttempt.error;
+    if (!this.edgeOnline || !this.editingAvailable) this.applyPet(PetEvent.PERMISSION_OR_NETWORK_FAILURE);
     if (!verifySession || !this.user) return;
     try {
       const sessionUser = await this.api.session();
       if (sessionUser) {
-        this.user = sessionUser;
+        this.transitionUser(sessionUser);
       } else {
-        this.user = null;
+        this.transitionUser(null);
         this.showToast('登录已失效，请重新登录', true);
       }
     } catch (error) {
-      this.user = null;
       if (!this.serviceError) this.serviceError = this.message(error);
-      this.showToast(error instanceof APIError && error.unauthorized ? '登录已失效，请重新登录' : this.message(error), true);
+      if (error instanceof APIError && error.unauthorized) {
+        this.transitionUser(null);
+        this.showToast('登录已失效，请重新登录', true);
+      } else {
+        this.showToast(this.message(error), true);
+      }
       this.applyPet(PetEvent.PERMISSION_OR_NETWORK_FAILURE);
     }
   }
@@ -221,16 +251,13 @@ export class AppStore {
 
   async signOut(): Promise<void> {
     try { await this.api.logout(); } catch (_) { this.api.clearSession(); }
-    this.user = null;
-    this.activeJobId = '';
-    this.clearClipWorkspace();
-    this.selectedTab = AppTab.CREATE;
+    this.transitionUser(null);
     this.showToast('已退出登录');
   }
 
   handleError(error: object): void {
     if (error instanceof APIError && error.unauthorized) {
-      this.user = null;
+      this.transitionUser(null);
       this.showToast('登录已失效，请重新登录', true);
     } else {
       this.showToast(this.message(error), true);
@@ -256,6 +283,60 @@ export class AppStore {
     this.petHappiness = await this.preferences.petHappiness(userId);
     try { this.scriptMessages = messages ? JSON.parse(messages) as ScriptMessage[] : []; }
     catch (_) { this.scriptMessages = []; }
+  }
+
+  private async fetchHealth(): Promise<HealthAttempt> {
+    try { return { value: await this.api.health(), error: '' }; }
+    catch (error) { return { value: null, error: this.message(error as object) }; }
+  }
+
+  private async fetchModels(): Promise<ModelsAttempt> {
+    try { return { value: await this.api.models(), error: '' }; }
+    catch (error) { return { value: null, error: this.message(error as object) }; }
+  }
+
+  private async fetchSession(): Promise<SessionAttempt> {
+    try { return { value: await this.api.session(), error: '' }; }
+    catch (error) { return { value: null, error: this.message(error as object) }; }
+  }
+
+  private withTimeout<T>(operation: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      let completed = false;
+      const timer = setTimeout(() => {
+        if (completed) return;
+        completed = true;
+        reject(new APIError(message, 0, 'BOOTSTRAP_TIMEOUT'));
+      }, timeoutMs);
+      operation.then((value: T) => {
+        if (completed) return;
+        completed = true;
+        clearTimeout(timer);
+        resolve(value);
+      }).catch((error: object) => {
+        if (completed) return;
+        completed = true;
+        clearTimeout(timer);
+        reject(error);
+      });
+    });
+  }
+
+  private transitionUser(next: AuthUser | null): void {
+    const currentId = this.user?.id ?? '';
+    const nextId = next?.id ?? '';
+    if (currentId === nextId) {
+      this.user = next;
+      return;
+    }
+    this.user = next;
+    this.sessionEpoch += 1;
+    this.activeJobId = '';
+    this.clearClipWorkspace();
+    this.currentDraft = '';
+    this.scriptMessages = [];
+    this.petHappiness = 68;
+    this.selectedTab = AppTab.CREATE;
   }
 
   private applyPreferredColorMode(mode: ThemeMode): void {

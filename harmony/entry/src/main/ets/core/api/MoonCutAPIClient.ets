@@ -7,11 +7,13 @@ import { APIError } from './APIError';
 import { presentError, standardError } from './ErrorPresentation';
 import { NetworkTrust } from '../security/NetworkTrust';
 import { SecureSessionStore } from '../security/SecureSessionStore';
+import { RawFileUploader } from './RawFileUploader';
 import {
   AuthCredentialsRequest, AuthEnvelope, AuthUser, CoachAdviceRequest, CoachAdviceResponse, CommunityListResponse,
-  CommunityPublishResponse, EditJob, EditJobCreateResponse, HealthResponse, RenderQueueSnapshot, AssetUploadResponse, UploadSession,
-  ScriptAssistantRequest, ScriptAssistantResponse, EmptyRequest, UploadSessionCreateRequest, EditJobCreateRequest,
-  CommunityPublishRequest
+  CommunityPublishResponse, EditJob, EditJobCreateResponse, HealthResponse, RenderQueueSnapshot, AssetUploadResponse,
+  ScriptAssistantRequest, ScriptAssistantResponse, EmptyRequest, EditJobCreateRequest,
+  CommunityPublishRequest, CapabilityInvocationRequest, ModelsResponse, OtpPurpose, OtpSendRequest, OtpSendResponse,
+  OtpVerifyRequest
 } from './APIModels';
 
 interface ErrorBody { error?: string; code?: string; message?: string; requestId?: string; }
@@ -24,6 +26,7 @@ export class MoonCutAPIClient {
   private sessionCookie: string = '';
   private initialized: boolean = false;
   private readonly secureSessionStore: SecureSessionStore;
+  private readonly rawFileUploader: RawFileUploader = new RawFileUploader();
 
   constructor(
     configuration: APIConfiguration = APIConfiguration.current(),
@@ -42,14 +45,24 @@ export class MoonCutAPIClient {
     this.initialized = true;
   }
 
-  async health(): Promise<HealthResponse> { return this.requestJson<HealthResponse>('GET', '/healthz', undefined, false); }
+  async health(): Promise<HealthResponse> {
+    return this.requestJson<HealthResponse>('GET', '/v1/agent/health', undefined, false);
+  }
+  async models(): Promise<ModelsResponse> {
+    return this.requestJson<ModelsResponse>('GET', '/v1/models', undefined, false);
+  }
   async session(): Promise<AuthUser | null> { return (await this.requestJson<AuthEnvelope>('GET', '/v1/auth/session')).user; }
-  async register(email: string, password: string): Promise<AuthUser> {
-    const payload: AuthCredentialsRequest = { email, password };
-    return (await this.requestJson<AuthEnvelope>('POST', '/v1/auth/register', payload, false)).user!;
+  async sendOtp(email: string, purpose: OtpPurpose): Promise<OtpSendResponse> {
+    const payload: OtpSendRequest = { email: this.normalizeEmail(email), purpose };
+    return this.requestJson<OtpSendResponse>('POST', '/v1/auth/otp/send', payload, false);
+  }
+  async verifyOtp(email: string, code: string, purpose: OtpPurpose, password?: string): Promise<AuthUser> {
+    const payload: OtpVerifyRequest = { email: this.normalizeEmail(email), code: code.trim(), purpose };
+    if (purpose === OtpPurpose.REGISTER && password !== undefined) payload.password = password;
+    return (await this.requestJson<AuthEnvelope>('POST', '/v1/auth/otp/verify', payload, false)).user!;
   }
   async login(email: string, password: string): Promise<AuthUser> {
-    const payload: AuthCredentialsRequest = { email, password };
+    const payload: AuthCredentialsRequest = { email: this.normalizeEmail(email), password };
     return (await this.requestJson<AuthEnvelope>('POST', '/v1/auth/login', payload, false)).user!;
   }
   async logout(): Promise<void> {
@@ -59,22 +72,39 @@ export class MoonCutAPIClient {
     await this.secureSessionStore.clear();
   }
   async getEditJob(id: string): Promise<EditJob> { return this.requestJson<EditJob>('GET', `/v1/edit-jobs/${id}`); }
-  async createUploadSession(filename: string, bytes: number, contentType: string): Promise<UploadSession> {
-    const payload: UploadSessionCreateRequest = { filename, bytes, contentType };
-    return this.requestJson<UploadSession>('POST', '/v1/upload-sessions', payload);
+  async uploadAsset(
+    fileUri: string,
+    filename: string,
+    bytes: number,
+    contentType: string = 'video/mp4',
+    onProgress?: (sentBytes: number, totalBytes: number) => void
+  ): Promise<AssetUploadResponse> {
+    this.ensureConfigured();
+    const path = `/v1/assets?filename=${encodeURIComponent(filename)}`;
+    const response = await this.rawFileUploader.upload(
+      this.configuration.url(path), fileUri, bytes, contentType, this.sessionCookie,
+      this.configuration.caPath, this.configuration.uploadTimeoutMs, onProgress
+    );
+    let parsed: ErrorBody = {};
+    try { parsed = JSON.parse(response.body) as ErrorBody; } catch (_) {}
+    if (response.status < 200 || response.status >= 300) {
+      if (parsed.code === 'AUTH_REQUIRED') this.clearSession();
+      throw this.responseError(response.status, parsed, `视频上传失败（${response.status}）`, 'UPLOAD_FAILED');
+    }
+    try { return JSON.parse(response.body) as AssetUploadResponse; }
+    catch (_) { throw new APIError('视频上传响应不是有效 JSON', response.status, 'UPLOAD_RESPONSE_INVALID'); }
   }
-  async getUploadSession(id: string): Promise<UploadSession> {
-    return this.requestJson<UploadSession>('GET', `/v1/upload-sessions/${id}`);
-  }
-  async uploadChunk(id: string, offset: number, data: ArrayBuffer): Promise<UploadSession> {
-    return this.requestBinaryJson<UploadSession>(`/v1/upload-sessions/${id}/chunks?offset=${offset}`, data, 'application/octet-stream');
-  }
-  async completeUploadSession(id: string): Promise<AssetUploadResponse> {
-    const payload: EmptyRequest = {};
-    return this.requestJson<AssetUploadResponse>('POST', `/v1/upload-sessions/${id}/complete`, payload);
-  }
-  async createEditJob(assetId: string, title?: string, prompt?: string, imageGeneration: string = 'auto'): Promise<EditJobCreateResponse> {
+  async createEditJob(
+    assetId: string,
+    title?: string,
+    prompt?: string,
+    imageGeneration: string = 'auto',
+    capabilityInstallIds: string[] = [],
+    capabilityRequests: CapabilityInvocationRequest[] = []
+  ): Promise<EditJobCreateResponse> {
     const payload: EditJobCreateRequest = { assetId, title, prompt, imageGeneration };
+    if (capabilityInstallIds.length > 0) payload.capabilityInstallIds = capabilityInstallIds;
+    if (capabilityRequests.length > 0) payload.capabilityRequests = capabilityRequests;
     return this.requestJson<EditJobCreateResponse>('POST', '/v1/edit-jobs', payload);
   }
   async renderQueue(): Promise<RenderQueueSnapshot> { return this.requestJson<RenderQueueSnapshot>('GET', '/v1/render-queue'); }
@@ -107,6 +137,7 @@ export class MoonCutAPIClient {
   }
 
   async downloadUrl(url: string, destinationPath: string): Promise<string> {
+    this.ensureConfigured();
     this.assertTrustedResourceUrl(url);
     const probe = await this.requestRange(url, 0, 0);
     const total = this.contentRangeTotal(probe.headers);
@@ -151,35 +182,6 @@ export class MoonCutAPIClient {
     if (base.protocol !== resource.protocol || base.hostname !== resource.hostname || base.port !== resource.port) {
       throw new APIError('拒绝向非 MoonCut 服务地址发送用户会话', 0, 'UNTRUSTED_RESOURCE_URL');
     }
-  }
-
-  private async requestBinaryJson<T>(path: string, data: ArrayBuffer, contentType: string): Promise<T> {
-    const request = http.createHttp();
-    const headers: Record<string, string> = { 'Content-Type': contentType, 'Accept': 'application/json' };
-    if (this.sessionCookie) headers['Cookie'] = this.sessionCookie;
-    try {
-      const options: http.HttpRequestOptions = {
-        method: http.RequestMethod.POST,
-        header: headers,
-        extraData: data,
-        expectDataType: http.HttpDataType.STRING,
-        connectTimeout: this.configuration.requestTimeoutMs,
-        readTimeout: this.configuration.uploadTimeoutMs
-      };
-      this.applyTrust(options);
-      const response = await request.request(this.configuration.url(path), options);
-      const text = typeof response.result === 'string' ? response.result : '';
-      if (response.responseCode < 200 || response.responseCode >= 300) {
-        if (response.responseCode === 401) this.clearSession();
-        let parsed: ErrorBody = {};
-        try { parsed = JSON.parse(text) as ErrorBody; } catch (_) {}
-        throw this.responseError(response.responseCode, parsed, `分块上传失败（${response.responseCode}）`, 'UPLOAD_CHUNK_FAILED');
-      }
-      return JSON.parse(text) as T;
-    } catch (error) {
-      if (error instanceof APIError) throw error;
-      throw new APIError(`分块上传连接失败：${presentError(error as object)}`);
-    } finally { request.destroy(); }
   }
 
   private async requestRange(url: string, start: number, end: number): Promise<RangeResponse> {
@@ -234,6 +236,7 @@ export class MoonCutAPIClient {
   }
 
   private async requestJson<T>(method: 'GET' | 'POST', path: string, body?: object, includeSession: boolean = true): Promise<T> {
+    this.ensureConfigured();
     const request = http.createHttp();
     const headers: Record<string, string> = { 'Accept': 'application/json' };
     if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -252,9 +255,9 @@ export class MoonCutAPIClient {
       await this.captureCookie(response.header as Record<string, string | string[]>, response.cookies);
       const text = typeof response.result === 'string' ? response.result : '';
       if (response.responseCode < 200 || response.responseCode >= 300) {
-        if (response.responseCode === 401) this.clearSession();
         let parsed: ErrorBody = {};
         try { parsed = JSON.parse(text) as ErrorBody; } catch (_) {}
+        if (parsed.code === 'AUTH_REQUIRED') this.clearSession();
         throw this.responseError(response.responseCode, parsed, `请求失败（${response.responseCode}）`);
       }
       return JSON.parse(text || 'null') as T;
@@ -270,15 +273,25 @@ export class MoonCutAPIClient {
     if (this.configuration.caPath) options.caPath = this.configuration.caPath;
   }
 
+  private ensureConfigured(): void {
+    if (!this.configuration.isConfigured) {
+      throw new APIError('当前安装包未配置可用服务地址，仅可浏览本地预览界面', 0, 'SERVICE_NOT_CONFIGURED');
+    }
+  }
+
   private responseError(status: number, body: ErrorBody, fallback: string, fallbackCode: string = 'HTTP_ERROR'): APIError {
     let message = body.error ?? body.message ?? fallback;
     let code = body.code ?? fallbackCode;
-    if (status === 401) { message = '登录已失效，请重新登录'; code = body.code ?? 'AUTH_REQUIRED'; }
+    if (status === 401 && code === 'AUTH_REQUIRED') { message = '登录已失效，请重新登录'; }
     else if (status === 413) { message = '视频超过服务端大小限制（413）'; code = 'PAYLOAD_TOO_LARGE'; }
     else if (status === 415) { message = '不支持的视频格式（415）'; code = 'UNSUPPORTED_MEDIA'; }
     else if (status === 429) { message = body.error ?? body.message ?? '请求过于频繁，请稍后再试（429）'; code = body.code ?? 'RATE_LIMITED'; }
     if (body.requestId) message = `${message} · 诊断号 ${body.requestId}`;
     return new APIError(message, status, code);
+  }
+
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
   }
 
   private async captureCookie(headers: Record<string, string | string[]>, responseCookies: string = ''): Promise<void> {

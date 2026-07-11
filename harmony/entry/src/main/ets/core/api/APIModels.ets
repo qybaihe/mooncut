@@ -6,6 +6,24 @@ export interface AuthUser {
 
 export interface AuthEnvelope { user: AuthUser | null; }
 export interface AuthCredentialsRequest { email: string; password: string; }
+export enum OtpPurpose {
+  LOGIN = 'login',
+  REGISTER = 'register'
+}
+export interface OtpSendRequest { email: string; purpose: OtpPurpose; }
+export interface OtpSendResponse {
+  ok: boolean;
+  email: string;
+  purpose: OtpPurpose;
+  expiresInSec: number;
+  resendAfterSec: number;
+}
+export interface OtpVerifyRequest {
+  email: string;
+  code: string;
+  purpose: OtpPurpose;
+  password?: string;
+}
 export interface EmptyRequest {}
 export interface HealthResponse {
   ok: boolean;
@@ -16,22 +34,31 @@ export interface HealthResponse {
   communityPosts?: number;
   gatewayReachable?: boolean;
 }
+export interface ModelRouting {
+  planner?: string;
+  script?: string;
+  coach?: string;
+}
+export interface ModelsResponse {
+  available: string[];
+  routing?: ModelRouting;
+  relayConfigured?: boolean;
+  note?: string;
+}
 
 export interface AssetUploadResponse { assetId: string; filename?: string; bytes?: number; }
-export interface UploadSessionCreateRequest { filename: string; bytes: number; contentType: string; }
-export interface EditJobCreateRequest { assetId: string; title?: string; prompt?: string; imageGeneration: string; }
-export interface UploadSession {
-  id: string;
-  filename: string;
-  bytes: number;
-  receivedBytes: number;
-  chunkBytes: number;
-  createdAt: string;
-  updatedAt: string;
-  expiresAt: string;
-  statusUrl: string;
-  chunkUrl: string;
-  completeUrl: string;
+export interface CapabilityInvocationRequest {
+  installationId: string;
+  tool: string;
+  arguments: Record<string, string>;
+}
+export interface EditJobCreateRequest {
+  assetId: string;
+  title?: string;
+  prompt?: string;
+  imageGeneration: string;
+  capabilityInstallIds?: string[];
+  capabilityRequests?: CapabilityInvocationRequest[];
 }
 export interface EditJobCreateResponse { id: string; status: string; statusUrl?: string; videoUrl?: string; assetId?: string; }
 export interface EditJobRequest { imageGeneration?: string; title?: string; prompt?: string; }

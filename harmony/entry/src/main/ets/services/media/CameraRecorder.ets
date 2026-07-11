@@ -14,6 +14,7 @@ export enum CameraAvailability {
 export enum CameraRecordingState {
   IDLE = 'idle',
   RECORDING = 'recording',
+  PAUSING = 'pausing',
   PAUSED = 'paused',
   FINISHING = 'finishing'
 }
@@ -31,6 +32,7 @@ export class CameraRecorder {
   outputPath: string = '';
   isMirrored: boolean = true;
   faceDetectionAvailable: boolean = false;
+  lastError: string = '';
   onFaceObservation?: (face?: FaceObservation) => void;
 
   private manager?: camera.CameraManager;
@@ -42,12 +44,14 @@ export class CameraRecorder {
   private recorder?: media.AVRecorder;
   private outputFile?: fs.File;
   private timer: number = -1;
+  private lastFaceObservationAt: number = 0;
 
   get canRecord(): boolean { return this.availability === CameraAvailability.READY; }
 
   async prepare(context: common.UIAbilityContext, previewSurfaceId: string): Promise<void> {
     this.availability = CameraAvailability.PREPARING;
     this.availabilityMessage = '正在准备相机…';
+    this.lastError = '';
     try {
       this.manager = camera.getCameraManager(context);
       const cameras = this.manager.getSupportedCameras();
@@ -89,6 +93,9 @@ export class CameraRecorder {
       if (faceType !== undefined) {
         this.metadataOutput = this.manager.createMetadataOutput([faceType]);
         this.metadataOutput.on('metadataObjectsAvailable', (_error, objects) => {
+          const now = Date.now();
+          if (now - this.lastFaceObservationAt < 200) return;
+          this.lastFaceObservationAt = now;
           const object = objects[0];
           if (!object) { this.onFaceObservation?.(); return; }
           const box = object.boundingBox;
@@ -123,6 +130,7 @@ export class CameraRecorder {
       this.outputPath = '';
       this.availability = CameraAvailability.UNAVAILABLE;
       this.availabilityMessage = error instanceof Error ? error.message : '镜头暂时不可用，无法进行真实录制。';
+      this.lastError = this.availabilityMessage;
     }
   }
 
@@ -136,9 +144,17 @@ export class CameraRecorder {
 
   async pause(): Promise<void> {
     if (!this.recorder || this.recordingState !== CameraRecordingState.RECORDING) return;
-    await this.recorder.pause();
     this.stopTimer();
-    this.recordingState = CameraRecordingState.PAUSED;
+    this.recordingState = CameraRecordingState.PAUSING;
+    try {
+      await this.recorder.pause();
+      this.recordingState = CameraRecordingState.PAUSED;
+    } catch (error) {
+      this.lastError = error instanceof Error ? error.message : '暂停录制失败';
+      this.recordingState = CameraRecordingState.RECORDING;
+      this.startTimer();
+      throw new Error(this.lastError);
+    }
   }
 
   async resume(): Promise<void> {
@@ -162,7 +178,8 @@ export class CameraRecorder {
 
   async cancel(): Promise<void> {
     this.stopTimer();
-    if (this.recorder && (this.recordingState === CameraRecordingState.RECORDING || this.recordingState === CameraRecordingState.PAUSED)) {
+    if (this.recorder && (this.recordingState === CameraRecordingState.RECORDING ||
+      this.recordingState === CameraRecordingState.PAUSING || this.recordingState === CameraRecordingState.PAUSED)) {
       try { await this.recorder.stop(); } catch (_) {}
     }
     const discarded = this.outputPath;
@@ -195,6 +212,7 @@ export class CameraRecorder {
     this.session = undefined; this.previewOutput = undefined; this.videoOutput = undefined;
     this.metadataOutput = undefined; this.input = undefined; this.recorder = undefined; this.outputFile = undefined;
     this.faceDetectionAvailable = false;
+    this.lastFaceObservationAt = 0;
   }
 
   private async setMirror(enabled: boolean): Promise<void> {

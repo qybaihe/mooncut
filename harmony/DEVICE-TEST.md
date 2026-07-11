@@ -45,16 +45,16 @@ device model, HarmonyOS version, SDK/DevEco versions and build mode for every ru
 - Verify recording drafts are created under the app cache directory, while a
   downloaded completed edit remains in the persistent files directory.
 
-## 4. Resumable upload and server-owned progress
+## 4. Raw streaming upload and server-owned progress
 
 - Select one video through the photo library and one MP4/MOV through the document
   picker; each selection must be readable and have non-zero size.
 - Before uploading, return to Create and reopen Clip Studio; the selected source,
   title and preview must remain available. Reset must not delete the original
   photo-library/document file, but must delete an app-owned recording/result copy.
-- Select a video larger than three configured upload chunks.
-- Disable and re-enable networking during upload. The client must query the
-  committed server offset and resume without loading the full file into memory.
+- Select a video larger than three 1 MiB upload blocks and verify measured progress.
+- Disable networking during upload. The request must fail explicitly and a retry
+  must start a new `/v1/assets` upload without loading the full file into memory.
 - Verify edit progress changes only when `/v1/edit-jobs/{id}` changes.
 - Force-stop during a queued/running job and relaunch; the active job must restore.
 
@@ -91,7 +91,7 @@ device model, HarmonyOS version, SDK/DevEco versions and build mode for every ru
 
 ## 8. Release transport
 
-- Build Release and verify Settings shows `https://42.194.219.172`.
-- Verify the bundled MoonCut CA succeeds only for the configured production host.
+- Build Release and verify Settings shows `https://mooncut.me/api`.
+- Verify the system HTTPS chain succeeds for `mooncut.me` and the client rejects other configured hosts.
 - Replace the endpoint with HTTP, another host or an invalid CA in a test branch;
   the client must fail closed without sending the session Cookie.

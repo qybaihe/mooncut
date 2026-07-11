@@ -42,8 +42,9 @@ export struct TeleprompterPage {
   private lastAdvice: string = '';
   private tearingDown: boolean = false;
   private handedOff: boolean = false;
+  private countdownGeneration: number = 0;
 
-  aboutToDisappear(): void { void this.teardown(); }
+  aboutToDisappear(): void { this.countdownGeneration += 1; this.countdown = -1; void this.teardown(); }
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
@@ -65,7 +66,8 @@ export struct TeleprompterPage {
         Text(this.countdown === 0 ? '开始' : `${this.countdown}`).fontSize(this.countdown === 0 ? 46 : 82)
           .fontWeight(FontWeight.Bold).fontColor('#FFFFFF').shadow({ radius: 20, color: '#99000000' })
       }
-      if (this.recorder.availability !== CameraAvailability.READY && this.recorder.availability !== CameraAvailability.PREPARING) {
+      if (!this.coachingActive && this.recorder.availability !== CameraAvailability.READY &&
+        this.recorder.availability !== CameraAvailability.PREPARING) {
         this.permissionOverlay()
       }
       if (this.showsSettings) {
@@ -139,8 +141,12 @@ export struct TeleprompterPage {
             .enabled(this.recorder.canRecord).accessibilityText('开始录制并陪练').onClick(() => this.startSession(false))
         } else {
           Button(this.practiceSession ? (this.practicePaused ? '继续' : '暂停') : (this.recorder.recordingState === CameraRecordingState.PAUSED ? '继续' : '暂停')).height(58).layoutWeight(1)
+            .enabled(this.practiceSession || this.recorder.recordingState === CameraRecordingState.RECORDING ||
+              this.recorder.recordingState === CameraRecordingState.PAUSED)
             .backgroundColor('#CCFFFFFF').fontColor('#17181C').onClick(() => this.togglePause())
           Button('完成').height(58).layoutWeight(1).backgroundColor('#FFFFFF').fontColor('#17181C').fontWeight(FontWeight.Bold)
+            .enabled(this.practiceSession || this.recorder.recordingState === CameraRecordingState.RECORDING ||
+              this.recorder.recordingState === CameraRecordingState.PAUSED)
             .onClick(() => this.finish())
         }
       }.width('100%').margin({ top: 12 })
@@ -190,6 +196,10 @@ export struct TeleprompterPage {
         Button('打开系统权限设置').height(50).width('100%').backgroundColor(themeTokens(this.store.themeMode).accent).fontColor('#FFFFFF')
           .onClick(() => this.openPermissionSettings())
       }
+      if (this.metricsEngine.metrics.isSpeechAvailable) {
+        Button('只陪练（无需相机）').height(50).width('100%').backgroundColor('#66FFFFFF').fontColor('#FFFFFF')
+          .onClick(() => this.startSession(true))
+      }
       Button('退出').height(50).width('100%').backgroundColor('#FFFFFF').fontColor('#17181C')
         .onClick(() => { void this.exitTeleprompter(); })
     }.padding(24).width('82%').backgroundColor('#EE25272C').borderRadius(18)
@@ -235,9 +245,14 @@ export struct TeleprompterPage {
     const context = getContext(this) as common.UIAbilityContext;
     const permissions: Permissions[] = ['ohos.permission.CAMERA', 'ohos.permission.MICROPHONE'];
     const result = await abilityAccessCtrl.createAtManager().requestPermissionsFromUser(context, permissions);
-    if (result.authResults.some((value) => value !== abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED)) {
+    const cameraGranted = result.authResults[0] === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+    const microphoneGranted = result.authResults[1] === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED;
+    if (microphoneGranted) await this.prepareCoaching();
+    if (!cameraGranted || !microphoneGranted) {
       this.recorder.availability = CameraAvailability.DENIED;
-      this.recorder.availabilityMessage = '相机或麦克风权限未开启。请在系统设置中允许后返回 App。';
+      this.recorder.availabilityMessage = !cameraGranted && !microphoneGranted
+        ? '相机与麦克风权限未开启。只陪练至少需要麦克风权限。'
+        : !cameraGranted ? '相机权限未开启；仍可使用只陪练。' : '麦克风权限未开启，无法录制带声音的视频。';
       this.store.applyPet(PetEvent.PERMISSION_OR_NETWORK_FAILURE);
       return;
     }
@@ -247,6 +262,11 @@ export struct TeleprompterPage {
     if (!this.recorder.canRecord) this.store.applyPet(PetEvent.PERMISSION_OR_NETWORK_FAILURE);
     this.metricsEngine.setVisionAvailability(this.recorder.faceDetectionAvailable,
       this.recorder.faceDetectionAvailable ? '镜头朝向（估算）· 检测中' : '镜头朝向（估算）· 当前设备不可用');
+    if (!this.speechRecognizer) await this.prepareCoaching();
+  }
+
+  private async prepareCoaching(): Promise<void> {
+    if (this.speechRecognizer) return;
     this.speechRecognizer = new SystemSpeechRecognizer(this.metricsEngine);
     this.audioMeter = new AudioRmsMeter(this.metricsEngine, (audio: Uint8Array) => {
       this.speechRecognizer?.writeAudio(audio);
@@ -272,11 +292,13 @@ export struct TeleprompterPage {
   }
 
   private async startSession(practiceOnly: boolean): Promise<void> {
+    const generation = ++this.countdownGeneration;
     this.practiceSession = practiceOnly;
     if (!practiceOnly) {
       for (const value of [3, 2, 1, 0]) {
         this.countdown = value;
         await new Promise<void>((resolve) => setTimeout(resolve, 450));
+        if (generation !== this.countdownGeneration) { this.countdown = -1; return; }
       }
       this.countdown = -1;
     }
@@ -468,6 +490,8 @@ export struct TeleprompterPage {
   private async teardown(): Promise<void> {
     if (this.tearingDown) return;
     this.tearingDown = true;
+    this.countdownGeneration += 1;
+    this.countdown = -1;
     await this.stopCoaching(true);
     if (!this.reviewing) await this.recorder.cancel();
     else {

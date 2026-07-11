@@ -6,10 +6,10 @@ export default function securityTest(): void {
   describe('MoonCut transport security contracts', () => {
     it('accepts the production HTTPS host', 0, () => {
       const configuration = new APIConfiguration(
-        'https://42.194.219.172', '42.194.219.172', BuildEnvironment.RELEASE, true
+        'https://mooncut.me/api', 'mooncut.me', BuildEnvironment.RELEASE, false
       );
-      expect(configuration.requiresBundledCA).assertTrue();
-      expect(configuration.url('/healthz')).assertEqual('https://42.194.219.172/healthz');
+      expect(configuration.requiresBundledCA).assertFalse();
+      expect(configuration.url('/v1/auth/session')).assertEqual('https://mooncut.me/api/v1/auth/session');
     });
 
     it('rejects release cleartext transport', 0, () => {
@@ -28,12 +28,11 @@ export default function securityTest(): void {
       expect(rejected).assertTrue();
     });
 
-    it('rejects release transport without the bundled CA', 0, () => {
-      let rejected = false;
-      try {
-        new APIConfiguration('https://42.194.219.172', '42.194.219.172', BuildEnvironment.RELEASE, false);
-      } catch (_) { rejected = true; }
-      expect(rejected).assertTrue();
+    it('accepts the public TLS chain without a bundled CA', 0, () => {
+      const configuration = new APIConfiguration(
+        'https://mooncut.me/api', 'mooncut.me', BuildEnvironment.RELEASE, false
+      );
+      expect(configuration.requiresBundledCA).assertFalse();
     });
 
     it('rejects non-HTTP protocols', 0, () => {
@@ -47,7 +46,7 @@ export default function securityTest(): void {
     it('rejects a configured host mismatch', 0, () => {
       let rejected = false;
       try {
-        new APIConfiguration('https://api.example.com', 'mooncut.example.com', BuildEnvironment.RELEASE, true);
+        new APIConfiguration('https://api.example.com', 'mooncut.example.com', BuildEnvironment.RELEASE, false);
       } catch (_) { rejected = true; }
       expect(rejected).assertTrue();
     });

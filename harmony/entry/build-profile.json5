@@ -7,9 +7,10 @@
       "arkOptions": {
         "buildProfileFields": {
           "MoonCutEnvironment": "release",
-          "MoonCutApiBaseUrl": "https://42.194.219.172",
-          "MoonCutTrustedHost": "42.194.219.172",
-          "MoonCutUseBundledCA": true
+          "MoonCutApiBaseUrl": "https://mooncut.me/api",
+          "MoonCutTrustedHost": "mooncut.me",
+          "MoonCutDistributionMode": "internal",
+          "MoonCutUseBundledCA": false
         },
         "obfuscation": { "ruleOptions": { "enable": true, "files": ["./obfuscation-rules.txt"] } }
       }
@@ -21,6 +22,7 @@
           "MoonCutEnvironment": "debug",
           "MoonCutApiBaseUrl": "http://127.0.0.1:4317",
           "MoonCutTrustedHost": "127.0.0.1",
+          "MoonCutDistributionMode": "internal",
           "MoonCutUseBundledCA": false
         }
       }
@@ -33,6 +35,7 @@
           "MoonCutEnvironment": "debug",
           "MoonCutApiBaseUrl": "http://127.0.0.1:4317",
           "MoonCutTrustedHost": "127.0.0.1",
+          "MoonCutDistributionMode": "test",
           "MoonCutUseBundledCA": false
         }
       }

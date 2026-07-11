@@ -7,20 +7,21 @@ service contracts, state labels and theme tokens mirror the iOS client under
 ## Implemented
 
 - Stage-model HarmonyOS project scaffold for phone and tablet.
-- Email registration/login and user Cookie session client.
+- OTP-first email registration/login, compatible password login and user Cookie session client.
 - Exact light, dark and Memphis semantic design tokens matching iOS values;
   the default follows system color mode, while explicit choices style native controls too.
 - Four primary tabs: Create, Coach, Jobs and Community.
 - Home, auth, settings, script assistant, edit workflow, render queue and
   community page states.
 - Real API DTOs and stage localization shared conceptually with iOS.
-- Photo-library and MP4/MOV document pickers, resumable bounded-memory upload,
+- Photo-library and MP4/MOV document pickers, raw `/v1/assets` bounded-memory upload,
   image-generation choice, edit-job creation and server-owned polling.
 - Authenticated HTTP Range download into the app sandbox with per-range offset,
   write-length and final-size validation, partial-file cleanup and local playback.
 - Network Kit cookie capture plus Asset Store-backed session restoration, with
   logout/401 deletion and no raw Cookie in Preferences.
-- Build-profile-specific network policy: loopback-only HTTP in Debug and the fixed HTTPS production host plus bundled MoonCut CA in Release.
+- Build-profile-specific network policy: loopback-only HTTP in Debug and `https://mooncut.me/api` with the system public TLS chain in Release; unconfigured/public packages fail closed without network requests.
+- Independent edge-assistant and editing-Agent health states, so Agent maintenance does not block authentication or assistant features.
 - Share Kit system sharing for a locally downloaded result video.
 - Practice-only or recording-plus-coaching from the same teleprompter, Camera Kit
   front-camera preview, AVRecorder pause/resume, recording review and
@@ -47,14 +48,14 @@ compatibility and target baseline. Before a
 release build, verify the following adapters on a physical target device:
 
 1. Network Kit Set-Cookie behavior and Asset Store-backed session restoration after process restart.
-2. Resumable upload chunk reads and retries against a real server under mobile
-   network interruption.
+2. Raw HTTP/1.1 file streaming to `/v1/assets` with bounded 1 MiB reads and
+   measured progress against a real server.
 3. Authenticated artifact Range download and local video playback.
 4. Camera Kit preview plus AVRecorder pause/resume.
 5. Core Speech Kit `writeAudio`, AudioCapturer RMS and Camera metadata face-direction metrics
    sharing the same AVRecorder session. If a device rejects microphone sharing,
    the UI must retain the explicit unavailable state already implemented.
-6. Release HTTPS certificate trust for the production MoonCut host and rejection of other hosts.
+6. Release system HTTPS trust for `mooncut.me`, including rejection of other hosts and cleartext transport.
 7. Share Kit preview and transfer of an app-sandbox MP4 to at least one target app.
 8. Both PhotoViewPicker and DocumentViewPicker return readable non-empty MP4/MOV
    assets on every supported target device.
@@ -89,9 +90,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\device-test.ps1
 Both scripts accept the full DevEco runner/tool paths through `-HvigorPath` and
 `-HdcPath` when those executables are not on `PATH`.
 
-If DevEco's Hvigor runner is not on `PATH`, pass its full path with
-`-HvigorPath` or set `HVIGOR_PATH` for the current shell. The script validates
-that the selected runner exists before invoking it.
+On a standard Windows DevEco Studio installation, the scripts automatically
+locate Hvigor and the bundled SDK. For a custom installation, pass the full
+runner path with `-HvigorPath`, or set `HVIGOR_PATH` and `DEVECO_SDK_HOME` for
+the current shell. The script validates both paths before invoking Hvigor.
 
 Physical-device evidence must follow `DEVICE-TEST.md`. The scripts intentionally
 do not store SDK paths, signing files, passwords or service credentials.

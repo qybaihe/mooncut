@@ -59,7 +59,7 @@ Assert-True ($speech -match 'writeAudio\(this\.sessionId, audio\)') 'Core Speech
 Assert-True ($speech -match 'this\.engine\.cancel\(this\.sessionId\)' -and $speech -match 'this\.wantRunning = false') 'Core Speech cancels a failed PCM session instead of leaking it'
 Assert-True ($motion -match 'ANIMATOR_DURATION_SCALE' -and $motion -match 'TRANSITION_ANIMATION_SCALE' -and $motion -match 'WINDOW_ANIMATION_SCALE') 'reduced motion follows HarmonyOS system animation scales'
 Assert-True ($pet -match 'if \(this\.reducedMotion\)' -and $pet -match 'compact') 'pet animation stops for reduced motion and supports teleprompter HUD'
-Assert-True ($auth -match 'errorDiagnostic' -and $auth -match 'refreshHealth\(\)' -and $store -match 'hasSessionCookie\(\)' -and $store -match 'verifySession') 'authentication matches iOS diagnostics, service retry, and session verification'
+Assert-True ($auth -match 'errorDiagnostic' -and $auth -match 'sendOtp\(\)' -and $auth -match 'verifyOtp\(\)' -and $auth -match 'resendRemaining' -and $store -match 'hasSessionCookie\(\)' -and $store -match 'verifySession') 'authentication implements OTP, cooldown, diagnostics, and session verification'
 Assert-True ($camera -match 'unlinkSync\(failedPath\)' -and $camera -match "this\.outputPath = ''") 'camera failures do not retain empty recording files'
 Assert-True ($camera -match 'context\.cacheDir.*mooncut-recording') 'recording drafts use purgeable cache storage until handoff'
 Assert-True ($teleprompter -match 'requestPermissionOnSetting' -and $teleprompter -match 'GrantStatus\.PERMISSION_GRANTED') 'permission denial opens native settings and rechecks authoritative grant state'
@@ -75,6 +75,7 @@ Assert-True ($preferencesSource -match 'Promise<ThemeMode \| null>' -and $store 
 Assert-True ($store -match 'setColorMode\(colorMode\)' -and $store -match 'COLOR_MODE_NOT_SET') 'explicit themes also style native system controls like iOS'
 
 $api = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/src/main/ets/core/api/MoonCutAPIClient.ets')
+$rawUploader = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/src/main/ets/core/api/RawFileUploader.ets')
 $clip = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/src/main/ets/features/edit/ClipStudioPage.ets')
 $coach = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/src/main/ets/features/coach/CoachPage.ets')
 $community = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/src/main/ets/features/community/CommunityPage.ets')
@@ -86,21 +87,22 @@ $apiConfiguration = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/s
 $moduleProfile = Get-Content -Raw -Encoding utf8 (Join-Path $project 'entry/src/main/module.json5')
 $projectProfile = Get-Content -Raw -Encoding utf8 (Join-Path $project 'build-profile.json5')
 Assert-True ($projectProfile -match '"compileSdkVersion"\s*:\s*"6\.1\.1\(24\)"' -and $projectProfile -match '"compatibleSdkVersion"\s*:\s*"5\.0\.0\(12\)"') 'compile SDK matches installed API 24 while compatibility remains API 12'
-Assert-True ($api -match '/v1/upload-sessions') 'API client uses resumable upload sessions'
-Assert-True ($api -notmatch 'async uploadAsset\(') 'API client exposes no whole-file ArrayBuffer upload regression path'
-Assert-True ($clip -match 'readSync\(' -and $clip -match 'session\.chunkBytes') 'source video is read in bounded chunks'
+Assert-True ($api -match '/v1/assets\?filename=' -and $api -notmatch '/v1/upload-sessions') 'API client matches the current raw /v1/assets upload contract'
+Assert-True ($rawUploader -match 'Content-Length:' -and $rawUploader -match 'new ArrayBuffer\(length\)' -and $rawUploader -match 'fs\.readSync' -and $rawUploader -match 'await (tls|tcp)\.send') 'raw source video upload streams bounded file blocks without multipart wrapping'
+Assert-True ($rawUploader -match 'chunkBytes:\s*number\s*=\s*1024 \* 1024') 'source upload keeps ArkTS memory bounded to one MiB blocks'
 Assert-True ($clip -match 'DocumentViewPicker' -and $clip -match 'fileSuffixFilters') 'edit import supports both photo library and MP4/MOV document picker'
 Assert-True ($clip -match 'this\.imageGeneration' -and $clip -match "'auto'" -and $clip -match "'off'") 'edit ready state exposes the iOS image-generation choice'
 Assert-True ($clip -match 'this\.store\.setPendingAsset\(this\.asset\)' -and $clip -match 'this\.store\.clipPrompt = this\.prompt' -and $clip -match "asset\?\.source === 'recording'" -and $clip -match 'removeSandboxUri\(this\.localResultUri\)') 'edit navigation retains workspace state and reset removes only app-owned media'
-Assert-True ($clip -match 'quality\?\.ok === true') 'community publishing is quality-gated'
+$communityPublishExposed = $clip.Contains("Button('发布到社区')")
+Assert-True (-not $communityPublishExposed) 'production build does not expose unsupported community publishing'
 Assert-True ($clip -notmatch 'setInterval\([^\)]*progress') 'edit progress is never locally incremented'
-Assert-True ($clip -match 'errorDiagnostic' -and $clip -match 'LoadingProgress\(\)' -and $clip -match 'offset / stat\.size') 'edit UI exposes diagnostics, indeterminate jobs, and measured upload progress'
-Assert-True ($clip -match '!error\.retryable' -and $clip -match 'error\.unauthorized' -and $clip -match 'this\.fail\(error\)') 'edit retry and polling preserve iOS terminal-error boundaries'
+Assert-True ($clip -match 'errorDiagnostic' -and $clip -match 'LoadingProgress\(\)' -and $clip -match 'sent / total') 'edit UI exposes diagnostics, indeterminate jobs, and measured upload progress'
+Assert-True ($clip -match '!error\.retryable' -and $clip -match 'transientFailures >= 8' -and $clip -match 'retryFailed\(\)') 'edit retry and polling preserve iOS terminal-error boundaries'
 Assert-True ($coach -match 'characterCount\(\)' -and $coach -match 'sentenceCount\(\)' -and $coach -match '/v1/assistant/coach') 'coach entry matches iOS draft statistics and real advice pipeline'
 Assert-True ($api -match 'assertTrustedResourceUrl') 'authenticated media enforces same-origin trust'
 Assert-True ($api -match 'requestId' -and $api -match 'PAYLOAD_TOO_LARGE' -and $api -match 'RATE_LIMITED') 'HTTP errors preserve iOS diagnostics and status-specific copy'
 Assert-True ($api -match 'response\.cookies' -and $api -match 'captureCookie') 'session capture uses the official HttpResponse cookies field plus headers'
-Assert-True ($api -match "DOWNLOAD_RANGE_UNSUPPORTED" -and $api -match "AUTH_REQUIRED") 'JSON, upload, and Range 401 responses clear the native session'
+Assert-True ($api -match "DOWNLOAD_RANGE_UNSUPPORTED" -and $api -match "AUTH_REQUIRED") 'protected artifact AUTH_REQUIRED responses clear the native session'
 Assert-True ($api -match 'DOWNLOAD_WRITE_INCOMPLETE' -and $api -match 'DOWNLOAD_SIZE_MISMATCH' -and $api -match 'DOWNLOAD_RANGE_MISMATCH' -and $api -match 'unlinkSync\(destinationPath\)') 'Range offsets and writes are verified and failures cannot leave a partial result file'
 Assert-True ($community -match 'downloadUrl\(post\.videoUrl') 'community video is downloaded before playback'
 Assert-True ($community -match 'context\.cacheDir.*community-poster' -and $community -match 'context\.cacheDir.*community-') 'community poster and video downloads use cache storage'
@@ -113,8 +115,12 @@ Assert-True ($jobs -notmatch 'new Date\(\)\.toLocaleTimeString') 'jobs UI does n
 Assert-True ($jobs -match 'this\.refreshing' -and $jobs -match '!this\.visible' -and $jobs -match 'finally') 'jobs polling is serial and ignores responses after navigation'
 Assert-True ($scriptStudio -match "requestScript\('generate'\)" -and $scriptStudio -match "requestScript\('polish'" -and $scriptStudio -match 'retryLast') 'script assistant keeps iOS request actions and retry path'
 Assert-True ($scriptStudio -match 'pasteboard\.getSystemPasteboard\(\)\.setData' -and $scriptStudio -match 'selectedSuggestionIds') 'script draft copy and suggestion selection are native and stateful'
-Assert-True ($buildProfile -match 'https://42\.194\.219\.172' -and $buildProfile -match 'http://127\.0\.0\.1:4317') 'Debug and Release endpoints are build-specific'
-Assert-True ($apiConfiguration -match "parsed\.protocol !== 'http:'" -and $apiConfiguration -match '!this\.requiresBundledCA') 'transport rejects non-HTTP schemes and Release without bundled CA'
+Assert-True ($buildProfile -match 'https://mooncut\.me/api' -and $buildProfile -match '"MoonCutTrustedHost"\s*:\s*"mooncut\.me"' -and $buildProfile -match 'http://127\.0\.0\.1:4317') 'Debug and Release endpoints are build-specific'
+Assert-True ($apiConfiguration -match 'isConfigured' -and $apiConfiguration -match 'distributionMode' -and $store -match 'sessionEpoch' -and $store -match 'BOOTSTRAP_TIMEOUT') 'distribution preview, bounded bootstrap, and account session isolation match iOS'
+Assert-True ($apiConfiguration -match "parsed\.protocol !== 'http:'" -and $apiConfiguration -notmatch 'Release 构建必须启用捆绑 CA') 'transport rejects non-HTTP schemes and permits the production public TLS chain'
+Assert-True ($api -match '/v1/auth/otp/send' -and $api -match '/v1/auth/otp/verify' -and $api -match "parsed\.code === 'AUTH_REQUIRED'") 'API client implements OTP and clears sessions only for AUTH_REQUIRED'
+Assert-True ($store -match 'edgeOnline' -and $store -match 'editingAvailable' -and $api -match '/v1/agent/health' -and $api -match '/v1/models') 'edge assistant and editing-node availability are independent'
+Assert-True ($clip -match 'pollInitialIntervalMs' -and $clip -match 'pollMaxIntervalMs' -and $clip -match 'intervalMs \* 2') 'edit polling uses bounded exponential backoff'
 Assert-True ($moduleProfile -match 'ohos\.permission\.INTERNET' -and $moduleProfile -match 'ohos\.permission\.CAMERA' -and $moduleProfile -match 'ohos\.permission\.MICROPHONE') 'required runtime permissions are declared'
 
 $synthetic = Select-String -Path $source.FullName -Pattern 'Math\.random|random\(|fake|mock' -AllMatches
@@ -122,14 +128,23 @@ Assert-True ($null -eq $synthetic) 'no synthetic metric or fake/mock path'
 
 if ($Build) {
   $wrapper = Join-Path $project 'hvigorw.bat'
+  $devecoRunner = Join-Path $env:ProgramFiles 'Huawei\DevEco Studio\tools\hvigor\bin\hvigorw.bat'
+  $devecoSdk = Join-Path $env:ProgramFiles 'Huawei\DevEco Studio\sdk'
   $command = Get-Command hvigor -ErrorAction SilentlyContinue
   $runner = if (-not [string]::IsNullOrWhiteSpace($HvigorPath)) { $HvigorPath }
     elseif (-not [string]::IsNullOrWhiteSpace($env:HVIGOR_PATH)) { $env:HVIGOR_PATH }
     elseif (Test-Path $wrapper) { $wrapper }
     elseif ($null -ne $command) { $command.Source }
+    elseif (Test-Path $devecoRunner) { $devecoRunner }
     else { '' }
   Assert-True (-not [string]::IsNullOrWhiteSpace($runner)) 'Hvigor runner is available'
   Assert-True (Test-Path -LiteralPath $runner -PathType Leaf) 'Hvigor runner path exists'
+  if ([string]::IsNullOrWhiteSpace($env:DEVECO_SDK_HOME) -or -not (Test-Path -LiteralPath $env:DEVECO_SDK_HOME)) {
+    if (Test-Path -LiteralPath $devecoSdk -PathType Container) {
+      $env:DEVECO_SDK_HOME = $devecoSdk
+    }
+  }
+  Assert-True (-not [string]::IsNullOrWhiteSpace($env:DEVECO_SDK_HOME) -and (Test-Path -LiteralPath $env:DEVECO_SDK_HOME -PathType Container)) 'DevEco SDK path is available'
   Push-Location $project
   try {
     & $runner assembleHap --mode module -p product=default -p module=entry@default -p buildMode=$BuildMode --no-daemon

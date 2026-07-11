@@ -3,7 +3,7 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { common } from '@kit.AbilityKit';
 import { AppStore } from '../../app/AppStore';
 import { APIError } from '../../core/api/APIError';
-import { presentError, standardError } from '../../core/api/ErrorPresentation';
+import { presentError } from '../../core/api/ErrorPresentation';
 import { EditJob, jobStageTitle } from '../../core/api/APIModels';
 import { themeTokens } from '../../core/design/AppTheme';
 import { ClipStage, PetEvent, VideoAsset } from '../../core/models/AppModels';
@@ -30,8 +30,10 @@ export struct ClipStudioPage {
   @State sharing: boolean = false;
   @State previewMode: string = 'after';
   private polling: boolean = false;
+  private visible: boolean = false;
 
   aboutToAppear(): void {
+    this.visible = true;
     if (this.store.pendingAsset) {
       this.asset = this.store.pendingAsset;
       this.title = this.store.clipTitle || this.store.pendingAsset.name;
@@ -44,6 +46,7 @@ export struct ClipStudioPage {
   }
 
   aboutToDisappear(): void {
+    this.visible = false;
     this.polling = false;
     // The iOS ClipStudioViewModel lives above navigation. Keep the source asset
     // in AppStore so rebuilding this ArkUI page has the same continuation behavior.
@@ -120,6 +123,11 @@ export struct ClipStudioPage {
     Column({ space: 16 }) {
       this.flowStepper(0)
       Text('素材已就绪').fontSize(22).fontWeight(FontWeight.Bold).fontColor(themeTokens(this.store.themeMode).textPrimary).width('100%')
+      if (!this.store.editingAvailable) {
+        Text(this.store.agentError || '剪辑节点暂不可用，请稍后重新检查服务。')
+          .fontSize(13).lineHeight(20).fontColor(themeTokens(this.store.themeMode).warning).width('100%')
+          .padding(12).backgroundColor(themeTokens(this.store.themeMode).inset).borderRadius(10)
+      }
       if (this.asset) {
         Video({ src: this.asset.uri }).width('100%').height(210).controls(true).objectFit(ImageFit.Contain)
           .backgroundColor(themeTokens(this.store.themeMode).videoWell)
@@ -143,6 +151,7 @@ export struct ClipStudioPage {
       }.padding(3).width('100%').backgroundColor(themeTokens(this.store.themeMode).inset).borderRadius(12)
       Button('上传并创建真实任务').width('100%').height(56).borderRadius(14)
         .fontSize(18).fontWeight(FontWeight.Bold).fontColor('#FFFFFF').backgroundColor(themeTokens(this.store.themeMode).accent)
+        .enabled(this.store.editingAvailable)
         .onClick(() => this.startProcessing())
       Button('更换素材').width('100%').height(48).fontColor(themeTokens(this.store.themeMode).accent)
         .backgroundColor(themeTokens(this.store.themeMode).accentSoft).onClick(() => this.reset())
@@ -196,7 +205,7 @@ export struct ClipStudioPage {
           .objectFit(ImageFit.Contain).backgroundColor(themeTokens(this.store.themeMode).videoWell)
       }
       if (this.job?.result?.quality?.ok === true) {
-        Text('质检通过，可下载或发布到社区').fontSize(14).fontColor(themeTokens(this.store.themeMode).success)
+        Text('质检通过，可下载或分享成片').fontSize(14).fontColor(themeTokens(this.store.themeMode).success)
       }
       if (!this.localResultUri) {
         Button('重新下载成片').width('100%').height(54).borderRadius(14)
@@ -208,15 +217,8 @@ export struct ClipStudioPage {
           .enabled(!this.sharing).backgroundColor(themeTokens(this.store.themeMode).accent)
           .fontColor('#FFFFFF').onClick(() => this.shareResult())
       }
-      if (this.job?.result?.quality?.ok === true) {
-        Button('发布到社区')
-          .width('100%').height(52).borderRadius(14).enabled(!this.publishing)
-          .backgroundColor(themeTokens(this.store.themeMode).accentSoft)
-          .fontColor(themeTokens(this.store.themeMode).accent)
-          .onClick(() => { this.showsPublish = true; })
-      } else {
-        Text('质检未通过或结果未知时不显示发布入口。').fontSize(12).fontColor(themeTokens(this.store.themeMode).textTertiary)
-      }
+      Text('社区发布尚未接入生产边缘代理，当前版本不提供发布入口。')
+        .fontSize(12).lineHeight(18).fontColor(themeTokens(this.store.themeMode).textTertiary)
       if (this.errorMessage) {
         Column({ space: 7 }) {
           Text(this.errorMessage).fontSize(13).lineHeight(20).fontColor(themeTokens(this.store.themeMode).danger).width('100%')
@@ -283,7 +285,7 @@ export struct ClipStudioPage {
         Text(`诊断：${this.errorDiagnostic}`).fontSize(12).fontColor(themeTokens(this.store.themeMode).textTertiary)
       }
       Button('重新检查').width('100%').height(52).backgroundColor(themeTokens(this.store.themeMode).accent).fontColor('#FFFFFF')
-        .onClick(() => this.store.activeJobId ? this.restore(this.store.activeJobId) : this.startProcessing())
+        .onClick(() => this.retryFailed())
       if (this.asset) {
         Button('保留素材，返回设置').width('100%').height(48).fontColor(themeTokens(this.store.themeMode).accent)
           .backgroundColor(themeTokens(this.store.themeMode).accentSoft)
@@ -334,70 +336,76 @@ export struct ClipStudioPage {
 
   private async startProcessing(): Promise<void> {
     if (!this.asset) return;
+    if (!this.store.editingAvailable) {
+      this.errorMessage = this.store.agentError || '剪辑节点暂不可用，请稍后重试';
+      this.errorDiagnostic = 'AGENT_UNAVAILABLE';
+      return;
+    }
+    const sessionEpoch = this.store.sessionEpoch;
     this.errorMessage = ''; this.errorDiagnostic = ''; this.stage = ClipStage.UPLOADING; this.stageLabel = '上传素材'; this.progress = 0;
     this.store.applyPet(PetEvent.UPLOADING);
     try {
       const file = fs.openSync(this.asset.uri, fs.OpenMode.READ_ONLY);
-      const stat = fs.statSync(file.fd);
+      let fileBytes = 0;
+      try { fileBytes = fs.statSync(file.fd).size; }
+      finally { fs.closeSync(file); }
       const contentType = this.asset.name.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
-      let session = await this.store.api.createUploadSession(this.asset.name, stat.size, contentType);
-      let offset = session.receivedBytes;
-      let retryCount = 0;
-      try {
-        while (offset < stat.size) {
-          const length = Math.min(session.chunkBytes, stat.size - offset);
-          const data = new ArrayBuffer(length);
-          const read = fs.readSync(file.fd, data, { offset, length });
-          if (read !== length) throw new Error(`视频读取中断：期望 ${length} 字节，实际 ${read} 字节`);
-          try {
-            session = await this.store.api.uploadChunk(session.id, offset, data);
-            offset = session.receivedBytes;
-            retryCount = 0;
-            this.progress = offset / stat.size;
-            this.stageLabel = `上传素材 ${Math.round(offset / stat.size * 100)}%`;
-          } catch (error) {
-            if (error instanceof APIError && !error.retryable) throw error;
-            retryCount += 1;
-            if (retryCount > 3) throw standardError(error as object);
-            session = await this.store.api.getUploadSession(session.id);
-            offset = session.receivedBytes;
-            this.stageLabel = `网络恢复，继续上传 ${Math.round(offset / stat.size * 100)}%`;
-          }
+      const uploaded = await this.store.api.uploadAsset(
+        this.asset.uri,
+        this.asset.name,
+        fileBytes,
+        contentType,
+        (sent: number, total: number) => {
+          this.progress = total > 0 ? sent / total : 0;
+          this.stageLabel = `上传素材 ${Math.round(this.progress * 100)}%`;
         }
-      } finally { fs.closeSync(file); }
-      const uploaded = await this.store.api.completeUploadSession(session.id);
+      );
+      if (!this.visible || sessionEpoch !== this.store.sessionEpoch) return;
       const created = await this.store.api.createEditJob(uploaded.assetId, this.title, this.prompt, this.imageGeneration);
+      if (!this.visible || sessionEpoch !== this.store.sessionEpoch) return;
       this.store.setActiveJobId(created.id); this.stage = ClipStage.QUEUED; this.stageLabel = '排队中';
       this.store.applyPet(PetEvent.JOB_QUEUED);
-      await this.poll(created.id);
+      await this.poll(created.id, sessionEpoch);
     } catch (error) { this.fail(error); }
   }
 
   private async restore(id: string): Promise<void> {
+    const sessionEpoch = this.store.sessionEpoch;
     this.stage = ClipStage.PROCESSING; this.stageLabel = '恢复任务';
     try {
       const current = await this.store.api.getEditJob(id); this.applyJob(current);
-      if (current.status === 'queued' || current.status === 'running') await this.poll(id);
+      if (!this.visible || sessionEpoch !== this.store.sessionEpoch) return;
+      if (current.status === 'queued' || current.status === 'running') await this.poll(id, sessionEpoch);
       else if (current.status === 'completed') await this.downloadIfNeeded(current);
     } catch (error) { this.fail(error); }
   }
 
-  private async poll(id: string): Promise<void> {
+  private async poll(id: string, sessionEpoch: number = this.store.sessionEpoch): Promise<void> {
     if (this.polling) return;
     this.polling = true;
-    while (this.polling) {
+    let transientFailures = 0;
+    let intervalMs = this.store.api.configuration.pollInitialIntervalMs;
+    while (this.polling && this.visible && sessionEpoch === this.store.sessionEpoch) {
       try {
         const current = await this.store.api.getEditJob(id); this.applyJob(current);
+        transientFailures = 0;
+        intervalMs = this.store.api.configuration.pollInitialIntervalMs;
         if (current.status === 'completed') { await this.downloadIfNeeded(current); break; }
         if (current.status === 'failed') break;
       } catch (error) {
-        if (error instanceof APIError && error.unauthorized) {
+        if (error instanceof APIError && !error.retryable) {
           this.fail(error);
+          break;
+        }
+        transientFailures += 1;
+        intervalMs = Math.min(this.store.api.configuration.pollMaxIntervalMs, intervalMs * 2);
+        if (transientFailures >= 8) {
+          this.fail(error as object);
           break;
         }
         this.stageLabel = '不确定，仍在等待服务更新';
       }
-      await new Promise<void>((resolve) => setTimeout(resolve, this.store.api.configuration.pollIntervalMs));
+      await new Promise<void>((resolve) => setTimeout(resolve, intervalMs));
     }
     this.polling = false;
   }
@@ -471,6 +479,26 @@ export struct ClipStudioPage {
     this.errorDiagnostic = error instanceof APIError ? error.code : '';
     this.stage = ClipStage.FAILED; this.store.applyPet(PetEvent.JOB_FAILED);
     this.store.handleError(error);
+  }
+
+  private retryFailed(): void {
+    if (this.asset) {
+      this.polling = false;
+      this.job = null;
+      this.localResultUri = '';
+      this.errorMessage = '';
+      this.errorDiagnostic = '';
+      this.store.setActiveJobId('');
+      this.stage = ClipStage.READY;
+      void this.startProcessing();
+      return;
+    }
+    if (this.store.activeJobId && (this.job?.status === 'queued' || this.job?.status === 'running')) {
+      void this.restore(this.store.activeJobId);
+      return;
+    }
+    this.reset();
+    this.errorMessage = '没有可重试的本地素材，请重新选择视频';
   }
 
   private reset(): void {
