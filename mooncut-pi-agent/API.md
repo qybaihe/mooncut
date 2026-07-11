@@ -86,7 +86,49 @@ curl --cacert "$MOONCUT_CA_CERT" \
 
 `instruction` 为必填（2–2000 字符），`atMs` 和 `replacementText` 可选。完成后查询新任务；其 `subtitleRepair.analysis.changes` 会列出每一处的原文、修正文本、时间段与原因。获取整个版本链：`GET /v1/edit-jobs/JOB_ID/subtitle-repairs`。
 
-## 社区
+## 能力市场（Pi Capability Market）
+
+能力市场让已登录用户为**自己的 Pi**安装已审核、带版本与权限的能力。安装不会在服务器运行时下载第三方代码，也不会把 shell 权限交给模型；系统只会解析 MoonCut 已部署的、签名的 release。
+
+- `GET /v1/capabilities?query=`：公开浏览能力目录；若携带登录 Cookie，卡片会附带当前用户的安装状态。
+- `GET /v1/capabilities/{slug}`：查看一个能力的 release、权限、适用任务和工具说明。
+- `POST /v1/capabilities/{slug}/install`：把当前 release 安装到当前用户的默认 Pi profile。
+- `GET /v1/me/capability-installations`：获取当前用户的真实安装状态。
+- `PATCH /v1/me/capability-installations/{id}`：JSON `{"status":"enabled"}` 或 `{"status":"disabled"}`。
+- `POST /v1/me/capability-installations/{id}/reconfirm`：release 增加权限后，由用户重新确认才可启用。
+- `DELETE /v1/me/capability-installations/{id}`：卸载；历史调用审计和已完成任务快照仍会保留。
+- `POST /v1/me/capability-installations/{id}/preflight`：无副作用地检查已部署 CLI 及其官方来源访问链路；不生成 artifact、不写入调用审计。
+- `POST /v1/me/capability-installations/{id}/invoke`：由用户明确发起一次受控能力调用。
+- `GET /v1/capability-invocations?installationId=`：查看当前用户自己的调用记录与来源。
+
+首个官方 release 是 `fifa-official-highlights`。它只暴露两种受控工具：`fifa_find_highlights`（只读查询）和 `fifa_match_context`（可选中文赛况）。所有 CLI 参数由宿主用 argv 数组白名单构造；不允许 `--download`、`--open`、任意输出路径或 shell 拼接。
+
+生成截图属于写入任务产物，必须由用户在明确提示后传递 `confirmedArtifact: true`：
+
+```bash
+curl --cookie mooncut-session.txt \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "tool":"fifa_match_context",
+    "input":{"matchId":"M95","includeChineseContext":true,"screenshotView":"ratings"},
+    "confirmedArtifact":true
+  }' \
+  "$MOONCUT_API_BASE/v1/me/capability-installations/INSTALLATION_ID/invoke"
+```
+
+响应中的 artifact 是一个当前用户可访问的 HTTP URL；绝不包含服务器路径。若没有明确确认，带 `screenshotView` 的调用返回 `ARTIFACT_CONFIRMATION_REQUIRED`。Pi 会话可使用已选定能力的只读工具，但不能自行越过此确认门。
+
+创建 JSON 编辑任务时可传递 `capabilityInstallIds`（最多 4 个），系统会把 package/release/hash 写进 job snapshot。任务开始时仍会检查该安装是否保持启用，以保证禁用或卸载立即生效。可选的 `capabilityRequests` 只接受已被选中的 installation，且当前 V1 最多一个用户确认的预处理请求。
+
+管理发布接口仅接受服务 API key：
+
+- `POST /v1/admin/capability-packages`
+- `POST /v1/admin/capability-packages/{packageId}/releases`
+- `POST /v1/admin/capability-releases/{releaseId}/yank`
+
+release 由 canonical manifest 的 SHA-256 和服务端签名保护；同一 package/version 不可覆盖。当前可上架的形式是经过审核的 `hosted-cli` 适配器和 `skill-only` 工作流；第三方可执行代码及未审核的 HTTP 适配器不会被市场接受。
+
+## 创作案例（原 Community）
 
 - `GET /v1/community/posts?limit=12`：浏览用户主动发布的作品；可使用返回的 `nextCursor` 翻页。
 - `POST /v1/community/posts`：传入 `jobId` 以及可选的 `authorName`、`title`、`caption`，发布质检通过的完成任务。

@@ -85,6 +85,11 @@ const publicBaseUrl = (request: IncomingMessage) => {
   const host = request.headers["x-forwarded-host"] ?? request.headers.host ?? `${config.host}:${config.port}`;
   return `${protocol}://${host}`;
 };
+const publicCommunityBaseUrl = (request: IncomingMessage) => config.communityPublicBaseUrl || publicBaseUrl(request);
+const communityPostPath = /^\/v1\/community\/posts\/([a-f0-9]{32})$/u;
+const communityAssetPath = /^\/v1\/community\/posts\/([a-f0-9]{32})\/(video|poster)$/u;
+const isPublicCommunityRead = (method: string | undefined, pathname: string) =>
+  method === "GET" && (pathname === "/v1/community/posts" || communityPostPath.test(pathname) || communityAssetPath.test(pathname));
 
 const publicCommunityPost = (post: CommunityPost, baseUrl: string) => ({
   id: post.id,
@@ -365,14 +370,19 @@ export const startServer = async () => {
     try {
       const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
       const requestOrigin = request.headers.origin?.replace(/\/$/u, "");
+      const publicCommunityRead = isPublicCommunityRead(request.method, url.pathname);
       if (requestOrigin) {
-        if (!config.corsOrigins.includes(requestOrigin)) {
+        if (publicCommunityRead) {
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.setHeader("Vary", "Origin");
+        } else if (!config.corsOrigins.includes(requestOrigin)) {
           json(response, 403, {error: "Origin is not allowed"});
           return;
+        } else {
+          response.setHeader("Access-Control-Allow-Origin", requestOrigin);
+          response.setHeader("Access-Control-Allow-Credentials", "true");
+          response.setHeader("Vary", "Origin");
         }
-        response.setHeader("Access-Control-Allow-Origin", requestOrigin);
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Vary", "Origin");
       }
       if (request.method === "OPTIONS") {
         response.writeHead(204, {
@@ -448,6 +458,32 @@ export const startServer = async () => {
       }
       if (request.method === "GET" && url.pathname === "/v1/auth/session") {
         json(response, 200, {user: authStore.getUserBySession(sessionToken) ?? null});
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/community/posts") {
+        const requestedLimit = Number.parseInt(url.searchParams.get("limit") ?? "12", 10);
+        const page = communityStore.list(Number.isFinite(requestedLimit) ? requestedLimit : 12, url.searchParams.get("cursor") ?? undefined);
+        const baseUrl = publicCommunityBaseUrl(request);
+        json(response, 200, {
+          items: page.items.map((post) => publicCommunityPost(post, baseUrl)),
+          ...(page.nextCursor ? {nextCursor: page.nextCursor} : {}),
+        });
+        return;
+      }
+      const publicCommunityAssetMatch = url.pathname.match(communityAssetPath);
+      if (request.method === "GET" && publicCommunityAssetMatch) {
+        const post = communityStore.get(publicCommunityAssetMatch[1]);
+        if (!post) throw new HttpError(404, "Community post not found");
+        const path = publicCommunityAssetMatch[2] === "video" ? post.videoPath : post.posterPath;
+        if (!path || !existsSync(path)) throw new HttpError(404, "Community media is unavailable");
+        await streamArtifact(request, response, path);
+        return;
+      }
+      const publicCommunityPostMatch = url.pathname.match(communityPostPath);
+      if (request.method === "GET" && publicCommunityPostMatch) {
+        const post = communityStore.get(publicCommunityPostMatch[1]);
+        if (!post) throw new HttpError(404, "Community post not found");
+        json(response, 200, publicCommunityPost(post, publicCommunityBaseUrl(request)));
         return;
       }
       // Discovery is public. A session only adds the caller's installation
@@ -659,16 +695,6 @@ export const startServer = async () => {
         json(response, 200, await mailAccountStatus());
         return;
       }
-      if (request.method === "GET" && url.pathname === "/v1/community/posts") {
-        const requestedLimit = Number.parseInt(url.searchParams.get("limit") ?? "12", 10);
-        const page = communityStore.list(Number.isFinite(requestedLimit) ? requestedLimit : 12, url.searchParams.get("cursor") ?? undefined);
-        const baseUrl = publicBaseUrl(request);
-        json(response, 200, {
-          items: page.items.map((post) => publicCommunityPost(post, baseUrl)),
-          ...(page.nextCursor ? {nextCursor: page.nextCursor} : {}),
-        });
-        return;
-      }
       if (request.method === "POST" && url.pathname === "/v1/community/posts") {
         const payload = await readJson(request);
         if (!isCommunityPublishRequest(payload)) throw new HttpError(400, "Body requires jobId and optional authorName, title, caption");
@@ -679,22 +705,6 @@ export const startServer = async () => {
           created: published.created,
           post: publicCommunityPost(published.post, publicBaseUrl(request)),
         });
-        return;
-      }
-      const communityAssetMatch = url.pathname.match(/^\/v1\/community\/posts\/([a-f0-9]{32})\/(video|poster)$/u);
-      if (request.method === "GET" && communityAssetMatch) {
-        const post = communityStore.get(communityAssetMatch[1]);
-        if (!post) throw new HttpError(404, "Community post not found");
-        const path = communityAssetMatch[2] === "video" ? post.videoPath : post.posterPath;
-        if (!path || !existsSync(path)) throw new HttpError(404, "Community media is unavailable");
-        await streamArtifact(request, response, path);
-        return;
-      }
-      const communityPostMatch = url.pathname.match(/^\/v1\/community\/posts\/([a-f0-9]{32})$/u);
-      if (request.method === "GET" && communityPostMatch) {
-        const post = communityStore.get(communityPostMatch[1]);
-        if (!post) throw new HttpError(404, "Community post not found");
-        json(response, 200, publicCommunityPost(post, publicBaseUrl(request)));
         return;
       }
       if (request.method === "POST" && url.pathname === "/v1/assets") {

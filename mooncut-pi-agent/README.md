@@ -188,9 +188,9 @@ npm run models
 - `MOONCUT_ALLOW_KNOWN_SUBTITLE_FIXTURES=true` 时，开发环境可复用仓库内的已校正字幕；线上默认关闭，所有上传都会走 Hybrid Subtitle。
 - 线上设置 `MOONCUT_REQUIRE_SUBTITLE_SERVICE=true`：字幕服务不可用或识别失败会明确失败，不会静默降级为较低准确度的本地识别。
 - 线上默认 `MOONCUT_AGENT_EXECUTION_MODE=reliable`：画面分析、可选视觉调度和质检仍使用模型，但探测、字幕、人脸、完整分镜、渲染和验证不会依赖会话式 Agent 恰好继续调用工具。需要实验开放式 Pi 策略时才设为 `pi`。
-- 默认服务器成片规格为 `1280×720 @ 24fps`；它可通过 `MOONCUT_RENDER_WIDTH`、`MOONCUT_RENDER_HEIGHT`、`MOONCUT_RENDER_FPS` 调整。高规格 `1920×1080 @ 30fps` 应交给内存充足的独立渲染节点。
+- 默认服务器成片规格为 `1920×1080 @ 30fps`；它可通过 `MOONCUT_RENDER_WIDTH`、`MOONCUT_RENDER_HEIGHT`、`MOONCUT_RENDER_FPS` 调整。低规格输出必须由部署显式指定。
 - 跟脸不可用时使用稳定居中裁切，仍继续渲染。
-- 所有任务串行渲染，避免多条 1080p Remotion 任务同时抢占内存。
+- 所有任务串行渲染，避免多条全高清 Remotion 任务同时抢占内存。
 - 每条排队/运行任务记录本机 `ownerPid`；另一个服务实例启动时不会把仍由活进程处理的任务误判成中断。
 
 ## 验证

@@ -119,6 +119,9 @@ export const config = {
   sessionDays: Math.min(90, Math.max(1, integerEnv("MOONCUT_SESSION_DAYS", 30))),
   cookieSecure: process.env.MOONCUT_COOKIE_SECURE === "true",
   publicBaseUrl: (process.env.MOONCUT_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
+  // Optional public edge path for the read-only Community surface. It must not
+  // replace the private Agent base URL used by jobs, sessions, or artifacts.
+  communityPublicBaseUrl: (process.env.MOONCUT_COMMUNITY_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
   mailCliPath: pathEnv("MOONCUT_MAIL_CLI", "/opt/homebrew/bin/agently-cli"),
   mailSenderName: process.env.MOONCUT_MAIL_SENDER_NAME ?? "MoonCut 小月",
   mailTransport: enumEnv("MOONCUT_MAIL_TRANSPORT", ["agently-cli", "webhook"] as const, "agently-cli"),

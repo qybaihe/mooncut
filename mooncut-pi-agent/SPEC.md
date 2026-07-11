@@ -8,16 +8,24 @@ Call the core tools in this order and finish every stage unless a tool reports a
 
 1. `inspect_source` — probe the media and analyze a contact sheet with the vision model.
 2. `transcribe_source` — obtain timed subtitles. Reuse a hash-matched local transcript when available; otherwise use the configured subtitle service.
-3. `schedule_generated_visuals` — conservatively decide whether the edit needs zero, one, or at most two AI-generated example illustrations. The default is zero.
-4. Evidence research when it materially supports the spoken claim:
+3. `clean_speech_delivery` — locally build an auditable edit-decision list, remove only isolated filler words and excess dead air, produce a derived MP4, and remap subtitles to its shortened timeline. Never alter the original upload.
+4. `schedule_generated_visuals` — conservatively decide whether the edit needs zero, one, or at most two AI-generated example illustrations. The default is zero.
+5. Evidence research when it materially supports the spoken claim:
    - `capture_x_post` for a validated, untouched original X post.
    - `capture_web_page` for a real official page rendered in Playwright.
-5. `track_speaker` — generate a stable face track for small speaker overlays. The main camera must not consume this track.
-6. `save_edit_spec` — save the semantic timeline. Use the transcript timing, source duration, visual analysis, captured evidence IDs, and only the generated visual IDs actually returned by the scheduler.
-7. `render_edit` — render the data-driven `AgentTalkingHeadVideo` Remotion composition.
-8. `verify_render` — inspect the encoded file, generate targeted QA sequences, and run multimodal visual gates.
+6. `track_speaker` — generate a stable face track for small speaker overlays. The main camera must not consume this track.
+7. `save_edit_spec` — save the semantic timeline. Use the cleaned transcript timing, derived source duration, visual analysis, captured evidence IDs, and only the generated visual IDs actually returned by the scheduler.
+8. `render_edit` — render the data-driven `AgentTalkingHeadVideo` Remotion composition.
+9. `verify_render` — inspect the encoded file, generate targeted QA sequences, and run multimodal visual gates.
 
 Do not stop after planning. A task succeeds only when `verify_render` succeeds, all hard visual gates pass, and the MP4 artifact exists. If visual QA fails, revise the edit spec, rerender, and verify again; do not merely repeat verification.
+
+## Speech delivery cleanup
+
+- This is a local FFmpeg-only stage; it does not call the planner, vision gateway, or any remote service.
+- It requires timed words so a filler or pause can be removed without cutting a neighbouring spoken word.
+- Only standalone fillers (`嗯`、`啊`、`呃` and their close variants) and silence longer than the policy threshold are eligible. A short natural pause is retained to avoid an over-compressed delivery.
+- It writes `speech-cleanup.json`, preserves `subtitles-source.json`, writes retimed `subtitles.json`, and records the shortened timeline in the final edit spec.
 
 ## Default visual language
 

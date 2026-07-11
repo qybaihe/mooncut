@@ -107,6 +107,77 @@ components:
         createdAt: {type: string, format: date-time}
         videoUrl: {type: string, format: uri}
         posterUrl: {type: string, format: uri}
+    CapabilityPermission:
+      type: object
+      required: [name, reason]
+      properties:
+        name: {type: string, enum: [network, artifact.write]}
+        reason: {type: string}
+        domains: {type: array, items: {type: string}}
+        kinds: {type: array, items: {type: string}}
+    CapabilityCatalogItem:
+      type: object
+      required: [id, slug, name, tagline, category, trustLevel, status, currentRelease, tools]
+      properties:
+        id: {type: string}
+        slug: {type: string}
+        name: {type: string}
+        tagline: {type: string}
+        category: {type: string}
+        trustLevel: {type: string, enum: [official, verified]}
+        status: {type: string, enum: [published, yanked]}
+        currentRelease:
+          type: object
+          required: [id, version, manifestHash, permissions, tasks, updatedAt]
+          properties:
+            id: {type: string}
+            version: {type: string}
+            manifestHash: {type: string}
+            permissions: {type: array, items: {$ref: "#/components/schemas/CapabilityPermission"}}
+            tasks: {type: array, items: {type: string, enum: [research, video-edit]}}
+            updatedAt: {type: string, format: date-time}
+        tools:
+          type: array
+          items:
+            type: object
+            required: [name, description, confirmation]
+            properties:
+              name: {type: string}
+              description: {type: string}
+              confirmation: {type: string, enum: [never, when_artifact_is_created]}
+    CapabilityInstallation:
+      type: object
+      required: [id, packageId, releaseId, slug, version, manifestHash, status, permissions, tasks]
+      properties:
+        id: {type: string, pattern: "^[a-f0-9]{32}$"}
+        packageId: {type: string}
+        releaseId: {type: string}
+        slug: {type: string}
+        version: {type: string}
+        manifestHash: {type: string}
+        status: {type: string, enum: [enabled, disabled, needs_reconsent, uninstalled]}
+        permissions: {type: array, items: {$ref: "#/components/schemas/CapabilityPermission"}}
+        tasks: {type: array, items: {type: string, enum: [research, video-edit]}}
+    CapabilityInvocation:
+      type: object
+      required: [id, installationId, toolName, status, startedAt, finishedAt, release, output, artifacts]
+      properties:
+        id: {type: string, pattern: "^[a-f0-9]{32}$"}
+        installationId: {type: string}
+        toolName: {type: string}
+        status: {type: string, enum: [succeeded, failed]}
+        startedAt: {type: string, format: date-time}
+        finishedAt: {type: string, format: date-time}
+        output: {type: object, additionalProperties: true}
+        artifacts:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              kind: {type: string, enum: [web-screenshot, research-json]}
+              sourceUrl: {type: string, format: uri}
+              url: {type: string, format: uri}
     RenderQueueItem:
       type: object
       required: [name, status, stage, progress, createdAt, updatedAt, mine]
@@ -369,6 +440,215 @@ paths:
       summary: 检查邮件发送能力
       responses:
         "200": {description: Mail account status}
+  /v1/capabilities:
+    get:
+      security: []
+      summary: 浏览已审核的 Pi 能力目录；有 Cookie 时会附带自己的安装状态
+      parameters:
+        - in: query
+          name: query
+          schema: {type: string, maxLength: 120}
+      responses:
+        "200":
+          description: Capability catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: {type: array, items: {$ref: "#/components/schemas/CapabilityCatalogItem"}}
+  /v1/capabilities/{slug}:
+    get:
+      security: []
+      summary: 查看单个能力的当前可信 release
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Capability details
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/CapabilityCatalogItem"}
+        "404": {description: Capability unavailable}
+  /v1/capabilities/{slug}/install:
+    post:
+      summary: 为当前登录用户安装当前 release
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema: {type: string}
+      responses:
+        "201": {description: Installed}
+        "200": {description: Already installed or restored}
+  /v1/me/capability-installations:
+    get:
+      summary: 列出当前用户的能力安装状态
+      responses:
+        "200":
+          description: Installations
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: {type: array, items: {$ref: "#/components/schemas/CapabilityInstallation"}}
+  /v1/me/capability-installations/{installationId}:
+    patch:
+      summary: 启用或暂停当前用户的一项能力
+      parameters:
+        - in: path
+          name: installationId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: {type: string, enum: [enabled, disabled]}
+      responses:
+        "200": {description: Updated}
+        "409": {description: Reconsent required}
+    delete:
+      summary: 卸载当前用户的一项能力（不删除历史审计）
+      parameters:
+        - in: path
+          name: installationId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Uninstalled}
+  /v1/me/capability-installations/{installationId}/preflight:
+    post:
+      summary: 无副作用检查已部署的受控适配器及其上游访问链路
+      parameters:
+        - in: path
+          name: installationId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Preflight result}
+  /v1/me/capability-installations/{installationId}/reconfirm:
+    post:
+      summary: 显式确认更新后的权限，并重新启用该 installation
+      parameters:
+        - in: path
+          name: installationId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Permission grant renewed}
+  /v1/me/capability-installations/{installationId}/invoke:
+    post:
+      summary: 用户明确发起受控能力调用；写入 artifact 的调用必须携带确认
+      parameters:
+        - in: path
+          name: installationId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [tool, input]
+                  properties:
+                    tool: {const: fifa_find_highlights}
+                    input:
+                      type: object
+                      required: [query]
+                      properties:
+                        query: {type: string, minLength: 2, maxLength: 120}
+                - type: object
+                  required: [tool, input]
+                  properties:
+                    tool: {const: fifa_match_context}
+                    confirmedArtifact: {type: boolean}
+                    input:
+                      type: object
+                      required: [matchId]
+                      properties:
+                        matchId: {type: string}
+                        includeChineseContext: {type: boolean}
+                        screenshotView: {type: string, enum: [ratings, match, chat]}
+      responses:
+        "200":
+          description: Invocation record
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/CapabilityInvocation"}
+        "409": {description: Capability disabled or artifact confirmation missing}
+  /v1/capability-invocations:
+    get:
+      summary: 查询当前用户自己的能力调用审计
+      parameters:
+        - in: query
+          name: installationId
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Invocation page}
+  /v1/capability-invocations/{invocationId}/artifacts/{artifactId}:
+    get:
+      summary: 下载当前用户能力调用产生的私有 artifact
+      parameters:
+        - in: path
+          name: invocationId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+        - in: path
+          name: artifactId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Artifact bytes}
+        "404": {description: Invocation or artifact unavailable}
+  /v1/admin/capability-packages:
+    post:
+      summary: 服务端创建一个能力 package（仅 Bearer service key）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug]
+              properties:
+                slug: {type: string, pattern: "^[a-z0-9][a-z0-9-]{2,79}$"}
+                trustLevel: {type: string, enum: [official, verified]}
+      responses:
+        "201": {description: Package created}
+  /v1/admin/capability-packages/{packageId}/releases:
+    post:
+      summary: 发布不可变的签名 manifest release（仅 Bearer service key）
+      parameters:
+        - in: path
+          name: packageId
+          required: true
+          schema: {type: string, minLength: 3, maxLength: 120}
+      responses:
+        "201": {description: Release published}
+        "409": {description: Version already exists}
+  /v1/admin/capability-releases/{releaseId}/yank:
+    post:
+      summary: 撤销一个 release，阻止后续安装（仅 Bearer service key）
+      parameters:
+        - in: path
+          name: releaseId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Release yanked}
   /v1/community/posts:
     get:
       summary: 浏览用户主动发布的社区口播成片
