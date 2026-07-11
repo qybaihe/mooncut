@@ -57,6 +57,8 @@ Apple Silicon 建议使用 `--device mps`；其他环境可使用 `--device cpu`
 
 人脸轨迹只用于网页、截图、演示或文字卡上方的圆形人物小窗。人物主镜头、放大镜头和情绪特写必须保留原素材构图，不要把轨迹当成持续运镜使用。相邻的小窗分镜复用同一个圆圈位置和进场状态，只在人物真正缩入或退出圆圈的语义切点切换。完整规则见 [`../docs/TALKING_HEAD_VISUAL_TRACKING_SPEC.md`](../docs/TALKING_HEAD_VISUAL_TRACKING_SPEC.md)。
 
+圆圈镜头内置 650 ms 缓入居中、前后对称的 720 ms / 13 采样裁切平滑，以及连续的贴边安全权重。调用方不需要再自行插值；不要在业务层叠加第二套逐帧跟随动画。
+
 ## Python API
 
 ```python
