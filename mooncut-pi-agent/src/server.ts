@@ -1,21 +1,137 @@
-import {randomUUID} from "node:crypto";
+import {randomUUID, timingSafeEqual} from "node:crypto";
 import {createReadStream, createWriteStream, existsSync} from "node:fs";
-import {stat, unlink} from "node:fs/promises";
-import {extname} from "node:path";
+import {mkdir, stat, unlink} from "node:fs/promises";
+import {extname, join} from "node:path";
 import {pipeline} from "node:stream/promises";
 import {createServer, type IncomingMessage, type ServerResponse} from "node:http";
-import {assetsRoot, config} from "./config.ts";
+import {runCoachAdvice, runScriptAssistant, type CoachAdviceRequest, type ScriptAssistantRequest} from "./assistant.ts";
+import {agentRoot, assetsRoot, config} from "./config.ts";
+import {authStore, AuthError, clearSessionCookie, parseSessionCookie, sessionCookie, type AuthUser} from "./auth.ts";
+import {communityStore, CommunityStoreError, type CommunityPost, type PublishCommunityPostInput} from "./community.ts";
 import {listGatewayModels} from "./gateway.ts";
-import {assetDataPath, jobManager, saveAssetMetadata, type StoredAsset} from "./jobs.ts";
-import type {EditJobRequest} from "./types.ts";
+import {assetDataPath, friendlyJobName, jobManager, saveAssetMetadata, type StoredAsset} from "./jobs.ts";
+import {confirmJobMail, isEmail, mailAccountStatus, prepareJobMail} from "./mail.ts";
+import type {EditJobRecord, EditJobRequest, SubtitleRepairFeedback} from "./types.ts";
+
+class HttpError extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
+
+const safeEqual = (left: string, right: string) => {
+  const leftBuffer = Buffer.from(left);
+  const rightBuffer = Buffer.from(right);
+  return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
+};
+
+export const isAuthorized = (authorization: string | undefined, apiKeys = config.apiKeys) => {
+  if (apiKeys.length === 0) return true;
+  const match = authorization?.match(/^Bearer\s+([^\s]{16,256})$/u);
+  return Boolean(match && apiKeys.some((key) => safeEqual(match[1], key)));
+};
+
+const isServiceAuthorized = (authorization: string | undefined) =>
+  config.apiKeys.length > 0 && isAuthorized(authorization, config.apiKeys);
+
+type RequestPrincipal = {kind: "service"} | {kind: "user"; user: AuthUser};
+
+export const canAccessOwnedResource = (ownerUserId: string | undefined, principal: RequestPrincipal) =>
+  principal.kind === "service" || (Boolean(ownerUserId) && ownerUserId === principal.user.id);
+
+export class RequestRateLimiter {
+  private readonly entries = new Map<string, number[]>();
+
+  allow(key: string, limit: number, windowMs: number, time = Date.now()) {
+    const recent = (this.entries.get(key) ?? []).filter((timestamp) => timestamp > time - windowMs);
+    if (recent.length >= limit) {
+      this.entries.set(key, recent);
+      return false;
+    }
+    recent.push(time);
+    this.entries.set(key, recent);
+    return true;
+  }
+
+  reset(key: string) {
+    this.entries.delete(key);
+  }
+}
+
+const authRateLimiter = new RequestRateLimiter();
 
 const json = (response: ServerResponse, status: number, value: unknown) => {
+  response.setHeader("Cache-Control", "no-store");
+  response.setHeader("X-Content-Type-Options", "nosniff");
   response.writeHead(status, {
-    "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/json; charset=utf-8",
   });
   response.end(`${JSON.stringify(value, null, 2)}\n`);
 };
+
+const publicBaseUrl = (request: IncomingMessage) => {
+  if (config.publicBaseUrl) return config.publicBaseUrl;
+  const protocol = request.headers["x-forwarded-proto"] ?? "http";
+  const host = request.headers["x-forwarded-host"] ?? request.headers.host ?? `${config.host}:${config.port}`;
+  return `${protocol}://${host}`;
+};
+
+const publicCommunityPost = (post: CommunityPost, baseUrl: string) => ({
+  id: post.id,
+  authorName: post.authorName,
+  title: post.title,
+  caption: post.caption,
+  durationMs: post.durationMs,
+  width: post.width,
+  height: post.height,
+  createdAt: post.createdAt,
+  videoUrl: `${baseUrl}/v1/community/posts/${post.id}/video`,
+  ...(post.posterPath ? {posterUrl: `${baseUrl}/v1/community/posts/${post.id}/poster`} : {}),
+});
+
+export const redactInternalPaths = (value: string) => value.replace(
+  /\/(?:opt|home|Users|var|tmp)\/[^\s`|)\]}]+/gu,
+  "[internal path]",
+);
+
+const publicJobRecord = (job: EditJobRecord, baseUrl: string) => ({
+  id: job.id,
+  status: job.status,
+  stage: job.stage,
+  progress: job.progress,
+  createdAt: job.createdAt,
+  updatedAt: job.updatedAt,
+  originalName: job.originalName,
+  request: {
+    assetId: job.request.assetId,
+    title: job.request.title,
+    prompt: job.request.prompt,
+    notificationEmail: job.request.notificationEmail,
+    imageGeneration: job.request.imageGeneration ?? "auto",
+  },
+  ...(job.error ? {error: redactInternalPaths(job.error.split("\n", 1)[0])} : {}),
+  ...(job.mail ? {mail: job.mail} : {}),
+  ...(job.subtitleRepair ? {subtitleRepair: job.subtitleRepair} : {}),
+  ...(job.result ? {
+    result: {
+      summary: redactInternalPaths(job.result.summary),
+      probe: job.result.probe,
+      models: job.result.models,
+      visuals: job.result.visuals,
+      quality: job.result.quality ? {
+        ...job.result.quality,
+        qaAssets: Object.keys(job.result.quality.qaAssets),
+      } : undefined,
+      artifacts: Object.fromEntries(Object.keys(job.result.artifacts).map((name) => [
+        name,
+        `${baseUrl}/v1/edit-jobs/${job.id}/artifacts/${name}`,
+      ])),
+    },
+  } : {}),
+});
 
 const readJson = async (request: IncomingMessage): Promise<unknown> => {
   const chunks: Buffer[] = [];
@@ -36,8 +152,50 @@ const isEditJobRequest = (value: unknown): value is EditJobRequest => {
     (record.assetId === undefined || typeof record.assetId === "string") &&
     (record.inputPath === undefined || typeof record.inputPath === "string") &&
     (record.prompt === undefined || typeof record.prompt === "string") &&
-    (record.title === undefined || typeof record.title === "string")
+    (record.title === undefined || typeof record.title === "string") &&
+    (record.notificationEmail === undefined || typeof record.notificationEmail === "string") &&
+    (record.imageGeneration === undefined || record.imageGeneration === "auto" || record.imageGeneration === "off")
   );
+};
+
+const isSubtitleRepairRequest = (value: unknown): value is SubtitleRepairFeedback => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.instruction === "string" && record.instruction.trim().length >= 2 && record.instruction.trim().length <= 2_000 &&
+    (record.atMs === undefined || typeof record.atMs === "number" && Number.isFinite(record.atMs) && record.atMs >= 0) &&
+    (record.replacementText === undefined || typeof record.replacementText === "string" && record.replacementText.trim().length >= 1 && record.replacementText.trim().length <= 160);
+};
+
+const isScriptAssistantRequest = (value: unknown): value is ScriptAssistantRequest => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return Array.isArray(record.messages) && record.messages.every((message) => {
+    if (!message || typeof message !== "object") return false;
+    const item = message as Record<string, unknown>;
+    return (item.role === "assistant" || item.role === "user") && typeof item.content === "string";
+  });
+};
+
+const isCoachAdviceRequest = (value: unknown): value is CoachAdviceRequest => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  const metrics = record.metrics;
+  return typeof record.transcript === "string" &&
+    typeof record.currentScript === "string" &&
+    typeof record.currentSentence === "string" &&
+    !!metrics && typeof metrics === "object" &&
+    ["pace", "wordCount", "volume", "pauseCount", "elapsedSeconds"].every(
+      (key) => typeof (metrics as Record<string, unknown>)[key] === "number",
+    );
+};
+
+const isCommunityPublishRequest = (value: unknown): value is PublishCommunityPostInput & {jobId: string} => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.jobId === "string" && /^[a-f0-9]{32}$/u.test(record.jobId) &&
+    (record.authorName === undefined || typeof record.authorName === "string") &&
+    (record.title === undefined || typeof record.title === "string") &&
+    (record.caption === undefined || typeof record.caption === "string");
 };
 
 const contentType = (path: string) => {
@@ -45,23 +203,31 @@ const contentType = (path: string) => {
     case ".mp4": return "video/mp4";
     case ".jpg":
     case ".jpeg": return "image/jpeg";
+    case ".png": return "image/png";
+    case ".webp": return "image/webp";
     case ".json": return "application/json; charset=utf-8";
     case ".jsonl": return "application/x-ndjson; charset=utf-8";
     case ".txt":
     case ".log": return "text/plain; charset=utf-8";
+    case ".yaml":
+    case ".yml": return "application/yaml; charset=utf-8";
+    case ".html": return "text/html; charset=utf-8";
     default: return "application/octet-stream";
   }
 };
 
-const uploadAsset = async (request: IncomingMessage, response: ServerResponse, url: URL) => {
+const storeUploadedAsset = async (request: IncomingMessage, url: URL, ownerUserId?: string) => {
   const contentLength = Number(request.headers["content-length"] ?? 0);
   if (contentLength > config.maxUploadBytes) {
-    json(response, 413, {error: "Upload exceeds configured limit"});
-    return;
+    throw new HttpError(413, "Upload exceeds configured limit");
   }
   const filename = url.searchParams.get("filename") ?? "upload.mp4";
+  if (!new Set([".mp4", ".mov", ".m4v", ".webm", ".mkv"]).has(extname(filename).toLowerCase())) {
+    throw new HttpError(415, "Supported video extensions: mp4, mov, m4v, webm, mkv");
+  }
   const id = randomUUID().replaceAll("-", "");
   const path = assetDataPath(id, filename);
+  await mkdir(assetsRoot, {recursive: true});
   let bytes = 0;
   request.on("data", (chunk: Buffer) => {
     bytes += chunk.length;
@@ -73,17 +239,46 @@ const uploadAsset = async (request: IncomingMessage, response: ServerResponse, u
     if (existsSync(path)) await unlink(path);
     throw error;
   }
-  const asset: StoredAsset = {id, filename, path, bytes, createdAt: new Date().toISOString()};
+  if (bytes === 0) {
+    await unlink(path);
+    throw new HttpError(400, "Uploaded video is empty");
+  }
+  const asset: StoredAsset = {id, ...(ownerUserId ? {ownerUserId} : {}), filename, path, bytes, createdAt: new Date().toISOString()};
   await saveAssetMetadata(asset);
-  json(response, 201, {assetId: id, filename, bytes});
+  return asset;
 };
 
-const streamArtifact = async (response: ServerResponse, path: string) => {
+const uploadAsset = async (request: IncomingMessage, response: ServerResponse, url: URL, ownerUserId?: string) => {
+  const asset = await storeUploadedAsset(request, url, ownerUserId);
+  json(response, 201, {assetId: asset.id, filename: asset.filename, bytes: asset.bytes});
+};
+
+const streamArtifact = async (request: IncomingMessage, response: ServerResponse, path: string) => {
   const info = await stat(path);
+  const range = request.headers.range?.match(/^bytes=(\d+)-(\d*)$/u);
+  if (range) {
+    const start = Number(range[1]);
+    const end = range[2] ? Math.min(info.size - 1, Number(range[2])) : info.size - 1;
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start > end || start >= info.size) {
+      response.writeHead(416, {"Content-Range": `bytes */${info.size}`});
+      response.end();
+      return;
+    }
+    response.writeHead(206, {
+      "Accept-Ranges": "bytes",
+      "Content-Length": end - start + 1,
+      "Content-Range": `bytes ${start}-${end}/${info.size}`,
+      "Content-Type": contentType(path),
+      "X-Content-Type-Options": "nosniff",
+    });
+    createReadStream(path, {start, end}).pipe(response);
+    return;
+  }
   response.writeHead(200, {
-    "Access-Control-Allow-Origin": "*",
+    "Accept-Ranges": "bytes",
     "Content-Length": info.size,
     "Content-Type": contentType(path),
+    "X-Content-Type-Options": "nosniff",
   });
   createReadStream(path).pipe(response);
 };
@@ -93,13 +288,30 @@ export const startServer = async () => {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
+      const requestOrigin = request.headers.origin?.replace(/\/$/u, "");
+      if (requestOrigin) {
+        if (!config.corsOrigins.includes(requestOrigin)) {
+          json(response, 403, {error: "Origin is not allowed"});
+          return;
+        }
+        response.setHeader("Access-Control-Allow-Origin", requestOrigin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Vary", "Origin");
+      }
       if (request.method === "OPTIONS") {
         response.writeHead(204, {
-          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Headers": "Authorization, Content-Type",
           "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-          "Access-Control-Allow-Origin": "*",
         });
         response.end();
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/openapi.yaml") {
+        await streamArtifact(request, response, join(agentRoot, "openapi.yaml"));
+        return;
+      }
+      if (request.method === "GET" && (url.pathname === "/docs" || url.pathname === "/docs/")) {
+        await streamArtifact(request, response, join(agentRoot, "docs/index.html"));
         return;
       }
       if (request.method === "GET" && url.pathname === "/healthz") {
@@ -109,19 +321,217 @@ export const startServer = async () => {
           service: "mooncut-pi-video-editor",
           plannerModel: config.plannerModel,
           visionModels: config.visionModels,
+          imageGenerationConfigured: Boolean(config.imageGenerationBaseUrl && config.imageGenerationApiKey && config.imageGenerationModel),
+          communityPosts: communityStore.count(),
           gatewayReachable: models.includes(config.plannerModel),
+        });
+        return;
+      }
+      const sessionToken = parseSessionCookie(request.headers.cookie);
+      if (request.method === "POST" && (url.pathname === "/v1/auth/register" || url.pathname === "/v1/auth/login")) {
+        const payload = await readJson(request) as {email?: unknown; password?: unknown};
+        const ip = String(request.headers["x-forwarded-for"] ?? request.socket.remoteAddress ?? "unknown").split(",", 1)[0].trim();
+        const emailKey = typeof payload?.email === "string" ? payload.email.trim().toLowerCase().slice(0, 254) : "invalid";
+        const action = url.pathname.endsWith("register") ? "register" : "login";
+        const limit = action === "register" ? 5 : 10;
+        const windowMs = action === "register" ? 60 * 60_000 : 15 * 60_000;
+        const rateKey = `${action}:${ip}:${emailKey}`;
+        if (!authRateLimiter.allow(rateKey, limit, windowMs)) {
+          throw new AuthError(429, "RATE_LIMITED", "尝试次数过多，请稍后再试");
+        }
+        const result = action === "register"
+          ? await authStore.register(payload?.email, payload?.password)
+          : await authStore.login(payload?.email, payload?.password);
+        authRateLimiter.reset(rateKey);
+        response.setHeader("Set-Cookie", sessionCookie(result.sessionToken));
+        json(response, action === "register" ? 201 : 200, {user: result.user});
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/v1/auth/logout") {
+        authStore.deleteSession(sessionToken);
+        response.setHeader("Set-Cookie", clearSessionCookie());
+        json(response, 200, {ok: true});
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/auth/me") {
+        const user = authStore.getUserBySession(sessionToken);
+        if (!user) throw new AuthError(401, "AUTH_REQUIRED", "请先登录");
+        json(response, 200, {user});
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/auth/session") {
+        json(response, 200, {user: authStore.getUserBySession(sessionToken) ?? null});
+        return;
+      }
+      let principal: RequestPrincipal | undefined;
+      if (isServiceAuthorized(request.headers.authorization)) principal = {kind: "service"};
+      else {
+        const user = authStore.getUserBySession(sessionToken);
+        if (user) principal = {kind: "user", user};
+      }
+      if (url.pathname.startsWith("/v1/") && !principal) {
+        response.setHeader("WWW-Authenticate", 'Bearer realm="MoonCut API"');
+        json(response, 401, {error: "请先登录", code: "AUTH_REQUIRED"});
+        return;
+      }
+      const ownerUserId = principal?.kind === "user" ? principal.user.id : undefined;
+      const getAccessibleJob = async (id: string) => {
+        let job: EditJobRecord;
+        try {
+          job = await jobManager.get(id);
+        } catch {
+          throw new HttpError(404, "Edit job not found");
+        }
+        if (!principal || !canAccessOwnedResource(job.ownerUserId, principal)) {
+          throw new HttpError(404, "Edit job not found");
+        }
+        return job;
+      };
+      if (request.method === "GET" && url.pathname === "/v1/render-queue") {
+        const jobs = await jobManager.list(200);
+        const queued = jobs.filter((job) => job.status === "queued").sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+        const queuePosition = new Map(queued.map((job, index) => [job.id, index + 1]));
+        const active = jobs
+          .filter((job) => job.status === "running" || job.status === "queued")
+          .sort((left, right) => {
+            if (left.status !== right.status) return left.status === "running" ? -1 : 1;
+            return left.createdAt.localeCompare(right.createdAt);
+          });
+        const recent = jobs
+          .filter((job) => job.status === "completed" || job.status === "failed")
+          .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
+          .slice(0, 8);
+        const shanghaiDate = (value: string | Date) => new Intl.DateTimeFormat("en-CA", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          timeZone: "Asia/Shanghai",
+        }).format(typeof value === "string" ? new Date(value) : value);
+        const today = shanghaiDate(new Date());
+        const queueItem = (job: EditJobRecord) => ({
+          name: job.displayName ?? friendlyJobName(job.id, job.createdAt),
+          status: job.status,
+          stage: job.stage,
+          progress: job.progress,
+          createdAt: job.createdAt,
+          updatedAt: job.updatedAt,
+          ...(job.status === "queued" ? {queuePosition: queuePosition.get(job.id)} : {}),
+          mine: principal?.kind === "user" && job.ownerUserId === principal.user.id,
+        });
+        json(response, 200, {
+          updatedAt: new Date().toISOString(),
+          summary: {
+            running: active.filter((job) => job.status === "running").length,
+            queued: queued.length,
+            completedToday: jobs.filter((job) => job.status === "completed" && shanghaiDate(job.updatedAt) === today).length,
+          },
+          active: active.map(queueItem),
+          recent: recent.map(queueItem),
         });
         return;
       }
       if (request.method === "GET" && url.pathname === "/v1/models") {
         json(response, 200, {
           available: await listGatewayModels(),
-          routing: {planner: config.plannerModel, vision: config.visionModels},
+          routing: {
+            planner: config.plannerModel,
+            script: config.scriptModel,
+            coach: config.coachModel,
+            vision: config.visionModels,
+            image: {
+              configured: Boolean(config.imageGenerationBaseUrl && config.imageGenerationApiKey && config.imageGenerationModel),
+              model: config.imageGenerationModel || null,
+              maxImages: config.imageGenerationMaxImages,
+            },
+          },
         });
         return;
       }
+      if (request.method === "POST" && url.pathname === "/v1/assistant/script") {
+        const payload = await readJson(request);
+        if (!isScriptAssistantRequest(payload)) {
+          json(response, 400, {error: "Body requires a valid messages array"});
+          return;
+        }
+        json(response, 200, await runScriptAssistant(payload));
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/v1/assistant/coach") {
+        const payload = await readJson(request);
+        if (!isCoachAdviceRequest(payload)) {
+          json(response, 400, {error: "Body requires transcript, script, currentSentence and numeric metrics"});
+          return;
+        }
+        json(response, 200, await runCoachAdvice(payload));
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/mail/status") {
+        json(response, 200, await mailAccountStatus());
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/v1/community/posts") {
+        const requestedLimit = Number.parseInt(url.searchParams.get("limit") ?? "12", 10);
+        const page = communityStore.list(Number.isFinite(requestedLimit) ? requestedLimit : 12, url.searchParams.get("cursor") ?? undefined);
+        const baseUrl = publicBaseUrl(request);
+        json(response, 200, {
+          items: page.items.map((post) => publicCommunityPost(post, baseUrl)),
+          ...(page.nextCursor ? {nextCursor: page.nextCursor} : {}),
+        });
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/v1/community/posts") {
+        const payload = await readJson(request);
+        if (!isCommunityPublishRequest(payload)) throw new HttpError(400, "Body requires jobId and optional authorName, title, caption");
+        const job = await getAccessibleJob(payload.jobId);
+        const defaultAuthor = principal?.kind === "user" ? principal.user.email.split("@", 1)[0] : undefined;
+        const published = communityStore.publish(job, {...payload, authorName: payload.authorName || defaultAuthor}, ownerUserId);
+        json(response, published.created ? 201 : 200, {
+          created: published.created,
+          post: publicCommunityPost(published.post, publicBaseUrl(request)),
+        });
+        return;
+      }
+      const communityAssetMatch = url.pathname.match(/^\/v1\/community\/posts\/([a-f0-9]{32})\/(video|poster)$/u);
+      if (request.method === "GET" && communityAssetMatch) {
+        const post = communityStore.get(communityAssetMatch[1]);
+        if (!post) throw new HttpError(404, "Community post not found");
+        const path = communityAssetMatch[2] === "video" ? post.videoPath : post.posterPath;
+        if (!path || !existsSync(path)) throw new HttpError(404, "Community media is unavailable");
+        await streamArtifact(request, response, path);
+        return;
+      }
+      const communityPostMatch = url.pathname.match(/^\/v1\/community\/posts\/([a-f0-9]{32})$/u);
+      if (request.method === "GET" && communityPostMatch) {
+        const post = communityStore.get(communityPostMatch[1]);
+        if (!post) throw new HttpError(404, "Community post not found");
+        json(response, 200, publicCommunityPost(post, publicBaseUrl(request)));
+        return;
+      }
       if (request.method === "POST" && url.pathname === "/v1/assets") {
-        await uploadAsset(request, response, url);
+        await uploadAsset(request, response, url, ownerUserId);
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/v1/edits") {
+        if (!jobManager.canAccept()) throw new HttpError(429, "Editing queue is full; retry later");
+        const notificationEmail = url.searchParams.get("notificationEmail") ?? undefined;
+        if (notificationEmail && !isEmail(notificationEmail)) throw new HttpError(400, "notificationEmail is invalid");
+        const prompt = url.searchParams.get("prompt")?.slice(0, 8000) || undefined;
+        const title = url.searchParams.get("title")?.slice(0, 120) || undefined;
+        const imageGenerationParam = url.searchParams.get("imageGeneration");
+        if (imageGenerationParam && imageGenerationParam !== "auto" && imageGenerationParam !== "off") {
+          throw new HttpError(400, "imageGeneration must be auto or off");
+        }
+        const imageGeneration = imageGenerationParam === "off" ? "off" as const : "auto" as const;
+        const asset = await storeUploadedAsset(request, url, ownerUserId);
+        const job = await jobManager.create({assetId: asset.id, prompt, title, notificationEmail, imageGeneration}, ownerUserId);
+        const baseUrl = publicBaseUrl(request);
+        json(response, 202, {
+          id: job.id,
+          status: job.status,
+          assetId: asset.id,
+          statusUrl: `${baseUrl}/v1/edit-jobs/${job.id}`,
+          videoUrl: `${baseUrl}/v1/edit-jobs/${job.id}/artifacts/video`,
+        });
         return;
       }
       if (request.method === "POST" && url.pathname === "/v1/edit-jobs") {
@@ -130,33 +540,122 @@ export const startServer = async () => {
           json(response, 400, {error: "Body requires assetId or inputPath"});
           return;
         }
-        const job = await jobManager.create(payload);
+        if (payload.inputPath && !config.allowLocalInputPath) {
+          json(response, 403, {error: "inputPath jobs are disabled on this server; upload an asset instead"});
+          return;
+        }
+        if (payload.notificationEmail && !isEmail(payload.notificationEmail)) {
+          json(response, 400, {error: "notificationEmail is invalid"});
+          return;
+        }
+        const job = await jobManager.create(payload, ownerUserId);
+        const baseUrl = publicBaseUrl(request);
         json(response, 202, {
           id: job.id,
           status: job.status,
-          statusUrl: `/v1/edit-jobs/${job.id}`,
+          statusUrl: `${baseUrl}/v1/edit-jobs/${job.id}`,
         });
+        return;
+      }
+      const subtitleRepairMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/subtitle-repairs$/u);
+      if (subtitleRepairMatch && request.method === "POST") {
+        const parent = await getAccessibleJob(subtitleRepairMatch[1]);
+        const payload = await readJson(request);
+        if (!isSubtitleRepairRequest(payload)) {
+          throw new HttpError(400, "Body requires instruction (2-2000 characters), optional atMs and replacementText");
+        }
+        if (parent.status !== "completed") {
+          throw new HttpError(409, "Only a completed version can receive subtitle repair feedback");
+        }
+        const feedback: SubtitleRepairFeedback = {
+          instruction: payload.instruction.trim(),
+          ...(Number.isFinite(payload.atMs) ? {atMs: Math.round(payload.atMs!)} : {}),
+          ...(payload.replacementText?.trim() ? {replacementText: payload.replacementText.trim()} : {}),
+        };
+        const repair = await jobManager.createSubtitleRepair(parent, feedback, ownerUserId);
+        const baseUrl = publicBaseUrl(request);
+        json(response, 202, {
+          id: repair.id,
+          status: repair.status,
+          statusUrl: `${baseUrl}/v1/edit-jobs/${repair.id}`,
+          parentJobId: parent.id,
+        });
+        return;
+      }
+      if (subtitleRepairMatch && request.method === "GET") {
+        const selected = await getAccessibleJob(subtitleRepairMatch[1]);
+        const repairs = (await jobManager.listSubtitleRepairs(selected))
+          .filter((repair) => principal && canAccessOwnedResource(repair.ownerUserId, principal));
+        const baseUrl = publicBaseUrl(request);
+        json(response, 200, {
+          rootJobId: selected.subtitleRepair?.rootJobId ?? selected.id,
+          items: repairs.map((repair) => publicJobRecord(repair, baseUrl)),
+        });
+        return;
+      }
+      const prepareMailMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/mail\/prepare$/u);
+      if (request.method === "POST" && prepareMailMatch) {
+        const job = await getAccessibleJob(prepareMailMatch[1]);
+        if (!job.mail) {
+          json(response, 400, {error: "This job has no notification email"});
+          return;
+        }
+        const prepared = await prepareJobMail(job, job.mail.recipient, url.origin);
+        await jobManager.updateMail(job.id, {status: "awaiting-confirmation", error: undefined});
+        json(response, 200, prepared);
+        return;
+      }
+      const confirmMailMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/mail\/([a-f0-9]+)\/confirm$/u);
+      if (request.method === "POST" && confirmMailMatch) {
+        await getAccessibleJob(confirmMailMatch[1]);
+        let sent;
+        try {
+          sent = await confirmJobMail(confirmMailMatch[1], confirmMailMatch[2]);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (/mail confirmation|unknown mail confirmation/iu.test(message)) {
+            await jobManager.updateMail(confirmMailMatch[1], {status: "ready", error: message});
+            throw new HttpError(409, message);
+          }
+          throw error;
+        }
+        await jobManager.updateMail(confirmMailMatch[1], {
+          status: "sent",
+          sentAt: new Date().toISOString(),
+          error: undefined,
+        });
+        json(response, 200, {ok: true, ...sent});
         return;
       }
       const jobMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)$/u);
       if (request.method === "GET" && jobMatch) {
-        json(response, 200, await jobManager.get(jobMatch[1]));
+        json(response, 200, publicJobRecord(await getAccessibleJob(jobMatch[1]), publicBaseUrl(request)));
         return;
       }
       const artifactMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/artifacts\/([A-Za-z0-9_-]+)$/u);
       if (request.method === "GET" && artifactMatch) {
-        const job = await jobManager.get(artifactMatch[1]);
+        const job = await getAccessibleJob(artifactMatch[1]);
         const path = job.result?.artifacts[artifactMatch[2]];
         if (!path) {
           json(response, 404, {error: "Artifact not found"});
           return;
         }
-        await streamArtifact(response, path);
+        await streamArtifact(request, response, path);
         return;
       }
       json(response, 404, {error: "Not found"});
     } catch (error) {
-      json(response, 500, {error: error instanceof Error ? error.message : String(error)});
+      const requestId = randomUUID();
+      console.error(`[http] ${request.method ?? "?"} ${request.url ?? "/"}:`, error);
+      if (error instanceof HttpError || error instanceof CommunityStoreError || error instanceof AuthError) {
+        json(response, error.status, {error: error.message, ...(error instanceof AuthError ? {code: error.code} : {}), requestId});
+      } else if (error instanceof Error && /asset access denied/iu.test(error.message)) {
+        json(response, 404, {error: "Asset not found", requestId});
+      } else if (error instanceof Error && error.message.startsWith("Job queue is full")) {
+        json(response, 429, {error: error.message, requestId});
+      } else {
+        json(response, 500, {error: "Internal server error", requestId});
+      }
     }
   });
 

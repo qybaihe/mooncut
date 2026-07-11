@@ -24,6 +24,22 @@
       "trigger": "A timed transcript contains a word matching an impact phrase or keyword.",
       "rule": "Persist the absolute word timestamp as impactAtMs and land the full-screen flash/ring pulse there. Never derive semantic sync from a fixed percentage of the beat duration.",
       "regression": "impact QA samples must be centered on impactAtMs and the rendered phrase must visibly land there"
+    },
+    {
+      "id": "qa-protocol-failure-is-not-edit-failure",
+      "status": "active",
+      "learnedFrom": "agent regression job 89ba9779e6824b419be4730a3320b6ef",
+      "trigger": "All hard QA findings are vision-gate-unavailable.",
+      "rule": "Retry verification without changing the edit spec or rendering the video again. Only revise and rerender when a visual finding identifies an actual frame-level defect.",
+      "regression": "a structured-output or gateway timeout must not invoke render_edit"
+    },
+    {
+      "id": "live-worker-job-is-not-interrupted",
+      "status": "active",
+      "learnedFrom": "multi-instance regression job da5ae4c110bd47c094280332e246b758",
+      "trigger": "A service instance starts while another local worker owns a queued or running job.",
+      "rule": "Persist ownerPid on job creation and only recover a queued/running job as interrupted when its owner process is no longer alive.",
+      "regression": "startup recovery must preserve jobs whose ownerPid passes a local liveness check"
     }
   ]
 }

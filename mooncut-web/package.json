@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "test": "node --test test/*.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
     "@lucide/vue": "^1.24.0",
+    "@mediapipe/tasks-vision": "^0.10.35",
     "vue": "^3.5.39"
   },
   "devDependencies": {

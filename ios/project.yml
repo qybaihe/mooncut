@@ -13,6 +13,14 @@ settings:
     TARGETED_DEVICE_FAMILY: "1"
     SUPPORTS_MACCATALYST: NO
 
+configs:
+  Debug: debug
+  Release: release
+
+configFiles:
+  Debug: Config/Debug.xcconfig
+  Release: Config/Release.xcconfig
+
 targets:
   MoonCut:
     type: application
@@ -29,6 +37,11 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         INFOPLIST_FILE: MoonCut/Info.plist
         GENERATE_INFOPLIST_FILE: NO
+        MOONCUT_API_BASE_URL: $(MOONCUT_API_BASE_URL)
+        MOONCUT_TRUSTED_HOST: $(MOONCUT_TRUSTED_HOST)
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
     scheme:
       testTargets:
         - MoonCutTests

@@ -17,6 +17,7 @@ from .reframing import (
     interpolate_sample,
     render_reframed_video,
     resolve_crop,
+    resolve_motion_crop,
     validate_manifest_source,
 )
 
@@ -37,5 +38,6 @@ __all__ = (
     "interpolate_sample",
     "render_reframed_video",
     "resolve_crop",
+    "resolve_motion_crop",
     "validate_manifest_source",
 )

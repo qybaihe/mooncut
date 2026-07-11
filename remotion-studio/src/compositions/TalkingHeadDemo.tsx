@@ -252,6 +252,7 @@ const Speaker = ({
           sourceAspectRatio={sourceAspectRatio}
           sourceTimeMs={sourceTimeMs}
           src={staticFile(src)}
+          trackingElapsedMs={(localFrame / fps) * 1000}
           trimBefore={trimBefore}
         />
       ) : <PlaceholderSpeaker />}

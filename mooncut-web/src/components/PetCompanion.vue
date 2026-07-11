@@ -4,6 +4,7 @@ import type { PetAnimationState } from '../types'
 
 const props = defineProps<{
   state: PetAnimationState
+  message?: string
   immersive?: boolean
   landing?: boolean
 }>()
@@ -22,6 +23,7 @@ const activeState = computed(() => interactionState.value ?? props.state)
 
 const stateMessage = computed(() => {
   if (touchedMessage.value) return '摸到我啦，好开心！'
+  if (props.message) return props.message
   const messages: Record<PetAnimationState, string> = {
     idle: '我在这儿，慢慢来。',
     running: '正在努力跑进度！',
@@ -41,9 +43,9 @@ const moodLabel = computed(() => {
 })
 
 function scheduleBubbleHide(delay = 3400) {
-  if (bubbleTimer) window.clearTimeout(bubbleTimer)
+    if (bubbleTimer) window.clearTimeout(bubbleTimer)
   bubbleTimer = window.setTimeout(() => {
-    if (!props.immersive) showBubble.value = false
+    showBubble.value = false
   }, delay)
 }
 
@@ -66,7 +68,7 @@ function petDog() {
 }
 
 watch(
-  () => props.state,
+  () => [props.state, props.message],
   () => {
     if (interactionState.value) return
     showBubble.value = true
@@ -84,13 +86,13 @@ onBeforeUnmount(() => {
 <template>
   <aside
     class="pet-companion"
-    :class="{ 'is-immersive': immersive, 'is-landing': landing, 'has-bubble': showBubble && !immersive }"
+    :class="{ 'is-immersive': immersive, 'is-landing': landing, 'has-bubble': showBubble }"
     aria-label="MoonCut 创作搭子小月"
     @mouseenter="showBubble = true"
     @mouseleave="scheduleBubbleHide(1800)"
   >
     <Transition name="pet-bubble">
-      <div v-if="showBubble && !immersive" class="pet-bubble" role="status" aria-live="polite">
+      <div v-if="showBubble" class="pet-bubble" role="status" aria-live="polite">
         <div class="pet-bubble-topline">
           <strong>小月</strong>
           <span>{{ moodLabel }} · {{ happiness }}</span>

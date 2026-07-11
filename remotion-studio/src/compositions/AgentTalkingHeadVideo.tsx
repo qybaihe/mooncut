@@ -14,7 +14,7 @@ import {FaceTrackedVideo, type FaceTrackManifest} from '../components/FaceTracke
 import {FullscreenImpactText} from '../extensions/community-motion/FullscreenImpactText';
 import {MacDesktop, MacFloatingVideoWindow, MacWindow} from '../extensions/community-motion/MacDesktop';
 
-export type AgentEditBeatKind = 'speaker' | 'desktop' | 'quote' | 'impact' | 'evidence';
+export type AgentEditBeatKind = 'speaker' | 'desktop' | 'quote' | 'impact' | 'evidence' | 'illustration';
 export type SpeakerLayout = 'native' | 'circle';
 
 export type AgentCameraPolicy = {
@@ -23,6 +23,7 @@ export type AgentCameraPolicy = {
   nativeReframe: 'preserve-source';
   minimumLayoutHoldMs: number;
   transitionMs: number;
+  recenterDurationMs: number;
 };
 
 export type AgentEditBeat = {
@@ -36,6 +37,7 @@ export type AgentEditBeat = {
   /** Absolute source-timeline time where the impact pulse lands. */
   impactAtMs?: number;
   evidenceId?: string;
+  generatedVisualId?: string;
   /** Explicit in generated specs; optional here so existing v1 jobs remain renderable. */
   speakerLayout?: SpeakerLayout;
 };
@@ -48,6 +50,19 @@ export type AgentEvidenceAsset = {
   src: string;
   localPath: string;
   evidencePath: string;
+};
+
+export type AgentGeneratedVisualAsset = {
+  id: string;
+  kind: 'generated-illustration';
+  label: string;
+  purpose: string;
+  prompt: string;
+  src: string;
+  localPath: string;
+  metadataPath: string;
+  model: string;
+  generatedAt: string;
 };
 
 export type AgentEditSpec = {
@@ -64,6 +79,7 @@ export type AgentEditSpec = {
   subtitles: Array<{index: number; text: string; start_ms: number; end_ms: number}>;
   beats: AgentEditBeat[];
   evidenceAssets: AgentEvidenceAsset[];
+  generatedVisuals?: AgentGeneratedVisualAsset[];
   generationPreset: 'macos-sonoma-native';
   cameraPolicy?: AgentCameraPolicy;
 };
@@ -97,6 +113,7 @@ export const DEFAULT_AGENT_EDIT_SPEC: AgentEditSpec = {
     },
   ],
   evidenceAssets: [],
+  generatedVisuals: [],
   generationPreset: 'macos-sonoma-native',
   cameraPolicy: {
     mode: 'track-small-overlays-only',
@@ -104,6 +121,7 @@ export const DEFAULT_AGENT_EDIT_SPEC: AgentEditSpec = {
     nativeReframe: 'preserve-source',
     minimumLayoutHoldMs: 2500,
     transitionMs: 220,
+    recenterDurationMs: 650,
   },
 };
 
@@ -116,7 +134,7 @@ const beatAt = (spec: AgentEditSpec, timeMs: number) =>
 /** Face tracking is a crop tool for supporting-content overlays, never a global camera effect. */
 export const resolveSpeakerLayout = (beat: AgentEditBeat): SpeakerLayout => {
   const semanticLayout = beat.kind === 'desktop' || beat.kind === 'quote' ||
-    (beat.kind === 'evidence' && Boolean(beat.evidenceId))
+    beat.kind === 'illustration' || (beat.kind === 'evidence' && Boolean(beat.evidenceId))
     ? 'circle'
     : 'native';
   // The renderer owns this invariant so a malformed/legacy spec cannot turn
@@ -175,11 +193,13 @@ const TrackedSpeakerBubble = ({
   faceTrack,
   spec,
   timeMs,
+  trackingElapsedMs,
 }: {
   enter: number;
   faceTrack: FaceTrackManifest | null;
   spec: AgentEditSpec;
   timeMs: number;
+  trackingElapsedMs: number;
 }) => (
   <div
     style={{
@@ -208,9 +228,11 @@ const TrackedSpeakerBubble = ({
         maxZoom: 4,
         edgeMode: 'pad',
       }}
+      motion={{recenterDurationMs: spec.cameraPolicy?.recenterDurationMs ?? 650}}
       sourceAspectRatio={spec.source.aspectRatio}
       sourceTimeMs={timeMs}
       src={staticFile(spec.source.src)}
+      trackingElapsedMs={trackingElapsedMs}
       volume={1}
     />
   </div>
@@ -417,6 +439,56 @@ const EvidenceBeat = ({
   );
 };
 
+const IllustrationBeat = ({
+  beat,
+  enter,
+  spec,
+}: {
+  beat: AgentEditBeat;
+  enter: number;
+  spec: AgentEditSpec;
+}) => {
+  const visual = (spec.generatedVisuals ?? []).find((asset) => asset.id === beat.generatedVisualId);
+  return (
+    <>
+      <MacWindow
+        kind="app"
+        title="MoonCut Creative Preview"
+        tone="dark"
+        toolbar={<span style={{color: '#ffd166', fontFamily: 'Menlo, monospace', fontSize: 12, fontWeight: 900}}>AI GENERATED EXAMPLE</span>}
+        style={{height: 730, left: 88, opacity: enter, position: 'absolute', top: 145, transform: `scale(${0.97 + enter * 0.03})`, width: 1260, zIndex: 2}}
+      >
+        <div style={{background: '#0b1110', height: '100%', overflow: 'hidden', position: 'relative'}}>
+          {visual ? (
+            <Img
+              src={staticFile(visual.src)}
+              style={{height: '100%', objectFit: 'cover', width: '100%'}}
+            />
+          ) : (
+            <div style={{alignItems: 'center', color: 'rgba(255,255,255,.55)', display: 'flex', fontSize: 28, height: '100%', justifyContent: 'center'}}>示例图不可用</div>
+          )}
+          <div style={{background: 'linear-gradient(transparent, rgba(0,0,0,.82))', bottom: 0, height: 180, left: 0, position: 'absolute', right: 0}} />
+          <div style={{background: 'rgba(5,9,8,.82)', border: '1px solid rgba(255,209,102,.65)', borderRadius: 999, bottom: 28, color: '#ffd166', fontFamily: 'Menlo, monospace', fontSize: 15, fontWeight: 900, left: 30, letterSpacing: 1.4, padding: '10px 16px', position: 'absolute'}}>AI 生成示例 · 非事实证据</div>
+        </div>
+      </MacWindow>
+      <MacWindow
+        kind="utility"
+        title="Example Inspector"
+        tone="dark"
+        style={{height: 590, opacity: enter, position: 'absolute', right: 88, top: 215, transform: `translateX(${(1 - enter) * 30}px)`, width: 420, zIndex: 3}}
+      >
+        <div style={{padding: '44px 38px'}}>
+          <div style={{color: '#ffd166', fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 900}}>ILLUSTRATIVE ONLY</div>
+          <h2 style={{color: '#fff', fontSize: 42, letterSpacing: '-.035em', lineHeight: 1.15, margin: '24px 0'}}>{beat.headline}</h2>
+          <p style={{color: 'rgba(255,255,255,.62)', fontSize: 22, lineHeight: 1.55}}>{beat.body}</p>
+          <KeywordChips accent={spec.accent} keywords={beat.keywords} />
+          <div style={{bottom: 34, color: 'rgba(255,255,255,.38)', fontFamily: 'Menlo, monospace', fontSize: 12, left: 38, position: 'absolute', right: 38}}>{visual?.model ?? 'generated visual'}</div>
+        </div>
+      </MacWindow>
+    </>
+  );
+};
+
 export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({faceTrack, spec}) => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
@@ -451,6 +523,7 @@ export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({fac
       {beat.kind === 'speaker' ? <SpeakerBeat beat={beat} enter={cameraEnter} spec={spec} /> : null}
       {beat.kind === 'quote' ? <QuoteBeat beat={beat} enter={enter} spec={spec} /> : null}
       {beat.kind === 'evidence' ? <EvidenceBeat beat={beat} beatDurationFrames={beatDurationFrames} enter={enter} localFrame={localFrame} spec={spec} /> : null}
+      {beat.kind === 'illustration' ? <IllustrationBeat beat={beat} enter={enter} spec={spec} /> : null}
       {beat.kind === 'impact' ? (
         <>
           <AbsoluteFill style={{zIndex: 1}}>
@@ -478,6 +551,7 @@ export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({fac
           faceTrack={faceTrack}
           spec={spec}
           timeMs={timeMs}
+          trackingElapsedMs={layoutLocalFrame / fps * 1000}
         />
       ) : null}
 

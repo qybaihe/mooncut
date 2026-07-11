@@ -14,6 +14,7 @@ from face_tracker import (
     SourceMetadata,
     interpolate_sample,
     resolve_crop,
+    resolve_motion_crop,
     validate_manifest_source,
 )
 from face_tracker.face_tracker import FaceTracker
@@ -66,6 +67,7 @@ def sample(
     center: tuple[float, float] = (0.5, 0.5),
     size: tuple[float, float] = (0.2, 0.2),
     source_clipped: tuple[bool, bool, bool, bool] = (False, False, False, False),
+    raw_bbox_norm: tuple[float, float, float, float] | None = None,
 ) -> FaceTrackSample:
     return FaceTrackSample(
         frame_idx=round(t_ms / 1000 * 30),
@@ -82,6 +84,7 @@ def sample(
         keypoints_norm=(),
         confidence=0.9,
         state="detected",
+        raw_bbox_norm=raw_bbox_norm,
         source_clipped=source_clipped,
     )
 
@@ -230,6 +233,58 @@ class ReframingTests(unittest.TestCase):
 
         self.assertEqual(crop.left, 0)
 
+    def test_edge_padding_safety_changes_crop_continuously(self) -> None:
+        crops = []
+        for index in range(101):
+            right = 0.9 + index / 1000
+            item = sample(
+                index,
+                center=(right - 0.18, 0.5),
+                size=(0.36, 0.3),
+                raw_bbox_norm=(right - 0.36, 0.32, right, 0.68),
+            )
+            crops.append(resolve_crop(item, source_metadata(), FRAMING_PRESETS["circle"]))
+
+        largest_step = max(
+            abs(current.left - previous.left)
+            for previous, current in zip(crops, crops[1:])
+        )
+        self.assertLess(largest_step, 0.01)
+
+    def test_motion_crop_eases_from_neutral_to_tracked_crop(self) -> None:
+        samples = [
+            sample(0, center=(0.76, 0.46), size=(0.24, 0.28)),
+            sample(1000, center=(0.76, 0.46), size=(0.24, 0.28)),
+        ]
+        neutral = resolve_crop(None, source_metadata(), FRAMING_PRESETS["circle"])
+        start = resolve_motion_crop(
+            samples,
+            500,
+            source_metadata(),
+            FRAMING_PRESETS["circle"],
+            tracking_elapsed_ms=0,
+        )
+        middle = resolve_motion_crop(
+            samples,
+            500,
+            source_metadata(),
+            FRAMING_PRESETS["circle"],
+            tracking_elapsed_ms=325,
+        )
+        settled = resolve_motion_crop(
+            samples,
+            500,
+            source_metadata(),
+            FRAMING_PRESETS["circle"],
+            tracking_elapsed_ms=650,
+        )
+
+        self.assertEqual(start, neutral)
+        self.assertGreater(middle.left, start.left)
+        self.assertLess(middle.left, settled.left)
+        self.assertLess(middle.width, start.width)
+        self.assertGreater(middle.width, settled.width)
+
     def test_interpolation_uses_source_timestamps(self) -> None:
         resolved = interpolate_sample(
             [sample(0, center=(0.2, 0.4)), sample(1000, center=(0.8, 0.6))],
@@ -240,6 +295,19 @@ class ReframingTests(unittest.TestCase):
         assert resolved is not None
         self.assertAlmostEqual(resolved.center_norm[0], 0.35)
         self.assertAlmostEqual(resolved.center_norm[1], 0.45)
+
+    def test_interpolation_blends_raw_bbox_without_midpoint_step(self) -> None:
+        resolved = interpolate_sample(
+            [
+                sample(0, raw_bbox_norm=(0.1, 0.2, 0.3, 0.4)),
+                sample(1000, raw_bbox_norm=(0.3, 0.4, 0.5, 0.6)),
+            ],
+            250,
+        )
+
+        self.assertIsNotNone(resolved)
+        assert resolved is not None
+        self.assertEqual(resolved.raw_bbox_norm, (0.15, 0.25, 0.35, 0.45))
 
     def test_interpolation_normalizes_unsorted_samples(self) -> None:
         resolved = interpolate_sample(

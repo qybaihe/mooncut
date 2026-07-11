@@ -19,7 +19,7 @@ from .alignment import (
 from .audio import AudioChunk, create_chunks, normalize_audio, probe_duration
 from .config import Settings
 from .models import GlossaryCorrection, JobOptions, ProviderMetadata, SubtitleResult
-from .providers import DeepgramClient, MimoClient, ProviderError
+from .providers import DeepgramClient, FasterWhisperClient, MimoClient, ProviderError
 from .subtitles import segment_transcript
 
 
@@ -71,30 +71,34 @@ class SubtitleProcessor:
 
         async with httpx.AsyncClient(timeout=timeout) as client:
             mimo = MimoClient(self.settings, client)
-            deepgram = DeepgramClient(self.settings, client)
+            timestamp_provider = (
+                DeepgramClient(self.settings, client)
+                if self.settings.resolved_timestamp_provider == "deepgram"
+                else FasterWhisperClient(self.settings)
+            )
 
             async def process_chunk(chunk: AudioChunk) -> _ChunkOutput:
                 nonlocal completed
                 async with semaphore:
                     mimo_task = mimo.transcribe(chunk.path, options.language)
-                    deepgram_task = deepgram.transcribe(
+                    timestamp_task = timestamp_provider.transcribe(
                         chunk.path,
                         options.language,
                         options.glossary,
                         chunk.duration,
                     )
-                    mimo_result, deepgram_result = await asyncio.gather(
+                    mimo_result, timestamp_result = await asyncio.gather(
                         mimo_task,
-                        deepgram_task,
+                        timestamp_task,
                         return_exceptions=True,
                     )
-                    if isinstance(deepgram_result, BaseException):
-                        raise deepgram_result
+                    if isinstance(timestamp_result, BaseException):
+                        raise timestamp_result
                     used_fallback = isinstance(mimo_result, BaseException)
                     if used_fallback and options.strict_hybrid:
                         raise ProviderError("mimo", str(mimo_result))
                     authoritative_text = (
-                        deepgram_result.transcript
+                        timestamp_result.transcript
                         if used_fallback
                         else str(mimo_result)
                     )
@@ -102,7 +106,7 @@ class SubtitleProcessor:
                     if not used_fallback:
                         authoritative_text, glossary_corrections = apply_glossary(
                             authoritative_text,
-                            deepgram_result.transcript,
+                            timestamp_result.transcript,
                             options.glossary,
                         )
                         glossary_corrections = [
@@ -112,7 +116,7 @@ class SubtitleProcessor:
                     try:
                         aligned = align_transcript(
                             authoritative_text=authoritative_text,
-                            timestamp_words=deepgram_result.words,
+                            timestamp_words=timestamp_result.words,
                             duration_ms=round(chunk.duration * 1000),
                             offset_ms=round(chunk.extract_start * 1000),
                         )
@@ -122,7 +126,7 @@ class SubtitleProcessor:
                         used_fallback = True
                         aligned = align_transcript(
                             authoritative_text=deepgram_result.transcript,
-                            timestamp_words=deepgram_result.words,
+                            timestamp_words=timestamp_result.words,
                             duration_ms=round(chunk.duration * 1000),
                             offset_ms=round(chunk.extract_start * 1000),
                         )
@@ -181,7 +185,7 @@ class SubtitleProcessor:
             alignment=stats,
             providers=ProviderMetadata(
                 text_provider=self.settings.mimo_model,
-                timestamp_provider=f"deepgram-{self.settings.deepgram_model}",
+                timestamp_provider=timestamp_provider.provider_name,
                 chunk_count=len(chunks),
                 fallback_chunks=sum(item.used_fallback for item in outputs),
                 glossary_corrections=[

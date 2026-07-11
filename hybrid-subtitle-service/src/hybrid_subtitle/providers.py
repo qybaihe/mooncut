@@ -117,6 +117,10 @@ class DeepgramClient:
         self.settings = settings
         self.client = client
 
+    @property
+    def provider_name(self) -> str:
+        return f"deepgram-{self.settings.deepgram_model}"
+
     async def transcribe(
         self,
         audio_path: Path,
@@ -194,3 +198,89 @@ class DeepgramClient:
             detected_language=channel.get("detected_language"),
         )
 
+
+class FasterWhisperClient:
+    """Use local Whisper only for timestamps; MiMo remains the text authority."""
+
+    def __init__(self, settings: Settings):
+        self.settings = settings
+        self._model: Any | None = None
+        self._model_lock = asyncio.Lock()
+
+    @property
+    def provider_name(self) -> str:
+        return f"faster-whisper-{Path(self.settings.faster_whisper_model).name}"
+
+    def _load_model(self) -> Any:
+        from faster_whisper import WhisperModel
+
+        return WhisperModel(
+            self.settings.faster_whisper_model,
+            device=self.settings.faster_whisper_device,
+            compute_type=self.settings.faster_whisper_compute_type,
+            cpu_threads=4,
+        )
+
+    async def _get_model(self) -> Any:
+        if self._model is not None:
+            return self._model
+        async with self._model_lock:
+            if self._model is None:
+                self._model = await asyncio.to_thread(self._load_model)
+        return self._model
+
+    @staticmethod
+    def _language(language: str) -> str | None:
+        return {"zh-CN": "zh", "zh": "zh", "en-US": "en", "en": "en"}.get(language)
+
+    @staticmethod
+    def _transcribe_sync(model: Any, audio_path: Path, language: str | None) -> DeepgramResult:
+        segments, info = model.transcribe(
+            str(audio_path),
+            language=language,
+            beam_size=5,
+            word_timestamps=True,
+            vad_filter=True,
+            condition_on_previous_text=False,
+        )
+        texts: list[str] = []
+        words: list[ProviderWord] = []
+        for segment in segments:
+            text = str(segment.text or "").strip()
+            if text:
+                texts.append(text)
+            for word in segment.words or []:
+                token = str(word.word or "").strip()
+                if not token or not any(char.isalnum() for char in token):
+                    continue
+                start = max(0.0, float(word.start))
+                end = max(start, float(word.end))
+                words.append(
+                    ProviderWord(
+                        text=token,
+                        start=start,
+                        end=end,
+                        confidence=max(0.0, min(float(getattr(word, "probability", 0.0)), 1.0)),
+                    )
+                )
+        transcript = "".join(texts) if language == "zh" else " ".join(texts)
+        if not transcript or not words:
+            raise ProviderError("faster-whisper", "empty transcript or timestamp list")
+        return DeepgramResult(
+            transcript=transcript,
+            words=words,
+            request_id=None,
+            detected_language=getattr(info, "language", None),
+        )
+
+    async def transcribe(
+        self,
+        audio_path: Path,
+        language: str,
+        _glossary: list[str],
+        _duration: float,
+    ) -> DeepgramResult:
+        if not self.settings.faster_whisper_model:
+            raise ProviderError("faster-whisper", "FASTER_WHISPER_MODEL is not configured")
+        model = await self._get_model()
+        return await asyncio.to_thread(self._transcribe_sync, model, audio_path, self._language(language))

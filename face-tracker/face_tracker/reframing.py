@@ -897,6 +897,19 @@ def interpolate_sample(
             float(left[1] + (right_value[1] - left[1]) * progress),
         )
 
+    def lerp_bbox(
+        left: Sequence[float] | None,
+        right_value: Sequence[float] | None,
+    ) -> tuple[float, float, float, float] | None:
+        if left is None:
+            return tuple(float(value) for value in right_value[:4]) if right_value is not None else None
+        if right_value is None:
+            return tuple(float(value) for value in left[:4])
+        return tuple(
+            float(left[index] + (right_value[index] - left[index]) * progress)
+            for index in range(4)
+        )
+
     center = lerp_pair(before.center_norm, after.center_norm)
     size = lerp_pair(before.face_size_norm, after.face_size_norm)
     return FaceTrackSample(
@@ -914,11 +927,30 @@ def interpolate_sample(
         keypoints_norm=before.keypoints_norm if progress < 0.5 else after.keypoints_norm,
         confidence=float(before.confidence + (after.confidence - before.confidence) * progress),
         state=before.state if progress < 0.5 else after.state,
-        raw_bbox_norm=before.raw_bbox_norm if progress < 0.5 else after.raw_bbox_norm,
+        raw_bbox_norm=lerp_bbox(before.raw_bbox_norm, after.raw_bbox_norm),
         source_clipped=tuple(
             left or right for left, right in zip(before.source_clipped, after.source_clipped)
         ),
     )
+
+
+def _smootherstep(value: float) -> float:
+    progress = float(np.clip(value, 0.0, 1.0))
+    return progress**3 * (progress * (progress * 6 - 15) + 10)
+
+
+def _edge_padding_weight(
+    *,
+    clearance: float,
+    clipped: bool,
+    crop_size: float,
+    face_size: float,
+) -> float:
+    if clipped:
+        return 0.0
+    seam_guard = max(crop_size * 0.03, face_size * 0.15)
+    release_band = max(crop_size * 0.025, face_size * 0.1, 0.006)
+    return _smootherstep((clearance - seam_guard) / release_band)
 
 
 def resolve_crop(
@@ -954,48 +986,146 @@ def resolve_crop(
     crop_width = target_aspect * crop_height / source_aspect
     unclamped_left = sample.center_norm[0] - profile.anchor[0] * crop_width
     unclamped_top = sample.center_norm[1] - profile.anchor[1] * crop_height
+    clamped_left = float(np.clip(unclamped_left, 0, 1 - crop_width))
+    clamped_top = float(np.clip(unclamped_top, 0, 1 - crop_height))
     if profile.edge_mode == "blur":
         safety_bbox = sample.raw_bbox_norm or sample.bbox_norm
         safety_left, safety_top, safety_right, safety_bottom = safety_bbox
         safety_width = max(1e-6, safety_right - safety_left)
         safety_height = max(1e-6, safety_bottom - safety_top)
-        # Keep the source-to-padding seam outside a small halo around the raw
-        # face box. This scales with the detected face (rather than using a
-        # fixed screen threshold) and also accounts for the 3% feather band.
-        seam_guard_x = max(crop_width * 0.03, safety_width * 0.15)
-        seam_guard_y = max(crop_height * 0.03, safety_height * 0.15)
-        # Padding is useful only when the source edge lies outside the face.
-        # If the recording already clips the face, a padded seam through the
-        # face looks worse and cannot restore missing pixels, so clamp honestly.
         clipped_left, clipped_top, clipped_right, clipped_bottom = sample.source_clipped
-        left = (
-            float(np.clip(unclamped_left, 0, 1 - crop_width))
-            if (
-                unclamped_left < 0
-                and (clipped_left or safety_left <= seam_guard_x)
+        horizontal_weight = 1.0
+        if unclamped_left < 0:
+            horizontal_weight = _edge_padding_weight(
+                clearance=safety_left,
+                clipped=clipped_left,
+                crop_size=crop_width,
+                face_size=safety_width,
             )
-            or (
-                unclamped_left + crop_width > 1
-                and (clipped_right or 1 - safety_right <= seam_guard_x)
+        elif unclamped_left + crop_width > 1:
+            horizontal_weight = _edge_padding_weight(
+                clearance=1 - safety_right,
+                clipped=clipped_right,
+                crop_size=crop_width,
+                face_size=safety_width,
             )
-            else float(unclamped_left)
-        )
-        top = (
-            float(np.clip(unclamped_top, 0, 1 - crop_height))
-            if (
-                unclamped_top < 0
-                and (clipped_top or safety_top <= seam_guard_y)
+
+        vertical_weight = 1.0
+        if unclamped_top < 0:
+            vertical_weight = _edge_padding_weight(
+                clearance=safety_top,
+                clipped=clipped_top,
+                crop_size=crop_height,
+                face_size=safety_height,
             )
-            or (
-                unclamped_top + crop_height > 1
-                and (clipped_bottom or 1 - safety_bottom <= seam_guard_y)
+        elif unclamped_top + crop_height > 1:
+            vertical_weight = _edge_padding_weight(
+                clearance=1 - safety_bottom,
+                clipped=clipped_bottom,
+                crop_size=crop_height,
+                face_size=safety_height,
             )
-            else float(unclamped_top)
-        )
+
+        left = float(clamped_left + (unclamped_left - clamped_left) * horizontal_weight)
+        top = float(clamped_top + (unclamped_top - clamped_top) * vertical_weight)
     else:
-        left = float(np.clip(unclamped_left, 0, 1 - crop_width))
-        top = float(np.clip(unclamped_top, 0, 1 - crop_height))
+        left = clamped_left
+        top = clamped_top
     return CropRect(left=left, top=top, width=crop_width, height=crop_height)
+
+
+def _average_crops(crops: Sequence[CropRect], weights: Sequence[float]) -> CropRect:
+    normalized_weights = np.asarray(weights, dtype=float)
+    normalized_weights /= max(1e-9, float(normalized_weights.sum()))
+    center_x = sum(
+        (crop.left + crop.width / 2) * weight
+        for crop, weight in zip(crops, normalized_weights)
+    )
+    center_y = sum(
+        (crop.top + crop.height / 2) * weight
+        for crop, weight in zip(crops, normalized_weights)
+    )
+    width = float(
+        np.exp(
+            sum(
+                np.log(max(1e-9, crop.width)) * weight
+                for crop, weight in zip(crops, normalized_weights)
+            )
+        )
+    )
+    height = float(
+        np.exp(
+            sum(
+                np.log(max(1e-9, crop.height)) * weight
+                for crop, weight in zip(crops, normalized_weights)
+            )
+        )
+    )
+    return CropRect(
+        left=float(center_x - width / 2),
+        top=float(center_y - height / 2),
+        width=width,
+        height=height,
+    )
+
+
+def _interpolate_crop(left: CropRect, right: CropRect, progress: float) -> CropRect:
+    eased = _smootherstep(progress)
+    left_center = (left.left + left.width / 2, left.top + left.height / 2)
+    right_center = (right.left + right.width / 2, right.top + right.height / 2)
+    width = float(
+        np.exp(
+            np.log(max(1e-9, left.width))
+            + (np.log(max(1e-9, right.width)) - np.log(max(1e-9, left.width))) * eased
+        )
+    )
+    height = float(
+        np.exp(
+            np.log(max(1e-9, left.height))
+            + (np.log(max(1e-9, right.height)) - np.log(max(1e-9, left.height))) * eased
+        )
+    )
+    center_x = left_center[0] + (right_center[0] - left_center[0]) * eased
+    center_y = left_center[1] + (right_center[1] - left_center[1]) * eased
+    return CropRect(
+        left=float(center_x - width / 2),
+        top=float(center_y - height / 2),
+        width=width,
+        height=height,
+    )
+
+
+def resolve_motion_crop(
+    samples: Sequence[FaceTrackSample],
+    t_ms: float,
+    source: SourceMetadata,
+    profile: FramingProfile,
+    *,
+    tracking_elapsed_ms: float | None = None,
+    recenter_duration_ms: float = 650.0,
+    smoothing_window_ms: float = 720.0,
+    smoothing_samples: int = 13,
+) -> CropRect:
+    """Resolve a smooth offline camera crop with a neutral-to-face entry move."""
+
+    count = max(1, int(round(smoothing_samples)))
+    offsets = np.linspace(-max(0.0, smoothing_window_ms) / 2, max(0.0, smoothing_window_ms) / 2, count)
+    crops: list[CropRect] = []
+    weights: list[float] = []
+    for index, offset in enumerate(offsets):
+        fraction = 0.5 if count == 1 else index / (count - 1)
+        distance = abs(fraction - 0.5) * 2
+        weights.append(1 + (1 - distance) * 3)
+        crops.append(resolve_crop(interpolate_sample(samples, t_ms + float(offset)), source, profile))
+    tracked = _average_crops(crops, weights)
+    if tracking_elapsed_ms is None:
+        return tracked
+    neutral = resolve_crop(None, source, profile)
+    return _interpolate_crop(
+        neutral,
+        tracked,
+        max(0.0, tracking_elapsed_ms) / max(1.0, recenter_duration_ms),
+    )
 
 
 def _hex_bgr(value: str) -> tuple[int, int, int]:
@@ -1146,8 +1276,13 @@ def render_reframed_video(
                 pts_ms = (frame_index / fps) * 1000.0
             if max_seconds is not None and pts_ms >= max_seconds * 1000:
                 break
-            sample = interpolate_sample(manifest.samples, pts_ms)
-            crop = resolve_crop(sample, manifest.source, profile)
+            crop = resolve_motion_crop(
+                manifest.samples,
+                pts_ms,
+                manifest.source,
+                profile,
+                tracking_elapsed_ms=pts_ms,
+            )
             frame_height, frame_width = frame.shape[:2]
             left = int(round(crop.left * frame_width))
             top = int(round(crop.top * frame_height))

@@ -8,7 +8,10 @@ defineProps<{
   controls?: boolean
 }>()
 
-defineEmits<{ error: [] }>()
+defineEmits<{
+  error: []
+  time: [seconds: number]
+}>()
 </script>
 
 <template>
@@ -20,6 +23,7 @@ defineEmits<{ error: [] }>()
     muted
     playsinline
     @error="$emit('error')"
+    @timeupdate="$emit('time', ($event.target as HTMLVideoElement).currentTime)"
   />
   <div v-else class="video-placeholder">
     <div class="person-silhouette" aria-hidden="true">

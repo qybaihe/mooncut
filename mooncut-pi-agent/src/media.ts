@@ -3,7 +3,7 @@ import {createReadStream, existsSync} from "node:fs";
 import {copyFile, mkdir, readFile, writeFile} from "node:fs/promises";
 import {basename, extname, join} from "node:path";
 import {analyzeContactSheet} from "./gateway.ts";
-import {config, faceTrackerRoot, remotionRoot} from "./config.ts";
+import {agentRoot, config, faceTrackerRoot, remotionRoot} from "./config.ts";
 import {runProcess} from "./process.ts";
 import type {FaceTrackManifest, SubtitleData, SubtitleSegment, VideoProbe} from "./types.ts";
 
@@ -133,7 +133,8 @@ const findSubtitleService = async () => {
   for (const baseUrl of subtitleServiceCandidates()) {
     try {
       const response = await fetchWithTimeout(`${baseUrl}/healthz`);
-      if (response.ok) return baseUrl;
+      const health = await response.json().catch(() => null) as {status?: string; providers_configured?: boolean} | null;
+      if (response.ok && (health?.status === undefined || health.status === "ok") && health?.providers_configured !== false) return baseUrl;
     } catch {
       // Try the next local endpoint.
     }
@@ -157,8 +158,9 @@ const requestSubtitleService = async (
   if (!createResponse.ok) throw new Error(`${createResponse.status} ${await createResponse.text()}`);
   const created = (await createResponse.json()) as {id: string};
 
-  for (let attempt = 0; attempt < 360; attempt += 1) {
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 1000));
+  const deadline = Date.now() + config.subtitleJobTimeoutMs;
+  while (Date.now() < deadline) {
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, config.subtitlePollIntervalMs));
     const statusResponse = await fetch(`${baseUrl}/v1/subtitle-jobs/${created.id}`, {headers});
     if (!statusResponse.ok) throw new Error(`${statusResponse.status} ${await statusResponse.text()}`);
     const status = (await statusResponse.json()) as {status: string; error?: string};
@@ -170,22 +172,50 @@ const requestSubtitleService = async (
     const provider = [result.providers?.text_provider, result.providers?.timestamp_provider].filter(Boolean).join(" + ");
     return normalizeSubtitles(result, durationMs, provider || "hybrid-subtitle-service");
   }
-  throw new Error("Subtitle service timed out");
+  throw new Error(`Subtitle service timed out after ${Math.round(config.subtitleJobTimeoutMs / 60_000)} minutes`);
+};
+
+const requestLocalTranscription = async (inputPath: string, durationMs: number): Promise<SubtitleData | null> => {
+  const script = join(agentRoot, "scripts/transcribe_faster_whisper.py");
+  if (!existsSync(config.transcribePython) || !existsSync(script)) return null;
+  try {
+    const result = await runProcess(config.transcribePython, [
+      script,
+      inputPath,
+      "--model", config.whisperModel,
+      "--language", config.whisperLanguage,
+      "--duration-ms", String(durationMs),
+    ], {cwd: agentRoot, timeoutMs: 30 * 60_000});
+    const payload = JSON.parse(result.stdout) as RawSubtitlePayload;
+    return normalizeSubtitles(payload, durationMs, `faster-whisper:${config.whisperModel}`);
+  } catch {
+    return null;
+  }
 };
 
 export const transcribeVideo = async (inputPath: string, durationMs: number): Promise<SubtitleData> => {
-  const hash = await sha256File(inputPath);
-  const knownPath = knownSubtitleSources.get(hash);
-  if (knownPath && existsSync(knownPath)) {
-    const payload = JSON.parse(await readFile(knownPath, "utf8")) as RawSubtitlePayload;
-    return normalizeSubtitles(payload, durationMs, `hash-match:${basename(knownPath)}`);
+  if (config.allowKnownSubtitleFixtures) {
+    const hash = await sha256File(inputPath);
+    const knownPath = knownSubtitleSources.get(hash);
+    if (knownPath && existsSync(knownPath)) {
+      const payload = JSON.parse(await readFile(knownPath, "utf8")) as RawSubtitlePayload;
+      return normalizeSubtitles(payload, durationMs, `hash-match:${basename(knownPath)}`);
+    }
   }
 
   const service = await findSubtitleService();
-  if (!service) {
-    return {duration_ms: durationMs, transcript: "", segments: [], provider: "unavailable"};
+  if (service) {
+    try {
+      return await requestSubtitleService(service, inputPath, durationMs);
+    } catch (error) {
+      if (config.requireSubtitleService) throw error;
+      // Preserve availability during a provider outage; the local model remains
+      // an explicitly lower-accuracy fallback rather than failing the edit.
+    }
   }
-  return requestSubtitleService(service, inputPath, durationMs);
+  if (config.requireSubtitleService) throw new Error("Hybrid subtitle service is unavailable");
+  return await requestLocalTranscription(inputPath, durationMs) ??
+    {duration_ms: durationMs, transcript: "", segments: [], provider: "unavailable"};
 };
 
 export const trackFace = async (

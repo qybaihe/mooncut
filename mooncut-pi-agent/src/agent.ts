@@ -12,8 +12,10 @@ import {
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
 import {agentRoot, agentRuntimeRoot, config, workspaceRoot} from "./config.ts";
+import {applySubtitleRepair, planSubtitleRepair} from "./subtitle-repair.ts";
 import {createMooncutTools, type StageUpdate} from "./tools.ts";
-import type {RunContext} from "./types.ts";
+import {isVisionGateProtocolOnlyFailure} from "./quality.ts";
+import type {AgentEditSpec, EditBeat, RunContext, SubtitleRepairAnalysis, SubtitleRepairFeedback, SubtitleSegment} from "./types.ts";
 
 const plannerModel = (): Model<"openai-completions"> => ({
   id: config.plannerModel,
@@ -63,7 +65,128 @@ const finalAssistantText = (messages: readonly unknown[]) => {
   return "";
 };
 
+type ReliableTool = {
+  name: string;
+  execute: (
+    toolCallId: string,
+    params: Record<string, unknown>,
+    signal: AbortSignal | undefined,
+    onUpdate: undefined,
+    context: unknown,
+  ) => Promise<unknown>;
+};
+
+const concise = (value: string, maximum = 28) => value.length <= maximum ? value : `${value.slice(0, maximum - 1)}…`;
+
+const impactPhrase = (segment: SubtitleSegment) => {
+  const text = segment.text.replace(/\s+/gu, "").trim();
+  const match = text.match(/(?:重磅的消息|GPT五点六发布|太震撼了|自动剪口播的视频|初版的测试|我们的效果)/u);
+  return match?.[0] ?? concise(text, 18);
+};
+
+const reliableBeats = (segments: readonly SubtitleSegment[]): EditBeat[] => {
+  const impactPattern = /重磅|GPT(?:五点六|5\.6)?|震撼|自动剪|初版|效果/u;
+  let impacts = 0;
+  return segments.map((segment) => {
+    const isImpact = impactPattern.test(segment.text) && impacts < 5;
+    if (isImpact) impacts += 1;
+    const phrase = impactPhrase(segment);
+    return {
+      startMs: segment.start_ms,
+      endMs: segment.end_ms,
+      kind: isImpact ? "impact" : "speaker",
+      headline: phrase,
+      body: isImpact ? "重点落下，保留原口播语境" : concise(segment.text, 72),
+      keywords: isImpact ? [phrase] : [],
+      ...(isImpact ? {impactText: phrase} : {}),
+    };
+  });
+};
+
+const runReliableEditingPipeline = async (
+  context: RunContext,
+  update: StageUpdate,
+): Promise<string> => {
+  const tools = createMooncutTools(context, update) as ReliableTool[];
+  const invoke = async (name: string, params: Record<string, unknown> = {}) => {
+    const tool = tools.find((candidate) => candidate.name === name);
+    if (!tool) throw new Error(`Required MoonCut tool is unavailable: ${name}`);
+    await tool.execute(`reliable-${name}`, params, undefined, undefined, {});
+  };
+
+  // This is deliberately procedural: the paid/slow model services remain in
+  // the individual tools, while the indispensable production stages cannot be
+  // skipped merely because a conversational planner stops replying.
+  await invoke("inspect_source");
+  await invoke("transcribe_source");
+  await invoke("schedule_generated_visuals");
+  await invoke("track_speaker");
+  if (!context.subtitles?.segments.length) throw new Error("Hybrid subtitle service returned no timed segments");
+  await invoke("save_edit_spec", {
+    title: concise(context.job.request.title ?? "MoonCut 原生口播", 60),
+    summary: "完整保留口播时长；关键短语以原生 macOS 风格全屏强调并落下。",
+    accent: "#65d9b6",
+    beats: reliableBeats(context.subtitles.segments),
+  });
+  await invoke("render_edit");
+  await invoke("verify_render");
+  return "MoonCut reliable pipeline completed: Hybrid Subtitle, full-duration edit, render verification, and visual quality review passed.";
+};
+
 export const runEditingAgent = async (
+  context: RunContext,
+  update: StageUpdate,
+): Promise<string> => {
+  if (config.agentExecutionMode === "reliable") return await runReliableEditingPipeline(context, update);
+  return await runPiEditingAgent(context, update);
+};
+
+/**
+ * Keep human subtitle feedback intentionally narrower than a new edit. The
+ * source cut, visual beats and tracked speaker are inherited; the Agent can
+ * only return a reviewed list of caption changes before the version is
+ * rendered and quality-checked again.
+ */
+export const runSubtitleRepairAgent = async (
+  context: RunContext,
+  parentSpec: AgentEditSpec,
+  feedback: SubtitleRepairFeedback,
+  update: StageUpdate,
+): Promise<{summary: string; analysis: SubtitleRepairAnalysis}> => {
+  if (!context.probe || !context.subtitles) {
+    throw new Error("Subtitle repair requires the completed version's probe and timed subtitles");
+  }
+  await update("analyzing-subtitle-feedback", 0.16);
+  const analysis = await planSubtitleRepair(context.subtitles, feedback);
+  await update("subtitle-repair-planned", 0.38);
+  const repairedSubtitles = applySubtitleRepair(context.subtitles, analysis.changes);
+  context.subtitles = repairedSubtitles;
+  context.spec = {
+    ...parentSpec,
+    source: {...parentSpec.source, src: context.publicMediaSrc},
+    transcript: repairedSubtitles.transcript,
+    subtitles: repairedSubtitles.segments,
+  };
+  await writeFile(join(context.jobDir, "subtitles.json"), `${JSON.stringify(repairedSubtitles, null, 2)}\n`);
+  await writeFile(join(context.jobDir, "edit-spec.json"), `${JSON.stringify(context.spec, null, 2)}\n`);
+  await writeFile(join(context.jobDir, "subtitle-repair.json"), `${JSON.stringify({feedback, analysis}, null, 2)}\n`);
+  await update("applying-subtitle-repair", 0.58);
+
+  const tools = createMooncutTools(context, update) as ReliableTool[];
+  const invoke = async (name: string) => {
+    const tool = tools.find((candidate) => candidate.name === name);
+    if (!tool) throw new Error(`Required MoonCut repair tool is unavailable: ${name}`);
+    await tool.execute(`subtitle-repair-${name}`, {}, undefined, undefined, {});
+  };
+  await invoke("render_edit");
+  await invoke("verify_render");
+  return {
+    summary: `字幕修复版本已完成：${analysis.summary}`,
+    analysis,
+  };
+};
+
+const runPiEditingAgent = async (
   context: RunContext,
   update: StageUpdate,
 ): Promise<string> => {
@@ -135,6 +258,7 @@ export const runEditingAgent = async (
     `用户要求：${context.job.request.prompt ?? "按默认 MoonCut 原生 macOS 口播规范剪辑"}`,
     context.job.request.title ? `建议标题：${context.job.request.title}` : "",
     "生成剪辑 Spec 时必须覆盖完整时长，使用字幕段时间，不要只给建议。",
+    "转写后必须调用 schedule_generated_visuals。默认不生图；只有工具实际返回 generatedVisualId 时，才可安排 illustration 分镜，且必须明确这是 AI 示例而非事实证据。",
     "如果口播涉及产品发布、官方声明或网页证据，先读取并使用 x-post-evidence / browser-evidence Skill，再保存带 evidenceId 的分镜。",
   ].filter(Boolean).join("\n");
 
@@ -143,10 +267,19 @@ export const runEditingAgent = async (
     for (let attempt = 0; attempt < 3 && !context.verificationPath; attempt += 1) {
       const latestQualityReview = context.qualityReviews.at(-1);
       if (latestQualityReview && !latestQualityReview.ok) {
-        const feedback = latestQualityReview.findings
-          .filter((finding) => finding.severity === "error")
+        const hardFindings = latestQualityReview.findings.filter((finding) => finding.severity === "error");
+        const protocolOnlyFailure = isVisionGateProtocolOnlyFailure(latestQualityReview.findings);
+        const feedback = hardFindings
           .map((finding) => `${finding.id}: ${finding.message}`)
           .join("\n");
+        if (protocolOnlyFailure) {
+          await session.prompt([
+            "上一轮只是视觉质检服务协议失败，成片本身没有被判定为不合格。",
+            "不要修改 Spec，不要重新渲染。立即只调用 verify_render 重试质检：",
+            feedback,
+          ].join("\n"));
+          continue;
+        }
         await session.prompt([
           "上一版成片没有通过视觉质检。不要只重复 verify_render。",
           "根据以下失败证据重新调用 save_edit_spec 修正分镜，随后 render_edit 和 verify_render：",
@@ -158,6 +291,7 @@ export const runEditingAgent = async (
       const missing = [
         !context.probe && "inspect_source",
         !context.subtitles && "transcribe_source",
+        context.imageSchedule === undefined && "schedule_generated_visuals",
         context.faceTrack === undefined && "track_speaker",
         !context.spec && "save_edit_spec",
         !context.renderPath && "render_edit",

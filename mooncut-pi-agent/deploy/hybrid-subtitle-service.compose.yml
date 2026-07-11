@@ -1,0 +1,25 @@
+services:
+  subtitles:
+    build: /opt/mooncut/hybrid-subtitle-service
+    container_name: mooncut-hybrid-subtitles
+    network_mode: host
+    env_file:
+      - /etc/mooncut/subtitle.env
+    environment:
+      DATA_DIR: /data
+      HTTP_PROXY: http://127.0.0.1:7897
+      HTTPS_PROXY: http://127.0.0.1:7897
+      NO_PROXY: 127.0.0.1,localhost
+    volumes:
+      - /opt/mooncut/hybrid-subtitle-service/data:/data
+      - /opt/mooncut/models/faster-whisper-small:/models/faster-whisper-small:ro
+    command:
+      - uvicorn
+      - hybrid_subtitle.app:app
+      - --host
+      - 127.0.0.1
+      - --port
+      - "8765"
+      - --workers
+      - "1"
+    restart: unless-stopped

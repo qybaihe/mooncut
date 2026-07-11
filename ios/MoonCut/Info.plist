@@ -22,12 +22,18 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MoonCutAPIBaseURL</key>
+	<string>$(MOONCUT_API_BASE_URL)</string>
+	<key>MoonCutTrustedHost</key>
+	<string>$(MOONCUT_TRUSTED_HOST)</string>
 	<key>NSCameraUsageDescription</key>
-	<string>MoonCut 使用前置相机录制你的口播视频。</string>
+	<string>MoonCut 使用前置相机录制你的口播视频，并用于镜头朝向估算。</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>MoonCut 使用麦克风收录口播声音。</string>
+	<string>MoonCut 使用麦克风收录口播声音，并计算真实音量与停顿指标。</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>MoonCut 使用语音识别生成真实转写，供口播陪练分析。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>MoonCut 需要读取你选择的视频以进行本地剪辑演示。</string>
+	<string>MoonCut 需要读取你选择的视频以上传到剪辑服务。</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
@@ -41,6 +47,27 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>127.0.0.1</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<false/>
+			</dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>
-

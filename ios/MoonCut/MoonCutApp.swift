@@ -2,13 +2,16 @@ import SwiftUI
 
 @main
 struct MoonCutApp: App {
-    @AppStorage("mooncut:theme") private var theme = ThemeMode.system.rawValue
+    @State private var env = AppEnvironment()
 
     var body: some Scene {
         WindowGroup {
             RootView()
-                .preferredColorScheme(ThemeMode(rawValue: theme)?.colorScheme)
+                .environment(env)
+                .moonTheme()
+                .task {
+                    await env.bootstrap()
+                }
         }
     }
 }
-

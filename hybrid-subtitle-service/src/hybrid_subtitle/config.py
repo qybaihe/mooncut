@@ -30,6 +30,10 @@ class Settings:
     deepgram_base_url: str
     deepgram_model: str
     deepgram_mip_opt_out: bool
+    timestamp_provider: str
+    faster_whisper_model: str
+    faster_whisper_device: str
+    faster_whisper_compute_type: str
     cors_origins: tuple[str, ...]
 
     @classmethod
@@ -63,6 +67,10 @@ class Settings:
             ),
             deepgram_model=os.getenv("DEEPGRAM_MODEL", "nova-3"),
             deepgram_mip_opt_out=_env_bool("DEEPGRAM_MIP_OPT_OUT"),
+            timestamp_provider=os.getenv("TIMESTAMP_PROVIDER", "auto").strip().lower(),
+            faster_whisper_model=os.getenv("FASTER_WHISPER_MODEL", "").strip(),
+            faster_whisper_device=os.getenv("FASTER_WHISPER_DEVICE", "cpu").strip(),
+            faster_whisper_compute_type=os.getenv("FASTER_WHISPER_COMPUTE_TYPE", "int8").strip(),
             cors_origins=origins,
         )
 
@@ -72,4 +80,16 @@ class Settings:
 
     @property
     def providers_ready(self) -> bool:
-        return bool(self.mimo_api_key and self.deepgram_api_key)
+        if not self.mimo_api_key:
+            return False
+        if self.resolved_timestamp_provider == "deepgram":
+            return bool(self.deepgram_api_key)
+        return bool(self.faster_whisper_model and Path(self.faster_whisper_model).exists())
+
+    @property
+    def resolved_timestamp_provider(self) -> str:
+        if self.timestamp_provider == "auto":
+            return "deepgram" if self.deepgram_api_key else "faster-whisper"
+        if self.timestamp_provider in {"deepgram", "faster-whisper"}:
+            return self.timestamp_provider
+        return "deepgram"

@@ -1,0 +1,20 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "isolated": true,
+    "launchOptions": {
+      "executablePath": "/opt/mooncut/tools/chrome",
+      "headless": true,
+      "chromiumSandbox": false,
+      "proxy": {
+        "server": "socks5://127.0.0.1:7897"
+      }
+    },
+    "contextOptions": {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    }
+  }
+}
