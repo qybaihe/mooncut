@@ -10,6 +10,13 @@
 </p>
 
 <p align="center">
+  <a href="https://mooncut.me"><strong>공식 웹사이트 · mooncut.me ↗</strong></a> ·
+  <a href="https://mooncut.me">온라인에서 제작 시작</a> ·
+  <a href="./mooncut-studio/README.md">데스크톱 Studio 살펴보기</a> ·
+  <a href="./LICENSE">Apache-2.0</a>
+</p>
+
+<p align="center">
   <a href="./README.md">简体中文</a> ·
   <a href="./README.en.md">English</a> ·
   <a href="./README.ja.md">日本語</a> ·

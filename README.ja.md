@@ -10,6 +10,13 @@
 </p>
 
 <p align="center">
+  <a href="https://mooncut.me"><strong>公式サイト · mooncut.me ↗</strong></a> ·
+  <a href="https://mooncut.me">オンラインで制作を始める</a> ·
+  <a href="./mooncut-studio/README.md">デスクトップ Studio を見る</a> ·
+  <a href="./LICENSE">Apache-2.0</a>
+</p>
+
+<p align="center">
   <a href="./README.md">简体中文</a> ·
   <a href="./README.en.md">English</a> ·
   <a href="./README.ja.md">日本語</a> ·

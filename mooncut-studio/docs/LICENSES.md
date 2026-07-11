@@ -2,7 +2,7 @@
 
 | Component | License notes | Action |
 |-----------|---------------|--------|
-| MoonCut Studio source | UNLICENSED / proprietary unless stated | Internal |
+| MoonCut Studio source | Apache-2.0 — see [`../../LICENSE`](../../LICENSE) | Retain the license and copyright notices; no MoonCut trademark grant |
 | Electron | MIT | Ship notices |
 | Chromium (Electron) | BSD + third-party | Ship NOTICE |
 | Vue 3 | MIT | OK |
@@ -13,4 +13,4 @@
 | Faster Whisper / models | MIT / model cards | User-downloaded models |
 | MediaPipe | Apache-2.0 | If bundled with teleprompter coach |
 
-This file is a living inventory. Legal sign-off is required before public distribution.
+This file is a living inventory. The root Apache-2.0 license applies to MoonCut-authored source, but does not replace third-party license, model, media, trademark or distribution checks. Legal sign-off is still required before public distribution.

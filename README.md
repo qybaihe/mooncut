@@ -10,6 +10,17 @@
 </p>
 
 <p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-3b82f6.svg" alt="License: Apache-2.0" /></a>
+</p>
+
+<p align="center">
+  <a href="https://mooncut.me"><strong>访问官网 · mooncut.me ↗</strong></a> ·
+  <a href="https://mooncut.me">在线开始创作</a> ·
+  <a href="./mooncut-studio/README.md">了解桌面 Studio</a> ·
+  <a href="./docs/DEVELOPER_GUIDE.md">开发者指南</a>
+</p>
+
+<p align="center">
   <a href="./README.md">简体中文</a> ·
   <a href="./README.en.md">English</a> ·
   <a href="./README.ja.md">日本語</a> ·
@@ -18,10 +29,22 @@
 </p>
 
 <p align="center">
+  <a href="https://mooncut.me">
+    <img src="./docs/readme-assets/mooncut-me-home-hero.png" width="1200" alt="MoonCut 官网 mooncut.me 首屏：深色太空蓝视觉、从一个想法到一条能发的口播，以及开始创作入口" />
+  </a>
+</p>
+
+<p align="center">
+  <sub>官网首屏快照 · <a href="https://mooncut.me">mooncut.me</a> · 点击图片即可进入在线创作入口</sub>
+</p>
+
+<p align="center">
   <img src="./ios/screenshots/memphis-home-iphone.png" width="31%" alt="MoonCut 创作首页 · Memphis" />
   <img src="./ios/screenshots/memphis-coach-iphone.png" width="31%" alt="MoonCut 口播陪练 · Memphis" />
   <img src="./ios/screenshots/memphis-jobs-iphone.png" width="31%" alt="MoonCut 任务队列 · Memphis" />
 </p>
+
+> **在线体验**：先到 [mooncut.me](https://mooncut.me) 了解产品、试写脚本或开始创作；这个仓库保留 Web、iOS、桌面 Studio 与本地制作链路的实现细节，方便将每一步做得可控、可复现、可验证。
 
 > **一句话**：MoonCut 不是把视频丢进“黑盒”里等结果，而是将口播创作拆成可控的表达链路——先把话说清楚，再把镜头录好，最后用真实字幕、语义分镜和质检把它做成成片。
 
@@ -195,8 +218,20 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | [`hybrid-subtitle-service`](./hybrid-subtitle-service) | 可独立部署的异步混合字幕 API。 |
 | [`face-tracker`](./face-tracker) | 口播主讲人跟踪、稳定化与画幅重构 CLI。 |
 | [`remotion-studio`](./remotion-studio) | 数据驱动的 Remotion 视频构图、字幕、素材与渲染能力。 |
-| [`docs`](./docs) | 口播人物视觉跟踪的产品约束。 |
+| [`docs`](./docs) | [开发者指南](./docs/DEVELOPER_GUIDE.md)、口播人物视觉跟踪与工程约束。 |
 | [`information-bases`](./information-bases) | 围绕设备接入、背景音乐等产品决策的研究资料。 |
+
+## 开发者指南
+
+想运行、修改或部署 MoonCut，请从 **[开发者指南](./docs/DEVELOPER_GUIDE.md)** 开始。它按模块列出了最小开发环境、Web / Studio / Agent 联调路径、提交前验证命令、Cloudflare Secrets、私有 CA、iOS 重签与桌面签名公证边界。
+
+| 你的目标 | 入口 |
+| --- | --- |
+| 修改官网或浏览器工作台 | [Web 本地开发](./docs/DEVELOPER_GUIDE.md#local-workflows) |
+| 修改本机专业工作台 | [Studio 开发](./docs/DEVELOPER_GUIDE.md#local-workflows) |
+| 接入真实剪辑、字幕与渲染 | [Web + 本地 Agent 联调](./docs/DEVELOPER_GUIDE.md#local-workflows) |
+| 配置 HTTPS、API Key、iOS / 桌面签名 | [Secrets、TLS 与签名证书](./docs/DEVELOPER_GUIDE.md#signing-certificates) |
+| 判断可否 fork、商用或公开分发 | [许可证与第三方组件](./docs/DEVELOPER_GUIDE.md#licensing) |
 
 ## MoonCut Studio（桌面端入口）
 
@@ -230,6 +265,12 @@ MoonCut 的仓库同时包含**可连接真实服务的制作链路**与**便于
 - 真实剪辑模式下，素材先进入配置的本地 Agent；音频可能发送给配置的 MiMo 与 Deepgram 字幕服务，联系表可能发送给配置的视觉模型网关。接入正式环境前，应向用户说明数据流、保留期限和删除方式。
 - 默认 Agent Mail 通知采用“准备 → 用户确认 → 发送”两步，避免未经确认主动发信（Studio 基线不含邮件发送）。
 - 需要无人值守投递时，可配置 `MOONCUT_MAIL_TRANSPORT=webhook`、服务端 URL、Bearer Token、发件地址与公开 Agent URL；仅应接入明确允许预授权自动发送的事务邮件服务。
+
+## 许可证
+
+MoonCut 源码采用 [Apache License 2.0](./LICENSE) 发布。你可以使用、修改与分发代码，但须保留许可证与必要的版权/归属声明；提交的修改应有清晰变更说明。Apache-2.0 **不**授予 MoonCut 名称、Logo 或其他商标的使用权。
+
+仓库中的第三方依赖、模型权重和媒体资产仍受各自许可证约束。尤其是 FFmpeg 构建、Remotion、Ultralytics 组件与可再分发媒体，请在公开安装包、商用或 App Store 分发前按 [Studio 许可证清单](./mooncut-studio/docs/LICENSES.md) 核验。
 
 ---
 
