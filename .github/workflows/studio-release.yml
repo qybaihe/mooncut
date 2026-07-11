@@ -145,13 +145,21 @@ jobs:
             find mooncut-studio/apps/desktop -maxdepth 3 -type d | head -40
             exit 1
           fi
+          # Only ship real installers / update metadata — not random runtime bins
+          # (ffmpeg.exe) or unrelated yml that may land under the release tree.
           find "$REL" -type f \( \
-            -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.AppImage' \
-            -o -name '*.deb' -o -name '*.rpm' -o -name '*.yml' -o -name '*.blockmap' \
+            -name 'MoonCut*.dmg' -o -name 'MoonCut*.zip' \
+            -o -name 'MoonCut*.exe' -o -name 'MoonCut*.AppImage' \
+            -o -name 'MoonCut*.deb' -o -name 'MoonCut*.rpm' \
+            -o -name 'latest*.yml' -o -name 'builder-*.yml' \
+            -o -name 'MoonCut*.blockmap' -o -name '*.blockmap' \
           \) -print -exec cp -v {} "$OUT/" \;
           echo "--- collected ---"
           ls -lah "$OUT"
-          count=$(find "$OUT" -type f ! -name '*.yml' ! -name '*.blockmap' | wc -l | tr -d ' ')
+          count=$(find "$OUT" -type f \( \
+            -name '*.dmg' -o -name '*.zip' -o -name '*.exe' \
+            -o -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' \
+          \) | wc -l | tr -d ' ')
           if [[ "$count" -lt 1 ]]; then
             echo "No installable packages found" >&2
             find "$REL" -type f | head -80
