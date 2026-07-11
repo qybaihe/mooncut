@@ -91,15 +91,16 @@ const q = new Quaternion().setFromAxisAngle(
 const rotated = transform.rotate(q);
 ```
 
-### `rotateX(radians)`, `rotateY(radians)`, `rotateZ(radians)`
+### `rotateX(angle)`, `rotateY(angle)`, `rotateZ(angle)`
 
-Rotates around a specific axis.
+Rotates around a specific axis. Numeric values are degrees; use a unit string
+such as `"0.785398rad"` when supplying radians explicitly.
 
 ```tsx
 const rotated = transform
-  .rotateX(Math.PI / 4)
-  .rotateY(Math.PI / 6)
-  .rotateZ(Math.PI / 8);
+  .rotateX(45)
+  .rotateY(30)
+  .rotateZ("0.392699rad");
 ```
 
 ### `scaleBy(sx, sy, sz)`
@@ -250,7 +251,7 @@ import { Scene3D, Element3D, Transform3D } from "remotion-bits";
 // Build transform with chainable API
 const transform = Transform3D.identity()
   .translate(100, 50, -200)
-  .rotateY(Math.PI / 4)
+  .rotateY(45)
   .scaleBy(1.5, 1.5, 1.5);
 
 // Apply to element
@@ -290,7 +291,7 @@ const orbitTransform = (angle: number, radius: number) => {
   
   return Transform3D.identity()
     .translate(x, 0, z)
-    .rotateY(angle + Math.PI / 2);
+    .rotateY(`${angle + Math.PI / 2}rad`);
 };
 
 // Use in animation

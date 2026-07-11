@@ -58,6 +58,17 @@ jobs:
             commands: |
               npm run typecheck
               npm test
+          - name: Remotion bits library and docs
+            directory: remotion-studio/extensions/remotion-community/remotion-bits
+            lockfile: remotion-studio/extensions/remotion-community/remotion-bits/package-lock.json
+            companion_directory: ""
+            companion_lockfile: ""
+            commands: |
+              npm run typecheck
+              npm test
+              npm --prefix docs ci --include=optional --no-audit --no-fund
+              npm --prefix docs test
+              npm --prefix docs run build
           - name: FIFA CLI typecheck and tests
             directory: fifa-highlights-cli
             lockfile: fifa-highlights-cli/package-lock.json
