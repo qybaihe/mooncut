@@ -218,7 +218,7 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | [`hybrid-subtitle-service`](./hybrid-subtitle-service) | 可独立部署的异步混合字幕 API。 |
 | [`face-tracker`](./face-tracker) | 口播主讲人跟踪、稳定化与画幅重构 CLI。 |
 | [`remotion-studio`](./remotion-studio) | 数据驱动的 Remotion 视频构图、字幕、素材与渲染能力。 |
-| [`docs`](./docs) | [开发者指南](./docs/DEVELOPER_GUIDE.md)、口播人物视觉跟踪与工程约束。 |
+| [`docs`](./docs) | [开发者指南](./docs/DEVELOPER_GUIDE.md)、[安全部署基线](./docs/SECURITY_DEPLOYMENT.md)、口播人物视觉跟踪与工程约束。 |
 | [`information-bases`](./information-bases) | 围绕设备接入、背景音乐等产品决策的研究资料。 |
 
 ## 开发者指南
@@ -231,6 +231,7 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | 修改本机专业工作台 | [Studio 开发](./docs/DEVELOPER_GUIDE.md#local-workflows) |
 | 接入真实剪辑、字幕与渲染 | [Web + 本地 Agent 联调](./docs/DEVELOPER_GUIDE.md#local-workflows) |
 | 配置 HTTPS、API Key、iOS / 桌面签名 | [Secrets、TLS 与签名证书](./docs/DEVELOPER_GUIDE.md#signing-certificates) |
+| 部署公开 Agent、Tunnel 或事务邮件 | [安全部署基线](./docs/SECURITY_DEPLOYMENT.md) |
 | 判断可否 fork、商用或公开分发 | [许可证与第三方组件](./docs/DEVELOPER_GUIDE.md#licensing) |
 
 ## MoonCut Studio（桌面端入口）
