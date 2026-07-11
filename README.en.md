@@ -101,6 +101,14 @@ flowchart LR
 - The iOS experience covers the speaking assistant, draft, teleprompted capture, playback, import, and sharing with SwiftUI, AVFoundation, and PhotosUI.
 - “Xiaoyue,” the creative companion, responds to planning, recording, processing, and completion states without getting in the way of expression.
 
+### MoonCut Studio · local professional desktop workstation
+
+- **[MoonCut Studio](./mooncut-studio/README.md)** is the monorepo’s **full desktop Studio shell / OS-like app** (Electron + Vue) for creators who need a closed-loop workflow on their own machine.
+- **No MoonCut login, no cloud identity**: projects, media, jobs, and exports stay under your chosen workspace; API keys use OS secure storage.
+- Four top-level panels: **Project library → Create talk → Edit workbench → Settings** — script, teleprompter recording, live coaching, one-click edit, and diagnostics.
+- Installers can embed pi-agent, Remotion, FFmpeg, caption, and face-track runtimes so end users need not check out the whole monorepo.
+- Shares the same talking-head product model as Web / iOS; Studio is the **offline professional workstation**. Usage and architecture: [mooncut-studio/README.md](./mooncut-studio/README.md).
+
 ## Why MoonCut
 
 | Product choice | What it means for creators |
@@ -118,7 +126,9 @@ flowchart LR
 flowchart TB
   Web[Web creative workspace\nVue 3 · MediaPipe] --> API[MoonCut Pi API]
   iOS[iOS creative experience\nSwiftUI · AVFoundation] --> API
+  Studio[MoonCut Studio desktop\nElectron · Vue · local-first] --> LocalAgent[Embedded / local Agent\nstudio mode · 127.0.0.1]
   API --> Planner[Controlled Pi editing agent]
+  LocalAgent --> Planner
   Planner --> Subtitle[Hybrid Subtitle API\nMiMo + Deepgram]
   Planner --> Face[Face Tracker\nYOLOv8 + OpenCV]
   Planner --> Evidence[Web / X evidence capture]
@@ -130,6 +140,7 @@ flowchart TB
 | Layer | Technology and dependency | Product responsibility |
 | --- | --- | --- |
 | Creative UI | Vue 3, TypeScript, Vite, MediaPipe Tasks Vision | Scripting, recording, live coaching, job state, and local demo. |
+| **Desktop Studio** | Electron, Vue 3, IPC allowlist, bundled runtime | Login-free local project library, create-talk, edit workbench, settings. See [mooncut-studio](./mooncut-studio/README.md). |
 | Native mobile | SwiftUI, AVFoundation, AVKit, PhotosUI | iPhone camera, teleprompter, playback, import, and sharing. |
 | Agent orchestration | Node.js, TypeScript, `@earendil-works/pi` SDK, OpenAI-compatible model gateway | Keeps inspection, transcription, planning, rendering, and verification in a controlled order. |
 | Captions | Python, FastAPI, MiMo, Deepgram, FFmpeg, jieba | Merges textual accuracy with word-level acoustic timing. |
@@ -172,6 +183,7 @@ The agent has eight controlled tools only: inspect, transcribe, track, capture w
 
 | Directory | Product role |
 | --- | --- |
+| [`mooncut-studio`](./mooncut-studio/README.md) | **Desktop Studio shell / local professional workstation** (Electron): project library, create-talk, edit workbench, settings; optional full production runtime bundle. See [Studio README](./mooncut-studio/README.md). |
 | [`mooncut-web`](./mooncut-web) | Browser creative workspace and product landing page. |
 | [`ios`](./ios) | Native iPhone experience and product screenshots. |
 | [`mooncut-pi-agent`](./mooncut-pi-agent) | Editing agent, HTTP interface, job queue, quality gates, and Pi Skills. |
@@ -181,14 +193,33 @@ The agent has eight controlled tools only: inspect, transcribe, track, capture w
 | [`docs`](./docs) | Product constraints for visual speaker tracking. |
 | [`information-bases`](./information-bases) | Product research around device integration, background music, and related decisions. |
 
+## MoonCut Studio (desktop entry)
+
+For a **local closed loop, no login, packable installer** talking-head workstation, start here:
+
+**→ [mooncut-studio/README.md](./mooncut-studio/README.md)** (what Studio is, how to use the panels, dev/pack, privacy and architecture)
+
+| | Studio | Web | iOS |
+| --- | --- | --- | --- |
+| Form | Desktop app | Browser | iPhone app |
+| Login | Not required | Optional | Optional |
+| Default data | Local project folders | Browser / optional remote agent | On-device |
+| Full edit runtime | Can ship inside the installer | Depends on external services | Needs service connection |
+
+```bash
+cd mooncut-studio
+npm install && npm run build && npm run dev
+```
+
 ## Current product state and data boundary
 
 The repository intentionally contains both a **production pipeline that can connect to real services** and a **local demo interface that makes the experience easy to explore**. They should not be conflated:
 
 - The web workspace can demonstrate the creation flow without a service. With the Pi API connected, it uploads assets and exposes actual job progress and artifacts.
 - The iOS app currently presents native interaction and local state-machine behavior. Its smart editing, captions, and final-export preview are demo implementations and are not yet connected to AI or rendering services.
+- **MoonCut Studio** is local-first and login-free by default; it can embed a real Agent runtime. Remote models are used only after the user enables and configures them in Settings; keys never enter project files. See [Studio privacy](./mooncut-studio/docs/PRIVACY.md).
 - In real editing mode, the source first reaches the configured local agent; audio may be sent to the configured MiMo and Deepgram caption providers, and contact sheets may be sent to the configured vision-model gateway. A production deployment should clearly disclose data flow, retention, and deletion controls.
-- Email notifications are a two-step “prepare → user confirms → send” action, so task completion cannot send an email silently.
+- Email notifications are a two-step “prepare → user confirms → send” action, so task completion cannot send an email silently (Studio baseline has no mail sending).
 
 ---
 

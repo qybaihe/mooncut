@@ -102,6 +102,14 @@ flowchart LR
 - iOS 原生体验覆盖口播助手、稿件、提词录制、回放、导入和分享，并使用 SwiftUI、AVFoundation 与 PhotosUI。
 - 创作搭子“小月”会随构思、录制、处理与完成状态变化，也会保留互动的开心值；它服务于创作过程，而不是打断表达。
 
+### 7. MoonCut Studio · 本地专业桌面工作台
+
+- **[MoonCut Studio](./mooncut-studio/README.md)** 是 monorepo 内的**完整桌面 Studio 面板 / 操作系统式 App**（Electron + Vue），面向需要本机闭环制作的创作者与团队。
+- **无需登录、无云端身份**：项目、素材、任务与成片默认落在你选定的工作目录；密钥走系统安全存储。
+- 顶栏四块主面板：**项目库 → 创作口播 → 剪辑台 → 设置**，覆盖写稿、提词录制、实时陪练、一键智能剪辑与诊断。
+- 可打包内嵌 pi-agent、Remotion、FFmpeg、字幕与人脸跟踪运行时，终端用户不必再 checkout 整个仓库。
+- 与 Web / iOS 共用同一条口播产品心智；Studio 是**离线专业工作站**，详细用法与架构见 [mooncut-studio/README.md](./mooncut-studio/README.md)。
+
 ## 为什么是 MoonCut
 
 | MoonCut 的选择 | 带来的体验 |
@@ -119,7 +127,9 @@ flowchart LR
 flowchart TB
   Web[Web 创作工作台\nVue 3 · MediaPipe] --> API[MoonCut Pi API]
   iOS[iOS 创作体验\nSwiftUI · AVFoundation] --> API
+  Studio[MoonCut Studio 桌面工作台\nElectron · Vue · 本地优先] --> LocalAgent[Studio 内嵌 / 本机 Agent\nstudio mode · 127.0.0.1]
   API --> Planner[Pi 受控剪辑智能体]
+  LocalAgent --> Planner
   API --> SQLite[(SQLite 社区发布记录)]
   Planner --> Subtitle[Hybrid Subtitle API\nMiMo + Deepgram]
   Planner --> Face[Face Tracker\nYOLOv8 + OpenCV]
@@ -132,6 +142,7 @@ flowchart TB
 | 层级 | 采用的能力与依赖 | 在产品中的职责 |
 | --- | --- | --- |
 | 创作界面 | Vue 3、TypeScript、Vite、MediaPipe Tasks Vision | 脚本、录制、实时陪练、任务状态和本地演示。 |
+| **桌面 Studio** | Electron、Vue 3、IPC 白名单、内嵌 runtime | 无登录的本机项目库、创作口播、剪辑台与设置面板；详见 [mooncut-studio](./mooncut-studio/README.md)。 |
 | 能力市场与案例 | Node 内置 SQLite、受签名的能力 release、Range 视频流 | 用户为自己的 Pi 安装受控能力；创作案例保留质检通过的视频分享，历史任务默认私有。 |
 | 原生移动端 | SwiftUI、AVFoundation、AVKit、PhotosUI | iPhone 上的相机、提词、回放、导入和分享体验。 |
 | 智能体编排 | Node.js、TypeScript、`@earendil-works/pi` SDK、OpenAI 兼容模型网关 | 让模型按受控顺序完成检查、转写、分镜、渲染与验收。 |
@@ -177,6 +188,7 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 
 | 目录 | 产品角色 |
 | --- | --- |
+| [`mooncut-studio`](./mooncut-studio/README.md) | **桌面 Studio 面板 / 本地专业工作台**（Electron）：项目库、创作口播、剪辑台、设置；可打包完整制作运行时。详见 [Studio README](./mooncut-studio/README.md)。 |
 | [`mooncut-web`](./mooncut-web) | 浏览器端创作工作台与产品落地页。 |
 | [`ios`](./ios) | 原生 iPhone 创作体验与界面截图。 |
 | [`mooncut-pi-agent`](./mooncut-pi-agent) | 剪辑智能体、HTTP 接口、任务队列、质量门禁与 Pi Skills。 |
@@ -186,14 +198,37 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | [`docs`](./docs) | 口播人物视觉跟踪的产品约束。 |
 | [`information-bases`](./information-bases) | 围绕设备接入、背景音乐等产品决策的研究资料。 |
 
+## MoonCut Studio（桌面端入口）
+
+需要**本机闭环、无登录、可打包安装**的口播工作台时，请直接进入：
+
+**→ [mooncut-studio/README.md](./mooncut-studio/README.md)**（Studio 是什么、面板怎么用、开发与打包、隐私与架构）
+
+简要对照：
+
+| | Studio | Web | iOS |
+| --- | --- | --- | --- |
+| 形态 | 桌面 App | 浏览器 | iPhone App |
+| 登录 | 不需要 | 可选 | 可选 |
+| 默认数据 | 本机项目目录 | 浏览器 / 可接云端 Agent | 端侧 |
+| 完整剪辑 runtime | 可内嵌安装包 | 依赖外部服务 | 需接服务 |
+
+开发启动：
+
+```bash
+cd mooncut-studio
+npm install && npm run build && npm run dev
+```
+
 ## 当前状态与数据边界
 
 MoonCut 的仓库同时包含**可连接真实服务的制作链路**与**便于体验产品流程的本地演示界面**，两者应被清楚区分：
 
 - Web 端在未连接服务时可完整演示创作路径；接入 Pi API 后会上传素材并显示真实任务进度与产物。
 - iOS 端当前以原生交互与本地状态机呈现体验，智能剪辑、字幕和导出成片预览仍是演示实现，尚未直连 AI/渲染服务。
+- **MoonCut Studio** 默认本地优先、无登录；可内嵌真实 Agent 运行时。远程模型仅在用户于设置中启用并配置后访问；密钥不进入项目文件。详见 [Studio 隐私说明](./mooncut-studio/docs/PRIVACY.md)。
 - 真实剪辑模式下，素材先进入配置的本地 Agent；音频可能发送给配置的 MiMo 与 Deepgram 字幕服务，联系表可能发送给配置的视觉模型网关。接入正式环境前，应向用户说明数据流、保留期限和删除方式。
-- 默认 Agent Mail 通知采用“准备 → 用户确认 → 发送”两步，避免未经确认主动发信。
+- 默认 Agent Mail 通知采用“准备 → 用户确认 → 发送”两步，避免未经确认主动发信（Studio 基线不含邮件发送）。
 - 需要无人值守投递时，可配置 `MOONCUT_MAIL_TRANSPORT=webhook`、服务端 URL、Bearer Token、发件地址与公开 Agent URL；仅应接入明确允许预授权自动发送的事务邮件服务。
 
 ---

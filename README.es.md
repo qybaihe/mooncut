@@ -97,6 +97,13 @@ flowchart LR
 - La experiencia iOS cubre asistente de expresión, guion, grabación con teleprónter, reproducción, importación y compartir con SwiftUI, AVFoundation y PhotosUI.
 - La compañera creativa “Xiaoyue” responde a los estados de ideación, grabación, procesamiento y finalización sin interrumpir la expresión.
 
+### MoonCut Studio · estación de trabajo de escritorio local
+
+- **[MoonCut Studio](./mooncut-studio/README.md)** es el **shell Studio de escritorio / app tipo sistema** del monorepo (Electron + Vue) para quien necesita un flujo cerrado en su máquina.
+- **Sin login ni identidad en la nube**: proyectos, medios, trabajos y exportaciones quedan en el directorio de trabajo elegido; las claves usan el almacén seguro del SO.
+- Cuatro paneles: **Biblioteca de proyectos → Crear locución → Mesa de edición → Ajustes**.
+- El instalador puede empaquetar pi-agent, Remotion, FFmpeg, subtítulos y seguimiento facial. Uso y arquitectura: [mooncut-studio/README.md](./mooncut-studio/README.md).
+
 ## Por qué MoonCut
 
 | Decisión de producto | Lo que significa para el creador |
@@ -113,7 +120,9 @@ flowchart LR
 flowchart TB
   Web[Espacio creativo Web\nVue 3 · MediaPipe] --> API[MoonCut Pi API]
   iOS[Experiencia creativa iOS\nSwiftUI · AVFoundation] --> API
+  Studio[MoonCut Studio escritorio\nElectron · Vue · local-first] --> LocalAgent[Agent embebido / local\nstudio mode · 127.0.0.1]
   API --> Planner[Agente de edición Pi controlado]
+  LocalAgent --> Planner
   Planner --> Subtitle[Hybrid Subtitle API\nMiMo + Deepgram]
   Planner --> Face[Face Tracker\nYOLOv8 + OpenCV]
   Planner --> Evidence[Captura de evidencia Web / X]
@@ -125,6 +134,7 @@ flowchart TB
 | Capa | Tecnología y dependencia | Responsabilidad de producto |
 | --- | --- | --- |
 | UI creativa | Vue 3, TypeScript, Vite, MediaPipe Tasks Vision | Guion, grabación, coaching en directo, estado de trabajo y demo local. |
+| **Studio de escritorio** | Electron, Vue 3, lista blanca IPC, runtime empaquetado | Biblioteca local sin login, crear locución, mesa de edición y ajustes. Ver [mooncut-studio](./mooncut-studio/README.md). |
 | Móvil nativo | SwiftUI, AVFoundation, AVKit, PhotosUI | Cámara de iPhone, teleprónter, reproducción, importación y compartir. |
 | Orquestación de agente | Node.js, TypeScript, SDK `@earendil-works/pi`, gateway de modelos compatible con OpenAI | Mantiene inspección, transcripción, planificación, renderizado y verificación en un orden controlado. |
 | Subtítulos | Python, FastAPI, MiMo, Deepgram, FFmpeg, jieba | Une precisión textual y temporización acústica por palabra. |
@@ -155,6 +165,7 @@ El agente de edición sólo tiene ocho herramientas controladas: inspeccionar, t
 
 | Directorio | Papel en el producto |
 | --- | --- |
+| [`mooncut-studio`](./mooncut-studio/README.md) | **Shell Studio de escritorio / estación local profesional** (Electron). Ver [Studio README](./mooncut-studio/README.md). |
 | [`mooncut-web`](./mooncut-web) | Espacio creativo en navegador y landing page. |
 | [`ios`](./ios) | Experiencia nativa para iPhone y capturas de producto. |
 | [`mooncut-pi-agent`](./mooncut-pi-agent) | Agente de edición, API HTTP, cola de trabajos, puertas de calidad y Pi Skills. |
@@ -164,14 +175,26 @@ El agente de edición sólo tiene ocho herramientas controladas: inspeccionar, t
 | [`docs`](./docs) | Restricciones de producto para seguimiento visual del hablante. |
 | [`information-bases`](./information-bases) | Investigación de producto sobre integración de dispositivos, música de fondo y decisiones relacionadas. |
 
+## MoonCut Studio (entrada de escritorio)
+
+Para un ciclo cerrado en local, sin login e instalable:
+
+**→ [mooncut-studio/README.md](./mooncut-studio/README.md)**
+
+```bash
+cd mooncut-studio
+npm install && npm run build && npm run dev
+```
+
 ## Estado actual y límite de datos
 
 El repositorio incluye deliberadamente tanto un **pipeline de producción que puede conectarse a servicios reales** como una **interfaz de demostración local para explorar la experiencia**. No deben confundirse:
 
 - El espacio web puede demostrar el flujo creativo sin servicios. Con la Pi API conectada, sube los recursos y muestra progreso real y artefactos.
 - La app iOS presenta hoy interacción nativa y una máquina de estados local. Su edición inteligente, subtítulos y previsualización de exportación final son implementaciones de demo y todavía no están conectadas a servicios de IA o renderizado.
+- **MoonCut Studio** es local-first y sin login por defecto; solo usa modelos remotos tras activarlos en Ajustes. Ver [privacidad de Studio](./mooncut-studio/docs/PRIVACY.md).
 - En edición real, el archivo fuente llega primero al Agent local configurado; el audio puede enviarse a los proveedores MiMo y Deepgram configurados, y las hojas de contacto al gateway de modelo visual configurado. Una implementación de producción debe explicar con claridad el flujo de datos, la retención y los controles de eliminación.
-- Los avisos por correo siguen dos pasos: “preparar → confirmar por el usuario → enviar”. Terminar un trabajo no puede enviar un correo en silencio.
+- Los avisos por correo siguen dos pasos: “preparar → confirmar por el usuario → enviar”. Terminar un trabajo no puede enviar un correo en silencio (la base de Studio no envía correo).
 
 ---
 

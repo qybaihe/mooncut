@@ -97,6 +97,13 @@ flowchart LR
 - iOS は話すアシスタント、台本、テレプロンプター録画、再生、読み込み、共有を SwiftUI、AVFoundation、PhotosUI で提供します。
 - クリエイティブ・コンパニオン「小月」は、考案、録画、処理、完了の状態に合わせて反応します。
 
+### MoonCut Studio · ローカル専門デスクトップ作業台
+
+- **[MoonCut Studio](./mooncut-studio/README.md)** は monorepo 内の **完全なデスクトップ Studio パネル / OS 型アプリ**（Electron + Vue）で、本機で制作を閉じたいクリエイター向けです。
+- **ログイン不要・クラウド身分なし**：プロジェクト、素材、ジョブ、書き出しは選んだ作業ディレクトリに保存。API キーは OS の安全な保存領域へ。
+- トップバーの四パネル：**プロジェクト庫 → 口播作成 → 編集台 → 設定**（台本、テレプロンプター、ライブコーチ、ワンクリック編集、診断）。
+- インストーラに pi-agent、Remotion、FFmpeg、字幕・顔追跡ランタイムを同梱可能。詳細は [mooncut-studio/README.md](./mooncut-studio/README.md)。
+
 ## MoonCut の考え方
 
 | 製品上の選択 | クリエイターにとっての意味 |
@@ -113,7 +120,9 @@ flowchart LR
 flowchart TB
   Web[Web 制作ワークスペース\nVue 3 · MediaPipe] --> API[MoonCut Pi API]
   iOS[iOS 制作体験\nSwiftUI · AVFoundation] --> API
+  Studio[MoonCut Studio デスクトップ\nElectron · Vue · ローカル優先] --> LocalAgent[同梱 / 本機 Agent\nstudio mode · 127.0.0.1]
   API --> Planner[制御された Pi 編集エージェント]
+  LocalAgent --> Planner
   Planner --> Subtitle[Hybrid Subtitle API\nMiMo + Deepgram]
   Planner --> Face[Face Tracker\nYOLOv8 + OpenCV]
   Planner --> Evidence[Web / X 証拠取得]
@@ -125,6 +134,7 @@ flowchart TB
 | レイヤー | 技術・依存関係 | 製品での役割 |
 | --- | --- | --- |
 | クリエイティブ UI | Vue 3、TypeScript、Vite、MediaPipe Tasks Vision | 台本、録画、ライブコーチ、ジョブ状態、ローカルデモ。 |
+| **デスクトップ Studio** | Electron、Vue 3、IPC 許可リスト、同梱 runtime | ログイン不要の本機プロジェクト庫・作成・編集台・設定。詳細 [mooncut-studio](./mooncut-studio/README.md)。 |
 | ネイティブモバイル | SwiftUI、AVFoundation、AVKit、PhotosUI | iPhone のカメラ、テレプロンプター、再生、読み込み、共有。 |
 | エージェント編成 | Node.js、TypeScript、`@earendil-works/pi` SDK、OpenAI 互換モデルゲートウェイ | 確認、文字起こし、計画、レンダリング、検証を制御された順序で実行。 |
 | 字幕 | Python、FastAPI、MiMo、Deepgram、FFmpeg、jieba | テキストの正確さと単語レベルの音響タイミングを統合。 |
@@ -155,6 +165,7 @@ flowchart TB
 
 | ディレクトリ | 製品上の役割 |
 | --- | --- |
+| [`mooncut-studio`](./mooncut-studio/README.md) | **デスクトップ Studio パネル / ローカル専門作業台**（Electron）。詳細は [Studio README](./mooncut-studio/README.md)。 |
 | [`mooncut-web`](./mooncut-web) | ブラウザ制作ワークスペースとランディングページ。 |
 | [`ios`](./ios) | ネイティブ iPhone 体験と製品スクリーンショット。 |
 | [`mooncut-pi-agent`](./mooncut-pi-agent) | 編集エージェント、HTTP API、ジョブキュー、品質ゲート、Pi Skills。 |
@@ -164,14 +175,26 @@ flowchart TB
 | [`docs`](./docs) | 話者追跡に関する製品制約。 |
 | [`information-bases`](./information-bases) | デバイス連携、BGM などの製品調査。 |
 
+## MoonCut Studio（デスクトップ入口）
+
+本機クローズドループ・ログイン不要・インストーラ配布の作業台はここから：
+
+**→ [mooncut-studio/README.md](./mooncut-studio/README.md)**
+
+```bash
+cd mooncut-studio
+npm install && npm run build && npm run dev
+```
+
 ## 現在の状態とデータ境界
 
 このリポジトリには、**実サービスに接続できる制作パイプライン**と、体験を探索しやすい**ローカルデモ画面**の両方が含まれます。
 
 - Web はサービス未接続でも制作フローをデモできます。Pi API 接続時には素材をアップロードし、実際のジョブ進捗と成果物を表示します。
 - iOS は現在、ネイティブな操作とローカル状態機械を提供します。スマート編集、字幕、最終書き出しプレビューはデモ実装であり、AI/レンダリングサービスにはまだ接続されていません。
+- **MoonCut Studio** は既定でローカル優先・ログイン不要。設定で有効化したときのみリモートモデルへ接続します。詳細 [Studio プライバシー](./mooncut-studio/docs/PRIVACY.md)。
 - 実編集では、素材は設定されたローカル Agent に届きます。音声は設定済みの MiMo / Deepgram 字幕プロバイダーへ、コンタクトシートは設定済みの映像モデルゲートウェイへ送信される場合があります。本番運用ではデータフロー、保存期間、削除方法を明示してください。
-- メール通知は「準備 → ユーザー確認 → 送信」の二段階です。完了しただけでメールが自動送信されることはありません。
+- メール通知は「準備 → ユーザー確認 → 送信」の二段階です。完了しただけでメールが自動送信されることはありません（Studio 基線にメール送信はありません）。
 
 ---
 
