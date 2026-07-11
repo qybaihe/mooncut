@@ -1,0 +1,79 @@
+{
+  "input": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides",
+  "output_pdf": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/final/mooncut-ai-agent-deck-v4-fullbleed.pdf",
+  "target_size": "1920x1080",
+  "fit": "cover",
+  "strict": true,
+  "slides": [
+    {
+      "index": 1,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-01-hook.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 2,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-02-user-pain.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 3,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-03-solution.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 4,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-04-48h-system.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 5,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-05-product-flow.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 6,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-06-agent-assembly.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 7,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-07-scenarios.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 8,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-08-validation.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 9,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-09-competition.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    },
+    {
+      "index": 10,
+      "source": "marketing/presentations/2026-07-mooncut-ai-agent-deck-v4/slides/slide-10-business-team.png",
+      "original_size": "1672x941",
+      "aspect_error": 0.000531,
+      "warnings": []
+    }
+  ]
+}
