@@ -250,3 +250,19 @@ export const copySourceIntoRemotion = async (
   await copyFile(inputPath, output);
   return {path: output, src: `agent-jobs/${jobId}/source${extension}`};
 };
+
+/** Publish a non-destructive local derivative alongside the original source. */
+export const copyDerivedVideoIntoRemotion = async (
+  inputPath: string,
+  jobId: string,
+  name: string,
+): Promise<{path: string; src: string}> => {
+  const extension = extname(inputPath).toLowerCase() || ".mp4";
+  const safeName = name.replace(/[^\p{L}\p{N}._-]+/gu, "-").replace(/^[-.]+|[-.]+$/gu, "") || "derived";
+  const publicDir = join(remotionRoot, "public", "agent-jobs", jobId);
+  await mkdir(publicDir, {recursive: true});
+  const filename = `${safeName}${extension}`;
+  const output = join(publicDir, filename);
+  await copyFile(inputPath, output);
+  return {path: output, src: `agent-jobs/${jobId}/${filename}`};
+};

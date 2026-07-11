@@ -14,6 +14,7 @@ import {
 import {agentRoot, agentRuntimeRoot, config, workspaceRoot} from "./config.ts";
 import {applySubtitleRepair, planSubtitleRepair} from "./subtitle-repair.ts";
 import {createMooncutTools, type StageUpdate} from "./tools.ts";
+import {createInstalledCapabilityTools, installedCapabilityGuidance} from "./capabilities.ts";
 import {isVisionGateProtocolOnlyFailure} from "./quality.ts";
 import type {AgentEditSpec, EditBeat, RunContext, SubtitleRepairAnalysis, SubtitleRepairFeedback, SubtitleSegment} from "./types.ts";
 
@@ -84,10 +85,10 @@ const impactPhrase = (segment: SubtitleSegment) => {
   return match?.[0] ?? concise(text, 18);
 };
 
-const reliableBeats = (segments: readonly SubtitleSegment[]): EditBeat[] => {
+const reliableBeats = (segments: readonly SubtitleSegment[], confirmedEvidence: RunContext["evidenceAssets"] = []): EditBeat[] => {
   const impactPattern = /重磅|GPT(?:五点六|5\.6)?|震撼|自动剪|初版|效果/u;
   let impacts = 0;
-  return segments.map((segment) => {
+  const beats: EditBeat[] = segments.map((segment): EditBeat => {
     const isImpact = impactPattern.test(segment.text) && impacts < 5;
     if (isImpact) impacts += 1;
     const phrase = impactPhrase(segment);
@@ -101,6 +102,24 @@ const reliableBeats = (segments: readonly SubtitleSegment[]): EditBeat[] => {
       ...(isImpact ? {impactText: phrase} : {}),
     };
   });
+  // The job pipeline only creates an evidence asset after an explicit user
+  // confirmation. Make it visible and preserve the existing quality invariant
+  // that every captured evidence asset is used by a semantic beat.
+  const evidence = confirmedEvidence[0];
+  if (evidence && beats.length) {
+    const index = Math.floor(beats.length / 2);
+    const original = beats[index];
+    beats[index] = {
+      startMs: original.startMs,
+      endMs: original.endMs,
+      kind: "evidence",
+      headline: evidence.label.slice(0, 30),
+      body: "用户确认采集的真实网页证据",
+      keywords: [],
+      evidenceId: evidence.id,
+    };
+  }
+  return beats;
 };
 
 const runReliableEditingPipeline = async (
@@ -119,6 +138,7 @@ const runReliableEditingPipeline = async (
   // skipped merely because a conversational planner stops replying.
   await invoke("inspect_source");
   await invoke("transcribe_source");
+  await invoke("clean_speech_delivery");
   await invoke("schedule_generated_visuals");
   await invoke("track_speaker");
   if (!context.subtitles?.segments.length) throw new Error("Hybrid subtitle service returned no timed segments");
@@ -126,7 +146,7 @@ const runReliableEditingPipeline = async (
     title: concise(context.job.request.title ?? "MoonCut 原生口播", 60),
     summary: "完整保留口播时长；关键短语以原生 macOS 风格全屏强调并落下。",
     accent: "#65d9b6",
-    beats: reliableBeats(context.subtitles.segments),
+    beats: reliableBeats(context.subtitles.segments, context.evidenceAssets),
   });
   await invoke("render_edit");
   await invoke("verify_render");
@@ -193,7 +213,12 @@ const runPiEditingAgent = async (
   if (!config.gatewayApiKey) throw new Error("MOONCUT_GATEWAY_API_KEY is required");
   const baseSystemPrompt = await readFile(join(agentRoot, "SPEC.md"), "utf8");
   const lessons = await readFile(join(agentRoot, "memory/lessons.json"), "utf8");
-  const systemPrompt = `${baseSystemPrompt}\n\n## Persistent editing lessons\n\nThese reviewed lessons are mandatory for every job:\n\n${lessons}`;
+  const capabilityGuidance = installedCapabilityGuidance(context);
+  const systemPrompt = [
+    baseSystemPrompt,
+    "## Persistent editing lessons\n\nThese reviewed lessons are mandatory for every job:\n\n" + lessons,
+    capabilityGuidance,
+  ].filter(Boolean).join("\n\n");
   const skillPaths = [
     join(agentRoot, ".pi/skills/mooncut-editor/SKILL.md"),
     join(agentRoot, ".pi/skills/x-post-evidence/SKILL.md"),
@@ -225,7 +250,7 @@ const runPiEditingAgent = async (
   authStorage.setRuntimeApiKey("mooncut-local", config.gatewayApiKey);
   const modelRegistry = ModelRegistry.inMemory(authStorage);
   const model = plannerModel();
-  const tools = createMooncutTools(context, update);
+  const tools = [...createMooncutTools(context, update), ...createInstalledCapabilityTools(context)];
   const settingsManager = SettingsManager.inMemory({
     compaction: {enabled: true},
     retry: {enabled: true, maxRetries: 2},
@@ -258,8 +283,12 @@ const runPiEditingAgent = async (
     `用户要求：${context.job.request.prompt ?? "按默认 MoonCut 原生 macOS 口播规范剪辑"}`,
     context.job.request.title ? `建议标题：${context.job.request.title}` : "",
     "生成剪辑 Spec 时必须覆盖完整时长，使用字幕段时间，不要只给建议。",
-    "转写后必须调用 schedule_generated_visuals。默认不生图；只有工具实际返回 generatedVisualId 时，才可安排 illustration 分镜，且必须明确这是 AI 示例而非事实证据。",
+    "转写后必须先调用 clean_speech_delivery；它即使安全跳过也会留下审计记录。之后才能调用 schedule_generated_visuals、track_speaker 和 save_edit_spec，所有后续阶段必须使用清理后的时间轴。",
+    "清理完成后调用 schedule_generated_visuals。默认不生图；只有工具实际返回 generatedVisualId 时，才可安排 illustration 分镜，且必须明确这是 AI 示例而非事实证据。",
     "如果口播涉及产品发布、官方声明或网页证据，先读取并使用 x-post-evidence / browser-evidence Skill，再保存带 evidenceId 的分镜。",
+    context.evidenceAssets.length
+      ? `本任务已有用户确认的证据资产，若它们支持视频中的相关事实，必须在 evidence 分镜中使用：${context.evidenceAssets.map((asset) => `${asset.id} (${asset.label})`).join(", ")}`
+      : "",
   ].filter(Boolean).join("\n");
 
   try {
@@ -291,6 +320,7 @@ const runPiEditingAgent = async (
       const missing = [
         !context.probe && "inspect_source",
         !context.subtitles && "transcribe_source",
+        context.speechCleanup === undefined && "clean_speech_delivery",
         context.imageSchedule === undefined && "schedule_generated_visuals",
         context.faceTrack === undefined && "track_speaker",
         !context.spec && "save_edit_spec",

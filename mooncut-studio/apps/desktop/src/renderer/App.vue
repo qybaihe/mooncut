@@ -32,7 +32,9 @@ const agentPill = computed(() => {
 });
 
 /** Full-bleed pages (Cherry-like content shell without max-width padding). */
-const fullBleed = computed(() => page.value === "create" || page.value === "workbench");
+const fullBleed = computed(
+  () => page.value === "create" || page.value === "workbench" || page.value === "onboarding",
+);
 
 async function refreshAgent() {
   try {

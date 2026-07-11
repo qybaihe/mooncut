@@ -31,7 +31,7 @@ const researchDirectory = async (context: RunContext, category: string) => {
   return output;
 };
 
-const publishEvidence = async (
+export const publishEvidence = async (
   context: RunContext,
   sourcePath: string,
   evidencePath: string,

@@ -12,11 +12,11 @@
     "typecheck": "tsc -p tsconfig.node.json --noEmit && vue-tsc -p tsconfig.web.json --noEmit",
     "test": "npm run build && node --test test/*.test.js",
     "prepare:runtime": "node ../../scripts/prepare-runtime-bundle.mjs",
-    "pack:mac": "npm run prepare:runtime && npm run build && electron-builder --mac",
-    "pack:win": "npm run prepare:runtime && npm run build && electron-builder --win",
+    "pack:mac": "npm run prepare:runtime && npm run build && electron-builder --mac --publish never",
+    "pack:win": "npm run prepare:runtime && npm run build && electron-builder --win --publish never",
     "start": "electron .",
-    "pack:linux": "npm run prepare:runtime && npm run build && electron-builder --linux",
-    "pack:ci": "MOONCUT_RUNTIME_PROFILE=minimal npm run prepare:runtime && npm run build && electron-builder --publish never",
+    "pack:linux": "npm run prepare:runtime && npm run build && electron-builder --linux --publish never",
+    "pack:ci": "npm run prepare:runtime && npm run build && electron-builder --publish never",
     "dist": "npm run pack:ci"
   },
   "dependencies": {

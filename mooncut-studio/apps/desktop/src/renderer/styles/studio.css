@@ -2413,3 +2413,418 @@ button.linkish,
   color: var(--memphis-ink);
   box-shadow: 2px 2px 0 var(--memphis-ink);
 }
+
+/* ==========================================================================
+   Onboarding — iOS / Cherry first-run tour
+   ========================================================================== */
+.onboard-shell {
+  min-height: calc(100vh - 88px);
+  display: grid;
+  place-items: center;
+  padding: 12px 8px 28px;
+}
+
+.onboard-card {
+  width: min(920px, 100%);
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--bg-elevated, var(--bg-primary));
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-large);
+}
+
+.onboard-progress {
+  height: 3px;
+  background: var(--bg-tertiary);
+}
+
+.onboard-progress > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-blue, var(--accent)));
+  transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 0 2px 2px 0;
+}
+
+.onboard-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  min-height: 480px;
+}
+
+.onboard-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px 24px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, var(--accent-soft), transparent 70%),
+    var(--bg-secondary);
+  border-right: 1px solid var(--border-default);
+}
+
+.onboard-hero {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 18px;
+  object-fit: cover;
+  aspect-ratio: 16 / 10;
+  box-shadow: var(--shadow-medium);
+  border: 1px solid var(--border-default);
+  background: var(--bg-primary);
+}
+
+.onboard-hero--steps {
+  max-width: 300px;
+  aspect-ratio: 1;
+}
+
+.onboard-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.onboard-pill-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+}
+
+.onboard-illus-panel {
+  width: min(340px, 100%);
+  padding: 28px 22px;
+  border-radius: 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.onboard-illus-panel h3 {
+  margin: 12px 0 6px;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.onboard-illus-panel p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.onboard-illus-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.onboard-illus-icon.accent {
+  background: var(--signal-soft);
+  color: var(--signal);
+  border-color: color-mix(in srgb, var(--signal) 25%, transparent);
+}
+
+.onboard-checklist {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  text-align: left;
+  display: grid;
+  gap: 8px;
+}
+
+.onboard-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.onboard-checklist .ui-icon {
+  color: var(--signal);
+}
+
+.onboard-status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.onboard-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  color: var(--text-tertiary);
+}
+
+.onboard-chip.ready {
+  background: var(--signal-soft);
+  color: var(--signal);
+  border-color: transparent;
+}
+
+.onboard-content {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 26px 20px;
+  min-height: 0;
+}
+
+.onboard-kicker {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.onboard-title {
+  margin: 0 0 10px;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  white-space: pre-line;
+  color: var(--text-primary);
+}
+
+.onboard-desc {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.onboard-flow-cards {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.onboard-flow-card {
+  display: grid;
+  grid-template-columns: 24px 36px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-secondary);
+}
+
+.onboard-flow-index {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  margin-top: 2px;
+}
+
+.onboard-flow-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--accent);
+}
+
+.onboard-flow-card strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  margin-bottom: 2px;
+}
+
+.onboard-flow-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.onboard-flow-card small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.onboard-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.onboard-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.onboard-field-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.onboard-field-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboard-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-secondary);
+  cursor: pointer;
+}
+
+.onboard-toggle strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.onboard-toggle small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.onboard-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  accent-color: var(--accent);
+}
+
+.onboard-footer {
+  margin-top: auto;
+  padding-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.onboard-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.onboard-dot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  min-height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  box-shadow: none;
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.onboard-dot.active {
+  width: 20px;
+  background: var(--accent);
+}
+
+.onboard-dot.done {
+  background: color-mix(in srgb, var(--accent) 55%, var(--bg-tertiary));
+}
+
+.onboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onboard-actions .primary {
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+[data-theme="memphis"] .onboard-card {
+  border: 2px solid var(--memphis-line);
+  box-shadow: 6px 6px 0 var(--memphis-cyan);
+}
+
+[data-theme="memphis"] .onboard-visual {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 230, 0, 0.25), transparent 45%),
+    var(--memphis-cream);
+}
+
+[data-theme="memphis"] .onboard-flow-card,
+[data-theme="memphis"] .onboard-toggle,
+[data-theme="memphis"] .onboard-illus-panel {
+  border: 2px solid var(--memphis-line);
+  box-shadow: 3px 3px 0 var(--memphis-pink);
+}
+
+@media (max-width: 820px) {
+  .onboard-body {
+    grid-template-columns: 1fr;
+  }
+  .onboard-visual {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-default);
+    min-height: 220px;
+    padding: 20px 16px;
+  }
+  .onboard-hero {
+    max-width: 280px;
+  }
+  .onboard-title {
+    font-size: 1.3rem;
+  }
+}

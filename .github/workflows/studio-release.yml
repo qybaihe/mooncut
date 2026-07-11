@@ -1,11 +1,6 @@
 # MoonCut Studio — multi-platform desktop release
-# Triggers:
-#   - tag: studio-v*  (e.g. studio-v0.1.0)
-#   - workflow_dispatch (manual)
-#
-# Artifacts: macOS arm64 (dmg/zip), Windows x64 (nsis), Linux x64 (AppImage)
-# Runtime profile defaults to "minimal" on CI (agent + ffmpeg) so the job finishes
-# without multi-GB remotion/face-tracker trees. Override with input full=true.
+# Triggers: studio-v* tags or workflow_dispatch
+# Artifacts: macOS arm64 dmg/zip, Windows x64 nsis, Linux x64 AppImage
 
 name: Studio Release
 
@@ -16,11 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag to create/publish (e.g. studio-v0.1.1). Leave empty to use run id."
+        description: "Release tag (e.g. studio-v0.1.0). Empty = studio-nightly-<run>"
         required: false
         default: ""
       runtime_profile:
-        description: "Runtime bundle profile: minimal | full"
+        description: "minimal (CI) or full"
         required: false
         default: "minimal"
 
@@ -33,12 +28,13 @@ permissions:
 
 env:
   MOONCUT_RUNTIME_PROFILE: ${{ github.event.inputs.runtime_profile || 'minimal' }}
+  CSC_IDENTITY_AUTO_DISCOVERY: "false"
   ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
   ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
 
 jobs:
   build:
-    name: Build ${{ matrix.os }}
+    name: Build ${{ matrix.artifact }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -74,38 +70,40 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y rpm fakeroot
 
-      - name: Install monorepo workspaces
+      - name: Install Studio workspaces
         working-directory: mooncut-studio
         run: npm ci || npm install
 
-      - name: Install & prebuild pi-agent
+      - name: Install pi-agent + prebuild dist/cli.mjs
         working-directory: mooncut-pi-agent
         run: |
           npm ci || npm install
           npm run build:studio
+          test -f dist/cli.mjs
 
-      - name: Prepare runtime + build + package
+      - name: Prepare runtime (profile=${{ env.MOONCUT_RUNTIME_PROFILE }})
         working-directory: mooncut-studio
         shell: bash
         run: |
           set -euo pipefail
           export MOONCUT_RUNTIME_PROFILE="${MOONCUT_RUNTIME_PROFILE:-minimal}"
-          echo "MOONCUT_RUNTIME_PROFILE=$MOONCUT_RUNTIME_PROFILE"
           npm run prepare:runtime
-          npm run build -w @mooncut/studio-desktop
+          test -f apps/desktop/resources/mooncut-runtime/mooncut-pi-agent/dist/cli.mjs
+
+      - name: Build desktop app
+        working-directory: mooncut-studio
+        run: npm run build -w @mooncut/studio-desktop
+
+      - name: Package with electron-builder
+        working-directory: mooncut-studio/apps/desktop
+        shell: bash
+        run: |
+          set -euo pipefail
           case "${{ matrix.platform }}" in
-            mac)
-              npx --yes electron-builder --mac --publish never -c.mac.identity=null
-              ;;
-            win)
-              npx --yes electron-builder --win --publish never
-              ;;
-            linux)
-              npx --yes electron-builder --linux --publish never
-              ;;
+            mac)   npx electron-builder --mac --publish never -c.mac.identity=null ;;
+            win)   npx electron-builder --win --publish never ;;
+            linux) npx electron-builder --linux --publish never ;;
           esac
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
       - name: Collect artifacts
         shell: bash
@@ -113,18 +111,22 @@ jobs:
           set -euo pipefail
           OUT="release-out/${{ matrix.artifact }}"
           mkdir -p "$OUT"
-          # electron-builder writes under apps/desktop/release
-          if [[ -d mooncut-studio/apps/desktop/release ]]; then
-            find mooncut-studio/apps/desktop/release -maxdepth 2 -type f \
-              \( -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.AppImage' -o -name '*.yml' -o -name '*.blockmap' -o -name '*.deb' -o -name '*.rpm' \) \
-              -exec cp -v {} "$OUT/" \;
+          REL="mooncut-studio/apps/desktop/release"
+          if [[ ! -d "$REL" ]]; then
+            echo "Missing release dir $REL" >&2
+            find mooncut-studio/apps/desktop -maxdepth 3 -type d | head -40
+            exit 1
           fi
-          ls -lah "$OUT" || true
-          # Fail if empty package set
-          count=$(find "$OUT" -type f | wc -l | tr -d ' ')
+          find "$REL" -type f \( \
+            -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.AppImage' \
+            -o -name '*.deb' -o -name '*.rpm' -o -name '*.yml' -o -name '*.blockmap' \
+          \) -print -exec cp -v {} "$OUT/" \;
+          echo "--- collected ---"
+          ls -lah "$OUT"
+          count=$(find "$OUT" -type f ! -name '*.yml' ! -name '*.blockmap' | wc -l | tr -d ' ')
           if [[ "$count" -lt 1 ]]; then
-            echo "No packaged artifacts found" >&2
-            find mooncut-studio/apps/desktop/release -maxdepth 3 -type f | head -50 || true
+            echo "No installable packages found" >&2
+            find "$REL" -type f | head -80
             exit 1
           fi
 
@@ -140,7 +142,6 @@ jobs:
     name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/studio-v') || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -150,7 +151,6 @@ jobs:
         with:
           path: release-assets
           pattern: mooncut-studio-*
-          merge-multiple: false
 
       - name: Flatten assets
         shell: bash
@@ -161,6 +161,7 @@ jobs:
             cp -v "$f" "dist-release/$(basename "$f")"
           done
           ls -lah dist-release
+          test "$(find dist-release -type f | wc -l | tr -d ' ')" -ge 1
 
       - name: Resolve tag name
         id: tag
@@ -171,10 +172,10 @@ jobs:
           elif [[ -n "${{ github.event.inputs.tag }}" ]]; then
             echo "name=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
           else
-            echo "name=studio-nightly-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+            echo "name=studio-v0.1.0-nightly.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create / update GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.name }}
@@ -186,20 +187,17 @@ jobs:
           body: |
             ## MoonCut Studio desktop builds
 
-            Multi-platform packages produced by GitHub Actions.
-
             | Platform | Notes |
             |----------|--------|
-            | macOS arm64 | `.dmg` / `.zip` (unsigned unless secrets configured) |
+            | macOS arm64 | `.dmg` / `.zip` (unsigned) |
             | Windows x64 | NSIS installer |
             | Linux x64 | AppImage |
 
-            **Runtime profile:** `${{ env.MOONCUT_RUNTIME_PROFILE }}`  
-            (`minimal` = pi-agent + ffmpeg; use `full` for remotion/face-tracker/subtitle when building locally.)
+            Runtime profile: **`${{ env.MOONCUT_RUNTIME_PROFILE }}`** (minimal = agent + ffmpeg).
 
-            ### Install tips
-            - **macOS unsigned:** right-click → Open, or `xattr -cr "/Applications/MoonCut Studio.app"`
-            - **Windows:** SmartScreen may warn on unsigned builds — “More info” → Run anyway
-            - **Linux:** `chmod +x *.AppImage && ./MoonCut*.AppImage`
+            ### Install
+            - **macOS unsigned:** right-click Open, or `xattr -cr "/Applications/MoonCut Studio.app"`
+            - **Windows:** SmartScreen → More info → Run anyway
+            - **Linux:** `chmod +x MoonCut*.AppImage && ./MoonCut*.AppImage`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

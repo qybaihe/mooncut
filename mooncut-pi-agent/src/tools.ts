@@ -3,9 +3,10 @@ import {join} from "node:path";
 import {Type} from "typebox";
 import {defineTool} from "@earendil-works/pi-coding-agent";
 import {config, remotionRoot} from "./config.ts";
-import {inspectVideo, makeContactSheet, probeVideo, trackFace, transcribeVideo} from "./media.ts";
+import {copyDerivedVideoIntoRemotion, inspectVideo, makeContactSheet, probeVideo, trackFace, transcribeVideo} from "./media.ts";
 import {runProcess} from "./process.ts";
 import {captureWebPage, captureXPost} from "./research.ts";
+import {detectAudioSilences, planSpeechCleanup, renderSpeechCleanup, retimeSubtitlesAfterCleanup} from "./speech-cleanup.ts";
 import {scheduleGeneratedVisuals} from "./visuals.ts";
 import {isVisionGateProtocolOnlyFailure, reviewRenderedVideo} from "./quality.ts";
 import {DEFAULT_CAMERA_POLICY, expectedSpeakerLayout, shortSpeakerLayoutRuns} from "./camera-policy.ts";
@@ -25,6 +26,14 @@ const writeJson = async (path: string, value: unknown) => {
 const colors = new Set(["#65d9b6", "#ffd166", "#ff7951", "#8fb7ff", "#d9ff63"]);
 
 const normalizeAccent = (accent: string) => colors.has(accent.toLowerCase()) ? accent.toLowerCase() : "#65d9b6";
+
+const speechCleanupPolicy = () => ({
+  enabled: config.speechCleanupEnabled,
+  minSilenceMs: config.speechCleanupMinSilenceMs,
+  retainedSilenceMs: config.speechCleanupRetainedSilenceMs,
+  fillerPaddingMs: config.speechCleanupFillerPaddingMs,
+  wordGuardMs: config.speechCleanupWordGuardMs,
+});
 
 export const normalizeBeats = (
   beats: Array<{
@@ -175,6 +184,65 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
     },
   });
 
+  const cleanSpeechDelivery = defineTool({
+    name: "clean_speech_delivery",
+    label: "Tighten pauses and filler words",
+    description: "Build a local non-destructive EDL from word timings and acoustic silence, remove only isolated fillers and excess dead air, then retime subtitles to the derived media.",
+    parameters: Type.Object({}),
+    execute: async () => {
+      if (!context.probe || !context.subtitles) throw new Error("inspect_source and transcribe_source must run before clean_speech_delivery");
+      await update("cleaning-speech", 0.35);
+      const policy = speechCleanupPolicy();
+      const audioSilences = context.probe.hasAudio
+        ? await detectAudioSilences(context.publicMediaPath, policy.minSilenceMs).catch(() => [])
+        : [];
+      let manifest = planSpeechCleanup({
+        subtitles: context.subtitles,
+        durationMs: context.probe.durationMs,
+        policy,
+        audioSilences,
+      });
+      const manifestPath = join(context.jobDir, "speech-cleanup.json");
+      if (manifest.status === "applied") {
+        const sourceSubtitles = context.subtitles;
+        const cleanedPath = join(context.jobDir, "speech-clean.mp4");
+        await renderSpeechCleanup({
+          inputPath: context.publicMediaPath,
+          outputPath: cleanedPath,
+          manifest,
+          hasAudio: context.probe.hasAudio,
+        });
+        const cleanedProbe = await probeVideo(cleanedPath);
+        manifest = {
+          ...manifest,
+          outputDurationMs: cleanedProbe.durationMs,
+          removedDurationMs: Math.max(0, manifest.sourceDurationMs - cleanedProbe.durationMs),
+        };
+        context.subtitles = retimeSubtitlesAfterCleanup(sourceSubtitles, manifest);
+        const copied = await copyDerivedVideoIntoRemotion(cleanedPath, context.job.id, "speech-clean");
+        context.publicMediaPath = copied.path;
+        context.publicMediaSrc = copied.src;
+        context.probe = cleanedProbe;
+        context.cleanedSpeechPath = cleanedPath;
+        await writeJson(join(context.jobDir, "subtitles-source.json"), sourceSubtitles);
+        await writeJson(join(context.jobDir, "subtitles.json"), context.subtitles);
+      }
+      context.speechCleanup = manifest;
+      context.speechCleanupPath = manifestPath;
+      await writeJson(manifestPath, manifest);
+      await update(manifest.status === "applied" ? "speech-cleaned" : "speech-cleanup-skipped", 0.44);
+      return textResult({
+        manifestPath,
+        status: manifest.status,
+        reason: manifest.reason,
+        sourceDurationMs: manifest.sourceDurationMs,
+        outputDurationMs: manifest.outputDurationMs,
+        removedDurationMs: manifest.removedDurationMs,
+        cuts: manifest.cuts,
+      });
+    },
+  });
+
   const scheduleVisuals = defineTool({
     name: "schedule_generated_visuals",
     label: "Schedule optional AI example visuals",
@@ -184,9 +252,12 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
       if (!context.probe || !context.subtitles) {
         throw new Error("inspect_source and transcribe_source must run before schedule_generated_visuals");
       }
-      await update("scheduling-visuals", 0.35);
+      if (!context.speechCleanup) {
+        throw new Error("clean_speech_delivery must run before schedule_generated_visuals so all visual beats use the cleaned timeline");
+      }
+      await update("scheduling-visuals", 0.45);
       const schedule = await scheduleGeneratedVisuals(context);
-      await update(schedule.mode === "generated" ? "visuals-generated" : "visuals-scheduled", 0.44);
+      await update(schedule.mode === "generated" ? "visuals-generated" : "visuals-scheduled", 0.50);
       return textResult({
         ...schedule,
         instruction: schedule.assets.length > 0
@@ -203,10 +274,11 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
     parameters: Type.Object({}),
     execute: async () => {
       if (!context.probe) throw new Error("inspect_source must run first");
-      await update("tracking-speaker", 0.38);
+      if (!context.speechCleanup) throw new Error("clean_speech_delivery must run before track_speaker");
+      await update("tracking-speaker", 0.52);
       const outputPath = join(context.jobDir, "face-track.json");
-      context.faceTrack = await trackFace(context.job.inputPath, outputPath);
-      await update("speaker-tracked", 0.52);
+      context.faceTrack = await trackFace(context.publicMediaPath, outputPath);
+      await update("speaker-tracked", 0.60);
       return textResult(context.faceTrack
         ? {
             faceTrackPath: outputPath,
@@ -306,7 +378,8 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
       if (!context.probe || !context.subtitles) {
         throw new Error("inspect_source and transcribe_source must run before save_edit_spec");
       }
-      await update("planning-edit", 0.56);
+      if (!context.speechCleanup) throw new Error("clean_speech_delivery must run before save_edit_spec");
+      await update("planning-edit", 0.62);
       const beats = alignImpactBeatsToWords(
         normalizeBeats(params.beats, context.probe.durationMs),
         context.subtitles.words,
@@ -336,13 +409,14 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         beats,
         evidenceAssets: context.evidenceAssets,
         generatedVisuals: context.generatedVisuals,
+        ...(context.speechCleanup ? {speechCleanup: context.speechCleanup} : {}),
         generationPreset: "macos-sonoma-native",
         cameraPolicy: DEFAULT_CAMERA_POLICY,
       };
       context.spec = spec;
       const specPath = join(context.jobDir, "edit-spec.json");
       await writeJson(specPath, spec);
-      await update("edit-planned", 0.64);
+      await update("edit-planned", 0.66);
       return textResult({specPath, durationInFrames: spec.durationInFrames, beats: spec.beats});
     },
   });
@@ -442,6 +516,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
   return [
     inspectSource,
     transcribeSource,
+    cleanSpeechDelivery,
     scheduleVisuals,
     captureXPostEvidence,
     captureWebEvidence,
