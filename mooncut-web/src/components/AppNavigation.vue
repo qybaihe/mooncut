@@ -1,16 +1,32 @@
 <script setup lang="ts">
-import { Home, Mic2, Scissors } from '@lucide/vue'
+import { Activity, Home, LogOut, Mic2, Scissors, UsersRound } from '@lucide/vue'
+import { onMounted, ref } from 'vue'
+import { getServiceModels } from '../services/api'
 import type { WorkspacePage } from '../types'
 import BrandMark from './BrandMark.vue'
 import ThemeToggle from './ThemeToggle.vue'
 
 const activePage = defineModel<WorkspacePage>({ required: true })
-defineProps<{ immersive?: boolean }>()
+const props = defineProps<{ immersive?: boolean; userEmail: string }>()
+const emit = defineEmits<{ logout: [] }>()
+const agentOnline = ref(false)
+
+onMounted(async () => {
+  try {
+    await getServiceModels()
+    agentOnline.value = true
+  } catch {
+    agentOnline.value = false
+  }
+})
 
 const destinations = [
   { id: 'edit' as const, label: '剪辑台', icon: Scissors },
   { id: 'record' as const, label: '录制间', icon: Mic2 },
+  { id: 'community' as const, label: '社区', icon: UsersRound },
+  { id: 'queue' as const, label: '队列', icon: Activity },
 ]
+const userInitial = props.userEmail.slice(0, 1).toUpperCase() || 'M'
 </script>
 
 <template>
@@ -34,9 +50,15 @@ const destinations = [
         </button>
       </nav>
       <div class="header-meta">
-        <span class="local-pill"><span class="status-dot" /> 本地演示</span>
+        <span class="local-pill"><span class="status-dot" :class="{ amber: !agentOnline }" /> {{ agentOnline ? 'Agent 已连接' : '连接 Agent' }}</span>
         <ThemeToggle />
-        <span class="avatar" aria-label="当前用户">M</span>
+        <div class="account-summary" :title="userEmail">
+          <span class="avatar" aria-hidden="true">{{ userInitial }}</span>
+          <span class="account-email">{{ userEmail }}</span>
+        </div>
+        <button class="header-icon-button" type="button" aria-label="退出登录" title="退出登录" @click="emit('logout')">
+          <LogOut :size="16" />
+        </button>
       </div>
     </div>
   </header>
