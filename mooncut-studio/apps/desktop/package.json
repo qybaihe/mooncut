@@ -21,6 +21,7 @@
     "dist": "npm run pack:ci"
   },
   "dependencies": {
+    "@lucide/vue": "^1.24.0",
     "@mooncut/studio-agent-host": "0.1.0",
     "@mooncut/studio-bootstrapper": "0.1.0",
     "@mooncut/studio-project-format": "0.1.0",
@@ -40,7 +41,7 @@
   "build": {
     "appId": "com.mooncut.studio",
     "productName": "MoonCut Studio",
-    "copyright": "Copyright \u00a9 MoonCut",
+    "copyright": "Copyright © MoonCut",
     "electronVersion": "35.1.2",
     "asar": true,
     "asarUnpack": [
