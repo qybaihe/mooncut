@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   MOONCUT_RUNTIME_PROFILE: ${{ github.event.inputs.runtime_profile || 'minimal' }}
@@ -37,6 +37,8 @@ jobs:
     name: Build ${{ matrix.artifact }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -53,10 +55,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
           cache: npm
@@ -76,24 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf node_modules
-          npm install --no-audit --no-fund
-          # npm optional-deps bug: rollup native binary often missing on clean CI
-          # https://github.com/npm/cli/issues/4828
-          case "${{ runner.os }}" in
-            Linux)
-              npm install --no-save @rollup/rollup-linux-x64-gnu || true
-              ;;
-            Windows)
-              npm install --no-save @rollup/rollup-win32-x64-msvc || true
-              ;;
-            macOS)
-              if [[ "$(uname -m)" == "arm64" ]]; then
-                npm install --no-save @rollup/rollup-darwin-arm64 || true
-              else
-                npm install --no-save @rollup/rollup-darwin-x64 || true
-              fi
-              ;;
-          esac
+          npm ci --include=optional --no-audit --no-fund
 
       - name: Install pi-agent + prebuild dist/cli.mjs
         working-directory: mooncut-pi-agent
@@ -101,7 +86,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf node_modules
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           test -f src/capabilities.ts
           npm run build:studio
           test -f dist/cli.mjs
@@ -126,7 +111,7 @@ jobs:
           set -euo pipefail
           # Ensure electron-builder binary is available from workspace root install
           EB="../../node_modules/.bin/electron-builder"
-          if [[ ! -x "$EB" ]]; then EB="npx electron-builder"; fi
+          test -x "$EB"
           case "${{ matrix.platform }}" in
             mac)   $EB --mac --publish never -c.mac.identity=null ;;
             win)   $EB --win --publish never ;;
@@ -167,7 +152,7 @@ jobs:
           fi
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: mooncut-studio-${{ matrix.artifact }}
           path: release-out/${{ matrix.artifact }}/*
@@ -178,12 +163,14 @@ jobs:
     name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: release-assets
           pattern: mooncut-studio-*
@@ -202,17 +189,23 @@ jobs:
       - name: Resolve tag name
         id: tag
         shell: bash
+        env:
+          TAG_INPUT: ${{ github.event.inputs.tag }}
         run: |
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             echo "name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          elif [[ -n "${{ github.event.inputs.tag }}" ]]; then
-            echo "name=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          elif [[ -n "${TAG_INPUT}" ]]; then
+            if [[ ! "${TAG_INPUT}" =~ ^studio-v[0-9A-Za-z._-]+$ ]]; then
+              echo "workflow_dispatch tag must match studio-v<version>" >&2
+              exit 1
+            fi
+            printf 'name=%s\n' "${TAG_INPUT}" >> "$GITHUB_OUTPUT"
           else
             echo "name=studio-v0.1.0-nightly.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           tag_name: ${{ steps.tag.outputs.name }}
           name: MoonCut Studio ${{ steps.tag.outputs.name }}

@@ -33,10 +33,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
           cache: npm
@@ -47,32 +47,14 @@ jobs:
       - name: Install Studio workspaces
         working-directory: mooncut-studio
         run: |
-          # Prefer install over ci so platform-specific optional deps (rollup native) resolve.
           rm -rf node_modules
-          npm install --no-audit --no-fund
-          # Guard against npm optional-deps bug for rollup native packages
-          # https://github.com/npm/cli/issues/4828
-          case "$(uname -s)" in
-            Linux)
-              npm install --no-save @rollup/rollup-linux-x64-gnu || true
-              ;;
-            Darwin)
-              if [[ "$(uname -m)" == "arm64" ]]; then
-                npm install --no-save @rollup/rollup-darwin-arm64 || true
-              else
-                npm install --no-save @rollup/rollup-darwin-x64 || true
-              fi
-              ;;
-            MINGW*|MSYS*|CYGWIN*)
-              npm install --no-save @rollup/rollup-win32-x64-msvc || true
-              ;;
-          esac
+          npm ci --include=optional --no-audit --no-fund
 
       - name: Build pi-agent studio entry
         working-directory: mooncut-pi-agent
         run: |
           rm -rf node_modules
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           test -f src/capabilities.ts
           test -f src/cli.ts
           npm run build:studio

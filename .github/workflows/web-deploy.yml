@@ -1,4 +1,4 @@
-name: web-deploy
+name: Web build and deploy
 
 on:
   push:
@@ -9,30 +9,31 @@ on:
   pull_request:
     paths:
       - "mooncut-web/**"
+      - ".github/workflows/web-deploy.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
     defaults:
       run:
         working-directory: mooncut-web
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: mooncut-web/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Type-check & build
         run: npm run build
@@ -40,10 +41,38 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Deploy to Cloudflare Pages (preview on PR, production on main)
-        uses: cloudflare/wrangler-action@v3
+      - name: Upload immutable deploy artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mooncut-web-dist
+          path: mooncut-web/dist
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    # Pull requests never receive deployment credentials or perform a deploy.
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout deployment configuration
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Download verified build artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: mooncut-web-dist
+          path: mooncut-web/dist
+
+      - name: Deploy production artifact to Cloudflare Pages
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: mooncut-web
-          command: pages deploy dist --project-name mooncut-web --branch ${{ github.head_ref || github.ref_name }}
+          command: pages deploy dist --project-name mooncut-web --branch main
