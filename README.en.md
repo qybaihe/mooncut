@@ -34,12 +34,12 @@
 
 ## Watch the finished videos
 
-Both selected demos are versioned in this repository as Git LFS media and can be opened or downloaded directly.
+The original MP4 files are versioned with Git LFS. GitHub's media preview is not reliable, so the permanent web-hosted posters below open the playable showcase on mooncut.me.
 
-| Demo | Finished video | What it shows |
+| Demo | Website preview | What it shows |
 | --- | --- | --- |
-| **Moonshot Plan · Physical AI Hackathon, on site**<br />41 s · 1280×720 | [▶ Watch the MP4](./remotion-studio/out/moonshot-gpt56-horizontal-v2-xhs.mp4)<br />[Xiaohongshu field note: “The Moonshot Plan hackathon was genuinely astonishing”](http://xhslink.com/o/R8BbBY1Qe1) | A live creation example that brings together event context, real web evidence, speaker footage, and emphasized captions. |
-| **Argentina vs. Egypt · World Cup match analysis**<br />97 s · 1920×1080 | [▶ Watch the MP4](./remotion-studio/out/argentina-egypt-analysis-v2.mp4) | Combines official match highlights, an event timeline, score cards, and the presenter into a paced analysis video. |
+| **Moonshot Plan · Physical AI Hackathon, on site**<br />41 s · 1280×720 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/koubo-raw-sample-poster.jpg" width="320" alt="Moonshot Plan Physical AI Hackathon finished-video poster" /></a><br />[▶ Play on mooncut.me ↗](https://mooncut.me/#works)<br />[Xiaohongshu field note: “The Moonshot Plan hackathon was genuinely astonishing”](http://xhslink.com/o/R8BbBY1Qe1) | A live creation example that brings together event context, real web evidence, speaker footage, and emphasized captions. |
+| **Argentina vs. Egypt · World Cup match analysis**<br />97 s · 1920×1080 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/football-argentina-egypt-poster.jpg" width="320" alt="Argentina versus Egypt World Cup analysis finished-video poster" /></a><br />[▶ Play on mooncut.me ↗](https://mooncut.me/#works) | Combines official match highlights, an event timeline, score cards, and the presenter into a paced analysis video. |
 
 ## Who it is for
 
