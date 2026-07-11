@@ -104,5 +104,3 @@ export function decomposeMatrix(matrix: Matrix4): {
 
   return { position, rotation, scale };
 }
-
-export { Vector3, Quaternion, Matrix4 };

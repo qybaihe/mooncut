@@ -30,7 +30,7 @@ export const isAuthPath = (pathname: string) =>
   pathname === '/v1/auth/otp/verify' ||
   pathname.startsWith('/v1/auth/')
 
-/** Ensure create-edit requests always carry a delivery email for local mailing. */
+/** Ensure create-edit requests always carry the authenticated user's delivery email. */
 export const withNotificationEmail = (request: Request, targetPath: string, user: EdgeUser | null) => {
   if (!user?.email) return { request, targetPath }
   const url = new URL(request.url)
@@ -42,14 +42,13 @@ export const withNotificationEmail = (request: Request, targetPath: string, user
 
   if (pathname === '/v1/edits') {
     const agentUrl = new URL(targetPath, 'https://agent.local')
-    if (!agentUrl.searchParams.get('notificationEmail')) {
-      agentUrl.searchParams.set('notificationEmail', user.email)
-    }
+    // Always overwrite client input. The agent repeats this check against the
+    // signed edge identity, so bypassing the Pages proxy cannot change it.
+    agentUrl.searchParams.set('notificationEmail', user.email)
     return { request, targetPath: agentUrl.pathname + agentUrl.search }
   }
 
-  // JSON create job: inject notificationEmail into body if missing
-  return { request, targetPath, injectEmail: user.email }
+  return { request, targetPath }
 }
 
 export const proxyToAgent = async (
@@ -65,7 +64,6 @@ export const proxyToAgent = async (
       {
         error: '渲染节点未配置',
         code: 'AGENT_ORIGIN_MISSING',
-        detail: 'Set AGENT_ORIGIN to the Cloudflare Tunnel URL for the local video agent.',
       },
       503,
     )
@@ -75,7 +73,6 @@ export const proxyToAgent = async (
       {
         error: '渲染节点密钥未配置',
         code: 'AGENT_KEY_MISSING',
-        detail: 'Set AGENT_INTERNAL_KEY (must match MOONCUT_API_KEY on the local agent).',
       },
       503,
     )
@@ -83,7 +80,7 @@ export const proxyToAgent = async (
 
   const patched = withNotificationEmail(request, targetPath, user)
   let path = patched.targetPath
-  let body: ArrayBuffer | undefined
+  let body: ReadableStream<Uint8Array> | null | undefined
 
   const headers = new Headers()
   const contentType = request.headers.get('content-type')
@@ -98,25 +95,10 @@ export const proxyToAgent = async (
   headers.set('x-mooncut-edge', '1')
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
-    if (
-      request.method === 'POST' &&
-      path.startsWith('/v1/edit-jobs') &&
-      !path.slice('/v1/edit-jobs'.length).includes('/') &&
-      contentType?.includes('application/json') &&
-      user?.email
-    ) {
-      const raw = await request.text()
-      try {
-        const parsed = JSON.parse(raw || '{}') as Record<string, unknown>
-        if (!parsed.notificationEmail) parsed.notificationEmail = user.email
-        body = new TextEncoder().encode(JSON.stringify(parsed)).buffer
-        headers.set('content-type', 'application/json')
-      } catch {
-        body = new TextEncoder().encode(raw).buffer
-      }
-    } else {
-      body = await request.arrayBuffer()
-    }
+    // Preserve the streaming body instead of materializing an entire video in
+    // Worker memory. The Agent independently enforces its byte ceiling while
+    // writing the stream to disk.
+    body = request.body
   }
 
   const target = `${origin}${path}`
@@ -124,7 +106,7 @@ export const proxyToAgent = async (
     method: request.method,
     headers,
     redirect: 'manual',
-    ...(body !== undefined ? { body } : {}),
+    ...(body !== undefined && body !== null ? { body } : {}),
   }
 
   try {
@@ -139,12 +121,11 @@ export const proxyToAgent = async (
       headers: respHeaders,
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Agent unreachable'
+    console.error('Agent proxy request failed', error)
     return json(
       {
         error: '渲染节点不可达，请确认本机 Agent 与 Tunnel 已启动',
         code: 'AGENT_UNREACHABLE',
-        detail: message,
       },
       502,
     )

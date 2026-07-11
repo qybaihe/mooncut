@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
+process.env.MOONCUT_MAIL_DOWNLOAD_SECRET ??= "mooncut-test-download-secret";
+
+const {
   buildJobMailArgs,
   buildJobWebhookPayload,
   buildResendPayload,
@@ -8,7 +10,7 @@ import {
   isEmail,
   parseCliEnvelope,
   verifyArtifactDownloadToken,
-} from "../src/mail.ts";
+} = await import("../src/mail.ts");
 import type {EditJobRecord} from "../src/types.ts";
 
 test("parses Agent Mail JSON even when the CLI prints a tip first", () => {

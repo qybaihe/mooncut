@@ -162,6 +162,7 @@ MoonCut 自有源码采用 [Apache License 2.0](../LICENSE)。它允许使用、
 - [主 README](../README.md)：产品概览、官网、案例与仓库地图。
 - [Web 部署](../mooncut-web/DEPLOY.md)：Cloudflare Pages、D1、Functions、Secrets 与自定义域名。
 - [Agent API](../mooncut-pi-agent/API.md)：HTTP API、TLS、客户端 CA 与运维边界。
+- [安全部署基线](./SECURITY_DEPLOYMENT.md)：公开 Agent、Tunnel、OTP、邮件投递与 CI 的强制安全设置。
 - [Studio 发行](../mooncut-studio/docs/RELEASE.md)：桌面打包、签名与公证。
 - [Studio 许可证清单](../mooncut-studio/docs/LICENSES.md)：第三方依赖与公开分发前的核验项。
 - [iOS README](../ios/README.md)：Xcode、本地 Agent、私有 CA 与未签名公开 IPA。

@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /mooncut-studio
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /mooncut-web
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /mooncut-pi-agent
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: pip
+    directory: /hybrid-subtitle-service
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /face-tracker
+    schedule:
+      interval: weekly

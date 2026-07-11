@@ -55,6 +55,9 @@ POST /api/v1/auth/login      { email, password }                   # password fa
 - Codes: 6 digits, 10 min TTL, 60s resend cooldown, max 5 attempts
 - Stored as SHA-256 hashes in D1 `email_otps`
 - Register without OTP is rejected (`OTP_REQUIRED`)
+- OTP send responses do not disclose whether an email is registered; D1 also
+  applies a hashed-source limit (20 send attempts / 15 min) in addition to the
+  per-email limit. Apply migration `0003_auth_rate_limits.sql` before deploy.
 
 ## Local agent
 
@@ -63,6 +66,10 @@ POST /api/v1/auth/login      { email, password }                   # password fa
 MOONCUT_API_KEY=<same as AGENT_INTERNAL_KEY>
 MOONCUT_EDGE_AUTH_ONLY=true
 MOONCUT_COOKIE_SECURE=true
+MOONCUT_PUBLIC_DEPLOYMENT=true
+MOONCUT_PUBLIC_BASE_URL=https://mooncut.me
+MOONCUT_MAIL_DOWNLOAD_SECRET=<separate-long-random-secret>
+MOONCUT_CAPABILITY_SIGNING_KEY=<separate-long-random-secret>
 ```
 
 ## D1
@@ -90,7 +97,7 @@ npx wrangler pages deploy dist --project-name mooncut --commit-dirty=true
 ## Phase 2 delivery path
 
 1. User logs in on Cloudflare (D1).
-2. User uploads a talking-head clip; edge injects `notificationEmail` (account email if omitted).
+2. User uploads a talking-head clip; Agent always derives `notificationEmail` from the authenticated account, ignoring any client-supplied recipient.
 3. Only `/v1/edits|assets|edit-jobs/*` hit the tunnel.
 4. Local agent finishes Remotion cut → attaches `final.mp4` → auto-sends email via `agently-cli`.
 
@@ -98,7 +105,10 @@ npx wrangler pages deploy dist --project-name mooncut --commit-dirty=true
 
 ```bash
 MOONCUT_EDGE_AUTH_ONLY=true
+MOONCUT_PUBLIC_DEPLOYMENT=true
+MOONCUT_COOKIE_SECURE=true
 MOONCUT_API_KEY=<same as AGENT_INTERNAL_KEY>
+MOONCUT_MAIL_DOWNLOAD_SECRET=<separate-long-random-secret>
 MOONCUT_MAIL_TRANSPORT=agently-cli
 MOONCUT_MAIL_AUTO_SEND=true
 MOONCUT_MAIL_ATTACH_VIDEO=true

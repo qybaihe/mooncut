@@ -125,10 +125,15 @@ export const config = {
   fifaCliPath: pathEnv("MOONCUT_FIFA_CLI_PATH", join(workspaceRoot, "fifa-highlights-cli/dist/index.js")),
   fifaCliCwd: pathEnv("MOONCUT_FIFA_CLI_CWD", join(workspaceRoot, "fifa-highlights-cli")),
   sessionDays: Math.min(90, Math.max(1, integerEnv("MOONCUT_SESSION_DAYS", 30))),
-  cookieSecure: process.env.MOONCUT_COOKIE_SECURE === "true",
+  cookieSecure: booleanEnv("MOONCUT_COOKIE_SECURE", false),
   // When true, browser session cookies are ignored — only service key (+ optional
   // X-MoonCut-User-Id from Cloudflare edge) can call protected routes.
   edgeAuthOnly: booleanEnv("MOONCUT_EDGE_AUTH_ONLY", false),
+  /**
+   * Explicit production guard for an Agent reachable through a Tunnel or a
+   * network listener. It intentionally stays false for desktop/localhost use.
+   */
+  publicDeployment: booleanEnv("MOONCUT_PUBLIC_DEPLOYMENT", false),
   publicBaseUrl: (process.env.MOONCUT_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
   mailCliPath: pathEnv("MOONCUT_MAIL_CLI", "/opt/homebrew/bin/agently-cli"),
   mailSenderName: process.env.MOONCUT_MAIL_SENDER_NAME ?? "MoonCut 小月",

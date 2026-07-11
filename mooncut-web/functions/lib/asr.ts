@@ -16,6 +16,42 @@ const json = (data: unknown, status = 200) =>
 
 export const isAsrConfigured = (env: AsrEnv) => Boolean((env.DEEPGRAM_API_KEY || '').trim())
 
+const MAX_ASR_AUDIO_BYTES = 3_500_000
+
+const readAudioWithinLimit = async (request: Request) => {
+  const declared = Number(request.headers.get('Content-Length') || '0')
+  if (Number.isFinite(declared) && declared > MAX_ASR_AUDIO_BYTES) {
+    throw new RangeError('ASR_AUDIO_TOO_LARGE')
+  }
+  if (!request.body) return new ArrayBuffer(0)
+
+  const reader = request.body.getReader()
+  const chunks: Uint8Array[] = []
+  let size = 0
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      size += value.byteLength
+      if (size > MAX_ASR_AUDIO_BYTES) {
+        await reader.cancel('ASR audio exceeds size limit')
+        throw new RangeError('ASR_AUDIO_TOO_LARGE')
+      }
+      chunks.push(value)
+    }
+  } finally {
+    reader.releaseLock()
+  }
+
+  const audio = new Uint8Array(size)
+  let offset = 0
+  for (const chunk of chunks) {
+    audio.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return audio.buffer
+}
+
 export const handleAsrStatus = (env: AsrEnv) =>
   json({
     configured: isAsrConfigured(env),
@@ -46,13 +82,17 @@ export const handleAsrTranscribe = async (request: Request, env: AsrEnv) => {
   const channels = url.searchParams.get('channels') || '1'
 
   const contentType = request.headers.get('Content-Type') || 'application/octet-stream'
-  const audio = await request.arrayBuffer()
+  let audio: ArrayBuffer
+  try {
+    audio = await readAudioWithinLimit(request)
+  } catch (error) {
+    if (error instanceof RangeError) {
+      return json({ error: '音频片段过大，请缩短切片', code: 'ASR_AUDIO_TOO_LARGE' }, 413)
+    }
+    throw error
+  }
   if (!audio.byteLength) {
     return json({ error: '空音频', code: 'ASR_EMPTY_AUDIO' }, 400)
-  }
-  // Guard edge CPU / Deepgram payload size (~10s 16kHz mono pcm ≈ 320KB; allow headroom)
-  if (audio.byteLength > 3_500_000) {
-    return json({ error: '音频片段过大，请缩短切片', code: 'ASR_AUDIO_TOO_LARGE' }, 413)
   }
 
   const dg = new URL('https://api.deepgram.com/v1/listen')
@@ -81,15 +121,15 @@ export const handleAsrTranscribe = async (request: Request, env: AsrEnv) => {
       body: audio,
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    return json({ error: `无法连接 Deepgram（${message}）`, code: 'ASR_UPSTREAM_NETWORK' }, 502)
+    console.error('Deepgram network request failed', error)
+    return json({ error: '语音服务暂时不可用，请稍后重试', code: 'ASR_UPSTREAM_NETWORK' }, 502)
   }
 
   const text = await upstream.text()
   if (!upstream.ok) {
     return json(
       {
-        error: `Deepgram ${upstream.status}: ${text.slice(0, 300)}`,
+        error: '语音服务暂时不可用，请稍后重试',
         code: 'ASR_UPSTREAM_FAILED',
       },
       502,

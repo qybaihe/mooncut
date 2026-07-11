@@ -4,12 +4,12 @@
  */
 
 import {safeStorage} from "electron";
-import {mkdir, readFile, rename, writeFile} from "node:fs/promises";
+import {chmod, mkdir, readFile, rename, writeFile} from "node:fs/promises";
 import {dirname} from "node:path";
 
 type SecretBlob = {
   v: 1;
-  /** base64 ciphertext from safeStorage, or base64 plain only if encryption unavailable (dev fallback flagged). */
+  /** base64 ciphertext from Electron safeStorage. Plaintext is never persisted. */
   data: string;
   encrypted: boolean;
 };
@@ -28,20 +28,19 @@ export class SecureStore {
   private async saveAll(map: Record<string, SecretBlob>) {
     await mkdir(dirname(this.filePath), {recursive: true});
     const tmp = `${this.filePath}.${process.pid}.tmp`;
-    await writeFile(tmp, `${JSON.stringify(map, null, 2)}\n`, "utf8");
+    await writeFile(tmp, `${JSON.stringify(map, null, 2)}\n`, {encoding: "utf8", mode: 0o600});
     await rename(tmp, this.filePath);
+    await chmod(this.filePath, 0o600);
   }
 
   async set(key: string, secret: string): Promise<void> {
     const map = await this.loadAll();
-    if (safeStorage.isEncryptionAvailable()) {
-      const buf = safeStorage.encryptString(secret);
-      map[key] = {v: 1, data: buf.toString("base64"), encrypted: true};
-    } else {
-      // Dev / headless CI fallback — still not written into project trees.
-      map[key] = {v: 1, data: Buffer.from(secret, "utf8").toString("base64"), encrypted: false};
+    if (!safeStorage.isEncryptionAvailable()) {
+      throw new Error("系统安全存储不可用；为保护 API Key，MoonCut 不会将其写入磁盘。");
     }
-    await saveQuiet(map, this.filePath);
+    const buf = safeStorage.encryptString(secret);
+    map[key] = {v: 1, data: buf.toString("base64"), encrypted: true};
+    await this.saveAll(map);
   }
 
   async get(key: string): Promise<string | null> {
@@ -52,7 +51,9 @@ export class SecureStore {
       if (blob.encrypted && safeStorage.isEncryptionAvailable()) {
         return safeStorage.decryptString(Buffer.from(blob.data, "base64"));
       }
-      return Buffer.from(blob.data, "base64").toString("utf8");
+      // Reject historical unencrypted fallback records rather than silently
+      // continuing to use a base64-encoded plaintext credential.
+      return null;
     } catch {
       return null;
     }
@@ -68,11 +69,4 @@ export class SecureStore {
     const map = await this.loadAll();
     return Boolean(map[key]);
   }
-}
-
-async function saveQuiet(map: Record<string, SecretBlob>, filePath: string) {
-  await mkdir(dirname(filePath), {recursive: true});
-  const tmp = `${filePath}.${process.pid}.tmp`;
-  await writeFile(tmp, `${JSON.stringify(map, null, 2)}\n`, "utf8");
-  await rename(tmp, filePath);
 }

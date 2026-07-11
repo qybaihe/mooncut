@@ -34,12 +34,12 @@
 
 ## Ver los vídeos terminados
 
-Las dos demostraciones siguientes están incluidas en este repositorio como medios Git LFS y se pueden abrir o descargar directamente.
+Los MP4 originales están versionados con Git LFS. Los README de GitHub no ofrecen un reproductor nativo para MP4 del repositorio, por eso se incluyen los GIF en bucle y sin sonido de siete segundos: se reproducen al abrir la página y un clic abre el vídeo completo con sonido en mooncut.me.
 
-| Demo | Vídeo terminado | Qué demuestra |
+| Demo | Vista previa de reproducción automática | Qué demuestra |
 | --- | --- | --- |
-| **Moonshot Plan · Hackathon de Physical AI, en directo**<br />41 s · 1280×720 | [▶ Ver el MP4](./remotion-studio/out/moonshot-gpt56-horizontal-v2-xhs.mp4)<br />[Crónica en Xiaohongshu: «El hackathon Moonshot Plan fue realmente impresionante»](http://xhslink.com/o/R8BbBY1Qe1) | Un ejemplo de creación en vivo que une contexto del evento, evidencia web real, vídeo del presentador y subtítulos enfatizados. |
-| **Argentina vs. Egipto · Análisis de partido del Mundial**<br />97 s · 1920×1080 | [▶ Ver el MP4](./remotion-studio/out/argentina-egypt-analysis-v2.mp4) | Combina resúmenes oficiales, línea de tiempo de eventos, tarjetas de marcador y presentador en un vídeo de análisis con ritmo. |
+| **Moonshot Plan · Hackathon de Physical AI, en directo**<br />41 s · 1280×720 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/moonshot-hackathon-preview.gif" width="480" alt="Vista previa en bucle sin sonido de siete segundos del hackathon Moonshot Plan Physical AI" /></a><br />Bucle sin sonido de siete segundos · [▶ Reproducir el MP4 completo en mooncut.me ↗](https://mooncut.me/#works)<br />[Crónica en Xiaohongshu: «El hackathon Moonshot Plan fue realmente impresionante»](http://xhslink.com/o/R8BbBY1Qe1) | Un ejemplo de creación en vivo que une contexto del evento, evidencia web real, vídeo del presentador y subtítulos enfatizados. |
+| **Argentina vs. Egipto · Análisis de partido del Mundial**<br />97 s · 1920×1080 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/argentina-egypt-preview.gif" width="480" alt="Vista previa en bucle sin sonido de siete segundos del análisis Argentina contra Egipto" /></a><br />Bucle sin sonido de siete segundos · [▶ Reproducir el MP4 completo en mooncut.me ↗](https://mooncut.me/#works) | Combina resúmenes oficiales, línea de tiempo de eventos, tarjetas de marcador y presentador en un vídeo de análisis con ritmo. |
 
 ## Para quién es
 

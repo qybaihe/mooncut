@@ -1,0 +1,8 @@
+title = "MoonCut repository secret scan"
+
+[allowlist]
+description = "Deliberate synthetic key strings used to test masking and validation."
+paths = [
+  '''mooncut-studio/apps/desktop/test/provider-store\.test\.js''',
+  '''mooncut-studio/packages/shared/test/provider-catalog\.test\.js''',
+]

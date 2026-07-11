@@ -50,12 +50,12 @@
 
 ## 看成片
 
-以下两条成片均已作为 Git LFS 媒体纳入仓库，可直接打开或下载：
+两条成片的原始 MP4 都由 Git LFS 保存。GitHub README 不支持仓库 MP4 的原生播放器，因此下方使用随仓库提交的 7 秒静音循环 GIF；打开 README 即可直接预览，点击则进入官网播放带声音的完整成片。
 
-| 示例 | 成片 | 看点 |
+| 示例 | 自动播放预览 | 看点 |
 | --- | --- | --- |
-| **探月计划 · Physical AI 黑客松现场**<br />41 秒 · 1280×720 | [▶ 查看 MP4 成片](./remotion-studio/out/moonshot-gpt56-horizontal-v2-xhs.mp4)<br />[小红书现场记录：探月计划黑客松现场，真的有被震撼到](http://xhslink.com/o/R8BbBY1Qe1) | 以现场口播串联活动信息、真实网页证据、人物镜头与重点字幕，是 MoonCut 的创作现场示例。 |
-| **阿根廷 vs 埃及 · 世界杯赛事复盘**<br />97 秒 · 1920×1080 | [▶ 查看 MP4 成片](./remotion-studio/out/argentina-egypt-analysis-v2.mp4) | 将官方比赛集锦、事件时间线、比分卡与讲解人物组合为一条有叙事节奏的赛事分析视频。 |
+| **探月计划 · Physical AI 黑客松现场**<br />41 秒 · 1280×720 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/moonshot-hackathon-preview.gif" width="480" alt="探月计划 Physical AI 黑客松现场 7 秒静音循环预览" /></a><br />7 秒静音循环预览 · [▶ 在官网播放完整 MP4 ↗](https://mooncut.me/#works)<br />[小红书现场记录：探月计划黑客松现场，真的有被震撼到](http://xhslink.com/o/R8BbBY1Qe1) | 以现场口播串联活动信息、真实网页证据、人物镜头与重点字幕，是 MoonCut 的创作现场示例。 |
+| **阿根廷 vs 埃及 · 世界杯赛事复盘**<br />97 秒 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/argentina-egypt-preview.gif" width="480" alt="阿根廷对埃及世界杯赛事复盘 7 秒静音循环预览" /></a><br />7 秒静音循环预览 · [▶ 在官网播放完整 MP4 ↗](https://mooncut.me/#works) | 将官方比赛集锦、事件时间线、比分卡与讲解人物组合为一条有叙事节奏的赛事分析视频。 |
 
 ## 为谁而做
 
@@ -218,7 +218,7 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | [`hybrid-subtitle-service`](./hybrid-subtitle-service) | 可独立部署的异步混合字幕 API。 |
 | [`face-tracker`](./face-tracker) | 口播主讲人跟踪、稳定化与画幅重构 CLI。 |
 | [`remotion-studio`](./remotion-studio) | 数据驱动的 Remotion 视频构图、字幕、素材与渲染能力。 |
-| [`docs`](./docs) | [开发者指南](./docs/DEVELOPER_GUIDE.md)、口播人物视觉跟踪与工程约束。 |
+| [`docs`](./docs) | [开发者指南](./docs/DEVELOPER_GUIDE.md)、[安全部署基线](./docs/SECURITY_DEPLOYMENT.md)、口播人物视觉跟踪与工程约束。 |
 | [`information-bases`](./information-bases) | 围绕设备接入、背景音乐等产品决策的研究资料。 |
 
 ## 开发者指南
@@ -231,6 +231,7 @@ MoonCut 不只是一组页面。仓库将可重复的制作工作封装成面向
 | 修改本机专业工作台 | [Studio 开发](./docs/DEVELOPER_GUIDE.md#local-workflows) |
 | 接入真实剪辑、字幕与渲染 | [Web + 本地 Agent 联调](./docs/DEVELOPER_GUIDE.md#local-workflows) |
 | 配置 HTTPS、API Key、iOS / 桌面签名 | [Secrets、TLS 与签名证书](./docs/DEVELOPER_GUIDE.md#signing-certificates) |
+| 部署公开 Agent、Tunnel 或事务邮件 | [安全部署基线](./docs/SECURITY_DEPLOYMENT.md) |
 | 判断可否 fork、商用或公开分发 | [许可证与第三方组件](./docs/DEVELOPER_GUIDE.md#licensing) |
 
 ## MoonCut Studio（桌面端入口）

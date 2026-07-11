@@ -22,6 +22,8 @@ const OTP_RESEND_COOLDOWN_MS = 60 * 1000
 const OTP_MAX_SENDS_PER_HOUR = 8
 const OTP_MAX_ATTEMPTS = 5
 const OTP_CODE_LENGTH = 6
+const OTP_IP_WINDOW_MS = 15 * 60 * 1000
+const OTP_MAX_SENDS_PER_IP_WINDOW = 20
 
 const normalizeEmail = (value: string) => value.trim().toLowerCase()
 
@@ -207,17 +209,59 @@ export const deleteSession = async (env: Env, rawToken: string | null) => {
 }
 
 /** Send a 6-digit email OTP via Resend. */
-export const sendEmailOtp = async (env: Env, emailValue: unknown, purposeValue: unknown) => {
+const acceptedOtpResponse = (email: string, purpose: OtpPurpose) => ({
+  ok: true as const,
+  email,
+  purpose,
+  expiresInSec: Math.round(OTP_TTL_MS / 1000),
+  resendAfterSec: Math.round(OTP_RESEND_COOLDOWN_MS / 1000),
+})
+
+const enforceOtpIpRateLimit = async (env: Env, clientIp: string | null | undefined) => {
+  // Store only a one-way digest, never the raw client address.
+  const ip = (clientIp || 'unknown').trim().slice(0, 160)
+  const clientKey = await sha256Hex(`otp-send:${ip}`)
+  const now = Date.now()
+  const since = new Date(now - OTP_IP_WINDOW_MS).toISOString()
+  const recent = await env.DB.prepare(
+    'SELECT COUNT(*) AS count FROM auth_rate_limits WHERE action = ? AND client_key = ? AND created_at >= ?',
+  )
+    .bind('otp-send', clientKey, since)
+    .first<{ count: number }>()
+  if ((recent?.count ?? 0) >= OTP_MAX_SENDS_PER_IP_WINDOW) {
+    throw new AuthHttpError(429, 'OTP_RATE_LIMIT', '验证码发送过于频繁，请稍后再试')
+  }
+  await env.DB.batch([
+    env.DB.prepare('INSERT INTO auth_rate_limits (id, action, client_key, created_at) VALUES (?, ?, ?, ?)')
+      .bind(randomId(12), 'otp-send', clientKey, new Date(now).toISOString()),
+    env.DB.prepare('DELETE FROM auth_rate_limits WHERE created_at < ?')
+      .bind(new Date(now - 24 * 60 * 60 * 1000).toISOString()),
+  ])
+}
+
+export const sendEmailOtp = async (
+  env: Env,
+  emailValue: unknown,
+  purposeValue: unknown,
+  clientIp?: string | null,
+) => {
   const email = validateEmailOnly(emailValue)
   const purpose = validateOtpPurpose(purposeValue)
+  await enforceOtpIpRateLimit(env, clientIp)
 
+  let sendAllowed = true
   if (purpose === 'register') {
     const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
-    if (existing) throw new AuthHttpError(409, 'EMAIL_TAKEN', '该邮箱已注册，请直接登录')
+    if (existing) sendAllowed = false
   } else {
     const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
-    if (!existing) throw new AuthHttpError(404, 'USER_NOT_FOUND', '该邮箱尚未注册，请先注册')
+    if (!existing) sendAllowed = false
   }
+
+  // Return the same accepted shape for unknown/existing accounts. This avoids
+  // exposing account existence through OTP send status while preserving the
+  // verification endpoint as the source of truth.
+  if (!sendAllowed) return acceptedOtpResponse(email, purpose)
 
   const now = Date.now()
   const hourAgo = new Date(now - 60 * 60 * 1000).toISOString()
@@ -284,13 +328,7 @@ export const sendEmailOtp = async (env: Env, emailValue: unknown, purposeValue: 
     throw new AuthHttpError(503, 'EMAIL_SEND_FAILED', friendlyEmailError(raw))
   }
 
-  return {
-    ok: true as const,
-    email,
-    purpose,
-    expiresInSec: Math.round(OTP_TTL_MS / 1000),
-    resendAfterSec: Math.round(OTP_RESEND_COOLDOWN_MS / 1000),
-  }
+  return acceptedOtpResponse(email, purpose)
 }
 
 const consumeValidOtp = async (env: Env, email: string, purpose: OtpPurpose, code: string) => {
