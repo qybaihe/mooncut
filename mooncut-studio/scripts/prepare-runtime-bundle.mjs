@@ -110,10 +110,15 @@ if (!existsSync(join(agentDest, "dist", "cli.mjs"))) {
   process.exit(1);
 }
 
+// Destination paths always defined so MANIFEST components can existSync them
+// under both full and minimal profiles (minimal skips copying heavy trees).
+const remotionDest = join(outRoot, "remotion-studio");
+const faceDest = join(outRoot, "face-tracker");
+const subDest = join(outRoot, "hybrid-subtitle-service");
+
 if (!minimal) {
 // ── remotion-studio ───────────────────────────────────────
 const remotionSrc = join(monorepoRoot, "remotion-studio");
-const remotionDest = join(outRoot, "remotion-studio");
 if (existsSync(join(remotionSrc, "package.json"))) {
   log("bundling remotion-studio (pruned)…");
   rsync(remotionSrc, remotionDest, [
@@ -131,7 +136,6 @@ if (existsSync(join(remotionSrc, "package.json"))) {
 
 // ── face-tracker ──────────────────────────────────────────
 const faceSrc = join(monorepoRoot, "face-tracker");
-const faceDest = join(outRoot, "face-tracker");
 if (existsSync(join(faceSrc, "pyproject.toml"))) {
   log("bundling face-tracker (incl. venv if present)…");
   rsync(faceSrc, faceDest, [
@@ -146,7 +150,6 @@ if (existsSync(join(faceSrc, "pyproject.toml"))) {
 
 // ── hybrid-subtitle-service ───────────────────────────────
 const subSrc = join(monorepoRoot, "hybrid-subtitle-service");
-const subDest = join(outRoot, "hybrid-subtitle-service");
 if (existsSync(join(subSrc, "pyproject.toml"))) {
   log("bundling hybrid-subtitle-service…");
   rsync(subSrc, subDest, [
