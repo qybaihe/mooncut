@@ -8,13 +8,14 @@ Call the core tools in this order and finish every stage unless a tool reports a
 
 1. `inspect_source` — probe the media and analyze a contact sheet with the vision model.
 2. `transcribe_source` — obtain timed subtitles. Reuse a hash-matched local transcript when available; otherwise use the configured subtitle service.
-3. Evidence research when it materially supports the spoken claim:
+3. `schedule_generated_visuals` — conservatively decide whether the edit needs zero, one, or at most two AI-generated example illustrations. The default is zero.
+4. Evidence research when it materially supports the spoken claim:
    - `capture_x_post` for a validated, untouched original X post.
    - `capture_web_page` for a real official page rendered in Playwright.
-4. `track_speaker` — generate a stable face track for small speaker overlays. The main camera must not consume this track.
-5. `save_edit_spec` — save the semantic timeline. Use the transcript timing, source duration, visual analysis, and captured evidence IDs.
-6. `render_edit` — render the data-driven `AgentTalkingHeadVideo` Remotion composition.
-7. `verify_render` — inspect the encoded file, generate targeted QA sequences, and run multimodal visual gates.
+5. `track_speaker` — generate a stable face track for small speaker overlays. The main camera must not consume this track.
+6. `save_edit_spec` — save the semantic timeline. Use the transcript timing, source duration, visual analysis, captured evidence IDs, and only the generated visual IDs actually returned by the scheduler.
+7. `render_edit` — render the data-driven `AgentTalkingHeadVideo` Remotion composition.
+8. `verify_render` — inspect the encoded file, generate targeted QA sequences, and run multimodal visual gates.
 
 Do not stop after planning. A task succeeds only when `verify_render` succeeds, all hard visual gates pass, and the MP4 artifact exists. If visual QA fails, revise the edit spec, rerender, and verify again; do not merely repeat verification.
 
@@ -30,14 +31,19 @@ Do not stop after planning. A task succeeds only when `verify_render` succeeds, 
 - Preserve speech audio. Do not place two audible copies of the source video on screen.
 - Prefer authentic evidence over simulated UI. If a real official webpage or X post is available, capture it and use an `evidence` beat rather than inventing a page.
 - Never use a recreated X card as source evidence. X evidence must be the untouched screenshot returned by `capture_x_post`.
+- Generated imagery is optional and scarce: prefer zero images, normally use one, and never exceed two. Use it only for abstract or hypothetical examples that are genuinely hard to source.
+- A generated image is never evidence. Do not use it for real people, news, product claims, data, interfaces, official statements, or anything whose truth matters.
+- Every generated image must be used only by an `illustration` beat with its real `generatedVisualId`; the renderer visibly labels it as an AI-generated example.
 
 ## Camera and face-tracking policy
 
 - Face tracking is a crop tool for a small speaker overlay, not a global camera effect.
 - `speaker` and `impact` beats use `speakerLayout=native`: preserve the source composition and never continuously recenter the large image.
-- `desktop`, `quote`, and evidence beats with a real `evidenceId` use `speakerLayout=circle`: show the supporting content as the main image and place one tracked circular speaker bubble above it.
+- `desktop`, `quote`, `illustration`, and evidence beats with a real `evidenceId` use `speakerLayout=circle`: show the supporting content as the main image and place one tracked circular speaker bubble above it.
 - An `evidence` beat without real evidence remains `native`; never show a large source monitor and a duplicate speaker bubble together.
 - The circle has one fixed size and screen position across adjacent supporting-content beats. Do not replay its entrance animation when only the content beat changes.
+- On entry, the circle starts from the neutral source crop and eases into the tracked crop over 650 ms. Never snap directly to the final crop.
+- Tracked crops use a symmetric 720 ms / 13-sample motion filter and continuous edge-safety weighting. Raw detector or pad/clamp changes must not become one-frame camera jumps.
 - Keep every contiguous `native` or `circle` run for at least 2500 ms. `save_edit_spec` rejects faster camera-layout switching.
 - Enter or leave tracking only at a semantic beat boundary where the speaker visibly shrinks into or expands out of the circle.
 - When the source already clips the face, prefer an honest edge clamp over a blurred seam, mirrored face, or synthetic duplicate.
@@ -51,7 +57,8 @@ Every saved spec records the invariant explicitly:
     "trackedLayout": "circle",
     "nativeReframe": "preserve-source",
     "minimumLayoutHoldMs": 2500,
-    "transitionMs": 220
+    "transitionMs": 220,
+    "recenterDurationMs": 650
   },
   "beats": [
     {"kind": "speaker", "speakerLayout": "native"},
@@ -70,6 +77,7 @@ Every saved spec records the invariant explicitly:
 - Use `impact` only for the single strongest phrase near its spoken time. Put the word-level pulse anchor in `impactAtMs`; do not estimate it as a percentage of the beat.
 - Use `evidence` when the source context or visible environment is itself meaningful.
 - Set `evidenceId` on an `evidence` beat when research tools returned a matching asset. The screenshot must be shown inside the native browser scene.
+- Use `illustration` only when `schedule_generated_visuals` returned a matching `generatedVisualId`. Never invent an ID or attach it to `evidence`.
 - Headlines should normally be 4–12 Chinese characters.
 - Every beat needs a concrete headline; avoid generic labels such as “重点来了”.
 

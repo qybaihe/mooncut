@@ -1,6 +1,7 @@
 node_modules/
 data/assets/*
 data/jobs/*
+data/*.sqlite*
 !data/assets/.gitkeep
 !data/jobs/.gitkeep
 .env

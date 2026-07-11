@@ -1,25 +1,267 @@
 openapi: 3.1.0
 info:
   title: MoonCut Pi Video Editor API
-  version: 0.1.0
+  version: 1.1.0
+  description: 上传口播视频，异步完成转录、按需示例图调度、证据抓取、人脸跟踪、语义分镜、Remotion 渲染和视觉质检。
 servers:
-  - url: http://127.0.0.1:4317
+  - url: https://42.194.219.172
+    description: Production (use the bundled mooncut-ca.crt)
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque-api-key
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: mooncut_session
+  schemas:
+    AuthUser:
+      type: object
+      required: [id, email, createdAt]
+      properties:
+        id: {type: string, pattern: "^[a-f0-9]{32}$"}
+        email: {type: string, format: email}
+        createdAt: {type: string, format: date-time}
+    CreateEditResponse:
+      type: object
+      required: [id, status, assetId, statusUrl, videoUrl]
+      properties:
+        id: {type: string}
+        status: {type: string, enum: [queued]}
+        assetId: {type: string}
+        statusUrl: {type: string, format: uri}
+        videoUrl: {type: string, format: uri}
+    Job:
+      type: object
+      required: [id, status, stage, progress, createdAt, updatedAt]
+      properties:
+        id: {type: string}
+        status: {type: string, enum: [queued, running, completed, failed]}
+        stage: {type: string}
+        progress: {type: number, minimum: 0, maximum: 1}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        originalName: {type: string}
+        error: {type: string}
+        subtitleRepair:
+          type: object
+          description: Present on a non-destructive human subtitle-repair version.
+          properties:
+            parentJobId: {type: string}
+            rootJobId: {type: string}
+            feedback: {$ref: "#/components/schemas/SubtitleRepairFeedback"}
+            analysis:
+              type: object
+              properties:
+                summary: {type: string}
+                model: {type: string}
+                changes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      segmentIndex: {type: integer}
+                      before: {type: string}
+                      after: {type: string}
+                      startMs: {type: integer}
+                      endMs: {type: integer}
+                      reason: {type: string}
+        result:
+          type: object
+          properties:
+            summary: {type: string}
+            artifacts:
+              type: object
+              additionalProperties: {type: string, format: uri}
+            visuals:
+              type: object
+              properties:
+                mode: {type: string, enum: [off, none, generated, unavailable]}
+                reason: {type: string}
+                maxImages: {type: integer, maximum: 2}
+                requestedCount: {type: integer, maximum: 2}
+    SubtitleRepairFeedback:
+      type: object
+      additionalProperties: false
+      required: [instruction]
+      properties:
+        instruction: {type: string, minLength: 2, maxLength: 2000}
+        atMs: {type: integer, minimum: 0, description: Optional preview cue point in source-timeline milliseconds.}
+        replacementText: {type: string, minLength: 1, maxLength: 160}
+    CommunityPost:
+      type: object
+      required: [id, authorName, title, caption, durationMs, width, height, createdAt, videoUrl]
+      properties:
+        id: {type: string, pattern: "^[a-f0-9]{32}$"}
+        authorName: {type: string, maxLength: 32}
+        title: {type: string, maxLength: 80}
+        caption: {type: string, maxLength: 280}
+        durationMs: {type: integer, minimum: 0}
+        width: {type: integer, minimum: 1}
+        height: {type: integer, minimum: 1}
+        createdAt: {type: string, format: date-time}
+        videoUrl: {type: string, format: uri}
+        posterUrl: {type: string, format: uri}
+    RenderQueueItem:
+      type: object
+      required: [name, status, stage, progress, createdAt, updatedAt, mine]
+      properties:
+        name: {type: string, description: Privacy-safe generated display name; never a filename or job hash.}
+        status: {type: string, enum: [queued, running, completed, failed]}
+        stage: {type: string}
+        progress: {type: number, minimum: 0, maximum: 1}
+        queuePosition: {type: integer, minimum: 1}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        mine: {type: boolean}
 paths:
   /healthz:
     get:
-      summary: Check the agent and local model gateway
+      security: []
+      summary: 服务与模型网关健康检查
       responses:
-        "200":
-          description: Healthy
-  /v1/models:
+        "200": {description: Healthy}
+  /docs:
     get:
-      summary: List gateway models and MoonCut model routing
+      security: []
+      summary: 人类可读的快速接入文档
+      responses:
+        "200": {description: HTML documentation}
+  /openapi.yaml:
+    get:
+      security: []
+      summary: OpenAPI 3.1 契约
+      responses:
+        "200": {description: OpenAPI YAML}
+  /v1/auth/register:
+    post:
+      security: []
+      summary: 使用邮箱和密码注册；无需邮箱验证并立即建立登录会话
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: {type: string, format: email, maxLength: 254}
+                password: {type: string, format: password, minLength: 8, maxLength: 128}
+      responses:
+        "201": {description: Registered and signed in; sets HttpOnly session cookie}
+        "409": {description: Email already registered}
+        "429": {description: Too many attempts}
+  /v1/auth/login:
+    post:
+      security: []
+      summary: 使用邮箱和密码登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: {type: string, format: email}
+                password: {type: string, format: password}
+      responses:
+        "200": {description: Signed in; sets HttpOnly session cookie}
+        "401": {description: Email or password is incorrect}
+        "429": {description: Too many attempts}
+  /v1/auth/logout:
+    post:
+      security: []
+      summary: 注销当前会话并清除 Cookie
+      responses:
+        "200": {description: Signed out}
+  /v1/auth/me:
+    get:
+      security:
+        - sessionCookie: []
+      summary: 获取当前登录用户
       responses:
         "200":
-          description: Model list
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: {$ref: "#/components/schemas/AuthUser"}
+        "401": {description: Not signed in}
+  /v1/auth/session:
+    get:
+      security: []
+      summary: 静默恢复 Web 会话；未登录时返回 null
+      responses:
+        "200": {description: Current user or null}
+  /v1/edits:
+    post:
+      summary: 一次上传视频并创建异步剪辑任务
+      parameters:
+        - in: query
+          name: filename
+          required: true
+          schema: {type: string, example: talking-head.mp4}
+        - in: query
+          name: prompt
+          schema: {type: string}
+        - in: query
+          name: title
+          schema: {type: string}
+        - in: query
+          name: notificationEmail
+          schema: {type: string, format: email}
+        - in: query
+          name: imageGeneration
+          description: 默认 auto，由保守调度器决定 0–2 张；off 完全关闭。
+          schema: {type: string, enum: [auto, off], default: auto}
+      requestBody:
+        required: true
+        content:
+          video/mp4: {}
+          video/quicktime: {}
+          application/octet-stream: {}
+      responses:
+        "202":
+          description: Queued
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/CreateEditResponse"}
+        "401": {description: Invalid API key}
+        "413": {description: Upload too large}
+        "429": {description: Queue full or rate limited}
+  /v1/render-queue:
+    get:
+      summary: 查看匿名化的当前运行、排队和最近完成任务
+      responses:
+        "200":
+          description: Live render queue snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [updatedAt, summary, active, recent]
+                properties:
+                  updatedAt: {type: string, format: date-time}
+                  summary:
+                    type: object
+                    required: [running, queued, completedToday]
+                    properties:
+                      running: {type: integer, minimum: 0}
+                      queued: {type: integer, minimum: 0}
+                      completedToday: {type: integer, minimum: 0}
+                  active: {type: array, items: {$ref: "#/components/schemas/RenderQueueItem"}}
+                  recent: {type: array, items: {$ref: "#/components/schemas/RenderQueueItem"}}
   /v1/assets:
     post:
-      summary: Upload a raw video body
+      summary: 仅上传视频；用于两阶段接入
       parameters:
         - in: query
           name: filename
@@ -28,34 +270,31 @@ paths:
       requestBody:
         required: true
         content:
-          application/octet-stream: {}
           video/mp4: {}
+          application/octet-stream: {}
       responses:
-        "201":
-          description: Uploaded asset
+        "201": {description: Uploaded asset}
   /v1/edit-jobs:
     post:
-      summary: Create an asynchronous editing job
+      summary: 使用已上传 assetId 创建任务
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required: [assetId]
               properties:
                 assetId: {type: string}
-                inputPath: {type: string}
                 title: {type: string}
                 prompt: {type: string}
-              anyOf:
-                - required: [assetId]
-                - required: [inputPath]
+                notificationEmail: {type: string, format: email}
+                imageGeneration: {type: string, enum: [auto, off], default: auto}
       responses:
-        "202":
-          description: Queued job
+        "202": {description: Queued job}
   /v1/edit-jobs/{jobId}:
     get:
-      summary: Read job status and artifact manifest
+      summary: 查询任务状态、进度和产物 URL
       parameters:
         - in: path
           name: jobId
@@ -64,9 +303,48 @@ paths:
       responses:
         "200":
           description: Job record
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Job"}
+  /v1/edit-jobs/{jobId}/subtitle-repairs:
+    get:
+      summary: 获取同一成片的全部人工字幕修订版本
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200":
+          description: Root version and all derived subtitle repair jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [rootJobId, items]
+                properties:
+                  rootJobId: {type: string}
+                  items:
+                    type: array
+                    items: {$ref: "#/components/schemas/Job"}
+    post:
+      summary: 从已完成成片创建一个非破坏性的字幕修订任务
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SubtitleRepairFeedback"}
+      responses:
+        "202": {description: Subtitle repair queued}
+        "409": {description: The selected version is not completed}
   /v1/edit-jobs/{jobId}/artifacts/{artifactName}:
     get:
-      summary: Download one completed artifact
+      summary: 下载成片或任务产物
       parameters:
         - in: path
           name: jobId
@@ -77,7 +355,118 @@ paths:
           required: true
           schema:
             type: string
-            enum: [video, editSpec, subtitles, faceTrack, sourceInspection, sourceContactSheet, finalContactSheet, verification, renderProps, renderLog, piEvents, agentSummary]
+            description: 包括固定产物名，以及 imageGeneration、generated-{id}、generated-meta-{id} 等按任务生成的名称。
+      responses:
+        "200": {description: Artifact bytes}
+        "404": {description: Artifact not found}
+  /v1/models:
+    get:
+      summary: 查看当前模型路由
+      responses:
+        "200": {description: Model list}
+  /v1/mail/status:
+    get:
+      summary: 检查邮件发送能力
+      responses:
+        "200": {description: Mail account status}
+  /v1/community/posts:
+    get:
+      summary: 浏览用户主动发布的社区口播成片
+      parameters:
+        - in: query
+          name: limit
+          schema: {type: integer, minimum: 1, maximum: 24, default: 12}
+        - in: query
+          name: cursor
+          schema: {type: string}
       responses:
         "200":
-          description: Artifact bytes
+          description: Community page
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items: {type: array, items: {$ref: "#/components/schemas/CommunityPost"}}
+                  nextCursor: {type: string}
+    post:
+      summary: 把一条质检通过的完成任务主动分享到社区
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId]
+              properties:
+                jobId: {type: string, pattern: "^[a-f0-9]{32}$"}
+                authorName: {type: string, maxLength: 32}
+                title: {type: string, maxLength: 80}
+                caption: {type: string, maxLength: 280}
+      responses:
+        "201": {description: Published}
+        "200": {description: Already published; existing post returned}
+        "409": {description: Job incomplete, unavailable, or failed quality review}
+  /v1/community/posts/{postId}:
+    get:
+      summary: 查看单条社区作品
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200":
+          description: Community post
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/CommunityPost"}
+        "404": {description: Post not found}
+  /v1/community/posts/{postId}/video:
+    get:
+      summary: 流式播放社区成片，支持 HTTP Range
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Full MP4}
+        "206": {description: Partial MP4 range}
+        "404": {description: Video unavailable}
+  /v1/community/posts/{postId}/poster:
+    get:
+      summary: 获取社区成片预览图
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema: {type: string, pattern: "^[a-f0-9]{32}$"}
+      responses:
+        "200": {description: Poster image}
+        "404": {description: Poster unavailable}
+  /v1/edit-jobs/{jobId}/mail/prepare:
+    post:
+      summary: 准备成片邮件，返回待确认内容
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: {type: string}
+      responses:
+        "200": {description: Pending confirmation}
+  /v1/edit-jobs/{jobId}/mail/{pendingId}/confirm:
+    post:
+      summary: 确认发送上一接口准备的邮件
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: {type: string}
+        - in: path
+          name: pendingId
+          required: true
+          schema: {type: string}
+      responses:
+        "200": {description: Email sent}

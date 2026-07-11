@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MoonCut 剪辑 API</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #07100d; color: #f4f7f5; }
+    body { margin: 0 auto; max-width: 960px; padding: 56px 24px 96px; line-height: 1.65; }
+    h1 { font-size: clamp(38px, 7vw, 76px); line-height: 1; letter-spacing: -.055em; margin: 12px 0 28px; }
+    h2 { margin-top: 48px; }
+    .tag { color: #65d9b6; font: 700 13px ui-monospace, monospace; letter-spacing: .12em; }
+    .card { background: #101b17; border: 1px solid #24342d; border-radius: 18px; padding: 22px; margin: 18px 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    pre { background: #020604; border-radius: 14px; overflow-x: auto; padding: 20px; white-space: pre-wrap; }
+    a { color: #8de7c9; }
+    .muted { color: #a4b3ac; }
+  </style>
+</head>
+<body>
+  <div class="tag">MOONCUT · PI EDITING AGENT</div>
+  <h1>上传口播，得到剪辑成片。</h1>
+  <p class="muted">异步 API 会完成转录、真实网页/X 证据、人脸跟踪、语义分镜、Remotion 渲染和视觉质检。</p>
+
+  <h2>1. 一次提交</h2>
+  <div class="card"><pre>curl --cacert mooncut-ca.crt \
+  -H "Authorization: Bearer $MOONCUT_API_KEY" \
+  -H "Content-Type: video/mp4" \
+  --url-query "filename=talking-head.mp4" \
+  --url-query "prompt=按默认原生macOS规范剪辑" \
+  --data-binary @talking-head.mp4 \
+  "https://42.194.219.172/v1/edits"</pre></div>
+
+  <h2>2. 查询进度</h2>
+  <div class="card"><pre>curl --cacert mooncut-ca.crt \
+  -H "Authorization: Bearer $MOONCUT_API_KEY" \
+  "https://42.194.219.172/v1/edit-jobs/JOB_ID"</pre></div>
+
+  <h2>3. 下载成片</h2>
+  <div class="card"><pre>curl --cacert mooncut-ca.crt \
+  -H "Authorization: Bearer $MOONCUT_API_KEY" \
+  -o final.mp4 \
+  "https://42.194.219.172/v1/edit-jobs/JOB_ID/artifacts/video"</pre></div>
+
+  <p><a href="/openapi.yaml">OpenAPI 3.1 契约</a></p>
+</body>
+</html>
