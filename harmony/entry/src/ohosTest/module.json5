@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "entry_test",
+    "type": "feature",
+    "description": "MoonCut HarmonyOS contract tests",
+    "deviceTypes": ["phone", "tablet"],
+    "deliveryWithInstall": true,
+    "installationFree": false
+  }
+}

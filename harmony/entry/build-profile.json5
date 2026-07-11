@@ -1,0 +1,53 @@
+{
+  "apiType": "stageMode",
+  "buildOption": {},
+  "buildOptionSet": [
+    {
+      "name": "release",
+      "arkOptions": {
+        "buildProfileFields": {
+          "MoonCutEnvironment": "release",
+          "MoonCutApiBaseUrl": "https://42.194.219.172",
+          "MoonCutTrustedHost": "42.194.219.172",
+          "MoonCutUseBundledCA": true
+        },
+        "obfuscation": { "ruleOptions": { "enable": true, "files": ["./obfuscation-rules.txt"] } }
+      }
+    },
+    {
+      "name": "debug",
+      "arkOptions": {
+        "buildProfileFields": {
+          "MoonCutEnvironment": "debug",
+          "MoonCutApiBaseUrl": "http://127.0.0.1:4317",
+          "MoonCutTrustedHost": "127.0.0.1",
+          "MoonCutUseBundledCA": false
+        }
+      }
+    },
+    {
+      "name": "test",
+      "debuggable": true,
+      "arkOptions": {
+        "buildProfileFields": {
+          "MoonCutEnvironment": "debug",
+          "MoonCutApiBaseUrl": "http://127.0.0.1:4317",
+          "MoonCutTrustedHost": "127.0.0.1",
+          "MoonCutUseBundledCA": false
+        }
+      }
+    }
+  ],
+  "buildModeBinder": [
+    {
+      "buildModeName": "test",
+      "mappings": [
+        { "targetName": "ohosTest", "buildOptionName": "test" }
+      ]
+    }
+  ],
+  "targets": [
+    { "name": "default" },
+    { "name": "ohosTest" }
+  ]
+}

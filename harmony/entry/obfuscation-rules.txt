@@ -1,0 +1,2 @@
+-keep-global-name
+./src/main/ets/core/api/APIModels.ets

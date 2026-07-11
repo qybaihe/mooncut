@@ -1,0 +1,9 @@
+{
+  "string": [
+    { "name": "app_name", "value": "MoonCut" },
+    { "name": "module_desc", "value": "MoonCut 原生鸿蒙客户端" },
+    { "name": "ability_desc", "value": "把想法变成值得发布的口播" },
+    { "name": "camera_permission_reason", "value": "用于提词器口播录制与镜头陪练" },
+    { "name": "microphone_permission_reason", "value": "用于口播录音、音量和语速分析" }
+  ]
+}

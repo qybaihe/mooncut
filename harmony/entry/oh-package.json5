@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "MoonCut HarmonyOS entry module",
+  "main": "",
+  "author": "MoonCut",
+  "license": "UNLICENSED",
+  "dependencies": {}
+}

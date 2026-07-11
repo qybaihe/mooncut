@@ -1,0 +1,53 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "openharmonyEmulator",
+        "type": "OpenHarmony",
+        "material": {
+          "certpath": "./signing/OpenHarmonyApplicationReleaseChain.pem",
+          "storePassword": "00000016cbdcedfe0f10213243546576382c761cb3339dfe3c5d674707f1a7537468432e2a7b",
+          "keyAlias": "openharmony application release",
+          "keyPassword": "00000016cbdcedfe0f10213243546576382c761cb3339dfe3c5d674707f1a7537468432e2a7b",
+          "profile": "./signing/mooncut-emulator-profile.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "./signing/OpenHarmony.p12"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "compileSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "targetSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS"
+      },
+      {
+        "name": "emulator",
+        "signingConfig": "openharmonyEmulator",
+        "compileSdkVersion": "6.1.1(24)",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "targetSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS"
+      }
+    ],
+    "buildModeSet": [
+      { "name": "debug" },
+      { "name": "release" },
+      { "name": "test" }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": ["default", "emulator"]
+        }
+      ]
+    }
+  ]
+}
