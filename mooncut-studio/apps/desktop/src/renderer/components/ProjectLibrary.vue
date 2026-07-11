@@ -96,22 +96,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <div class="page-header">
-      <div>
-        <div class="eyebrow">
-          <UiIcon name="library" :size="12" />
-          本地 · 无需登录
-        </div>
-        <h1>项目库</h1>
-        <p>打开已有项目，或新建一条口播工程。</p>
-      </div>
-      <div class="page-header-actions">
-        <button type="button" class="primary" @click="openCreate">
-          <UiIcon name="plus" :size="15" />
+  <div class="library-page">
+    <div class="library-header">
+      <h1>项目库</h1>
+      <div class="library-actions">
+        <button type="button" class="primary compact" @click="openCreate">
+          <UiIcon name="plus" :size="14" />
           新建项目
         </button>
-        <button type="button" class="ghost" title="刷新" @click="refresh">
+        <button type="button" class="ghost compact icon-only" title="刷新" @click="refresh">
           <UiIcon name="refresh" :size="14" />
         </button>
       </div>
@@ -165,52 +158,48 @@ onMounted(async () => {
 
     <div v-if="error && !showCreate" class="notice alert">{{ error }}</div>
 
-    <div v-if="projects.length === 0" class="empty-state">
+    <div v-if="projects.length === 0" class="empty-state compact-empty">
       <div class="empty-state-icon">
-        <UiIcon name="empty" :size="22" />
+        <UiIcon name="empty" :size="20" />
       </div>
-      <h3 style="color: var(--text-primary); margin-top: 0">还没有本地项目</h3>
+      <h3>还没有本地项目</h3>
       <p>创建项目后即可导入视频、发起剪辑任务。</p>
-      <div class="row" style="justify-content: center; margin-top: 1rem">
-        <button type="button" class="primary" @click="openCreate">
-          <UiIcon name="plus" :size="15" />
-          创建第一个项目
-        </button>
-      </div>
+      <button type="button" class="primary compact" @click="openCreate">
+        <UiIcon name="plus" :size="14" />
+        创建第一个项目
+      </button>
     </div>
 
     <div v-else class="grid-cards">
       <article v-for="project in projects" :key="project.id" class="card card-project">
-        <div class="card-project-top">
-          <span class="card-icon" aria-hidden="true">
-            <UiIcon name="folder" :size="18" />
-          </span>
-          <div style="min-width: 0; flex: 1">
-            <h3 style="margin-bottom: 0.25rem">{{ project.name }}</h3>
-            <div class="meta mono" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+        <div class="card-thumb" aria-hidden="true">
+          <UiIcon name="media" :size="22" />
+        </div>
+        <div class="card-project-body">
+          <div class="card-project-top">
+            <h3>{{ project.name }}</h3>
+            <div class="meta mono card-path">
               {{ project.rootPath }}
             </div>
           </div>
-        </div>
-        <div class="meta">
-          更新 {{ formatTime(project.updatedAt) }} · 素材 {{ project.mediaCount }} · 任务 {{ project.jobCount }}
-          <template v-if="project.lastJobStatus"> · {{ project.lastJobStatus }}</template>
-        </div>
-        <div class="actions">
-          <button type="button" class="primary compact" @click="emit('open', project)">
-            <UiIcon name="open" :size="13" />
-            打开
-          </button>
-          <button type="button" class="ghost compact icon-only" title="在文件夹中显示" @click="reveal(project)">
-            <UiIcon name="folder" :size="14" />
-          </button>
-          <button type="button" class="danger compact icon-only" title="删除" @click="remove(project)">
-            <UiIcon name="trash" :size="14" />
-          </button>
+          <div class="meta card-stats">
+            更新 {{ formatTime(project.updatedAt) }} · 素材 {{ project.mediaCount }} · 任务 {{ project.jobCount }}
+            <template v-if="project.lastJobStatus"> · {{ project.lastJobStatus }}</template>
+          </div>
+          <div class="actions">
+            <button type="button" class="primary compact" @click="emit('open', project)">
+              <UiIcon name="open" :size="13" />
+              打开
+            </button>
+            <button type="button" class="ghost compact icon-only" title="在文件夹中显示" @click="reveal(project)">
+              <UiIcon name="folder" :size="14" />
+            </button>
+            <button type="button" class="danger compact icon-only" title="删除" @click="remove(project)">
+              <UiIcon name="trash" :size="14" />
+            </button>
+          </div>
         </div>
       </article>
     </div>
-
-    <p class="privacy-banner">素材默认只在本机。远程模型需在设置中自行配置。</p>
   </div>
 </template>

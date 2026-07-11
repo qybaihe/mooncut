@@ -229,50 +229,25 @@ onUnmounted(() => {
 
 <template>
   <div class="clip-page">
-    <!-- Compact top bar -->
+    <!-- Compact action bar (rail + global topbar already show project name) -->
     <header class="clip-topbar">
-      <div class="clip-topbar-left">
-        <button type="button" class="ghost compact" @click="emit('back')">
-          <UiIcon name="back" :size="14" />
-          项目库
-        </button>
-        <div class="clip-title-block">
-          <h1>{{ project.name }}</h1>
-          <span class="meta">智能口播剪辑</span>
-        </div>
-      </div>
       <div class="clip-topbar-actions">
         <button type="button" class="ghost compact" @click="emit('create-speak')">
           <UiIcon name="chat" :size="13" />
           创作口播
         </button>
+      </div>
+      <div class="clip-topbar-actions">
         <button type="button" class="ghost compact" title="在访达中显示" @click="revealProject">
           <UiIcon name="folder" :size="14" />
+          打开目录
         </button>
       </div>
     </header>
 
-    <!-- Stepper -->
-    <div v-if="clipStage !== 'empty'" class="clip-stepper" aria-label="剪辑进度">
-      <span :class="{'is-done': clipStage !== 'empty'}">
-        <UiIcon name="check" :size="12" /> 上传
-      </span>
-      <i />
-      <span
-        :class="{
-          'is-current': clipStage === 'ready' || clipStage === 'processing' || clipStage === 'failed',
-          'is-done': clipStage === 'done',
-        }"
-      >
-        剪辑
-      </span>
-      <i />
-      <span :class="{'is-current': clipStage === 'done', 'is-done': clipStage === 'done'}">成片</span>
-    </div>
-
     <div v-if="error" class="notice alert">{{ error }}</div>
 
-    <!-- EMPTY: big upload zone (web ClipStudio style) -->
+    <!-- EMPTY: compact drop target -->
     <div v-if="clipStage === 'empty'" class="upload-layout">
       <button
         type="button"
@@ -280,33 +255,14 @@ onUnmounted(() => {
         :disabled="busy"
         @click="importVideo"
       >
-        <div class="upload-visual" aria-hidden="true">
-          <span class="upload-frame frame-back" />
-          <span class="upload-frame frame-front">
-            <UiIcon name="upload" :size="22" />
-          </span>
-          <span class="upload-spark spark-one">✦</span>
-          <span class="upload-spark spark-two">✦</span>
-          <img
-            class="memphis-sticker upload-sticker"
-            src="/memphis-icons/upload-file-line.png"
-            alt=""
-            width="48"
-            height="48"
-          />
-        </div>
-        <h2>{{ busy ? "正在导入…" : "拖入或选择一条素口播" }}</h2>
-        <p>点击选择本地视频，MoonCut 会自动整理节奏与字幕</p>
+        <span class="upload-zone-icon"><UiIcon name="upload" :size="24" /></span>
+        <h2>{{ busy ? "正在导入…" : "拖入或选择一条口播视频" }}</h2>
+        <p>MoonCut 会自动整理节奏与字幕</p>
         <span class="primary upload-cta">
-          <UiIcon name="upload" :size="16" />
+          <UiIcon name="upload" :size="15" />
           选择视频
         </span>
-        <small>支持 MP4、MOV、WebM · 建议 30 分钟以内</small>
-        <div class="capability-row">
-          <span><UiIcon name="sparkles" :size="14" /> 自动删停顿</span>
-          <span><UiIcon name="layers" :size="14" /> 清理重复表达</span>
-          <span><UiIcon name="media" :size="14" /> 生成节奏字幕</span>
-        </div>
+        <small>支持 MP4 · MOV · WebM</small>
       </button>
       <p class="upload-alt">
         也可以
@@ -355,15 +311,6 @@ onUnmounted(() => {
 
       <aside class="settings-card">
         <span class="mini-label">本次剪辑</span>
-        <h2>保持你的表达，<br />只让节奏更好。</h2>
-        <div class="preset-card">
-          <div class="preset-icon"><UiIcon name="sparkles" :size="18" /></div>
-          <div>
-            <strong>自然口播</strong>
-            <p>轻度精简 · 动态字幕 · 保留语气</p>
-          </div>
-          <UiIcon name="check" :size="18" class="preset-check" />
-        </div>
 
         <div class="setting-row">
           <span><UiIcon name="layers" :size="15" /> 节奏</span>
@@ -472,9 +419,8 @@ onUnmounted(() => {
       </div>
       <aside class="settings-card">
         <span class="mini-label">已完成</span>
-        <h2>可以发了。</h2>
-        <p class="meta" style="margin: 0 0 1rem; line-height: 1.5">
-          成片已保存在本机项目目录。音频、画面与字幕检查已跑完。
+        <p class="meta" style="margin: 0 0 0.75rem; line-height: 1.5">
+          成片已保存在本机项目目录，音频、画面与字幕检查已跑完。
         </p>
         <button type="button" class="primary start-cut" @click="revealVideo">
           <UiIcon name="download" :size="16" />

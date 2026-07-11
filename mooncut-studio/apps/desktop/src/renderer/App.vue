@@ -36,6 +36,24 @@ const fullBleed = computed(
   () => page.value === "create" || page.value === "workbench" || page.value === "onboarding",
 );
 
+/** Page title shown in the slim topbar. */
+const pageTitle = computed(() => {
+  switch (page.value) {
+    case "library":
+      return "项目库";
+    case "create":
+      return "创作口播";
+    case "workbench":
+      return activeProject.value ? activeProject.value.name : "剪辑台";
+    case "settings":
+      return "设置";
+    case "onboarding":
+      return "欢迎使用";
+    default:
+      return "MoonCut Studio";
+  }
+});
+
 async function refreshAgent() {
   try {
     agent.value = await getMooncut().agentStatus();
@@ -95,93 +113,120 @@ onMounted(() => {
 
 <template>
   <div class="studio-shell" :data-theme-active="currentTheme" :class="{'is-full-bleed': fullBleed}">
-    <header class="studio-topbar">
-      <div class="topbar-inner">
-        <div class="brand">
-          <div class="brand-logo--mark">
-            <img :src="logoUrl" alt="MoonCut" />
-          </div>
-          <div class="brand-title">
-            <strong>MoonCut Studio</strong>
-            <span>本地专业口播工作台 · 无需登录</span>
-          </div>
-        </div>
-
-        <nav v-if="page !== 'onboarding' && !bridgeMissing" class="nav-tabs" aria-label="主导航">
-          <button :class="{active: page === 'library'}" type="button" @click="page = 'library'">
-            <UiIcon name="library" :size="15" />
-            项目库
-          </button>
-          <button :class="{active: page === 'create'}" type="button" @click="goCreate(activeProject)">
-            <UiIcon name="chat" :size="15" />
-            创作口播
-          </button>
-          <button
-            :class="{active: page === 'workbench'}"
-            type="button"
-            :disabled="!activeProject"
-            @click="page = 'workbench'"
-          >
-            <UiIcon name="workbench" :size="15" />
-            剪辑台
-          </button>
-          <button :class="{active: page === 'settings'}" type="button" @click="page = 'settings'">
-            <UiIcon name="settings" :size="15" />
-            设置
-          </button>
-        </nav>
-
-        <div class="header-meta">
-          <span v-if="!bridgeMissing" class="status-pill" :class="agentPill">
-            <span class="dot" />
-            <UiIcon name="agent" :size="13" />
-            Agent {{ agent?.state ?? "…" }}
-            <template v-if="agent?.port"> · :{{ agent.port }}</template>
-          </span>
-          <ThemeToggle />
+    <!-- Left activity rail (Cherry-style icon nav) -->
+    <aside class="studio-rail" v-if="page !== 'onboarding' && !bridgeMissing">
+      <div class="rail-brand" aria-label="MoonCut Studio">
+        <div class="brand-logo--mark">
+          <img :src="logoUrl" alt="MoonCut" />
         </div>
       </div>
-    </header>
+      <nav class="rail-nav" aria-label="主导航">
+        <button
+          class="rail-button"
+          :class="{active: page === 'library'}"
+          type="button"
+          title="项目库"
+          aria-label="项目库"
+          @click="page = 'library'"
+        >
+          <UiIcon name="library" :size="18" />
+        </button>
+        <button
+          class="rail-button"
+          :class="{active: page === 'create'}"
+          type="button"
+          title="创作口播"
+          aria-label="创作口播"
+          @click="goCreate(activeProject)"
+        >
+          <UiIcon name="chat" :size="18" />
+        </button>
+        <button
+          class="rail-button"
+          :class="{active: page === 'workbench'}"
+          type="button"
+          title="剪辑台"
+          aria-label="剪辑台"
+          :disabled="!activeProject"
+          @click="page = 'workbench'"
+        >
+          <UiIcon name="workbench" :size="18" />
+        </button>
+        <button
+          class="rail-button"
+          :class="{active: page === 'settings'}"
+          type="button"
+          title="设置"
+          aria-label="设置"
+          @click="page = 'settings'"
+        >
+          <UiIcon name="settings" :size="18" />
+        </button>
+      </nav>
+      <div class="rail-foot">
+        <ThemeToggle />
+      </div>
+    </aside>
 
-    <main class="studio-main" :class="{'studio-main--bleed': fullBleed}">
-      <div class="studio-main-inner" :class="{'studio-main-inner--bleed': fullBleed}">
-        <div v-if="!ready" class="empty-state">正在启动本地 Studio…</div>
-
-        <div v-else-if="bridgeMissing" class="card bridge-error">
-          <div class="eyebrow">桌面桥接</div>
-          <h1 style="margin: 0 0 0.5rem">无法连接主进程</h1>
-          <p class="meta" style="margin-bottom: 1rem">
-            <code>window.mooncut</code> 未注入。请使用最新打包产物，或在仓库中运行开发模式。
-          </p>
-          <div class="notice alert" style="text-align: left">
-            开发：<code>cd mooncut-studio && npm run dev</code><br />
-            打包：<code>npm run pack:mac</code> 后打开 release 下的 App
+    <!-- Right column: slim topbar + main -->
+    <div class="studio-body">
+      <header class="studio-topbar">
+        <div class="topbar-inner">
+          <div class="topbar-title">
+            <h1>{{ pageTitle }}</h1>
+            <span v-if="page === 'workbench' && activeProject" class="topbar-subtitle">智能口播剪辑</span>
+          </div>
+          <div class="header-meta">
+            <span v-if="!bridgeMissing" class="status-pill" :class="agentPill">
+              <span class="dot" />
+              <UiIcon name="agent" :size="13" />
+              Agent {{ agent?.state ?? "…" }}
+              <template v-if="agent?.port"> · :{{ agent.port }}</template>
+            </span>
           </div>
         </div>
+      </header>
 
-        <div v-else-if="bootError" class="notice alert">{{ bootError }}</div>
-        <OnboardingWizard v-else-if="page === 'onboarding'" @done="onOnboardingDone" />
-        <ProjectLibrary
-          v-else-if="page === 'library'"
-          :settings="settings"
-          @open="openProject"
-          @settings="page = 'settings'"
-        />
-        <CreateSpeakPage
-          v-else-if="page === 'create'"
-          :project="activeProject"
-          @open-project="(p) => (activeProject = p)"
-          @go-edit="goEdit"
-          @go-library="page = 'library'"
-        />
-        <ProjectWorkbench
-          v-else-if="page === 'workbench' && activeProject"
-          :project="activeProject"
-          @back="page = 'library'"
-          @create-speak="goCreate(activeProject)"
-        />
-        <SettingsPanel v-else-if="page === 'settings'" @updated="(s) => (settings = s)" />
-      </div>
-    </main>
+      <main class="studio-main" :class="{'studio-main--bleed': fullBleed}">
+        <div class="studio-main-inner" :class="{'studio-main-inner--bleed': fullBleed}">
+          <div v-if="!ready" class="empty-state">正在启动本地 Studio…</div>
+
+          <div v-else-if="bridgeMissing" class="card bridge-error">
+            <div class="eyebrow">桌面桥接</div>
+            <h1 style="margin: 0 0 0.5rem">无法连接主进程</h1>
+            <p class="meta" style="margin-bottom: 1rem">
+              <code>window.mooncut</code> 未注入。请使用最新打包产物，或在仓库中运行开发模式。
+            </p>
+            <div class="notice alert" style="text-align: left">
+              开发：<code>cd mooncut-studio && npm run dev</code><br />
+              打包：<code>npm run pack:mac</code> 后打开 release 下的 App
+            </div>
+          </div>
+
+          <div v-else-if="bootError" class="notice alert">{{ bootError }}</div>
+          <OnboardingWizard v-else-if="page === 'onboarding'" @done="onOnboardingDone" />
+          <ProjectLibrary
+            v-else-if="page === 'library'"
+            :settings="settings"
+            @open="openProject"
+            @settings="page = 'settings'"
+          />
+          <CreateSpeakPage
+            v-else-if="page === 'create'"
+            :project="activeProject"
+            @open-project="(p) => (activeProject = p)"
+            @go-edit="goEdit"
+            @go-library="page = 'library'"
+          />
+          <ProjectWorkbench
+            v-else-if="page === 'workbench' && activeProject"
+            :project="activeProject"
+            @back="page = 'library'"
+            @create-speak="goCreate(activeProject)"
+          />
+          <SettingsPanel v-else-if="page === 'settings'" @updated="(s) => (settings = s)" />
+        </div>
+      </main>
+    </div>
   </div>
 </template>

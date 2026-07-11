@@ -41,18 +41,19 @@
   --alert: #d4392e;
   --alert-soft: rgba(212, 57, 46, 0.1);
 
-  /* Radius scale aligned with Cherry Studio (cs-radius-*) */
+  /* Radius scale aligned with Cherry Studio (cs-radius-*) — desktop-grade, not mobile */
   --r-xs: 2px;
   --r-sm: 6px;
   --r-md: 8px;
   --r-lg: 10px;
-  --r-xl: 14px;
-  --r-2xl: 18px;
-  --r-3xl: 22px;
+  --r-xl: 10px;
+  --r-2xl: 12px;
+  --r-3xl: 14px;
   --r-round: 9999px;
 
   /* Dense shell / control metrics (Cherry navbar ≈ 44px) */
   --shell-navbar-height: 44px;
+  --rail-width: 56px;
   --control-height: 32px;
   --control-height-sm: 28px;
   --space-1: 4px;
@@ -62,9 +63,10 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  --shadow: 0 1px 2px rgba(15, 15, 15, 0.04);
-  --shadow-medium: 0 2px 8px rgba(15, 15, 15, 0.08);
-  --shadow-large: 0 8px 24px rgba(15, 15, 15, 0.1);
+  /* Layered elevation — lifted desktop surfaces, not flat web hairlines */
+  --shadow: 0 1px 3px rgba(15, 15, 15, 0.06), 0 1px 2px rgba(15, 15, 15, 0.04);
+  --shadow-medium: 0 4px 12px rgba(15, 15, 15, 0.10), 0 2px 4px rgba(15, 15, 15, 0.06);
+  --shadow-large: 0 12px 32px rgba(15, 15, 15, 0.14), 0 4px 8px rgba(15, 15, 15, 0.08);
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", monospace;
 
   color: var(--text-primary);
@@ -102,9 +104,9 @@
   --alert: #e85d52;
   --alert-soft: rgba(232, 93, 82, 0.12);
 
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-large: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.30), 0 2px 4px rgba(0, 0, 0, 0.20);
+  --shadow-large: 0 12px 32px rgba(0, 0, 0, 0.40), 0 4px 8px rgba(0, 0, 0, 0.24);
 }
 
 /* ── Memphis Theme ── */
@@ -158,6 +160,8 @@
   --r-xl: 14px;
   --r-2xl: 18px;
   --r-3xl: 22px;
+
+  --rail-width: 64px;
 
   --shadow: 3px 3px 0 var(--memphis-cyan);
   --shadow-medium: 5px 5px 0 var(--memphis-yellow);
@@ -355,12 +359,124 @@ button .ui-icon,
   opacity: 0.88;
 }
 
-/* ── Shell ── */
+/* ── Shell — left activity rail + slim topbar + main (Cherry-style) ── */
 .studio-shell {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: var(--rail-width) 1fr;
+  grid-template-rows: 1fr;
   height: 100%;
   min-height: 100%;
+}
+
+/* Onboarding / bridge-missing: full-width, no rail */
+.studio-shell > .studio-body:only-child {
+  grid-column: 1 / -1;
+}
+
+/* ── Left activity rail ── */
+.studio-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0 12px;
+  border-right: 1px solid var(--border-default);
+  background: var(--bg-secondary);
+  flex: 0 0 auto;
+  -webkit-app-region: drag;
+}
+
+.studio-rail .rail-brand,
+.studio-rail .rail-nav,
+.studio-rail .rail-foot,
+.studio-rail .rail-button {
+  -webkit-app-region: no-drag;
+}
+
+.rail-brand {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+}
+
+.rail-brand .brand-logo--mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.rail-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+}
+
+.rail-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-tertiary);
+  box-shadow: none;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.rail-button:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.rail-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.rail-button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.rail-button.active::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+
+.rail-foot {
+  display: grid;
+  place-items: center;
+  padding-top: 6px;
+}
+
+.rail-foot .theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+}
+
+/* ── Right body column ── */
+.studio-body {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
 
 .studio-topbar {
@@ -369,19 +485,16 @@ button .ui-icon,
   z-index: 40;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: calc(var(--shell-navbar-height) + 12px);
-  padding: 6px 14px;
-  background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
+  min-height: var(--shell-navbar-height);
+  padding: 0 16px;
+  background: color-mix(in srgb, var(--bg-primary) 92%, transparent);
   backdrop-filter: blur(14px) saturate(1.25);
   border-bottom: 1px solid var(--border-default);
   -webkit-app-region: drag;
+  flex: 0 0 auto;
 }
 
-.studio-topbar button,
-.studio-topbar .theme-selector,
-.studio-topbar .nav-tabs,
+.studio-topbar .topbar-inner,
 .studio-topbar .status-pill {
   -webkit-app-region: no-drag;
 }
@@ -390,20 +503,73 @@ button .ui-icon,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 12px;
   width: 100%;
-  max-width: 1480px;
-  margin: 0 auto;
   min-height: var(--shell-navbar-height);
-  padding: 0 4px;
-  border-radius: var(--r-lg);
 }
 
-[data-theme="memphis"] .topbar-inner {
+.topbar-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.topbar-title h1 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+[data-theme="memphis"] .studio-rail {
+  border-right: 2px solid var(--memphis-line);
+  background: var(--memphis-cream);
+}
+
+[data-theme="memphis"] .rail-brand .brand-logo--mark {
   border: 2px solid var(--memphis-line);
-  background: var(--memphis-paper);
-  box-shadow: 4px 4px 0 var(--memphis-cyan);
-  padding: 6px 10px;
+  background: var(--memphis-yellow);
+  box-shadow: 2px 2px 0 var(--memphis-ink);
+}
+
+[data-theme="memphis"] .rail-button {
+  border: 2px solid transparent;
+  border-radius: 10px;
+}
+
+[data-theme="memphis"] .rail-button:hover:not(:disabled) {
+  background: var(--memphis-cream);
+  color: var(--memphis-ink);
+}
+
+[data-theme="memphis"] .rail-button.active {
+  background: var(--memphis-yellow);
+  color: var(--memphis-ink);
+  border-color: var(--memphis-line);
+  box-shadow: 2px 2px 0 var(--memphis-ink);
+}
+
+[data-theme="memphis"] .rail-button.active::before {
+  background: var(--memphis-pink);
+}
+
+[data-theme="memphis"] .rail-foot .theme-toggle {
+  border: 2px solid var(--memphis-line);
+  background: var(--memphis-cyan);
+  color: var(--memphis-ink);
+  box-shadow: 2px 2px 0 var(--memphis-ink);
 }
 
 .brand {
@@ -686,12 +852,12 @@ button .ui-icon,
 .studio-main {
   min-height: 0;
   overflow: auto;
-  padding: 20px 20px 40px;
+  padding: 16px 20px 24px;
 }
 
 .studio-main-inner {
-  max-width: 1280px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
 .page-header {
@@ -774,8 +940,8 @@ button .ui-icon,
 
 .grid-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
 }
 
 .card {
@@ -843,6 +1009,95 @@ button .ui-icon,
   width: 28px;
   min-width: 28px;
   padding: 0;
+}
+
+/* ── Library page (compact header + thumbnail cards) ── */
+.library-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.library-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.library-header h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.library-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-project {
+  padding: 0;
+  overflow: hidden;
+}
+.card-thumb {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border-default);
+}
+.card-project-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+.card-project-body .card-project-top {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.card-project-body h3 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.card-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.card-stats {
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+.card-project-body .actions {
+  margin-top: 2px;
+}
+.compact-empty {
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+}
+.compact-empty h3 {
+  margin: 8px 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.compact-empty p {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+}
+.compact-empty .empty-state-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
 }
 
 /* Modal dialog */
@@ -929,10 +1184,10 @@ button .ui-icon,
 .empty-state {
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-2xl);
-  padding: 2.5rem 1.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
   color: var(--text-secondary);
-  background: radial-gradient(ellipse at top, var(--accent-soft), transparent 60%);
+  background: var(--bg-secondary);
 }
 
 .empty-state-icon {
@@ -1318,6 +1573,21 @@ button .ui-icon,
   }
 }
 
+/* Narrow window: collapse the left rail so content gets full width.
+   Desktop Electron windows are normally wide enough, but this keeps
+   the app usable when resized small. */
+@media (max-width: 720px) {
+  .studio-shell {
+    grid-template-columns: 1fr;
+  }
+  .studio-rail {
+    display: none;
+  }
+  .studio-shell > .studio-body {
+    grid-column: 1;
+  }
+}
+
 
 /* ── Settings shell (Cherry-inspired IA) ── */
 .settings-shell {
@@ -1576,6 +1846,128 @@ button.compact { padding: 0.4rem 0.7rem; font-size: 12px; }
   box-shadow: var(--shadow);
 }
 .theme-card span { font-size: 12px; color: var(--text-tertiary); }
+
+/* Agent source cards (onboarding privacy step — 3 choices) */
+.agent-source-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 4px;
+}
+.agent-source-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 12px;
+  text-align: left;
+  min-height: 88px;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border-default);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 500;
+  justify-content: flex-start;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.agent-source-card:hover {
+  border-color: var(--border-strong);
+}
+.agent-source-card.active {
+  border-color: var(--border-accent);
+  background: var(--accent-soft);
+  box-shadow: var(--shadow);
+}
+.agent-source-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+.agent-source-card.active .agent-source-icon {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: transparent;
+}
+.agent-source-card strong {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.agent-source-card small {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+.agent-cli-subform {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border-default);
+  background: var(--bg-secondary);
+}
+.agent-cli-kinds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.onboard-toggle.compact {
+  padding: 10px 12px;
+  border-radius: var(--r-lg);
+}
+.onboard-toggle.compact strong {
+  font-size: 12.5px;
+}
+.onboard-toggle.compact small {
+  font-size: 11px;
+}
+.agent-cli-path {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.agent-cli-path .meta {
+  color: var(--text-tertiary);
+  font-size: 11.5px;
+}
+[data-theme="memphis"] .agent-source-card {
+  border: 2px solid var(--memphis-line);
+  background: var(--memphis-paper);
+  box-shadow: 3px 3px 0 var(--memphis-cyan);
+  font-weight: 600;
+}
+[data-theme="memphis"] .agent-source-card.active {
+  background: var(--memphis-yellow);
+  color: var(--memphis-ink);
+  box-shadow: 4px 4px 0 var(--memphis-ink);
+}
+[data-theme="memphis"] .agent-source-icon {
+  border: 2px solid var(--memphis-line);
+  background: var(--memphis-cream);
+}
+[data-theme="memphis"] .agent-source-card.active .agent-source-icon {
+  background: var(--memphis-ink);
+  color: var(--memphis-yellow);
+}
+[data-theme="memphis"] .agent-cli-subform {
+  border: 2px solid var(--memphis-line);
+  background: var(--memphis-cream);
+  box-shadow: 3px 3px 0 var(--memphis-pink);
+}
+[data-theme="memphis"] .onboard-toggle.compact {
+  border: 2px solid var(--memphis-line);
+  background: var(--memphis-paper);
+  box-shadow: 2px 2px 0 var(--memphis-ink);
+}
 .empty-detail {
   display: grid;
   place-items: center;
@@ -1768,13 +2160,13 @@ button.upload-zone,
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 440px;
+  min-height: 260px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 0;
+  gap: 6px;
   overflow: hidden;
-  padding: 40px 28px;
+  padding: 28px 24px;
   border: 2px dashed var(--border-strong);
   border-radius: var(--r-2xl);
   background: var(--bg-secondary);
@@ -1784,22 +2176,21 @@ button.upload-zone,
   transition: border-color 200ms ease, background 200ms ease;
 }
 
+.upload-zone-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 6px;
+  border-radius: var(--r-xl);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
 button.upload-zone:hover:not(:disabled) {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent-soft) 50%, var(--bg-secondary));
-}
-
-.upload-zone::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  opacity: 0.35;
-  background-image:
-    linear-gradient(var(--border-default) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-default) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 65% 55% at 50% 50%, black, transparent 80%);
-  pointer-events: none;
 }
 
 .upload-zone h2 {
@@ -1938,9 +2329,11 @@ button.linkish,
 /* Ready / done workbench */
 .clip-workbench {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 360px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 340px);
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
+  height: calc(100vh - 120px);
+  min-height: 460px;
 }
 
 .video-card,
@@ -1975,6 +2368,7 @@ button.linkish,
   vertical-align: 1px;
 }
 .status-dot.ok { background: var(--signal); }
+.status-dot.amber { background: var(--warn); }
 
 .portrait-friendly {
   min-height: 360px;
@@ -2017,10 +2411,10 @@ button.linkish,
 }
 
 .settings-card {
-  padding: 18px 16px 16px;
+  padding: 14px 14px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .settings-card h2 {
@@ -2266,11 +2660,26 @@ button.linkish,
   flex-direction: column;
 }
 
-/* ── Create speak page (Cherry-like assistant shell) ── */
+/* ── Create speak page — Compose Design Spec ───────────────────────────────
+   Layout contract (desktop ≥ 861px):
+     [ header chrome   ~44px  — mark + title + project bind + nav ]
+     [ step rail       ~36px  — 聊想法 → 成稿 → 提词录制 + hint ]
+     [ left chat | right script — flex fill, single outer shell ]
+   Mobile (≤ 860px): tab switch between panes (see record-studio.css).
+
+   Density rules (Cherry + Notion, not web landing):
+     · 栏头 ~52px；气泡 13px；步骤条 ~32px；避免落地页式大 h1
+     · 双栏单外框 + 内部分割线，不要两张漂浮散卡
+     · 左栏略灰底（assistant）；右栏纯白文档面（script）
+     · 主操作唯一：右下角「进入提词录制」；复制为次
+     · 空态：短标题 + 一句 + chips，不重复 seed 大气泡
+   Tokens (override-able by theme):
+     --compose-rail-h – step rail min-height
+   ──────────────────────────────────────────────────────────────────────── */
 .create-speak-page {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   flex: 1;
   min-height: 0;
   height: 100%;
@@ -2283,37 +2692,41 @@ button.linkish,
   gap: 12px;
   flex-wrap: wrap;
   min-height: 44px;
-  padding: 4px 2px 8px;
+  padding: 4px 2px 10px;
   border-bottom: 1px solid var(--border-default);
+  flex: 0 0 auto;
 }
 
 .create-speak-title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .create-speak-title h1 {
   margin: 0;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 650;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+  letter-spacing: -0.012em;
+  line-height: 1.25;
 }
 
 .create-speak-title p {
   margin: 2px 0 0;
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .assistant-mark {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--r-lg);
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
   background: var(--accent-soft);
   color: var(--accent);
   border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
@@ -2354,30 +2767,26 @@ button.linkish,
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  /* kill web marketing spacing when nested in Studio shell */
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .create-speak-body .record-compose-heading {
-  margin-bottom: 0 !important;
-  padding-bottom: 0;
+  display: none !important;
 }
 
-.create-speak-body .record-compose-heading h1 {
-  font-size: 1.2rem !important;
-  margin: 0.15rem 0 0.25rem !important;
-}
-
-.create-speak-body .record-compose-heading p {
-  font-size: 13px !important;
-  margin: 0 !important;
+.create-speak-body .compose-rail {
+  padding: 0;
 }
 
 .create-speak-body .compose-layout {
   flex: 1;
-  min-height: 0;
+  min-height: 0 !important;
   height: auto !important;
-  grid-template-columns: minmax(300px, 0.95fr) minmax(340px, 1.05fr);
-  gap: 12px;
+  /* fill remaining viewport; don't lock to 680px */
+  max-height: none;
 }
 
 .create-speak-body .assistant-card,
@@ -2385,26 +2794,82 @@ button.linkish,
   min-height: 0;
   height: 100%;
   max-height: none;
-  border-radius: var(--r-xl);
-  box-shadow: var(--shadow);
 }
 
-/* Chat bubbles closer to Cherry density */
+/* Density: tighter bubbles / composer */
+.create-speak-body .chat-scroll {
+  padding: 12px 12px 8px;
+}
+
+.create-speak-body .chat-message {
+  margin-bottom: 10px;
+}
+
 .create-speak-body .chat-message p {
   border-radius: 10px;
-  font-size: 13.5px;
+  font-size: 13px;
+  line-height: 1.55;
+  padding: 8px 12px;
+  max-width: 92%;
+}
+
+.create-speak-body .message-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
 }
 
 .create-speak-body .chat-composer {
   border-top: 1px solid var(--border-default);
-  padding: 10px 12px;
-  background: color-mix(in srgb, var(--bg-primary) 88%, var(--bg-secondary));
+  padding: 10px 12px 22px;
+  background: color-mix(in srgb, var(--bg-primary) 92%, var(--bg-secondary));
 }
 
 .create-speak-body .chat-composer textarea {
-  min-height: 44px;
-  border-radius: var(--r-lg);
+  min-height: 52px;
+  border-radius: 10px;
   font-size: 13px;
+  padding: 10px 42px 10px 12px;
+}
+
+.create-speak-body .chat-composer > button {
+  top: 18px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+}
+
+.create-speak-body .script-header {
+  min-height: 52px;
+  padding: 0 14px;
+}
+
+.create-speak-body .script-header h2 {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.create-speak-body .script-editor-wrap {
+  padding: 16px 18px 10px;
+}
+
+.create-speak-body .script-editor {
+  font-size: 14.5px;
+  line-height: 1.85;
+}
+
+.create-speak-body .script-footer {
+  min-height: 56px;
+  padding: 0 12px 0 14px;
+}
+
+.create-speak-body .quick-topics {
+  padding-left: 0;
+}
+
+.create-speak-body .suggestion-block {
+  margin-left: 0;
 }
 
 [data-theme="memphis"] .assistant-mark {
@@ -2412,6 +2877,16 @@ button.linkish,
   background: var(--memphis-yellow);
   color: var(--memphis-ink);
   box-shadow: 2px 2px 0 var(--memphis-ink);
+}
+
+[data-theme="memphis"] .create-speak-body .compose-layout {
+  border: 2px solid var(--memphis-ink);
+  box-shadow: 4px 4px 0 var(--memphis-ink);
+}
+
+[data-theme="memphis"] .create-speak-body .compose-layout .assistant-card {
+  border-right: 2px solid var(--memphis-ink);
+  background: var(--memphis-cream);
 }
 
 /* ==========================================================================
@@ -2826,5 +3301,11 @@ button.linkish,
   }
   .onboard-title {
     font-size: 1.3rem;
+  }
+  .agent-source-cards {
+    grid-template-columns: 1fr;
+  }
+  .agent-cli-kinds {
+    grid-template-columns: 1fr;
   }
 }

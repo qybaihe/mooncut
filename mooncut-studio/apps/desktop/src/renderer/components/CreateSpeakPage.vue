@@ -96,7 +96,7 @@ onMounted(() => {
         </span>
         <div>
           <h1>创作口播</h1>
-          <p>和助手聊清楚，再提词录制 · 能力与 Web 口播间一致</p>
+          <p>左对话 · 右成稿 · 提词录制</p>
         </div>
       </div>
       <div class="create-speak-meta">
