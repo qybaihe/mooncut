@@ -1,0 +1,82 @@
+# MoonCut Studio — continuous integration (packages + desktop unit tests)
+# Does not build multi-GB full runtime; uses package tests + desktop node:test.
+
+name: Studio CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mooncut-studio/**"
+      - "mooncut-pi-agent/**"
+      - ".github/workflows/studio-ci.yml"
+      - ".github/workflows/studio-release.yml"
+  pull_request:
+    paths:
+      - "mooncut-studio/**"
+      - "mooncut-pi-agent/**"
+      - ".github/workflows/studio-ci.yml"
+      - ".github/workflows/studio-release.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: studio-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build & test (Ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            mooncut-studio/package-lock.json
+            mooncut-pi-agent/package-lock.json
+
+      - name: Install Studio workspaces
+        working-directory: mooncut-studio
+        run: npm ci || npm install
+
+      - name: Build pi-agent studio entry
+        working-directory: mooncut-pi-agent
+        run: |
+          npm ci || npm install
+          npm run build:studio
+
+      - name: Build Studio packages
+        working-directory: mooncut-studio
+        run: |
+          npm run build -w @mooncut/studio-shared
+          npm run build -w @mooncut/studio-project-format
+          npm run build -w @mooncut/studio-bootstrapper
+          npm run build -w @mooncut/studio-agent-host
+
+      - name: Test Studio packages
+        working-directory: mooncut-studio
+        run: |
+          npm run test -w @mooncut/studio-shared
+          npm run test -w @mooncut/studio-project-format
+          npm run test -w @mooncut/studio-bootstrapper
+          npm run test -w @mooncut/studio-agent-host
+
+      - name: Desktop unit tests (build + node:test)
+        working-directory: mooncut-studio
+        run: npm run test -w @mooncut/studio-desktop
+
+      - name: Pi-agent studio gates
+        working-directory: mooncut-pi-agent
+        run: |
+          node --experimental-strip-types --test test/studio-data-root.test.ts
+          # Electron binary not guaranteed on Linux runners for spawn gate;
+          # entry existence is covered by build:studio above.
