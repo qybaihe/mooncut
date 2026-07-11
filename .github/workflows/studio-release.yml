@@ -77,9 +77,23 @@ jobs:
           set -euo pipefail
           rm -rf node_modules
           npm install --no-audit --no-fund
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
-            npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          fi
+          # npm optional-deps bug: rollup native binary often missing on clean CI
+          # https://github.com/npm/cli/issues/4828
+          case "${{ runner.os }}" in
+            Linux)
+              npm install --no-save @rollup/rollup-linux-x64-gnu || true
+              ;;
+            Windows)
+              npm install --no-save @rollup/rollup-win32-x64-msvc || true
+              ;;
+            macOS)
+              if [[ "$(uname -m)" == "arm64" ]]; then
+                npm install --no-save @rollup/rollup-darwin-arm64 || true
+              else
+                npm install --no-save @rollup/rollup-darwin-x64 || true
+              fi
+              ;;
+          esac
 
       - name: Install pi-agent + prebuild dist/cli.mjs
         working-directory: mooncut-pi-agent
