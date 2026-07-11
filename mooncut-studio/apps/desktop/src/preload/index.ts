@@ -28,6 +28,7 @@ const C = {
   jobCreate: "studio:job:create",
   jobGet: "studio:job:get",
   jobList: "studio:job:list",
+  jobListAll: "studio:job:listAll",
   jobCancel: "studio:job:cancel",
   jobRetry: "studio:job:retry",
   jobRevealArtifact: "studio:job:revealArtifact",
@@ -79,6 +80,7 @@ const api = {
   retryJob: (projectId: string, jobId: string) =>
     ipcRenderer.invoke(C.jobRetry, {projectId, jobId}),
   revealArtifact: (absolutePath: string) => ipcRenderer.invoke(C.jobRevealArtifact, absolutePath),
+  listAllJobs: () => ipcRenderer.invoke(C.jobListAll),
   listProviders: () => ipcRenderer.invoke(C.providerList),
   listProviderCatalog: () => ipcRenderer.invoke(C.providerCatalog),
   upsertProvider: (input: unknown) => ipcRenderer.invoke(C.providerUpsert, input),

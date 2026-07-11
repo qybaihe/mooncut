@@ -524,6 +524,26 @@ export function registerIpc(services: StudioServices) {
     return listJobs(entry.rootPath);
   });
 
+  /** Inbox: 跨项目聚合所有已完成的成片，按完成时间倒序。 */
+  ipcMain.handle(IPC_CHANNELS.jobListAll, async () => {
+    const index = await loadIndex(paths.projectIndex);
+    const items: Array<StudioJob & {projectName: string}> = [];
+    for (const entry of index.projects) {
+      try {
+        const jobs = await listJobs(entry.rootPath);
+        for (const job of jobs) {
+          if (job.status === "completed") {
+            items.push({...job, projectName: entry.name});
+          }
+        }
+      } catch {
+        /* skip projects with unreadable manifests */
+      }
+    }
+    items.sort((a, b) => (b.updatedAt > a.updatedAt ? 1 : -1));
+    return items;
+  });
+
   ipcMain.handle(IPC_CHANNELS.jobCancel, async (_e, payload: {projectId: string; jobId: string}) => {
     const client = supervisor.getClient();
     const remote = await client.cancelJob(payload.jobId);

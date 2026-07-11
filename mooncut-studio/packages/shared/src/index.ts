@@ -297,6 +297,11 @@ export type StudioJob = {
   providerProfileId?: string;
 };
 
+/** Inbox 聚合条目 — StudioJob + 所属项目名（收件箱跨项目展示用）。 */
+export type InboxItem = StudioJob & {
+  projectName: string;
+};
+
 /** 三选一助手来源：
  *  - mock：离线，不联网，用于验证任务流
  *  - real：内置派（mooncut-pi-agent Studio 模式），需在设置里配 OpenAI 兼容网关
@@ -399,6 +404,7 @@ export const IPC_CHANNELS = {
   jobCancel: "studio:job:cancel",
   jobRetry: "studio:job:retry",
   jobRevealArtifact: "studio:job:revealArtifact",
+  jobListAll: "studio:job:listAll",
   providerList: "studio:provider:list",
   providerCatalog: "studio:provider:catalog",
   providerUpsert: "studio:provider:upsert",

@@ -1100,6 +1100,63 @@ button .ui-icon,
   margin: 0 auto;
 }
 
+/* ── Quick cut page ── */
+.quickcut-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: calc(100vh - 120px);
+}
+.quickcut-done {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 320px);
+  gap: 14px;
+  align-items: stretch;
+  height: calc(100vh - 120px);
+  min-height: 460px;
+}
+
+/* ── Inbox page ── */
+.inbox-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.inbox-card {
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.inbox-card:hover {
+  border-color: var(--border-strong);
+}
+.inbox-card .card-thumb {
+  cursor: pointer;
+}
+.inbox-source {
+  color: var(--accent);
+  font-weight: 500;
+}
+.inbox-preview {
+  margin: 4px 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: #0a0a0a;
+  min-height: 160px;
+}
+.inbox-preview .studio-preview-video {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  display: block;
+}
+.inbox-preview .preview-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+}
+
 /* Modal dialog */
 .modal-backdrop {
   position: fixed;

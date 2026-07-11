@@ -2,9 +2,11 @@
 import {computed, onMounted, ref} from "vue";
 import logoUrl from "./assets/mooncut-logo.png";
 import CreateSpeakPage from "./components/CreateSpeakPage.vue";
+import InboxPage from "./components/InboxPage.vue";
 import OnboardingWizard from "./components/OnboardingWizard.vue";
 import ProjectLibrary from "./components/ProjectLibrary.vue";
 import ProjectWorkbench from "./components/ProjectWorkbench.vue";
+import QuickCutPage from "./components/QuickCutPage.vue";
 import SettingsPanel from "./components/SettingsPanel.vue";
 import ThemeToggle from "./components/ThemeToggle.vue";
 import UiIcon from "./components/UiIcon.vue";
@@ -12,7 +14,7 @@ import {getMooncut, hasMooncut} from "./composables/useMooncut";
 import {useTheme} from "./composables/useTheme";
 import type {AgentHostStatus, ProjectSummary, StudioSettings} from "@mooncut/studio-shared";
 
-type Page = "library" | "create" | "workbench" | "settings" | "onboarding";
+type Page = "library" | "create" | "workbench" | "quickcut" | "inbox" | "settings" | "onboarding";
 
 const {currentTheme} = useTheme();
 const page = ref<Page>("library");
@@ -45,6 +47,10 @@ const pageTitle = computed(() => {
       return "创作口播";
     case "workbench":
       return activeProject.value ? activeProject.value.name : "剪辑台";
+    case "quickcut":
+      return "一键剪辑";
+    case "inbox":
+      return "收件箱";
     case "settings":
       return "设置";
     case "onboarding":
@@ -154,6 +160,26 @@ onMounted(() => {
         </button>
         <button
           class="rail-button"
+          :class="{active: page === 'quickcut'}"
+          type="button"
+          title="一键剪辑"
+          aria-label="一键剪辑"
+          @click="page = 'quickcut'"
+        >
+          <UiIcon name="sparkles" :size="18" />
+        </button>
+        <button
+          class="rail-button"
+          :class="{active: page === 'inbox'}"
+          type="button"
+          title="收件箱"
+          aria-label="收件箱"
+          @click="page = 'inbox'"
+        >
+          <UiIcon name="media" :size="18" />
+        </button>
+        <button
+          class="rail-button"
           :class="{active: page === 'settings'}"
           type="button"
           title="设置"
@@ -224,6 +250,11 @@ onMounted(() => {
             @back="page = 'library'"
             @create-speak="goCreate(activeProject)"
           />
+          <QuickCutPage
+            v-else-if="page === 'quickcut'"
+            @go-inbox="page = 'inbox'"
+          />
+          <InboxPage v-else-if="page === 'inbox'" />
           <SettingsPanel v-else-if="page === 'settings'" @updated="(s) => (settings = s)" />
         </div>
       </main>
