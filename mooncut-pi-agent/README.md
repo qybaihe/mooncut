@@ -1,13 +1,29 @@
 # MoonCut Pi Video Editor
 
-一个基于 `earendil-works/pi` SDK 的完整口播剪辑智能体。它接受真实视频，自动完成视觉分析、字幕、跟脸、语义分镜、Remotion 渲染和成片验证，并通过 HTTP 返回任务状态与产物。
+一个完整口播剪辑智能体。它接受真实视频，自动完成视觉分析、字幕、跟脸、语义分镜、Remotion 渲染和成片验证，并通过 HTTP 返回任务状态与产物。
+
+规划器可切换（同一套任务 API 与工具）：
+
+| `MOONCUT_AGENT_EXECUTION_MODE` | 说明 |
+|---|---|
+| `reliable`（默认） | 确定性流水线，生产默认 |
+| `pi` | Pi coding-agent + MoonCut tools（实验） |
+| `grok` | **Grok Build 非交互式 Agent** + 同一套 MoonCut tools（Pi 替代路径） |
+
+Grok 模式说明见 [docs/GROK_AGENT.md](./docs/GROK_AGENT.md)。一键本地剪辑：
+
+```bash
+MOONCUT_AGENT_EXECUTION_MODE=grok npm run edit -- /path/to/video.mp4 "按 SPEC 完整剪辑"
+# 或
+npm run edit:grok -- /path/to/video.mp4 "按 SPEC 完整剪辑"
+```
 
 ## 已接入的制作链路
 
 ```text
 外部客户端
   → 上传源视频 / 创建异步任务
-  → Pi + GLM-5.2 规划并调用专用工具
+  → 规划器（reliable / Pi / Grok）调用同一套专用工具
   → MiniMax-M3（失败回退 MiMo-v2.5）分析六宫格画面
   → 保守视觉调度：默认 0 张，确有抽象示例素材缺口时生成 1–2 张
   → 可选：真实 Playwright 官网浏览 / 可信 X 原帖截图
@@ -20,7 +36,7 @@
   → 用户主动选择后写入 SQLite 社区，并通过 Range 接口播放
 ```
 
-智能体使用固定的 [SPEC.md](./SPEC.md)，只开放九个受控工具（含按需示例图调度、只读 Skill、真实网页和可信 X 证据能力），不给模型任意 shell 权限。Pi 依赖固定为 `0.80.6`，官方仓库的只读审查副本位于 `../external/pi`，没有修改上游代码。
+智能体使用固定的 [SPEC.md](./SPEC.md) 与受控工具（含按需示例图调度、只读 Skill、真实网页和可信 X 证据能力）。Pi 模式依赖固定为 `0.80.6`；Grok 模式通过本机 `grok` CLI 编排，工具实现与 reliable/Pi 共享。
 
 内嵌 Pi 会实际发现并按需读取三个项目 Skill：
 
@@ -55,6 +71,11 @@ MOONCUT_IMAGE_BASE_URL=https://image-provider.example/v1
 MOONCUT_IMAGE_API_KEY=your-image-api-key
 MOONCUT_IMAGE_MODEL=your-image-model
 MOONCUT_IMAGE_MAX_IMAGES=2
+
+# 规划器：reliable | pi | grok
+# MOONCUT_AGENT_EXECUTION_MODE=grok
+# MOONCUT_GROK_MODEL=grok-4.5
+# MOONCUT_GROK_REASONING_EFFORT=max
 ```
 
 启动外部接口：

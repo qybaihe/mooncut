@@ -88,9 +88,17 @@ export const config = {
     .filter(Boolean),
   allowLocalInputPath: process.env.MOONCUT_ALLOW_INPUT_PATH === "true",
   maxQueuedJobs: integerEnv("MOONCUT_MAX_QUEUED_JOBS", 8),
-  // The conversational Pi planner remains available for experimentation, but
-  // production must not leave a video task in an unbounded tool-call loop.
-  agentExecutionMode: enumEnv("MOONCUT_AGENT_EXECUTION_MODE", ["reliable", "pi"] as const, "reliable"),
+  // reliable = deterministic tool pipeline (no conversational planner).
+  // pi      = experimental Pi coding-agent planner over the same tools.
+  // grok    = Grok Build headless agent over the same tools (Pi replacement path).
+  agentExecutionMode: enumEnv("MOONCUT_AGENT_EXECUTION_MODE", ["reliable", "pi", "grok"] as const, "reliable"),
+  // Grok Build CLI (non-interactive). Used when agentExecutionMode=grok.
+  grokBinary: process.env.MOONCUT_GROK_BINARY ?? "grok",
+  grokModel: process.env.MOONCUT_GROK_MODEL ?? "grok-4.5",
+  grokReasoningEffort: process.env.MOONCUT_GROK_REASONING_EFFORT ?? "max",
+  grokMaxTurns: Math.max(20, integerEnv("MOONCUT_GROK_MAX_TURNS", 120)),
+  // Long enough for Remotion + research; override per deployment.
+  grokTimeoutMs: Math.max(120_000, integerEnv("MOONCUT_GROK_TIMEOUT_MS", 45 * 60_000)),
   // Deliverable default: full-HD 16:9. Low-resolution output must be an
   // explicit deployment override, never an implicit quality downgrade.
   renderWidth: Math.max(320, integerEnv("MOONCUT_RENDER_WIDTH", 1920)),
@@ -118,17 +126,47 @@ export const config = {
   fifaCliCwd: pathEnv("MOONCUT_FIFA_CLI_CWD", join(workspaceRoot, "fifa-highlights-cli")),
   sessionDays: Math.min(90, Math.max(1, integerEnv("MOONCUT_SESSION_DAYS", 30))),
   cookieSecure: process.env.MOONCUT_COOKIE_SECURE === "true",
+  // When true, browser session cookies are ignored — only service key (+ optional
+  // X-MoonCut-User-Id from Cloudflare edge) can call protected routes.
+  edgeAuthOnly: booleanEnv("MOONCUT_EDGE_AUTH_ONLY", false),
   publicBaseUrl: (process.env.MOONCUT_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
-  // Optional public edge path for the read-only Community surface. It must not
-  // replace the private Agent base URL used by jobs, sessions, or artifacts.
-  communityPublicBaseUrl: (process.env.MOONCUT_COMMUNITY_PUBLIC_BASE_URL ?? "").replace(/\/$/u, ""),
   mailCliPath: pathEnv("MOONCUT_MAIL_CLI", "/opt/homebrew/bin/agently-cli"),
   mailSenderName: process.env.MOONCUT_MAIL_SENDER_NAME ?? "MoonCut 小月",
-  mailTransport: enumEnv("MOONCUT_MAIL_TRANSPORT", ["agently-cli", "webhook"] as const, "agently-cli"),
+  mailTransport: enumEnv("MOONCUT_MAIL_TRANSPORT", ["agently-cli", "webhook", "resend"] as const, "agently-cli"),
   mailWebhookUrl: (process.env.MOONCUT_MAIL_WEBHOOK_URL ?? "").trim(),
   mailWebhookToken: process.env.MOONCUT_MAIL_WEBHOOK_TOKEN ?? "",
   mailFromAddress: process.env.MOONCUT_MAIL_FROM_ADDRESS ?? "",
-  corsOrigins: (process.env.MOONCUT_CORS_ORIGINS ?? "http://127.0.0.1:5173,http://localhost:5173")
+  // Resend API key (https://resend.com/api-keys). Prefer over agently-cli for unattended delivery.
+  resendApiKey: (process.env.MOONCUT_RESEND_API_KEY ?? "").trim(),
+  // HMAC secret for email download links (?token=...). Falls back to API key when unset.
+  mailDownloadSecret: (process.env.MOONCUT_MAIL_DOWNLOAD_SECRET
+    ?? process.env.MOONCUT_API_KEY
+    ?? "").trim(),
+  // How long a mailed download link stays valid (hours). Default 7 days.
+  mailDownloadTtlHours: Math.min(30 * 24, Math.max(1, integerEnv("MOONCUT_MAIL_DOWNLOAD_TTL_HOURS", 168))),
+  // After a job completes, automatically deliver mail (agently / webhook / resend).
+  mailAutoSend: booleanEnv("MOONCUT_MAIL_AUTO_SEND", true),
+  // Attach the ~20MB mail preview (final-mail.mp4), not the full-quality master.
+  mailAttachVideo: booleanEnv("MOONCUT_MAIL_ATTACH_VIDEO", true),
+  // Target size for the emailed preview encode (raw bytes before Base64).
+  mailPreviewTargetBytes: integerEnv("MOONCUT_MAIL_PREVIEW_TARGET_MB", 20) * 1024 * 1024,
+  // Mail attachment only: re-encode master down to this max height (default 720).
+  // Remotion still renders at MOONCUT_RENDER_WIDTH/HEIGHT (1080p) — never change that for email size.
+  mailPreviewMaxHeight: Math.min(2160, Math.max(360, integerEnv("MOONCUT_MAIL_PREVIEW_MAX_HEIGHT", 720))),
+  // Hard cap for email attachments (Resend total message ≤40MB incl. Base64 ≈ ~28MB raw).
+  mailAttachMaxBytes: integerEnv("MOONCUT_MAIL_ATTACH_MAX_MB", 22) * 1024 * 1024,
+  // Membership CTA in completion mail.
+  mailMembershipUrl: (process.env.MOONCUT_MAIL_MEMBERSHIP_URL ?? "https://mooncut.me").replace(/\/$/u, ""),
+  // Browser Origin is forwarded by the Pages /api proxy even for same-site
+  // traffic, so production web hosts must be listed here (or via env).
+  corsOrigins: (process.env.MOONCUT_CORS_ORIGINS
+    ?? [
+      "http://127.0.0.1:5173",
+      "http://localhost:5173",
+      "https://mooncut.me",
+      "https://www.mooncut.me",
+      "https://mooncut.pages.dev",
+    ].join(","))
     .split(",")
     .map((origin) => origin.trim().replace(/\/$/u, ""))
     .filter(Boolean),

@@ -5,7 +5,7 @@ import {basename, join, resolve} from "node:path";
 import {runEditingAgent, runSubtitleRepairAgent} from "./agent.ts";
 import {capabilityStore} from "./capabilities.ts";
 import {assetsRoot, config, jobsRoot} from "./config.ts";
-import {copySourceIntoRemotion} from "./media.ts";
+import {copySourceIntoRemotion, encodeMailPreviewVideo} from "./media.ts";
 import {sendJobMailAutomatically} from "./mail.ts";
 import {publishEvidence} from "./research.ts";
 import type {
@@ -374,6 +374,10 @@ export class JobManager {
         agentSummary: join(jobDir, "agent-summary.txt"),
         qualityReview: join(jobDir, `quality-review-${Math.max(1, context.qualityReviews.length)}.json`),
       };
+      if (existsSync(join(jobDir, "grok-headless.log"))) artifacts.grokLog = join(jobDir, "grok-headless.log");
+      if (existsSync(join(jobDir, "grok-events.jsonl"))) artifacts.grokEvents = join(jobDir, "grok-events.jsonl");
+      if (existsSync(join(jobDir, "GROK_PROMPT.md"))) artifacts.grokPrompt = join(jobDir, "GROK_PROMPT.md");
+      if (existsSync(join(jobDir, "run-context.json"))) artifacts.runContext = join(jobDir, "run-context.json");
       if (context.faceTrack) artifacts.faceTrack = join(jobDir, "face-track.json");
       if (context.speechCleanupPath) artifacts.speechCleanup = context.speechCleanupPath;
       if (context.cleanedSpeechPath) artifacts.speechCleanVideo = context.cleanedSpeechPath;
@@ -392,6 +396,23 @@ export class JobManager {
       if (existsSync(join(jobDir, "learning-proposal.json"))) {
         artifacts.learningProposal = join(jobDir, "learning-proposal.json");
       }
+      // Dual delivery: keep full-quality master as `video`; build ~20MB mail preview for attachments.
+      if (job.mail && (config.mailAutoSend || config.mailAttachVideo)) {
+        job.stage = "mail-preview";
+        job.progress = 0.98;
+        await this.persist(job);
+        try {
+          const mailPreviewPath = join(jobDir, "final-mail.mp4");
+          const preview = await encodeMailPreviewVideo(context.renderPath, mailPreviewPath);
+          artifacts.videoMail = preview.path;
+          console.log(
+            `[mail-preview] job=${job.id} bytes=${preview.bytes} copied=${preview.copied} bitrate=${preview.videoBitrate}`,
+          );
+        } catch (error) {
+          // Do not fail the edit job if preview encode fails — mail may fall back to link-only.
+          console.error(`[mail-preview] job=${job.id} failed:`, error instanceof Error ? error.message : error);
+        }
+      }
       job.status = "completed";
       job.stage = "completed";
       job.progress = 1;
@@ -400,15 +421,17 @@ export class JobManager {
         artifacts,
         probe: context.probe,
         models: {
-          planner: config.plannerModel,
-          vision: context.visionModel ?? "unknown",
+          planner: config.agentExecutionMode === "grok" ? config.grokModel : config.plannerModel,
+          vision: context.visionModel ?? (config.agentExecutionMode === "grok" ? config.grokModel : "unknown"),
           ...(context.generatedVisuals.length > 0 ? {image: config.imageGenerationModel} : {}),
         },
         visuals: context.imageSchedule,
         quality: context.qualityReviews.at(-1),
       };
       if (job.mail) {
-        if (config.mailTransport === "webhook") {
+        // Delivery path: local worker finishes the cut, then emails the user.
+        // Cloudflare only submitted the job; it does not host the finished file.
+        if (config.mailAutoSend) {
           try {
             await sendJobMailAutomatically(job);
             job.mail.status = "sent";

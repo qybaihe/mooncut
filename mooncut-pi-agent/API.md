@@ -241,7 +241,31 @@ sudo nginx -t
 
 当前服务器的默认交付规格为 **1280×720、24fps**（`MOONCUT_RENDER_WIDTH/HEIGHT/FPS`），保持 16:9 和完整源时长。需要 1080p 时可在独立的高内存渲染节点覆盖为 `1920/1080/30`，避免小型 API 节点产生严重 swap。
 
-生产环境的 `MOONCUT_AGENT_EXECUTION_MODE=reliable` 把不可省略的剪辑阶段固定为可恢复的工作流，避免 Pi 会话式规划器在某个工具返回后停止推进任务；AI 画面分析、可选视觉调度和最终质检仍保留。需要测试开放式策略时可显式切换为 `pi`。
+生产环境默认 `MOONCUT_AGENT_EXECUTION_MODE=reliable`：把不可省略的剪辑阶段固定为可恢复的工作流，避免会话式规划器在某个工具返回后停止推进任务；AI 画面分析、可选视觉调度和最终质检仍保留。
+
+可选执行模式（同一套 HTTP API / 同一任务队列，仅换规划器）：
+
+| `MOONCUT_AGENT_EXECUTION_MODE` | 行为 |
+|---|---|
+| `reliable`（默认） | 确定性工具流水线，无开放式规划器 |
+| `pi` | 实验性 Pi coding-agent 规划器 + MoonCut tools |
+| `grok` | **Grok Build 非交互式 Agent**（`grok` CLI）+ 同一套 MoonCut tools；可替代 Pi 作为智能剪辑规划器 |
+
+Grok 模式相关环境变量：
+
+| 变量 | 默认 | 含义 |
+|---|---|---|
+| `MOONCUT_GROK_BINARY` | `grok` | Grok Build CLI 路径 |
+| `MOONCUT_GROK_MODEL` | `grok-4.5` | 模型 |
+| `MOONCUT_GROK_REASONING_EFFORT` | `max` | 思考强度 |
+| `MOONCUT_GROK_MAX_TURNS` | `120` | 最大 agent turns |
+| `MOONCUT_GROK_TIMEOUT_MS` | `2700000` | 单任务超时（含渲染） |
+
+Grok 通过 `node src/cli.ts tool <jobDir> <toolName> [json]` 调用与 Pi/reliable 完全相同的 inspect/transcribe/track/render/verify 实现；结束后若仅缺 render/verify 等确定性阶段，宿主会自动补齐。本地快速验证：
+
+```bash
+MOONCUT_AGENT_EXECUTION_MODE=grok npm run edit -- /absolute/path/talking-head.mp4 "按 SPEC 完整剪辑"
+```
 
 Remocn、Remotion Bits 和 Onda 保持在 Remotion 工程的 `extensions/remotion-community` 隔离目录；使用 `deploy/sync-remotion-extensions.sh` 同步到服务器，安装脚本会在启用服务前验证 Agent 实际引用的组件源码存在。
 

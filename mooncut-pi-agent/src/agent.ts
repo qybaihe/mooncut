@@ -12,8 +12,10 @@ import {
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
 import {agentRoot, agentRuntimeRoot, config, workspaceRoot} from "./config.ts";
+import {runGrokEditingAgent} from "./grok-agent.ts";
 import {applySubtitleRepair, planSubtitleRepair} from "./subtitle-repair.ts";
 import {createMooncutTools, type StageUpdate} from "./tools.ts";
+import {invokeMooncutTool} from "./tool-runner.ts";
 import {createInstalledCapabilityTools, installedCapabilityGuidance} from "./capabilities.ts";
 import {isVisionGateProtocolOnlyFailure} from "./quality.ts";
 import type {AgentEditSpec, EditBeat, RunContext, SubtitleRepairAnalysis, SubtitleRepairFeedback, SubtitleSegment} from "./types.ts";
@@ -66,17 +68,6 @@ const finalAssistantText = (messages: readonly unknown[]) => {
   return "";
 };
 
-type ReliableTool = {
-  name: string;
-  execute: (
-    toolCallId: string,
-    params: Record<string, unknown>,
-    signal: AbortSignal | undefined,
-    onUpdate: undefined,
-    context: unknown,
-  ) => Promise<unknown>;
-};
-
 const concise = (value: string, maximum = 28) => value.length <= maximum ? value : `${value.slice(0, maximum - 1)}…`;
 
 const impactPhrase = (segment: SubtitleSegment) => {
@@ -126,30 +117,23 @@ const runReliableEditingPipeline = async (
   context: RunContext,
   update: StageUpdate,
 ): Promise<string> => {
-  const tools = createMooncutTools(context, update) as ReliableTool[];
-  const invoke = async (name: string, params: Record<string, unknown> = {}) => {
-    const tool = tools.find((candidate) => candidate.name === name);
-    if (!tool) throw new Error(`Required MoonCut tool is unavailable: ${name}`);
-    await tool.execute(`reliable-${name}`, params, undefined, undefined, {});
-  };
-
   // This is deliberately procedural: the paid/slow model services remain in
   // the individual tools, while the indispensable production stages cannot be
   // skipped merely because a conversational planner stops replying.
-  await invoke("inspect_source");
-  await invoke("transcribe_source");
-  await invoke("clean_speech_delivery");
-  await invoke("schedule_generated_visuals");
-  await invoke("track_speaker");
+  await invokeMooncutTool(context, update, "inspect_source", {}, "reliable-inspect_source");
+  await invokeMooncutTool(context, update, "transcribe_source", {}, "reliable-transcribe_source");
+  await invokeMooncutTool(context, update, "clean_speech_delivery", {}, "reliable-clean_speech_delivery");
+  await invokeMooncutTool(context, update, "schedule_generated_visuals", {}, "reliable-schedule_generated_visuals");
+  await invokeMooncutTool(context, update, "track_speaker", {}, "reliable-track_speaker");
   if (!context.subtitles?.segments.length) throw new Error("Hybrid subtitle service returned no timed segments");
-  await invoke("save_edit_spec", {
+  await invokeMooncutTool(context, update, "save_edit_spec", {
     title: concise(context.job.request.title ?? "MoonCut 原生口播", 60),
     summary: "完整保留口播时长；关键短语以原生 macOS 风格全屏强调并落下。",
     accent: "#65d9b6",
     beats: reliableBeats(context.subtitles.segments, context.evidenceAssets),
-  });
-  await invoke("render_edit");
-  await invoke("verify_render");
+  }, "reliable-save_edit_spec");
+  await invokeMooncutTool(context, update, "render_edit", {}, "reliable-render_edit");
+  await invokeMooncutTool(context, update, "verify_render", {}, "reliable-verify_render");
   return "MoonCut reliable pipeline completed: Hybrid Subtitle, full-duration edit, render verification, and visual quality review passed.";
 };
 
@@ -158,6 +142,7 @@ export const runEditingAgent = async (
   update: StageUpdate,
 ): Promise<string> => {
   if (config.agentExecutionMode === "reliable") return await runReliableEditingPipeline(context, update);
+  if (config.agentExecutionMode === "grok") return await runGrokEditingAgent(context, update);
   return await runPiEditingAgent(context, update);
 };
 
@@ -192,11 +177,8 @@ export const runSubtitleRepairAgent = async (
   await writeFile(join(context.jobDir, "subtitle-repair.json"), `${JSON.stringify({feedback, analysis}, null, 2)}\n`);
   await update("applying-subtitle-repair", 0.58);
 
-  const tools = createMooncutTools(context, update) as ReliableTool[];
   const invoke = async (name: string) => {
-    const tool = tools.find((candidate) => candidate.name === name);
-    if (!tool) throw new Error(`Required MoonCut repair tool is unavailable: ${name}`);
-    await tool.execute(`subtitle-repair-${name}`, {}, undefined, undefined, {});
+    await invokeMooncutTool(context, update, name, {}, `subtitle-repair-${name}`);
   };
   await invoke("render_edit");
   await invoke("verify_render");

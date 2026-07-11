@@ -17,7 +17,7 @@ import {authStore, AuthError, clearSessionCookie, parseSessionCookie, sessionCoo
 import {communityStore, CommunityStoreError, type CommunityPost, type PublishCommunityPostInput} from "./community.ts";
 import {listGatewayModels} from "./gateway.ts";
 import {assetDataPath, friendlyJobName, jobManager, saveAssetMetadata, type StoredAsset} from "./jobs.ts";
-import {confirmJobMail, isEmail, mailAccountStatus, prepareJobMail} from "./mail.ts";
+import {confirmJobMail, isEmail, mailAccountStatus, prepareJobMail, verifyArtifactDownloadToken} from "./mail.ts";
 import type {EditJobRecord, EditJobRequest, SubtitleRepairFeedback} from "./types.ts";
 
 class HttpError extends Error {
@@ -85,12 +85,6 @@ const publicBaseUrl = (request: IncomingMessage) => {
   const host = request.headers["x-forwarded-host"] ?? request.headers.host ?? `${config.host}:${config.port}`;
   return `${protocol}://${host}`;
 };
-const publicCommunityBaseUrl = (request: IncomingMessage) => config.communityPublicBaseUrl || publicBaseUrl(request);
-const communityPostPath = /^\/v1\/community\/posts\/([a-f0-9]{32})$/u;
-const communityAssetPath = /^\/v1\/community\/posts\/([a-f0-9]{32})\/(video|poster)$/u;
-const isPublicCommunityRead = (method: string | undefined, pathname: string) =>
-  method === "GET" && (pathname === "/v1/community/posts" || communityPostPath.test(pathname) || communityAssetPath.test(pathname));
-
 const publicCommunityPost = (post: CommunityPost, baseUrl: string) => ({
   id: post.id,
   authorName: post.authorName,
@@ -370,12 +364,8 @@ export const startServer = async () => {
     try {
       const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
       const requestOrigin = request.headers.origin?.replace(/\/$/u, "");
-      const publicCommunityRead = isPublicCommunityRead(request.method, url.pathname);
       if (requestOrigin) {
-        if (publicCommunityRead) {
-          response.setHeader("Access-Control-Allow-Origin", "*");
-          response.setHeader("Vary", "Origin");
-        } else if (!config.corsOrigins.includes(requestOrigin)) {
+        if (!config.corsOrigins.includes(requestOrigin)) {
           json(response, 403, {error: "Origin is not allowed"});
           return;
         } else {
@@ -424,7 +414,72 @@ export const startServer = async () => {
         });
         return;
       }
+      // Mailed download links: signed token grants read-only access to one artifact.
+      // Runs before session/service auth so recipients can open links without logging in.
+      const mailedArtifactMatch = url.pathname.match(/^\/v1\/edit-jobs\/([a-f0-9]+)\/artifacts\/([A-Za-z0-9_-]+)$/u);
+      if (request.method === "GET" && mailedArtifactMatch) {
+        const token = url.searchParams.get("token") ?? "";
+        if (token && verifyArtifactDownloadToken(token, mailedArtifactMatch[1], mailedArtifactMatch[2])) {
+          let job: EditJobRecord;
+          try {
+            job = await jobManager.get(mailedArtifactMatch[1]);
+          } catch {
+            json(response, 404, {error: "Edit job not found"});
+            return;
+          }
+          if (job.status !== "completed") {
+            json(response, 409, {error: "The edited video is not ready yet"});
+            return;
+          }
+          const path = job.result?.artifacts[mailedArtifactMatch[2]];
+          if (!path || !existsSync(path)) {
+            json(response, 404, {error: "Artifact not found"});
+            return;
+          }
+          await streamArtifact(request, response, path);
+          return;
+        }
+      }
+      // Cloudflare Pages often cannot reach private/regional LLM gateways.
+      // Edge assistants call this service-key-only relay; the agent forwards to
+      // MOONCUT_GATEWAY_* and does not use browser sessions.
+      if (request.method === "POST" && url.pathname === "/v1/edge-relay/chat/completions") {
+        if (!isServiceAuthorized(request.headers.authorization)) {
+          json(response, 401, {error: "Service key required", code: "AUTH_REQUIRED"});
+          return;
+        }
+        if (!config.gatewayApiKey) {
+          json(response, 503, {error: "MOONCUT_GATEWAY_API_KEY is not configured on the agent"});
+          return;
+        }
+        const payload = await readJson(request);
+        const upstream = await fetch(`${config.gatewayBaseUrl}/chat/completions`, {
+          method: "POST",
+          signal: AbortSignal.timeout(90_000),
+          headers: {
+            Authorization: `Bearer ${config.gatewayApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload ?? {}),
+        });
+        const text = await upstream.text();
+        response.writeHead(upstream.status, {
+          "Content-Type": upstream.headers.get("content-type") ?? "application/json; charset=utf-8",
+          "Cache-Control": "no-store",
+        });
+        response.end(text);
+        return;
+      }
       const sessionToken = parseSessionCookie(request.headers.cookie);
+      // Phase 1: browser auth lives on Cloudflare (D1). Local agent only accepts
+      // service-key calls for the video pipeline when edgeAuthOnly is enabled.
+      if (config.edgeAuthOnly && url.pathname.startsWith("/v1/auth/")) {
+        json(response, 404, {
+          error: "浏览器登录请使用 Cloudflare 边缘 API（/api/v1/auth/*）",
+          code: "EDGE_AUTH_ONLY",
+        });
+        return;
+      }
       if (request.method === "POST" && (url.pathname === "/v1/auth/register" || url.pathname === "/v1/auth/login")) {
         const payload = await readJson(request) as {email?: unknown; password?: unknown};
         const ip = String(request.headers["x-forwarded-for"] ?? request.socket.remoteAddress ?? "unknown").split(",", 1)[0].trim();
@@ -460,32 +515,6 @@ export const startServer = async () => {
         json(response, 200, {user: authStore.getUserBySession(sessionToken) ?? null});
         return;
       }
-      if (request.method === "GET" && url.pathname === "/v1/community/posts") {
-        const requestedLimit = Number.parseInt(url.searchParams.get("limit") ?? "12", 10);
-        const page = communityStore.list(Number.isFinite(requestedLimit) ? requestedLimit : 12, url.searchParams.get("cursor") ?? undefined);
-        const baseUrl = publicCommunityBaseUrl(request);
-        json(response, 200, {
-          items: page.items.map((post) => publicCommunityPost(post, baseUrl)),
-          ...(page.nextCursor ? {nextCursor: page.nextCursor} : {}),
-        });
-        return;
-      }
-      const publicCommunityAssetMatch = url.pathname.match(communityAssetPath);
-      if (request.method === "GET" && publicCommunityAssetMatch) {
-        const post = communityStore.get(publicCommunityAssetMatch[1]);
-        if (!post) throw new HttpError(404, "Community post not found");
-        const path = publicCommunityAssetMatch[2] === "video" ? post.videoPath : post.posterPath;
-        if (!path || !existsSync(path)) throw new HttpError(404, "Community media is unavailable");
-        await streamArtifact(request, response, path);
-        return;
-      }
-      const publicCommunityPostMatch = url.pathname.match(communityPostPath);
-      if (request.method === "GET" && publicCommunityPostMatch) {
-        const post = communityStore.get(publicCommunityPostMatch[1]);
-        if (!post) throw new HttpError(404, "Community post not found");
-        json(response, 200, publicCommunityPost(post, publicCommunityBaseUrl(request)));
-        return;
-      }
       // Discovery is public. A session only adds the caller's installation
       // state; no private install, invocation or artifact data is exposed.
       const catalogUser = authStore.getUserBySession(sessionToken);
@@ -499,8 +528,26 @@ export const startServer = async () => {
         return;
       }
       let principal: RequestPrincipal | undefined;
-      if (isServiceAuthorized(request.headers.authorization)) principal = {kind: "service"};
-      else {
+      const serviceOk = isServiceAuthorized(request.headers.authorization);
+      const edgeUserIdHeader = request.headers["x-mooncut-user-id"];
+      const edgeUserId = typeof edgeUserIdHeader === "string" ? edgeUserIdHeader.trim() : "";
+      const edgeUserEmailHeader = request.headers["x-mooncut-user-email"];
+      const edgeUserEmail = typeof edgeUserEmailHeader === "string" ? edgeUserEmailHeader.trim() : "";
+      // Phase 1 edge mode: Cloudflare authenticates the browser, then calls the
+      // agent with a service key + X-MoonCut-User-Id. Treat that as a user principal
+      // so jobs stay owned by the edge user id.
+      if (serviceOk && edgeUserId && /^[a-f0-9]{16,64}$/iu.test(edgeUserId)) {
+        principal = {
+          kind: "user",
+          user: {
+            id: edgeUserId,
+            email: edgeUserEmail && edgeUserEmail.includes("@") ? edgeUserEmail : `${edgeUserId}@edge.mooncut`,
+            createdAt: new Date(0).toISOString(),
+          },
+        };
+      } else if (serviceOk) {
+        principal = {kind: "service"};
+      } else if (!config.edgeAuthOnly) {
         const user = authStore.getUserBySession(sessionToken);
         if (user) principal = {kind: "user", user};
       }
@@ -713,8 +760,13 @@ export const startServer = async () => {
       }
       if (request.method === "POST" && url.pathname === "/v1/edits") {
         if (!jobManager.canAccept()) throw new HttpError(429, "Editing queue is full; retry later");
-        const notificationEmail = url.searchParams.get("notificationEmail") ?? undefined;
+        // Edge path: prefer explicit notify email, else authenticated edge user email.
+        const notificationEmail = (url.searchParams.get("notificationEmail")
+          ?? (edgeUserEmail.includes("@") ? edgeUserEmail : undefined))?.trim() || undefined;
         if (notificationEmail && !isEmail(notificationEmail)) throw new HttpError(400, "notificationEmail is invalid");
+        if (config.edgeAuthOnly && !notificationEmail) {
+          throw new HttpError(400, "notificationEmail is required so the finished video can be emailed from this machine");
+        }
         const prompt = url.searchParams.get("prompt")?.slice(0, 8000) || undefined;
         const title = url.searchParams.get("title")?.slice(0, 120) || undefined;
         const imageGenerationParam = url.searchParams.get("imageGeneration");
@@ -746,6 +798,13 @@ export const startServer = async () => {
         }
         if (payload.notificationEmail && !isEmail(payload.notificationEmail)) {
           json(response, 400, {error: "notificationEmail is invalid"});
+          return;
+        }
+        if (!payload.notificationEmail && edgeUserEmail.includes("@")) {
+          payload.notificationEmail = edgeUserEmail;
+        }
+        if (config.edgeAuthOnly && !payload.notificationEmail) {
+          json(response, 400, {error: "notificationEmail is required so the finished video can be emailed from this machine"});
           return;
         }
         if ((payload.capabilityInstallIds?.length || payload.capabilityRequests?.length) && !ownerUserId) {

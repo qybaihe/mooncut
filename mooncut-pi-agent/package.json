@@ -15,9 +15,11 @@
     ]
   },
   "scripts": {
-    "serve": "node src/cli.ts serve",
-    "edit": "node src/cli.ts edit",
-    "models": "node src/cli.ts models",
+    "serve": "node --experimental-strip-types src/cli.ts serve",
+    "edit": "node --experimental-strip-types src/cli.ts edit",
+    "edit:grok": "MOONCUT_AGENT_EXECUTION_MODE=grok node --experimental-strip-types src/cli.ts edit",
+    "models": "node --experimental-strip-types src/cli.ts models",
+    "tool": "node --experimental-strip-types src/cli.ts tool",
     "build:studio": "node scripts/build-studio-entry.mjs",
     "typecheck": "tsc --noEmit",
     "test": "npm run build:studio && node --experimental-strip-types --test test/*.test.ts"

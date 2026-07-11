@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {buildJobMailArgs, buildJobWebhookPayload, isEmail, parseCliEnvelope} from "../src/mail.ts";
+import {
+  buildJobMailArgs,
+  buildJobWebhookPayload,
+  buildResendPayload,
+  createArtifactDownloadToken,
+  isEmail,
+  parseCliEnvelope,
+  verifyArtifactDownloadToken,
+} from "../src/mail.ts";
 import type {EditJobRecord} from "../src/types.ts";
 
 test("parses Agent Mail JSON even when the CLI prints a tip first", () => {
@@ -63,4 +71,69 @@ test("builds a pre-authorized automatic webhook payload without exposing local p
   assert.equal(payload.metadata.jobId, "webhook123");
   assert.match(payload.text, /https:\/\/agent\.example\.com\/v1\/edit-jobs\/webhook123\/artifacts\/video/u);
   assert.doesNotMatch(payload.text, /\/private\//u);
+});
+
+test("builds a Resend payload with signed download link and no local paths", () => {
+  const job = {
+    id: "resend123",
+    status: "completed",
+    stage: "completed",
+    progress: 1,
+    createdAt: "2026-07-11T00:00:00.000Z",
+    updatedAt: "2026-07-11T00:00:00.000Z",
+    inputPath: "/private/source.mp4",
+    originalName: "source.mp4",
+    request: {title: "Resend 通知"},
+    mail: {recipient: "recipient@example.com", status: "ready", updatedAt: "2026-07-11T00:00:00.000Z"},
+    result: {
+      summary: "质量检查通过",
+      artifacts: {video: "/private/final.mp4"},
+      probe: {durationMs: 1000, fps: 30, width: 1920, height: 1080, hasAudio: true, formatName: "mp4"},
+      models: {planner: "glm-5.2", vision: "minimax-m3"},
+    },
+  } satisfies EditJobRecord;
+  const payload = buildResendPayload(job, "MoonCut 小月 <onboarding@resend.dev>", "https://agent.example.com");
+  assert.equal(payload.to[0], "recipient@example.com");
+  assert.match(payload.from, /onboarding@resend\.dev/u);
+  assert.match(payload.text, /https:\/\/agent\.example\.com\/v1\/edit-jobs\/resend123\/artifacts\/video/u);
+  assert.match(payload.text, /会员/u);
+  assert.doesNotMatch(payload.text, /\/private\//u);
+  assert.equal(payload.attachments, undefined);
+});
+
+test("Resend payload with preview attachment uses membership copy", () => {
+  const job = {
+    id: "preview123",
+    status: "completed",
+    stage: "completed",
+    progress: 1,
+    createdAt: "2026-07-11T00:00:00.000Z",
+    updatedAt: "2026-07-11T00:00:00.000Z",
+    inputPath: "/private/source.mp4",
+    originalName: "source.mp4",
+    request: {title: "预览附件"},
+    mail: {recipient: "recipient@example.com", status: "ready", updatedAt: "2026-07-11T00:00:00.000Z"},
+    result: {
+      summary: "质量检查通过",
+      artifacts: {video: "/private/final.mp4", videoMail: "/private/final-mail.mp4"},
+      probe: {durationMs: 1000, fps: 30, width: 1920, height: 1080, hasAudio: true, formatName: "mp4"},
+      models: {planner: "glm-5.2", vision: "minimax-m3"},
+    },
+  } satisfies EditJobRecord;
+  const payload = buildResendPayload(job, "MoonCut 小月 <noreply@mooncut.me>", "https://agent.example.com", {
+    attachVideo: true,
+    attachmentContentBase64: Buffer.from("fake-mp4").toString("base64"),
+    attachmentFilename: "mooncut-preview.mp4",
+    previewAttached: true,
+  });
+  assert.match(payload.text, /分享预览版/u);
+  assert.match(payload.text, /更高清/u);
+  assert.equal(payload.attachments?.[0]?.filename, "mooncut-preview.mp4");
+});
+
+test("signs and verifies artifact download tokens", () => {
+  const token = createArtifactDownloadToken("jobabc", "video", 24);
+  assert.equal(verifyArtifactDownloadToken(token, "jobabc", "video"), true);
+  assert.equal(verifyArtifactDownloadToken(token, "other", "video"), false);
+  assert.equal(verifyArtifactDownloadToken("tampered." + token, "jobabc", "video"), false);
 });

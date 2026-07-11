@@ -1,6 +1,6 @@
 import {createHash} from "node:crypto";
 import {createReadStream, existsSync} from "node:fs";
-import {copyFile, mkdir, readFile, writeFile} from "node:fs/promises";
+import {copyFile, mkdir, readFile, stat, writeFile} from "node:fs/promises";
 import {basename, extname, join} from "node:path";
 import {analyzeContactSheet} from "./gateway.ts";
 import {agentRoot, config, faceTrackerRoot, remotionRoot} from "./config.ts";
@@ -68,6 +68,91 @@ export const makeContactSheet = async (
     "-y", outputPath,
   ], {timeoutMs: 120_000});
   return outputPath;
+};
+
+export type MailPreviewResult = {
+  path: string;
+  bytes: number;
+  /** True when the master was already small enough and was copied as-is. */
+  copied: boolean;
+  videoBitrate: number;
+};
+
+/**
+ * Post-render only: build an email-safe preview (~target MB, typically 720p)
+ * from the finished 1080p master. Never changes Remotion export resolution.
+ */
+export const encodeMailPreviewVideo = async (
+  inputPath: string,
+  outputPath: string,
+  options: {targetBytes?: number; maxHeight?: number; maxBytes?: number} = {},
+): Promise<MailPreviewResult> => {
+  if (!existsSync(inputPath)) throw new Error(`Mail preview source missing: ${inputPath}`);
+  const targetBytes = options.targetBytes ?? config.mailPreviewTargetBytes;
+  const maxBytes = options.maxBytes ?? config.mailAttachMaxBytes;
+  const maxHeight = options.maxHeight ?? config.mailPreviewMaxHeight;
+  const inputInfo = await stat(inputPath);
+
+  const probe = await probeVideo(inputPath);
+  // Only skip re-encode when master is already small AND already at-or-below mail height
+  // (do not email a full 1080p master just because it happens to be under 20MB).
+  if (
+    inputInfo.size > 0
+    && inputInfo.size <= Math.min(targetBytes, maxBytes)
+    && probe.height <= maxHeight
+  ) {
+    await copyFile(inputPath, outputPath);
+    return {path: outputPath, bytes: inputInfo.size, copied: true, videoBitrate: 0};
+  }
+
+  const durationSec = Math.max(0.5, probe.durationMs / 1000);
+  const audioBitrate = 96_000;
+  // Leave muxing headroom; Base64 will grow ~33% later.
+  const budgetBitsPerSec = (targetBytes * 8 * 0.9) / durationSec;
+  let videoBitrate = Math.max(400_000, Math.floor(budgetBitsPerSec - audioBitrate));
+
+  // Always scale 1080p master → mail maxHeight (default 720). Even dims for yuv420p.
+  const scaleFilter = `scale=-2:'min(${maxHeight},ih)',scale=trunc(iw/2)*2:trunc(ih/2)*2`;
+
+  const encodeOnce = async (bitrate: number) => {
+    await runProcess("ffmpeg", [
+      "-hide_banner", "-loglevel", "error", "-y",
+      "-i", inputPath,
+      "-vf", scaleFilter,
+      "-c:v", "libx264",
+      "-preset", "fast",
+      "-profile:v", "main",
+      "-pix_fmt", "yuv420p",
+      "-b:v", String(bitrate),
+      "-maxrate", String(Math.floor(bitrate * 1.2)),
+      "-bufsize", String(Math.floor(bitrate * 2)),
+      "-c:a", "aac",
+      "-b:a", "96k",
+      "-ac", "2",
+      "-movflags", "+faststart",
+      outputPath,
+    ], {timeoutMs: 20 * 60_000});
+  };
+
+  await encodeOnce(videoBitrate);
+  let outBytes = (await stat(outputPath)).size;
+
+  // One retry if still over hard attachment cap.
+  if (outBytes > maxBytes) {
+    const scale = (maxBytes * 0.85) / outBytes;
+    videoBitrate = Math.max(180_000, Math.floor(videoBitrate * scale));
+    await encodeOnce(videoBitrate);
+    outBytes = (await stat(outputPath)).size;
+  }
+
+  if (outBytes <= 0) throw new Error("Mail preview encode produced an empty file");
+  if (outBytes > maxBytes) {
+    throw new Error(
+      `Mail preview still too large after encode (${Math.round(outBytes / 1024 / 1024)}MB > ${Math.round(maxBytes / 1024 / 1024)}MB cap)`,
+    );
+  }
+
+  return {path: outputPath, bytes: outBytes, copied: false, videoBitrate};
 };
 
 export const inspectVideo = async (
