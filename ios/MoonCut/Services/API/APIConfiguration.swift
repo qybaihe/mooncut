@@ -48,9 +48,14 @@ struct APIConfiguration: Sendable, Equatable {
         let fallback: String
         #if DEBUG
         fallback = "http://127.0.0.1:4317"
+        // Debug 用更短超时：本机 agent 未开时快速失败，避免启动卡死
+        let reqTimeout: TimeInterval = 5
+        let resTimeout: TimeInterval = 8
         #else
         // 仅非公开 Release 回退；公开包不会走到这里
         fallback = "https://42.194.219.172"
+        let reqTimeout: TimeInterval = 30
+        let resTimeout: TimeInterval = 120
         #endif
 
         let baseString = (rawBase.isEmpty ? fallback : rawBase)
@@ -60,8 +65,8 @@ struct APIConfiguration: Sendable, Equatable {
         return APIConfiguration(
             baseURL: URL(string: baseString) ?? URL(string: fallback)!,
             trustedHost: resolvedHost,
-            requestTimeout: 30,
-            resourceTimeout: 120,
+            requestTimeout: reqTimeout,
+            resourceTimeout: resTimeout,
             uploadTimeout: 600,
             pollInterval: 3,
             isConfigured: true,

@@ -7,6 +7,7 @@ import Vision
 /// - 使用 `VNDetectFaceLandmarksRequest`（系统内置，无需 MediaPipe）
 /// - 产品文案必须是「镜头朝向（估算）」，不得声称精确「眼神接触率」
 /// - 不可用时保持 nil / isAvailable=false，绝不捏造漂亮数字
+/// - **节流在检测之前**：避免每帧跑 landmarks（耗电/发热）
 @MainActor
 final class VisionFaceMetrics: NSObject, ObservableObject {
     @Published private(set) var faceOrientationScore: Double?
@@ -19,8 +20,9 @@ final class VisionFaceMetrics: NSObject, ObservableObject {
     private let queue = DispatchQueue(label: "com.mooncut.vision.face", qos: .userInitiated)
     private weak var session: AVCaptureSession?
     private var isAttached = false
-    private var lastProcessTime: CFTimeInterval = 0
-    private let minInterval: CFTimeInterval = 0.12
+    /// 上次真正执行检测的时间（在 queue 上读写）
+    private nonisolated(unsafe) var lastDetectTime: CFTimeInterval = 0
+    private let minInterval: CFTimeInterval = 0.20
 
     func attach(to session: AVCaptureSession) {
         guard !isAttached else { return }
@@ -70,21 +72,19 @@ extension VisionFaceMetrics: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        // 先节流，再跑昂贵的 landmarks
         let now = CACurrentMediaTime()
-        // throttle on caller side via stored last time - use perform without heavy load
+        if now - lastDetectTime < minInterval { return }
+        lastDetectTime = now
+
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
-        // Lightweight throttle
         let request = VNDetectFaceLandmarksRequest()
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .leftMirrored, options: [:])
         do {
             try handler.perform([request])
             let faces = request.results ?? []
             Task { @MainActor in
-                // throttle UI updates
-                let t = CACurrentMediaTime()
-                if t - self.lastProcessTime < self.minInterval, !faces.isEmpty { return }
-                self.lastProcessTime = t
                 self.ingest(faces: faces)
             }
         } catch {
@@ -113,14 +113,12 @@ extension VisionFaceMetrics: AVCaptureVideoDataOutputSampleBufferDelegate {
         faceBoxNormalized = face.boundingBox
         isAvailable = true
 
-        // yaw/roll 接近 0 → 大致正对镜头；仅为估算
         let yaw = abs(Double(truncating: face.yaw ?? 0))
         let roll = abs(Double(truncating: face.roll ?? 0))
         let yawScore = max(0, 1 - yaw / 0.75)
         let rollScore = max(0, 1 - roll / 0.75)
         let bbox = face.boundingBox
         let centerScore = 1 - min(1, hypot(bbox.midX - 0.5, bbox.midY - 0.5) * 2.1)
-        // 面部占比：过小/过大略降分
         let area = bbox.width * bbox.height
         let sizeScore = area < 0.04 ? area / 0.04 : (area > 0.45 ? max(0.4, 1 - (area - 0.45)) : 1)
         let score = (yawScore * 0.42 + rollScore * 0.20 + centerScore * 0.28 + sizeScore * 0.10)

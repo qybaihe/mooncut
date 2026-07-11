@@ -183,12 +183,30 @@ final class ClipStudioViewModel {
         }
     }
 
+    /// 失败任务「重试」：对已 failed 的 job 重新上传并创建新任务；进行中的才恢复轮询。
     func retry() {
-        if let id = env.activeJobId ?? job?.id {
-            Task { await restoreJob(id: id) }
-        } else {
-            startProcessing()
+        if let job, job.status == .failed || stage == .failed {
+            // 保留本地素材，重新走上传 + 创建
+            env.activeJobId = nil
+            self.job = nil
+            localResultURL = nil
+            errorMessage = nil
+            errorDiagnostic = nil
+            progress = nil
+            if asset?.isPlayable == true {
+                stage = .ready
+                startProcessing()
+            } else {
+                stage = .empty
+                errorMessage = "没有可重试的本地素材，请重新选择视频"
+            }
+            return
         }
+        if let id = env.activeJobId ?? job?.id, job?.status == .queued || job?.status == .running {
+            Task { await restoreJob(id: id) }
+            return
+        }
+        startProcessing()
     }
 
     func publishToCommunity(authorName: String?, caption: String?) async {
@@ -213,9 +231,11 @@ final class ClipStudioViewModel {
     }
 
     private func pollLoop(jobId: String) async {
+        var transientFailures = 0
         while !Task.isCancelled {
             do {
                 let job = try await api.getEditJob(id: jobId)
+                transientFailures = 0
                 applyJob(job)
                 switch job.status {
                 case .completed:
@@ -231,11 +251,29 @@ final class ClipStudioViewModel {
                 }
             } catch is CancellationError {
                 return
-            } catch let error as APIError where error == .unauthorized {
-                await fail(error)
-                return
+            } catch let error as APIError {
+                // 永久错误：停止轮询，给出可操作失败
+                switch error {
+                case .unauthorized, .forbidden, .notFound, .payloadTooLarge, .unsupportedMedia, .decoding, .notConfigured, .invalidURL, .certificateUntrusted:
+                    await fail(error)
+                    return
+                case .offline, .rateLimited, .transport, .server, .cancelled, .invalidResponse:
+                    transientFailures += 1
+                    if transientFailures >= 8 {
+                        await fail(error)
+                        return
+                    }
+                    progressIndeterminate = true
+                    stageLabel = "不确定，仍在等待服务更新"
+                    progress = nil
+                    try? await Task.sleep(nanoseconds: UInt64(api.configuration.pollInterval * 1_000_000_000))
+                }
             } catch {
-                // 暂断：保持不确定进度，不本地自增
+                transientFailures += 1
+                if transientFailures >= 8 {
+                    await fail(error)
+                    return
+                }
                 progressIndeterminate = true
                 stageLabel = "不确定，仍在等待服务更新"
                 progress = nil

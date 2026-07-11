@@ -35,7 +35,33 @@ final class RecordStudioViewModel {
     init(api: MoonCutAPIClient, env: AppEnvironment) {
         self.api = api
         self.env = env
+        // 必须在已登录用户上下文中创建；匿名 key 仅作兜底，不跨账号复用内存态
+        resetInMemoryState()
         loadLocal()
+    }
+
+    /// 换账号重建时清空内存，再按当前 userId 读私有草稿。
+    func resetInMemoryState() {
+        assistantTask?.cancel()
+        toastTask?.cancel()
+        mode = .compose
+        panel = .chat
+        messages = []
+        input = ""
+        isThinking = false
+        suggestions = []
+        selectedSuggestionIDs = []
+        draft = ""
+        toast = ""
+        errorMessage = nil
+        errorDiagnostic = nil
+        reviewURL = nil
+        recordedDuration = 0
+        phase = nil
+        lastPetMessage = nil
+        lastModel = nil
+        isReadyToDraft = false
+        pendingRetry = nil
     }
 
     var characterCount: Int {

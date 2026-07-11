@@ -33,6 +33,7 @@
 		86F431C92B5B4288F94073BC /* VideoSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A7D889328D35A39072D7E09 /* VideoSurface.swift */; };
 		8A2B1516CB733F835D1F59C2 /* CertificateTrust.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD760695BE18AB6E6BD0D89 /* CertificateTrust.swift */; };
 		8F7C1DDAA56ECA3ADD7AAD38 /* JobsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A9BB15ECED7086235B5FDF /* JobsView.swift */; };
+		94020350A14DBADA67B16A2B /* MemphisScreenshotUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE04347280E6AEF2F7B8234 /* MemphisScreenshotUITests.swift */; };
 		9D148AF3E66CE4F1C9A1E932 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0951B623E5A89A0034B120EF /* RootView.swift */; };
 		9E9CB304EE1367F81F9DDCC5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 300DC07BE1DAF4988ECF1ADB /* Assets.xcassets */; };
 		9EB0E48ACB6131DFF56266CC /* MoonCutAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68487154F9803763ABA839CC /* MoonCutAPIClientTests.swift */; };
@@ -116,6 +117,7 @@
 		D7C036C98914BE0B4BC8B3E4 /* MoonCutTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MoonCutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0A2CDDD2A191807607DD3C7 /* VisionFaceMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionFaceMetrics.swift; sourceTree = "<group>"; };
 		E4F6FB8CCC6D1A2548CAF92A /* MoonCutApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonCutApp.swift; sourceTree = "<group>"; };
+		ECE04347280E6AEF2F7B8234 /* MemphisScreenshotUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemphisScreenshotUITests.swift; sourceTree = "<group>"; };
 		F2E88F78C8298314767F7E15 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -390,6 +392,7 @@
 		F44C04BCE3D1AF9FDA50D7D9 /* MoonCutUITests */ = {
 			isa = PBXGroup;
 			children = (
+				ECE04347280E6AEF2F7B8234 /* MemphisScreenshotUITests.swift */,
 				35B5984F643218D2542B8991 /* MoonCutUITests.swift */,
 				96E5ED9758D8F4CDEEE832AF /* PetCompanionUITests.swift */,
 				5FC4E8635B160E2F7D314EA4 /* ScreenshotUITests.swift */,
@@ -533,6 +536,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94020350A14DBADA67B16A2B /* MemphisScreenshotUITests.swift in Sources */,
 				581CD626D3958C9CAE9AEAF2 /* MoonCutUITests.swift in Sources */,
 				1F9F0996D6A92117AE884D03 /* PetCompanionUITests.swift in Sources */,
 				0529041BCA007AD102A56E4B /* ScreenshotUITests.swift in Sources */,

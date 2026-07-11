@@ -77,6 +77,7 @@ struct AuthView: View {
                 Text(serviceError)
                     .font(.caption)
                     .foregroundStyle(theme.warning)
+                    .fixedSize(horizontal: false, vertical: true)
             } else {
                 Text("正在检查服务…")
                     .font(.caption)
@@ -85,6 +86,15 @@ struct AuthView: View {
             Text("认证方式：邮箱会话 Cookie（不使用 API Key）· 分发：\(APIConfiguration.current.distributionMode)")
                 .font(.caption2)
                 .foregroundStyle(theme.textTertiary)
+
+            Button {
+                Task { await env.recheckService() }
+            } label: {
+                Label("重新检查服务", systemImage: "arrow.clockwise")
+                    .font(.caption.weight(.semibold))
+            }
+            .buttonStyle(SecondaryButtonStyle())
+            .accessibilityIdentifier("auth-recheck-service")
         }
         .padding(16)
         .moonCard()

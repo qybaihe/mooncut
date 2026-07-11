@@ -32,8 +32,8 @@ actor MoonCutAPIClient {
             config.httpShouldSetCookies = true
             config.timeoutIntervalForRequest = configuration.requestTimeout
             config.timeoutIntervalForResource = configuration.resourceTimeout
-            config.waitsForConnectivity = true
-            // 独立 session 标识，避免与系统其它客户端配置意外串扰
+            // 切勿 waitsForConnectivity：本机 agent 未启动时会长时间挂起「恢复会话」
+            config.waitsForConnectivity = false
             config.urlCache = nil
             self.session = URLSession(configuration: config, delegate: trust, delegateQueue: nil)
         }
@@ -130,11 +130,15 @@ actor MoonCutAPIClient {
         return try await performUpload(request, fromFile: fileURL)
     }
 
+    /// - `capabilityInstallIds`：启用中的安装快照
+    /// - `capabilityRequests`：要真正调用的工具（服务端仅在有此字段时执行工具）
     func createEditJob(
         assetId: String,
         title: String?,
         prompt: String?,
-        imageGeneration: String = "auto"
+        imageGeneration: String = "auto",
+        capabilityInstallIds: [String] = [],
+        capabilityRequests: [[String: Any]] = []
     ) async throws -> EditJobCreateResponse {
         var body: [String: Any] = [
             "assetId": assetId,
@@ -142,6 +146,12 @@ actor MoonCutAPIClient {
         ]
         if let title, !title.isEmpty { body["title"] = title }
         if let prompt, !prompt.isEmpty { body["prompt"] = prompt }
+        if !capabilityInstallIds.isEmpty {
+            body["capabilityInstallIds"] = capabilityInstallIds
+        }
+        if !capabilityRequests.isEmpty {
+            body["capabilityRequests"] = capabilityRequests
+        }
         return try await postJSON("/v1/edit-jobs", body: body)
     }
 

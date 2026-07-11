@@ -5,16 +5,29 @@ struct RootView: View {
     @Environment(\.theme) private var theme
     @State private var clipModel: ClipStudioViewModel?
     @State private var recordModel: RecordStudioViewModel?
+    /// 与 env.sessionEpoch 对齐，换账号/登出时丢弃内存中的私有模型
+    @State private var boundSessionEpoch: Int = -1
     @State private var createPath = NavigationPath()
     @State private var coachPath = NavigationPath()
 
     var body: some View {
         Group {
             if env.isRestoringSession {
-                ProgressView("恢复会话…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(theme.canvas.ignoresSafeArea())
-                    .accessibilityIdentifier("restoring-session")
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .controlSize(.large)
+                    Text("正在连接服务…")
+                        .font(.headline)
+                        .foregroundStyle(theme.textPrimary)
+                    Text("检查健康状态并恢复登录会话。若本机 agent 未启动，数秒后会自动进入登录页。")
+                        .font(.subheadline)
+                        .foregroundStyle(theme.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(theme.canvas.ignoresSafeArea())
+                .accessibilityIdentifier("restoring-session")
             } else if !env.isAuthenticated {
                 AuthView()
             } else {
@@ -22,10 +35,19 @@ struct RootView: View {
             }
         }
         .onAppear {
-            ensureModels()
+            syncModelsToSession()
         }
         .onChange(of: env.isAuthenticated) { _, authed in
-            if authed { ensureModels() }
+            syncModelsToSession()
+            if !authed {
+                createPath = NavigationPath()
+                coachPath = NavigationPath()
+            }
+        }
+        .onChange(of: env.sessionEpoch) { _, _ in
+            syncModelsToSession()
+            createPath = NavigationPath()
+            coachPath = NavigationPath()
         }
         .overlay(alignment: .bottom) {
             ToastView(message: env.toast, isError: env.toastIsError)
@@ -75,9 +97,7 @@ struct RootView: View {
                 if let recordModel {
                     CoachView(
                         recordModel: recordModel,
-                        onOpenTeleprompter: {
-                            // mode already set by enterTeleprompter
-                        },
+                        onOpenTeleprompter: {},
                         onOpenScript: {
                             env.selectedTab = .create
                             createPath.append(CreateDestination.script)
@@ -134,7 +154,6 @@ struct RootView: View {
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 env.selectedTab = .create
-                // 延迟一帧，确保 tab 切换后再 push
                 DispatchQueue.main.async {
                     createPath.append(CreateDestination.settings)
                 }
@@ -147,12 +166,22 @@ struct RootView: View {
         }
     }
 
-    private func ensureModels() {
-        if clipModel == nil {
-            clipModel = ClipStudioViewModel(api: env.api, env: env)
+    /// 仅在登录后、且 sessionEpoch 变化时创建/重建模型，避免跨账号串数据。
+    private func syncModelsToSession() {
+        guard env.isAuthenticated else {
+            clipModel?.cancelTasks()
+            recordModel?.cancelTasks()
+            clipModel = nil
+            recordModel = nil
+            boundSessionEpoch = env.sessionEpoch
+            return
         }
-        if recordModel == nil {
+        if boundSessionEpoch != env.sessionEpoch || clipModel == nil || recordModel == nil {
+            clipModel?.cancelTasks()
+            recordModel?.cancelTasks()
+            clipModel = ClipStudioViewModel(api: env.api, env: env)
             recordModel = RecordStudioViewModel(api: env.api, env: env)
+            boundSessionEpoch = env.sessionEpoch
         }
     }
 }

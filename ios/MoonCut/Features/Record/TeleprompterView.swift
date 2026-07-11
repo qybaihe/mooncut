@@ -15,7 +15,7 @@ struct TeleprompterView: View {
     @AppStorage("mooncut:promptFontSize") private var fontSize = 30.0
     @AppStorage("mooncut:promptSpeed") private var scrollSpeed = 3.0
     @State private var countdown: Int?
-    @State private var countdownTask: Task<Void, Never>?
+    @State private var countdownTask: Task<Void, Error>?
     @State private var showsSettings = false
     @State private var coachAdvice: String = "看镜头，按自己的节奏开始。"
     @State private var coachCategory: String? = "steady"
@@ -75,6 +75,11 @@ struct TeleprompterView: View {
         return model.sentences[i]
     }
 
+    /// 仅当用户要「录像」且相机不可用时全屏拦截；「只陪练」不依赖相机。
+    private var needsCameraGate: Bool {
+        !isPracticeOnly && !coachingActive && !recorder.canRecord && recorder.availability != .preparing
+    }
+
     var body: some View {
         ZStack {
             cameraLayer
@@ -85,7 +90,8 @@ struct TeleprompterView: View {
                 countdownOverlay(countdown)
             }
 
-            if !recorder.canRecord && recorder.availability != .preparing {
+            // 只陪练进行中：即便无相机也允许操作
+            if needsCameraGate {
                 permissionOverlay
             }
         }
@@ -315,7 +321,6 @@ struct TeleprompterView: View {
             .disabled(!recorder.canRecord || recorder.recordingState != .idle)
 
             if coachingActive {
-                // 停止
                 Button {
                     Task { await stopSession() }
                 } label: {
@@ -332,17 +337,17 @@ struct TeleprompterView: View {
                 .accessibilityIdentifier("teleprompter-record")
 
                 Button {
-                    togglePause()
+                    Task { await togglePause() }
                 } label: {
-                    Image(systemName: recorder.recordingState == .paused || (isPracticeOnly && !speech.isRunning)
-                          ? "play.fill" : "pause.fill")
+                    Image(systemName: isPausedUI ? "play.fill" : "pause.fill")
                         .foregroundStyle(.white)
                         .frame(width: 48, height: 48)
                         .background(Circle().fill(.white.opacity(0.12)))
                 }
+                .disabled(recorder.recordingState == .pausing || recorder.recordingState == .finishing)
                 .accessibilityLabel("暂停或继续")
             } else {
-                // 只陪练
+                // 只陪练：仅需 Speech；无相机也可进入
                 Button {
                     Task { await startPractice() }
                 } label: {
@@ -356,9 +361,8 @@ struct TeleprompterView: View {
                     .frame(width: 64, height: 56)
                 }
                 .accessibilityLabel("只陪练不录制")
-                .disabled(!speech.metrics.isSpeechAvailable && !recorder.canRecord)
+                .disabled(!speech.metrics.isSpeechAvailable)
 
-                // 录制 + 陪练
                 Button {
                     Task { await startRecordingSession() }
                 } label: {
@@ -375,6 +379,11 @@ struct TeleprompterView: View {
             }
         }
         .padding(.vertical, 6)
+    }
+
+    private var isPausedUI: Bool {
+        if isPracticeOnly { return !speech.isRunning }
+        return recorder.recordingState == .paused || recorder.recordingState == .pausing
     }
 
     private func countdownOverlay(_ value: Int) -> some View {
@@ -396,16 +405,22 @@ struct TeleprompterView: View {
                 .font(.subheadline)
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
-            Text("实时语速依赖 Speech；镜头朝向依赖 Vision 面部检测。未授权时不会伪造指标。")
+            Text("录像需要相机与麦克风。若只想练语速，可关闭此提示后点「只陪练」（不依赖相机）。")
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.65))
                 .multilineTextAlignment(.center)
+            if speech.metrics.isSpeechAvailable {
+                Button("改为只陪练（不录像）") {
+                    Task { await startPractice() }
+                }
+                .buttonStyle(PrimaryButtonStyle())
+            }
             Button("打开系统设置") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     openURL(url)
                 }
             }
-            .buttonStyle(PrimaryButtonStyle())
+            .buttonStyle(SecondaryButtonStyle())
             Button("退出") {
                 teardown()
                 model.leaveTeleprompter()
@@ -460,6 +475,8 @@ struct TeleprompterView: View {
     // MARK: - Session
 
     private func startPractice() async {
+        countdownTask?.cancel()
+        countdown = nil
         isPracticeOnly = true
         coachingActive = true
         env.pet.apply(.coachListening)
@@ -474,27 +491,42 @@ struct TeleprompterView: View {
     }
 
     private func startRecordingSession() async {
+        guard recorder.canRecord else { return }
         isPracticeOnly = false
         countdownTask?.cancel()
-        for value in [3, 2, 1, 0] {
-            countdown = value
-            try? await Task.sleep(nanoseconds: 450_000_000)
+
+        // 把倒计时放进可取消 Task；退出时必须 cancel，且后续检查 cancellation
+        let task = Task { @MainActor in
+            for value in [3, 2, 1, 0] {
+                try Task.checkCancellation()
+                countdown = value
+                try await Task.sleep(nanoseconds: 450_000_000)
+            }
+            try Task.checkCancellation()
+            countdown = nil
+            guard recorder.canRecord else { return }
+            recorder.startRecording()
+            coachingActive = true
+            env.pet.apply(.recording)
+            do {
+                try speech.start()
+            } catch {
+                coachAdvice = "已开始录像。语音识别未能启动，指标将标为不可用。"
+                coachPositive = false
+            }
+            scheduleCoachLoop()
         }
-        countdown = nil
-        guard recorder.canRecord else { return }
-        recorder.startRecording()
-        coachingActive = true
-        env.pet.apply(.recording)
+        countdownTask = task
         do {
-            try speech.start()
+            try await task.value
+        } catch is CancellationError {
+            countdown = nil
         } catch {
-            coachAdvice = "已开始录像。语音识别未能启动，指标将标为不可用。"
-            coachPositive = false
+            countdown = nil
         }
-        scheduleCoachLoop()
     }
 
-    private func togglePause() {
+    private func togglePause() async {
         if isPracticeOnly {
             if speech.isRunning {
                 speech.stop()
@@ -506,8 +538,8 @@ struct TeleprompterView: View {
             return
         }
         if recorder.recordingState == .recording {
-            recorder.pauseRecording()
             speech.stop()
+            await recorder.pauseRecording()
             env.pet.apply(.coachReview)
         } else if recorder.recordingState == .paused {
             recorder.resumeRecording()
@@ -610,12 +642,16 @@ struct TeleprompterView: View {
 
     private func teardown() {
         countdownTask?.cancel()
+        countdownTask = nil
+        countdown = nil
         coachTask?.cancel()
+        coachTask = nil
         speech.stop()
         vision.detach()
         recorder.cancelRecording()
         recorder.stopPreview()
         coachingActive = false
+        isPracticeOnly = false
         env.isImmersiveTeleprompter = false
     }
 }
