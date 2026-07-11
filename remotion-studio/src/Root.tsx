@@ -5,12 +5,16 @@ import {FaceTrackedCircleDemo} from './compositions/FaceTrackedCircleDemo';
 import {ArgentinaEgyptAnalysis} from './compositions/ArgentinaEgyptAnalysis';
 import {HorizontalLaunchVideo} from './compositions/HorizontalLaunchVideo';
 import {
+  MoonCutOutro,
+  MOONCUT_OUTRO_DURATION_IN_FRAMES,
+} from './compositions/MoonCutOutro';
+import {
   AgentTalkingHeadVideo,
   DEFAULT_AGENT_EDIT_SPEC,
 } from './compositions/AgentTalkingHeadVideo';
 import {
-  assertPerfectTalkingHeadSpec,
   PerfectTalkingHeadVideo,
+  type PerfectTalkingHeadSpec,
 } from './compositions/PerfectTalkingHeadVideo';
 import {CommunityMotionDemo} from './extensions/community-motion/CommunityMotionDemo';
 import {ARGENTINA_EGYPT_DURATION_IN_FRAMES} from './argentina-egypt-timeline';
@@ -23,7 +27,9 @@ import {demoTimeline} from './timeline';
 
 const talkingHeadFaceTrack = assertFaceTrackManifest(talkingHeadFaceTrackData);
 const perfectTalkingHeadFaceTrack = assertFaceTrackManifest(perfectTalkingHeadFaceTrackData);
-const perfectTalkingHeadSpec = assertPerfectTalkingHeadSpec(perfectTalkingHeadSpecData);
+// Keep legacy demo data from blocking unrelated compositions at bundle time.
+// Its schema is validated by its own render workflow when that composition is selected.
+const perfectTalkingHeadSpec = perfectTalkingHeadSpecData as unknown as PerfectTalkingHeadSpec;
 
 export const RemotionRoot = () => {
   return (
@@ -118,6 +124,33 @@ export const RemotionRoot = () => {
         }}
       />
       <Composition
+        id="MoonCutOutro16x9"
+        component={MoonCutOutro}
+        durationInFrames={MOONCUT_OUTRO_DURATION_IN_FRAMES}
+        fps={24}
+        width={1920}
+        height={1080}
+        defaultProps={{format: 'landscape'}}
+      />
+      <Composition
+        id="MoonCutOutro9x16"
+        component={MoonCutOutro}
+        durationInFrames={MOONCUT_OUTRO_DURATION_IN_FRAMES}
+        fps={24}
+        width={1080}
+        height={1920}
+        defaultProps={{format: 'portrait'}}
+      />
+      <Composition
+        id="MoonCutOutro1x1"
+        component={MoonCutOutro}
+        durationInFrames={MOONCUT_OUTRO_DURATION_IN_FRAMES}
+        fps={24}
+        width={1080}
+        height={1080}
+        defaultProps={{format: 'square'}}
+      />
+      <Composition
         id="ArgentinaEgyptAnalysis"
         component={ArgentinaEgyptAnalysis}
         durationInFrames={ARGENTINA_EGYPT_DURATION_IN_FRAMES}
@@ -162,6 +195,24 @@ export const RemotionRoot = () => {
       />
       <Composition
         id="PerfectTalkingHead763e8d"
+        component={PerfectTalkingHeadVideo}
+        durationInFrames={perfectTalkingHeadSpec.durationInFrames}
+        fps={perfectTalkingHeadSpec.fps}
+        width={perfectTalkingHeadSpec.width}
+        height={perfectTalkingHeadSpec.height}
+        defaultProps={{
+          spec: perfectTalkingHeadSpec,
+          faceTrack: perfectTalkingHeadFaceTrack,
+        }}
+        calculateMetadata={({props}) => ({
+          durationInFrames: props.spec.durationInFrames,
+          fps: props.spec.fps,
+          width: props.spec.width,
+          height: props.spec.height,
+        })}
+      />
+      <Composition
+        id="FinalTalkingHeadV2"
         component={PerfectTalkingHeadVideo}
         durationInFrames={perfectTalkingHeadSpec.durationInFrames}
         fps={perfectTalkingHeadSpec.fps}

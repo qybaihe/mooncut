@@ -1,17 +1,28 @@
 {
-  "schemaVersion": "mooncut.perfect-talking-head.v1",
+  "schemaVersion": "mooncut.final-talking-head.v2",
   "title": "MoonCut 极致口播测试｜连续开发 8 小时",
   "summary": "在探月计划具身智能黑客松现场，用一条 100 秒真实口播验证 YOLO 圆形小窗、原构图主镜头、素材内 B-roll、产品 UI、语义动效、已评审音效和低增益 BGM 的完整成片链路。",
   "accent": "#d9ff63",
   "fps": 30,
-  "durationInFrames": 3016,
+  "durationInFrames": 3018,
   "width": 1920,
   "height": 1080,
   "source": {
     "src": "agent-jobs/763e8d-perfect-v1/source-sdr.mp4",
-    "aspectRatio": 1.7777777777777777
+    "aspectRatio": 1.7777777777777777,
+    "durationMs": 100600,
+    "mimeType": "video/mp4",
+    "audio": {
+      "integratedLufs": -16.05,
+      "truePeakDbtp": -1.21,
+      "lra": 5.0
+    }
   },
   "transcript": "大家好，我是小贺。现在已经是北京时间的10点半了，距离我们上一条发布视频已经过了大约8个小时。在这8个小时时间内，我们进行了不间断的开发，就是要把我们这个做的视频效果打磨到极致。现在你看到的这条视频，将是由我们在现在这套系统下跑出来的口播视频。来看一看现在什么样的效果了。我们的Codex现在还在不间断地运行，它已经坚持运行了有12个小时了。我们的Pro 20的周限已经基本用掉了30%。这一天的开发过程真的是非常非常有成就感。看到我们这一套系统就这样一点一点地搭建起来，希望可以给探月具身智能社区带来一个让他们非常Amazing的产品。我们一起期待起来。看一看这个教室，大家都还在这里开发。现在10点半，我看到这里基本休息的人很少，大家都还在努力。这真的震惊到我了。今天我们尝鲜了最新的模型，用最新的模型，我觉得跑出来的效果比之前的模型要好很多。但是我们现在在做什么样的一个事呢？我们现在想把它上线成一个网站，然后我们会集成一套智能体，还有对应的API。我希望任何一个人，他们的一条口播视频上传上来之后，我们就给它剪辑完成，自动发送到他的邮箱。然后它可以自动发布到他的小红书、抖音平台，实现一套从录制到自动发布的完整运作流程。这个我相信会在明天实现。我们明天见。感谢观看！",
+  "transcriptMetadata": {
+    "language": "zh-CN",
+    "glossary": ["探月计划", "具身智能", "Codex", "Pro 20", "API", "小红书", "抖音"]
+  },
   "subtitles": [
     {"index": 1, "text": "大家好，我是小贺。", "start_ms": 210, "end_ms": 1790},
     {"index": 2, "text": "现在已经是北京时间 10 点半了。", "start_ms": 1870, "end_ms": 4570},
@@ -171,7 +182,7 @@
     {
       "id": "closing",
       "startMs": 94950,
-      "endMs": 100523,
+      "endMs": 100600,
       "visual": "closing",
       "headline": "明天实现",
       "body": "继续把长线开发变成真正稳定、可交付的自动化工作流。",
@@ -182,24 +193,30 @@
     {
       "id": "mooncut-upload-ui",
       "src": "agent-jobs/763e8d-perfect-v1/assets/mooncut-upload-ui.png",
-      "label": "MoonCut 当前剪辑台"
+      "label": "MoonCut 当前剪辑台",
+      "kind": "product-ui",
+      "provenance": {"kind": "project-owned"}
     }
   ],
-  "cameraPolicy": {
-    "mode": "track-small-overlays-only",
-    "trackedLayout": "circle",
-    "nativeReframe": "preserve-source",
-    "minimumLayoutHoldMs": 3500,
-    "transitionMs": 240
-  },
-  "bgm": {
-    "src": "audio/bgm/tracks/dear-mr-super-computer.mp3",
-    "title": "Dear Mr Super Computer",
-    "gainDb": -22,
-    "fadeInMs": 900,
-    "fadeOutMs": 1400
-  },
-  "audioVisualCues": [
+  "audio": {
+    "narration": {
+      "targetIntegratedLufs": -16,
+      "maxTruePeakDbtp": -1.5,
+      "normalizeBeforeRender": true,
+      "renderGainDb": -0.5
+    },
+    "bgm": {
+      "trackId": "dear-mr-super-computer",
+      "src": "audio/bgm/tracks/dear-mr-super-computer.mp3",
+      "title": "Dear Mr Super Computer",
+      "gainDb": -22,
+      "duckDb": -6,
+      "fadeInMs": 900,
+      "fadeOutMs": 1400,
+      "crossfadeLoopMs": 900,
+      "allowDemoOnly": false
+    },
+    "cues": [
     {
       "id": "elapsed-time-metrics-land",
       "preset": "card-land",
@@ -250,7 +267,14 @@
       "preset": "card-land",
       "anchor": {"type": "beat", "beatId": "closing", "offsetMs": 167}
     }
-  ],
+    ],
+    "mastering": {
+      "programmeTargetLufs": -14,
+      "programmeToleranceLufs": 1.5,
+      "maxTruePeakDbtp": -1.5,
+      "requireRenderedAudioMetering": true
+    }
+  },
   "cameraPolicy": {
     "mode": "track-small-overlays-only",
     "trackedLayout": "circle",
@@ -258,5 +282,21 @@
     "minimumLayoutHoldMs": 2500,
     "transitionMs": 220,
     "recenterDurationMs": 650
+  },
+  "output": {
+    "format": "landscape-16:9",
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "imageFormat": "jpeg",
+    "videoBitrateKbps": 12000,
+    "audioBitrateKbps": 192
+  },
+  "qa": {
+    "requireContiguousBeats": true,
+    "minimumBeatDurationMs": 2500,
+    "maxCaptionCharacters": 36,
+    "maxCaptionCharsPerSecond": 12,
+    "requireCueSpacing": true,
+    "requireAssetProvenance": true
   }
 }

@@ -6,65 +6,29 @@ import {
   Img,
   interpolate,
   OffthreadVideo,
+  Sequence,
   spring,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import type {AudioVisualCue} from '../audioVisualCues';
 import {FaceTrackedVideo, type FaceTrackManifest} from '../components/FaceTrackedVideo';
 import {AudioVisualCueTrack} from '../components/AudioVisualCueTrack';
 import {MacDesktop, MacFloatingVideoWindow, MacWindow} from '../extensions/community-motion/MacDesktop';
+import {
+  assertFinalTalkingHeadSpec,
+  type FinalTalkingHeadBeat,
+  type FinalTalkingHeadSpec,
+  type FinalTalkingHeadVisual,
+} from '../finalTalkingHeadSpec';
+import {narrationDuckAmount} from '../audioDucking';
 
-export type PerfectBeatVisual =
-  | 'speaker-focus'
-  | 'metrics'
-  | 'pipeline'
-  | 'source-full'
-  | 'impact'
-  | 'model-compare'
-  | 'product-ui'
-  | 'distribution'
-  | 'closing';
-
-export type PerfectBeat = {
-  id: string;
-  startMs: number;
-  endMs: number;
-  visual: PerfectBeatVisual;
-  headline: string;
-  body: string;
-  keywords: string[];
-  assetId?: string;
-  metrics?: Array<{label: string; value: string; unit?: string}>;
-  speakerLayout?: 'native' | 'circle';
-};
-
-export type PerfectTalkingHeadSpec = {
-  schemaVersion: 'mooncut.perfect-talking-head.v1';
-  title: string;
-  summary: string;
-  accent: string;
-  fps: number;
-  durationInFrames: number;
-  width: number;
-  height: number;
-  source: {src: string; aspectRatio: number};
-  transcript: string;
-  subtitles: Array<{index: number; text: string; start_ms: number; end_ms: number}>;
-  beats: PerfectBeat[];
-  assets: Array<{id: string; src: string; label: string}>;
-  bgm?: {src: string; title: string; gainDb: number; fadeInMs: number; fadeOutMs: number};
-  audioVisualCues: AudioVisualCue[];
-  cameraPolicy?: {
-    mode: 'track-small-overlays-only';
-    trackedLayout: 'circle';
-    nativeReframe: 'preserve-source';
-    minimumLayoutHoldMs: number;
-    transitionMs: number;
-    recenterDurationMs: number;
-  };
-};
+/** @deprecated Use FinalTalkingHeadSpec for all new generated videos. */
+export type PerfectBeatVisual = FinalTalkingHeadVisual;
+/** @deprecated Use FinalTalkingHeadBeat for all new generated videos. */
+export type PerfectBeat = FinalTalkingHeadBeat;
+/** @deprecated Use FinalTalkingHeadSpec for all new generated videos. */
+export type PerfectTalkingHeadSpec = FinalTalkingHeadSpec;
 
 export type PerfectTalkingHeadVideoProps = {
   spec: PerfectTalkingHeadSpec;
@@ -76,20 +40,8 @@ const clamp = (value: number, minimum: number, maximum: number) =>
 
 const dbToVolume = (db: number) => 10 ** (db / 20);
 
-export const assertPerfectTalkingHeadSpec = (value: unknown): PerfectTalkingHeadSpec => {
-  if (!value || typeof value !== 'object') throw new Error('Perfect talking-head spec must be an object');
-  const candidate = value as Partial<PerfectTalkingHeadSpec>;
-  if (candidate.schemaVersion !== 'mooncut.perfect-talking-head.v1') {
-    throw new Error(`Unsupported perfect talking-head schema: ${String(candidate.schemaVersion)}`);
-  }
-  if (!Array.isArray(candidate.beats) || candidate.beats.length === 0) {
-    throw new Error('Perfect talking-head spec requires timed beats');
-  }
-  if (!Array.isArray(candidate.subtitles) || !Array.isArray(candidate.audioVisualCues)) {
-    throw new Error('Perfect talking-head spec requires subtitle and audioVisualCues arrays');
-  }
-  return candidate as PerfectTalkingHeadSpec;
-};
+/** @deprecated Use assertFinalTalkingHeadSpec for all new generated videos. */
+export const assertPerfectTalkingHeadSpec = assertFinalTalkingHeadSpec;
 
 const beatAt = (spec: PerfectTalkingHeadSpec, timeMs: number) =>
   spec.beats.find((beat) => timeMs >= beat.startMs && timeMs < beat.endMs) ??
@@ -158,7 +110,8 @@ const circleSpeakerVisuals = new Set<PerfectBeatVisual>([
   'distribution',
 ]);
 
-const usesCircleSpeaker = (beat: PerfectBeat) => circleSpeakerVisuals.has(beat.visual);
+const usesCircleSpeaker = (beat: PerfectBeat) =>
+  beat.speakerLayout ? beat.speakerLayout === 'circle' : circleSpeakerVisuals.has(beat.visual);
 
 const speakerLayoutRunStartMs = (spec: PerfectTalkingHeadSpec, beat: PerfectBeat) => {
   let index = spec.beats.indexOf(beat);
@@ -174,6 +127,18 @@ const SceneTitle = ({accent, beat}: {accent: string; beat: PerfectBeat}) => (
     </div>
     <div style={{color: '#fff', fontSize: 45, fontWeight: 900, letterSpacing: '-.035em', marginTop: 10}}>
       {beat.headline}
+    </div>
+  </div>
+);
+
+const ToolBadge = ({tool}: {tool: NonNullable<PerfectBeat['tools']>[number]}) => (
+  <div style={{alignItems: 'center', background: 'rgba(5,12,14,.76)', border: `1px solid ${tool.accent ?? 'rgba(255,255,255,.18)'}`, borderRadius: 20, boxShadow: '0 16px 36px rgba(0,0,0,.22)', display: 'flex', gap: 15, minWidth: 210, padding: '14px 18px'}}>
+    <div style={{alignItems: 'center', background: 'rgba(255,255,255,.94)', borderRadius: 14, display: 'flex', height: 42, justifyContent: 'center', overflow: 'hidden', padding: 8, width: 42}}>
+      <Img src={staticFile(tool.iconSrc)} style={{height: '100%', objectFit: 'contain', width: '100%'}} />
+    </div>
+    <div>
+      <div style={{color: '#fff', fontSize: 18, fontWeight: 900, letterSpacing: '-.02em'}}>{tool.label}</div>
+      <div style={{color: 'rgba(255,255,255,.55)', fontFamily: 'Menlo, monospace', fontSize: 11, marginTop: 4}}>{tool.caption}</div>
     </div>
   </div>
 );
@@ -257,37 +222,35 @@ const PipelineScene = ({beat, enter, localFrame, spec}: {
   localFrame: number;
   spec: PerfectTalkingHeadSpec;
 }) => {
-  const nodes = beat.keywords.length > 0 ? beat.keywords : ['理解', '规划', '剪辑', '成片'];
+  const [primary = '聚焦体验', secondary = '系统整理', tertiary = '持续打磨'] = beat.keywords;
+  const rise = (delay: number) => interpolate(localFrame, [delay, delay + 18], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
     <>
       <SceneTitle accent={spec.accent} beat={beat} />
       <MacWindow kind="app" title="Agent Pipeline" tone="dark" style={{height: 690, left: 92, opacity: enter, position: 'absolute', top: 190, width: 1736, zIndex: 2}}>
-        <div style={{height: '100%', padding: '96px 72px 60px'}}>
-          <div style={{color: 'rgba(255,255,255,.6)', fontSize: 25, lineHeight: 1.5}}>{beat.body}</div>
-          <div style={{alignItems: 'center', display: 'grid', gap: 18, gridTemplateColumns: `repeat(${nodes.length}, 1fr)`, marginTop: 90}}>
-            {nodes.map((node, index) => {
-              const reveal = interpolate(localFrame, [index * 12, index * 12 + 14], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-              return (
-                <div key={node} style={{position: 'relative'}}>
-                  {index > 0 ? <div style={{background: `linear-gradient(90deg, ${spec.accent}, rgba(255,255,255,.18))`, height: 3, left: -36, position: 'absolute', top: 53, width: 54}} /> : null}
-                  <div style={{
-                    background: reveal > 0.7 ? `${spec.accent}20` : 'rgba(255,255,255,.035)',
-                    border: `1px solid ${reveal > 0.7 ? spec.accent : 'rgba(255,255,255,.14)'}`,
-                    borderRadius: 24,
-                    color: '#fff',
-                    fontSize: 25,
-                    fontWeight: 850,
-                    opacity: reveal,
-                    padding: '38px 18px',
-                    textAlign: 'center',
-                    transform: `translateY(${(1 - reveal) * 24}px)`,
-                  }}>
-                    <small style={{color: spec.accent, display: 'block', fontFamily: 'Menlo, monospace', fontSize: 13, marginBottom: 12}}>0{index + 1}</small>
-                    {node}
+        <div style={{height: '100%', padding: '58px 64px'}}>
+          <div style={{color: 'rgba(255,255,255,.6)', fontSize: 23, lineHeight: 1.5, maxWidth: 1080}}>{beat.body}</div>
+          <div style={{display: 'grid', gap: 24, gridTemplateColumns: '1.2fr .8fr', height: 445, marginTop: 34}}>
+            <div style={{background: `radial-gradient(circle at 82% 18%, ${spec.accent}38, transparent 42%), linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.018))`, border: `1px solid ${spec.accent}88`, borderRadius: 32, opacity: rise(2), overflow: 'hidden', padding: '54px 52px', position: 'relative', transform: `translateY(${(1 - rise(2)) * 24}px)`}}>
+              <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 14, fontWeight: 900, letterSpacing: 3}}>PRIMARY FOCUS</div>
+              <div style={{color: '#fff', fontSize: 74, fontWeight: 950, letterSpacing: '-.065em', lineHeight: 1.02, marginTop: 40, maxWidth: 660}}>{primary}</div>
+              <div style={{bottom: 40, color: 'rgba(255,255,255,.58)', fontSize: 22, position: 'absolute'}}>从已跑通能力中，挑出最能改变体验的那一层。</div>
+              <div style={{background: spec.accent, borderRadius: '50%', height: 210, opacity: .12, position: 'absolute', right: -62, top: -62, width: 210}} />
+            </div>
+            <div style={{display: 'grid', gap: 24, gridTemplateRows: '1fr 1fr'}}>
+              {[secondary, tertiary].map((node, index) => {
+                const reveal = rise(18 + index * 18);
+                return (
+                  <div key={node} style={{alignItems: 'center', background: 'rgba(255,255,255,.042)', border: '1px solid rgba(255,255,255,.16)', borderRadius: 28, display: 'flex', justifyContent: 'space-between', opacity: reveal, padding: '28px 34px', transform: `translateX(${(1 - reveal) * 28}px)`}}>
+                    <div>
+                      <div style={{color: 'rgba(255,255,255,.4)', fontFamily: 'Menlo, monospace', fontSize: 12, letterSpacing: 2}}>NEXT LAYER</div>
+                      <div style={{color: '#fff', fontSize: 35, fontWeight: 900, marginTop: 13}}>{node}</div>
+                    </div>
+                    <div style={{border: `1px solid ${spec.accent}99`, borderRadius: '50%', color: spec.accent, fontSize: 29, height: 54, lineHeight: '52px', textAlign: 'center', width: 54}}>↗</div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </MacWindow>
@@ -295,27 +258,45 @@ const PipelineScene = ({beat, enter, localFrame, spec}: {
   );
 };
 
-const SourceFullScene = ({beat, enter, spec}: {beat: PerfectBeat; enter: number; spec: PerfectTalkingHeadSpec}) => (
-  <AbsoluteFill style={{background: '#030606', opacity: enter}}>
-    <OffthreadVideo src={staticFile(spec.source.src)} volume={0} style={{height: '100%', objectFit: 'cover', width: '100%'}} />
-    <AbsoluteFill style={{background: 'linear-gradient(90deg, rgba(0,0,0,.72), transparent 52%), linear-gradient(transparent 65%, rgba(0,0,0,.68))'}} />
-    <div style={{left: 68, position: 'absolute', top: 64}}>
-      <div style={{background: 'rgba(0,0,0,.55)', border: '1px solid rgba(255,255,255,.24)', borderRadius: 999, color: '#fff', display: 'inline-block', fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 850, padding: '10px 16px'}}>REAL SOURCE B-ROLL</div>
-      <div style={{fontSize: 55, fontWeight: 950, letterSpacing: '-.04em', marginTop: 24, maxWidth: 760}}>{beat.headline}</div>
-      <div style={{color: 'rgba(255,255,255,.72)', fontSize: 25, lineHeight: 1.5, marginTop: 14, maxWidth: 680}}>{beat.body}</div>
-      {beat.metrics && beat.metrics.length > 0 ? (
-        <div style={{display: 'flex', gap: 16, marginTop: 24}}>
-          {beat.metrics.map((metric) => (
-            <div key={metric.label} style={{background: 'rgba(0,0,0,.62)', border: `1px solid ${spec.accent}88`, borderRadius: 18, minWidth: 155, padding: '18px 22px'}}>
-              <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 34, fontWeight: 950}}>{metric.value}{metric.unit}</div>
-              <div style={{color: 'rgba(255,255,255,.58)', fontSize: 15, marginTop: 7}}>{metric.label}</div>
-            </div>
-          ))}
+const SourceFullScene = ({beat, enter, spec}: {beat: PerfectBeat; enter: number; spec: PerfectTalkingHeadSpec}) => {
+  const {fps} = useVideoConfig();
+  const sourceStartFrame = beat.sourceStartMs == null ? null : Math.round(beat.sourceStartMs / 1000 * fps);
+  const scene = (
+    <AbsoluteFill style={{background: '#030606', opacity: enter}}>
+      <OffthreadVideo src={staticFile(spec.source.src)} trimBefore={sourceStartFrame ?? 0} volume={0} style={{height: '100%', objectFit: 'cover', width: '100%'}} />
+      <AbsoluteFill style={{background: 'linear-gradient(90deg, rgba(0,0,0,.72), transparent 52%), linear-gradient(transparent 65%, rgba(0,0,0,.68))'}} />
+      <div style={{left: 68, position: 'absolute', top: 64}}>
+        <div style={{background: 'rgba(0,0,0,.55)', border: '1px solid rgba(255,255,255,.24)', borderRadius: 999, color: '#fff', display: 'inline-block', fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 850, padding: '10px 16px'}}>REAL SOURCE B-ROLL</div>
+        <div style={{fontSize: 55, fontWeight: 950, letterSpacing: '-.04em', marginTop: 24, maxWidth: 760}}>{beat.headline}</div>
+        <div style={{color: 'rgba(255,255,255,.72)', fontSize: 25, lineHeight: 1.5, marginTop: 14, maxWidth: 680}}>{beat.body}</div>
+        {beat.metrics && beat.metrics.length > 0 ? (
+          <div style={{display: 'flex', gap: 16, marginTop: 24}}>
+            {beat.metrics.map((metric) => (
+              <div key={metric.label} style={{background: 'rgba(0,0,0,.62)', border: `1px solid ${spec.accent}88`, borderRadius: 18, minWidth: 155, padding: '18px 22px'}}>
+                <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 34, fontWeight: 950}}>{metric.value}{metric.unit}</div>
+                <div style={{color: 'rgba(255,255,255,.58)', fontSize: 15, marginTop: 7}}>{metric.label}</div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      {beat.tools?.length ? (
+        <div style={{bottom: 170, display: 'flex', gap: 14, position: 'absolute', right: 62, zIndex: 2}}>
+          {beat.tools.map((tool) => <ToolBadge key={tool.label} tool={tool} />)}
         </div>
       ) : null}
-    </div>
-  </AbsoluteFill>
-);
+    </AbsoluteFill>
+  );
+  if (sourceStartFrame == null) return scene;
+  return (
+    <Sequence
+      from={Math.round(beat.startMs / 1000 * fps)}
+      durationInFrames={Math.max(1, Math.round((beat.endMs - beat.startMs) / 1000 * fps))}
+    >
+      {scene}
+    </Sequence>
+  );
+};
 
 const ImpactScene = ({beat, enter, localFrame, spec}: {beat: PerfectBeat; enter: number; localFrame: number; spec: PerfectTalkingHeadSpec}) => {
   const {fps} = useVideoConfig();
@@ -325,7 +306,7 @@ const ImpactScene = ({beat, enter, localFrame, spec}: {beat: PerfectBeat; enter:
       <OffthreadVideo src={staticFile(spec.source.src)} volume={0} style={{filter: 'brightness(.42) saturate(.8)', height: '100%', objectFit: 'cover', transform: `scale(${1 + hit * 0.035})`, width: '100%'}} />
       <AbsoluteFill style={{alignItems: 'center', display: 'flex', justifyContent: 'center'}}>
         <div style={{textAlign: 'center', transform: `scale(${0.72 + hit * 0.28})`}}>
-          <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 17, fontWeight: 900, letterSpacing: 4}}>STILL SHIPPING · 22:30</div>
+          <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 17, fontWeight: 900, letterSpacing: 4}}>LIVE BUILD · HACKATHON</div>
           <div style={{color: '#fff', fontSize: 128, fontWeight: 950, letterSpacing: '-.07em', marginTop: 22, textShadow: '0 12px 48px rgba(0,0,0,.6)'}}>{beat.headline}</div>
           <div style={{color: 'rgba(255,255,255,.7)', fontSize: 28, marginTop: 16}}>{beat.body}</div>
         </div>
@@ -386,37 +367,39 @@ const ProductUIScene = ({beat, enter, localFrame, spec}: {
 };
 
 const DistributionScene = ({beat, enter, localFrame, spec}: {beat: PerfectBeat; enter: number; localFrame: number; spec: PerfectTalkingHeadSpec}) => {
-  const steps = beat.keywords.length > 0 ? beat.keywords : ['上传', 'AI 剪辑', '邮箱', '小红书', '抖音'];
+  const tools = beat.tools ?? beat.keywords.map((label) => ({label, caption: 'WORKSPACE', iconSrc: 'assets/mooncut-logo-transparent.png', accent: spec.accent}));
   return (
     <>
       <SceneTitle accent={spec.accent} beat={beat} />
       <MacWindow kind="app" title="MoonCut Automation · Delivery" tone="dark" style={{height: 700, left: 92, opacity: enter, position: 'absolute', top: 185, width: 1736, zIndex: 2}}>
-        <div style={{height: '100%', padding: '90px 64px 58px'}}>
-          <div style={{display: 'grid', gap: 18, gridTemplateColumns: `repeat(${steps.length}, 1fr)`, marginTop: 44}}>
-            {steps.map((step, index) => {
-              const show = interpolate(localFrame, [index * 18, index * 18 + 14], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-              const complete = localFrame > index * 18 + 32;
+        <div style={{height: '100%', padding: '60px 64px 52px', position: 'relative'}}>
+          <div style={{alignItems: 'center', display: 'flex', justifyContent: 'space-between'}}>
+            <div>
+              <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 14, fontWeight: 900, letterSpacing: 3}}>INTEGRATION SHELF</div>
+              <div style={{color: 'rgba(255,255,255,.62)', fontSize: 23, marginTop: 12}}>{beat.body}</div>
+            </div>
+            <div style={{alignItems: 'center', background: `${spec.accent}18`, border: `1px solid ${spec.accent}`, borderRadius: 999, color: '#fff', display: 'flex', fontSize: 20, fontWeight: 900, gap: 12, padding: '14px 22px'}}><span style={{color: spec.accent}}>●</span> MoonCut Studio</div>
+          </div>
+          <div style={{display: 'grid', gap: 22, gridTemplateColumns: `repeat(${Math.min(3, tools.length)}, 1fr)`, marginTop: 54}}>
+            {tools.map((tool, index) => {
+              const show = interpolate(localFrame, [index * 16, index * 16 + 16], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
               return (
-                <div key={step} style={{position: 'relative'}}>
-                  {index > 0 ? <div style={{background: complete ? spec.accent : 'rgba(255,255,255,.18)', height: 4, left: -30, position: 'absolute', top: 104, width: 42}} /> : null}
-                  <div style={{
-                    background: complete ? `${spec.accent}1d` : 'rgba(255,255,255,.035)',
-                    border: `1px solid ${complete ? spec.accent : 'rgba(255,255,255,.14)'}`,
+                <div key={tool.label} style={{
+                    background: `linear-gradient(145deg, ${tool.accent ?? spec.accent}20, rgba(255,255,255,.025))`,
+                    border: `1px solid ${tool.accent ?? 'rgba(255,255,255,.16)'}`,
                     borderRadius: 26,
                     minHeight: 210,
                     opacity: show,
                     padding: '38px 24px',
-                    textAlign: 'center',
-                    transform: `translateY(${(1 - show) * 30}px) scale(${0.94 + show * 0.06})`,
+                    transform: `translateY(${(1 - show) * 30}px) rotate(${(1 - show) * (index % 2 ? 1.4 : -1.4)}deg)`,
                   }}>
-                    <div style={{alignItems: 'center', background: complete ? spec.accent : 'rgba(255,255,255,.1)', borderRadius: '50%', color: complete ? '#07110e' : '#fff', display: 'inline-flex', fontFamily: 'Menlo, monospace', fontSize: 22, fontWeight: 950, height: 58, justifyContent: 'center', width: 58}}>{complete ? '✓' : index + 1}</div>
-                    <div style={{color: '#fff', fontSize: 27, fontWeight: 900, marginTop: 28}}>{step}</div>
-                  </div>
+                    <div style={{alignItems: 'center', background: '#fff', borderRadius: 18, display: 'flex', height: 62, justifyContent: 'center', padding: 12, width: 62}}><Img src={staticFile(tool.iconSrc)} style={{height: '100%', objectFit: 'contain', width: '100%'}} /></div>
+                    <div style={{color: '#fff', fontSize: 28, fontWeight: 900, marginTop: 26}}>{tool.label}</div>
+                    <div style={{color: 'rgba(255,255,255,.58)', fontFamily: 'Menlo, monospace', fontSize: 13, letterSpacing: 1.4, marginTop: 10}}>{tool.caption}</div>
                 </div>
               );
             })}
           </div>
-          <div style={{color: 'rgba(255,255,255,.58)', fontSize: 25, marginTop: 44, textAlign: 'center'}}>{beat.body}</div>
         </div>
       </MacWindow>
     </>
@@ -470,30 +453,39 @@ export const PerfectTalkingHeadVideo: React.FC<PerfectTalkingHeadVideoProps> = (
   });
   const progress = frame / Math.max(1, durationInFrames - 1);
   const desktopScene = !['source-full', 'impact'].includes(beat.visual);
-  const bgmFadeInFrames = Math.max(1, Math.round((spec.bgm?.fadeInMs ?? 900) / 1000 * fps));
-  const bgmFadeOutFrames = Math.max(1, Math.round((spec.bgm?.fadeOutMs ?? 1200) / 1000 * fps));
-  const bgmEnvelope = Math.min(
-    interpolate(frame, [0, bgmFadeInFrames], [0, 1], {extrapolateRight: 'clamp'}),
-    interpolate(frame, [durationInFrames - bgmFadeOutFrames, durationInFrames], [1, 0], {extrapolateLeft: 'clamp'}),
-  );
+  const bgmVolume = spec.audio.bgm
+    ? (audioFrame: number) => {
+      const bgmFadeInFrames = Math.max(1, Math.round(spec.audio.bgm!.fadeInMs / 1000 * fps));
+      const bgmFadeOutFrames = Math.max(1, Math.round(spec.audio.bgm!.fadeOutMs / 1000 * fps));
+      const fadeEnvelope = Math.min(
+        interpolate(audioFrame, [0, bgmFadeInFrames], [0, 1], {extrapolateRight: 'clamp'}),
+        interpolate(audioFrame, [durationInFrames - bgmFadeOutFrames, durationInFrames], [1, 0], {extrapolateLeft: 'clamp'}),
+      );
+      const duckAmount = narrationDuckAmount({
+        timeMs: audioFrame / fps * 1000,
+        ranges: spec.subtitles,
+      });
+      return dbToVolume(spec.audio.bgm!.gainDb + spec.audio.bgm!.duckDb * duckAmount) * fadeEnvelope;
+    }
+    : undefined;
 
   return (
     <AbsoluteFill style={{background: '#030706', color: '#fff', fontFamily: 'Inter, "PingFang SC", sans-serif', overflow: 'hidden'}}>
       <OffthreadVideo
         src={staticFile(spec.source.src)}
-        volume={1}
+        volume={dbToVolume(spec.audio.narration.renderGainDb)}
         style={{height: 1, left: 0, opacity: 0, position: 'absolute', top: 0, width: 1}}
       />
-      {spec.bgm ? (
+      {spec.audio.bgm ? (
         <Audio
-          name={`BGM · ${spec.bgm.title}`}
-          src={staticFile(spec.bgm.src)}
-          volume={dbToVolume(spec.bgm.gainDb) * bgmEnvelope}
+          name={`BGM · ${spec.audio.bgm.title}`}
+          src={staticFile(spec.audio.bgm.src)}
+          volume={bgmVolume}
         />
       ) : null}
-      <AudioVisualCueTrack beats={spec.beats} cues={spec.audioVisualCues} />
+      <AudioVisualCueTrack beats={spec.beats} cues={spec.audio.cues} />
 
-      {desktopScene ? <MacDesktop applicationName="MoonCut" clockText="22:30" shade={0.42} showDock={false} showMenuBar /> : null}
+      {desktopScene ? <MacDesktop applicationName="MoonCut" clockText="LIVE" shade={0.42} showDock={false} showMenuBar /> : null}
       {beat.visual === 'speaker-focus' ? <SpeakerFocusScene beat={beat} enter={enter} spec={spec} /> : null}
       {beat.visual === 'metrics' ? <MetricsScene beat={beat} enter={enter} localFrame={localFrame} spec={spec} /> : null}
       {beat.visual === 'pipeline' ? <PipelineScene beat={beat} enter={enter} localFrame={localFrame} spec={spec} /> : null}

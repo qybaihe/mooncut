@@ -1,4 +1,4 @@
-import rawCatalog from './data/bgm-library.json';
+import rawCatalog from './data/bgm-library.json' with {type: 'json'};
 
 export type BgmCategory =
   | 'calm_explainer'

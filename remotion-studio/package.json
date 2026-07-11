@@ -16,7 +16,10 @@
     "materials:search": "node scripts/search-material-library.mjs",
     "materials:verify": "node scripts/verify-material-library.mjs",
     "verify:bgm": "node scripts/verify-bgm-library.mjs",
+    "bgm:import-generated": "node scripts/import-generated-bgm.mjs",
     "verify:av-cues": "node --test test/audioVisualCues.test.ts",
+    "verify:final-spec": "node scripts/validate-final-talking-head-spec.ts src/data/763e8d-perfect-edit-spec.json",
+    "verify:rendered-audio": "node scripts/verify-rendered-final-audio.mjs",
     "test": "node --test test/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
