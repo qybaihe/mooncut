@@ -34,12 +34,12 @@
 
 ## 完成動画を見る
 
-元の MP4 は Git LFS で管理されています。GitHub のメディアプレビューは安定しないため、以下では恒久的な公式サイトのポスターを使い、クリックすると mooncut.me の再生可能な作品一覧に移動します。
+元の MP4 は Git LFS で管理されています。GitHub README にはリポジトリの MP4 を再生するネイティブプレイヤーがないため、以下ではリポジトリ同梱の 7 秒・無音・ループ GIF を使います。ページを開くとそのままプレビューでき、クリックすると mooncut.me で音声付きの完全版を再生できます。
 
-| デモ | 公式サイトのプレビュー | 見どころ |
+| デモ | 自動再生プレビュー | 見どころ |
 | --- | --- | --- |
-| **Moonshot Plan · Physical AI ハッカソン会場**<br />41 秒 · 1280×720 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/koubo-raw-sample-poster.jpg" width="320" alt="Moonshot Plan Physical AI ハッカソンの完成動画ポスター" /></a><br />[▶ mooncut.me で再生 ↗](https://mooncut.me/#works)<br />[小紅書の現地記録：「探月計画ハッカソンの会場に本当に圧倒された」](http://xhslink.com/o/R8BbBY1Qe1) | イベント情報、実際の Web 証拠、話者映像、強調字幕を一つにしたライブ制作例です。 |
-| **アルゼンチン vs エジプト · ワールドカップ試合分析**<br />97 秒 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/football-argentina-egypt-poster.jpg" width="320" alt="アルゼンチン対エジプトの試合分析完成動画ポスター" /></a><br />[▶ mooncut.me で再生 ↗](https://mooncut.me/#works) | 公式ハイライト、試合イベントの時間軸、スコアカード、解説者を、リズムのある分析動画にまとめます。 |
+| **Moonshot Plan · Physical AI ハッカソン会場**<br />41 秒 · 1280×720 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/moonshot-hackathon-preview.gif" width="480" alt="Moonshot Plan Physical AI ハッカソンの 7 秒・無音ループプレビュー" /></a><br />7 秒・無音ループ · [▶ mooncut.me で完全版 MP4 を再生 ↗](https://mooncut.me/#works)<br />[小紅書の現地記録：「探月計画ハッカソンの会場に本当に圧倒された」](http://xhslink.com/o/R8BbBY1Qe1) | イベント情報、実際の Web 証拠、話者映像、強調字幕を一つにしたライブ制作例です。 |
+| **アルゼンチン vs エジプト · ワールドカップ試合分析**<br />97 秒 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/argentina-egypt-preview.gif" width="480" alt="アルゼンチン対エジプトの試合分析の 7 秒・無音ループプレビュー" /></a><br />7 秒・無音ループ · [▶ mooncut.me で完全版 MP4 を再生 ↗](https://mooncut.me/#works) | 公式ハイライト、試合イベントの時間軸、スコアカード、解説者を、リズムのある分析動画にまとめます。 |
 
 ## 誰のための製品か
 

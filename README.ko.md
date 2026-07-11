@@ -34,12 +34,12 @@
 
 ## 완성 영상을 보세요
 
-원본 MP4는 Git LFS로 관리합니다. GitHub의 미디어 미리보기는 안정적이지 않으므로, 아래의 공식 웹사이트 포스터를 클릭해 mooncut.me의 재생 가능한 작품 영역으로 이동할 수 있습니다.
+원본 MP4는 Git LFS로 관리합니다. GitHub README에는 리포지토리 MP4용 네이티브 플레이어가 없으므로, 아래에는 리포지토리에 포함한 7초 무음 반복 GIF를 사용합니다. 페이지를 열면 바로 미리 볼 수 있고, 클릭하면 mooncut.me에서 소리가 포함된 전체 영상을 재생합니다.
 
-| 데모 | 공식 웹사이트 미리보기 | 보여 주는 점 |
+| 데모 | 자동 재생 미리보기 | 보여 주는 점 |
 | --- | --- | --- |
-| **Moonshot Plan · Physical AI 해커톤 현장**<br />41초 · 1280×720 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/koubo-raw-sample-poster.jpg" width="320" alt="Moonshot Plan Physical AI 해커톤 완성 영상 포스터" /></a><br />[▶ mooncut.me에서 재생 ↗](https://mooncut.me/#works)<br />[샤오홍슈 현장 기록: “탐월계획 해커톤 현장에 정말 압도됐다”](http://xhslink.com/o/R8BbBY1Qe1) | 행사 정보, 실제 웹 근거, 화자 영상, 강조 자막을 한데 묶은 현장 제작 예시입니다. |
-| **아르헨티나 vs 이집트 · 월드컵 경기 분석**<br />97초 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/football-argentina-egypt-poster.jpg" width="320" alt="아르헨티나 대 이집트 경기 분석 완성 영상 포스터" /></a><br />[▶ mooncut.me에서 재생 ↗](https://mooncut.me/#works) | 공식 하이라이트, 경기 이벤트 타임라인, 스코어 카드, 해설자를 리듬감 있는 분석 영상으로 구성합니다. |
+| **Moonshot Plan · Physical AI 해커톤 현장**<br />41초 · 1280×720 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/moonshot-hackathon-preview.gif" width="480" alt="Moonshot Plan Physical AI 해커톤 7초 무음 반복 미리보기" /></a><br />7초 무음 반복 · [▶ mooncut.me에서 전체 MP4 재생 ↗](https://mooncut.me/#works)<br />[샤오홍슈 현장 기록: “탐월계획 해커톤 현장에 정말 압도됐다”](http://xhslink.com/o/R8BbBY1Qe1) | 행사 정보, 실제 웹 근거, 화자 영상, 강조 자막을 한데 묶은 현장 제작 예시입니다. |
+| **아르헨티나 vs 이집트 · 월드컵 경기 분석**<br />97초 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/argentina-egypt-preview.gif" width="480" alt="아르헨티나 대 이집트 경기 분석 7초 무음 반복 미리보기" /></a><br />7초 무음 반복 · [▶ mooncut.me에서 전체 MP4 재생 ↗](https://mooncut.me/#works) | 공식 하이라이트, 경기 이벤트 타임라인, 스코어 카드, 해설자를 리듬감 있는 분석 영상으로 구성합니다. |
 
 ## 누구를 위한 제품인가
 

@@ -50,12 +50,12 @@
 
 ## 看成片
 
-两条成片的原始 MP4 都由 Git LFS 保存；GitHub 并不能稳定在线播放，因此下方固定使用官网的轻量封面，点击即可跳到可播放的作品区。
+两条成片的原始 MP4 都由 Git LFS 保存。GitHub README 不支持仓库 MP4 的原生播放器，因此下方使用随仓库提交的 7 秒静音循环 GIF；打开 README 即可直接预览，点击则进入官网播放带声音的完整成片。
 
-| 示例 | 官网预览 | 看点 |
+| 示例 | 自动播放预览 | 看点 |
 | --- | --- | --- |
-| **探月计划 · Physical AI 黑客松现场**<br />41 秒 · 1280×720 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/koubo-raw-sample-poster.jpg" width="320" alt="探月计划 Physical AI 黑客松现场成片封面" /></a><br />[▶ 在官网播放 ↗](https://mooncut.me/#works)<br />[小红书现场记录：探月计划黑客松现场，真的有被震撼到](http://xhslink.com/o/R8BbBY1Qe1) | 以现场口播串联活动信息、真实网页证据、人物镜头与重点字幕，是 MoonCut 的创作现场示例。 |
-| **阿根廷 vs 埃及 · 世界杯赛事复盘**<br />97 秒 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="https://mooncut.me/showcase/football-argentina-egypt-poster.jpg" width="320" alt="阿根廷对埃及世界杯赛事复盘成片封面" /></a><br />[▶ 在官网播放 ↗](https://mooncut.me/#works) | 将官方比赛集锦、事件时间线、比分卡与讲解人物组合为一条有叙事节奏的赛事分析视频。 |
+| **探月计划 · Physical AI 黑客松现场**<br />41 秒 · 1280×720 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/moonshot-hackathon-preview.gif" width="480" alt="探月计划 Physical AI 黑客松现场 7 秒静音循环预览" /></a><br />7 秒静音循环预览 · [▶ 在官网播放完整 MP4 ↗](https://mooncut.me/#works)<br />[小红书现场记录：探月计划黑客松现场，真的有被震撼到](http://xhslink.com/o/R8BbBY1Qe1) | 以现场口播串联活动信息、真实网页证据、人物镜头与重点字幕，是 MoonCut 的创作现场示例。 |
+| **阿根廷 vs 埃及 · 世界杯赛事复盘**<br />97 秒 · 1920×1080 | <a href="https://mooncut.me/#works"><img src="./docs/readme-assets/argentina-egypt-preview.gif" width="480" alt="阿根廷对埃及世界杯赛事复盘 7 秒静音循环预览" /></a><br />7 秒静音循环预览 · [▶ 在官网播放完整 MP4 ↗](https://mooncut.me/#works) | 将官方比赛集锦、事件时间线、比分卡与讲解人物组合为一条有叙事节奏的赛事分析视频。 |
 
 ## 为谁而做
 
