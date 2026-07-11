@@ -4,7 +4,8 @@ import Foundation
 enum CameraAvailability: Equatable {
     case preparing
     case ready
-    case fallback(String)
+    case denied(String)
+    case unavailable(String)
 }
 
 enum CameraRecordingState: Equatable {
@@ -14,6 +15,7 @@ enum CameraRecordingState: Equatable {
     case finishing
 }
 
+/// 真实前摄录制。无权限时不会进入“演示录制”，也不生成假成片。
 @MainActor
 final class CameraRecorder: NSObject, ObservableObject {
     @Published private(set) var availability: CameraAvailability = .preparing
@@ -41,6 +43,11 @@ final class CameraRecorder: NSObject, ObservableObject {
         case cancel
     }
 
+    var canRecord: Bool {
+        if case .ready = availability { return true }
+        return false
+    }
+
     func prepare() async {
         guard !isConfigured else {
             startSession()
@@ -52,8 +59,15 @@ final class CameraRecorder: NSObject, ObservableObject {
         let microphoneAllowed = await requestPermission(for: .audio)
 
         guard cameraAllowed, microphoneAllowed else {
-            let missing = !cameraAllowed && !microphoneAllowed ? "相机与麦克风权限未开启" : (!cameraAllowed ? "相机权限未开启" : "麦克风权限未开启")
-            availability = .fallback(missing)
+            let missing: String
+            if !cameraAllowed && !microphoneAllowed {
+                missing = "相机与麦克风权限未开启。请在系统设置中允许后返回 App。"
+            } else if !cameraAllowed {
+                missing = "相机权限未开启。请在系统设置中允许后返回 App。"
+            } else {
+                missing = "麦克风权限未开启。请在系统设置中允许后返回 App。"
+            }
+            availability = .denied(missing)
             return
         }
 
@@ -63,35 +77,23 @@ final class CameraRecorder: NSObject, ObservableObject {
             availability = .ready
             startSession()
         } catch {
-            availability = .fallback("镜头暂时不可用")
+            availability = .unavailable("镜头暂时不可用，无法进行真实录制。")
         }
     }
 
     func startRecording() {
         guard recordingState == .idle else { return }
+        guard canRecord else { return }
         cleanupSegments()
         outputURL = nil
         elapsedTime = 0
-
-        if case .fallback = availability {
-            recordingState = .recording
-            startTimer()
-            return
-        }
-
-        guard availability == .ready else { return }
         startNewSegment()
     }
 
     func pauseRecording() {
         guard recordingState == .recording else { return }
         stopTimer()
-
-        if case .fallback = availability {
-            recordingState = .paused
-            return
-        }
-
+        guard canRecord else { return }
         pendingAction = .pause
         recordingState = .paused
         if movieOutput.isRecording { movieOutput.stopRecording() }
@@ -99,21 +101,13 @@ final class CameraRecorder: NSObject, ObservableObject {
 
     func resumeRecording() {
         guard recordingState == .paused else { return }
-
-        if case .fallback = availability {
-            recordingState = .recording
-            startTimer()
-            return
-        }
-
-        guard availability == .ready else { return }
+        guard canRecord else { return }
         startNewSegment()
     }
 
     func finishRecording() async -> URL? {
         stopTimer()
-
-        if case .fallback = availability {
+        guard canRecord else {
             recordingState = .idle
             return nil
         }
@@ -146,6 +140,7 @@ final class CameraRecorder: NSObject, ObservableObject {
         }
         recordingState = .idle
         elapsedTime = 0
+        outputURL = nil
     }
 
     func toggleMirroring() {
@@ -265,6 +260,7 @@ final class CameraRecorder: NSObject, ObservableObject {
         case .cancel:
             cleanupSegments()
             recordingState = .idle
+            outputURL = nil
         case .none:
             if recordingState == .recording { recordingState = .idle }
         }

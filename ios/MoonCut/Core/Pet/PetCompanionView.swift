@@ -34,7 +34,6 @@ private struct AnimatedPetSprite: UIViewRepresentable {
         guard let source = UIImage(named: "HappyDogSpritesheet")?.cgImage else { return [] }
         let cellWidth = source.width / 8
         let cellHeight = source.height / 9
-
         return (0..<state.frameCount).compactMap { column in
             let rect = CGRect(
                 x: column * cellWidth,
@@ -53,80 +52,70 @@ private struct AnimatedPetSprite: UIViewRepresentable {
 }
 
 struct PetCompanionView: View {
-    let state: PetAnimationState
+    @Bindable var store: PetStateStore
     var compact = false
+    var showsBubble = true
+    var forceHideBubble = false
 
-    @AppStorage("mooncut:pet-happiness") private var happiness = 68
-    @State private var reactionState: PetAnimationState?
-    @State private var touchedMessage = false
-    @State private var showsBubble = true
+    @Environment(\.theme) private var theme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var showsBubbleState = true
     @State private var heartBurst = 0
-    @State private var reactionNonce = 0
 
-    private var activeState: PetAnimationState { reactionState ?? state }
-    private var canShowBubble: Bool { !compact && UIScreen.main.bounds.height >= 700 }
+    private var canShowBubble: Bool {
+        showsBubble && !forceHideBubble && !compact && !UIAccessibility.isVoiceOverRunning
+    }
+
     private var mood: String {
-        if happiness >= 90 { return "超开心" }
-        if happiness >= 72 { return "很开心" }
+        if store.happiness >= 90 { return "超开心" }
+        if store.happiness >= 72 { return "很开心" }
         return "陪着你"
     }
 
     var body: some View {
         VStack(spacing: -4) {
-            if showsBubble && canShowBubble {
+            if showsBubbleState && canShowBubble {
                 bubble
-                    .transition(.scale(scale: 0.94, anchor: .bottomTrailing).combined(with: .opacity))
+                    .transition(.scale(scale: 0.94, anchor: .bottom).combined(with: .opacity))
             }
 
             Button(action: pet) {
                 ZStack(alignment: .bottom) {
                     RadialGradient(
-                        colors: [MoonColor.accent.opacity(0.14), .clear],
+                        colors: [theme.accent.opacity(0.14), .clear],
                         center: .bottom,
                         startRadius: 2,
                         endRadius: 54
                     )
-                    .frame(width: compact ? 68 : 76, height: compact ? 74 : 86)
+                    .frame(width: compact ? 56 : 72, height: compact ? 60 : 78)
 
-                    Capsule()
-                        .fill(.black.opacity(0.10))
-                        .frame(width: compact ? 44 : 54, height: 9)
-                        .blur(radius: 4)
-                        .offset(y: -4)
+                    AnimatedPetSprite(state: store.animation)
+                        .frame(width: compact ? 52 : 68, height: compact ? 56 : 74)
+                        .offset(y: -2)
 
-                    AnimatedPetSprite(state: activeState)
-                        .frame(width: compact ? 64 : 72, height: compact ? 70 : 78)
-                        .offset(y: -4)
-
-                    if !compact {
-                        Text("摸摸我")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 7)
-                            .frame(height: 22)
-                            .background(.regularMaterial, in: Capsule())
-                            .overlay(Capsule().stroke(MoonColor.hairline, lineWidth: 1))
-                            .offset(x: 8, y: 1)
-                    }
-
-                    if heartBurst > 0 {
+                    if heartBurst > 0, !reduceMotion {
                         PetHeartBurst()
                             .id(heartBurst)
-                            .offset(y: -66)
+                            .offset(y: -56)
                     }
                 }
+                .frame(minWidth: 44, minHeight: 44)
                 .contentShape(Rectangle())
             }
             .buttonStyle(PetPressStyle())
-            .accessibilityLabel("摸摸小月，当前开心值 \(happiness)")
+            .accessibilityLabel("摸摸小月，当前开心值 \(store.happiness)")
+            .accessibilityIdentifier("pet-companion")
         }
-        .animation(.spring(response: 0.30, dampingFraction: 0.82), value: showsBubble)
-        .task(id: state) {
-            guard canShowBubble, reactionState == nil else { return }
-            showsBubble = true
+        .animation(.spring(response: 0.30, dampingFraction: 0.82), value: showsBubbleState)
+        .task(id: store.animation) {
+            guard canShowBubble else {
+                showsBubbleState = false
+                return
+            }
+            showsBubbleState = true
             try? await Task.sleep(nanoseconds: 3_400_000_000)
-            guard !Task.isCancelled, reactionState == nil else { return }
-            showsBubble = false
+            guard !Task.isCancelled else { return }
+            showsBubbleState = false
         }
     }
 
@@ -136,17 +125,17 @@ struct PetCompanionView: View {
                 Text("小月")
                     .font(.caption.weight(.bold))
                 Spacer(minLength: 12)
-                Text("\(mood) · \(happiness)")
+                Text("\(mood) · \(store.happiness)")
                     .font(.system(size: 9, weight: .medium, design: .monospaced))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(theme.textTertiary)
             }
-            Text(touchedMessage ? "摸到我啦，好开心！" : activeState.message)
+            Text(store.message)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             GeometryReader { geometry in
                 Capsule()
-                    .fill(MoonColor.inset)
+                    .fill(theme.inset)
                     .overlay(alignment: .leading) {
                         Capsule()
                             .fill(
@@ -156,7 +145,7 @@ struct PetCompanionView: View {
                                     endPoint: .trailing
                                 )
                             )
-                            .frame(width: geometry.size.width * CGFloat(happiness) / 100)
+                            .frame(width: geometry.size.width * CGFloat(store.happiness) / 100)
                     }
             }
             .frame(height: 4)
@@ -166,32 +155,17 @@ struct PetCompanionView: View {
         .background(.regularMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 14, bottomLeadingRadius: 14, bottomTrailingRadius: 5, topTrailingRadius: 14))
         .overlay(
             UnevenRoundedRectangle(topLeadingRadius: 14, bottomLeadingRadius: 14, bottomTrailingRadius: 5, topTrailingRadius: 14)
-                .stroke(MoonColor.hairline, lineWidth: 1)
+                .stroke(theme.hairline, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.08), radius: 14, y: 6)
-        .onTapGesture { showsBubble = false }
+        .onTapGesture { showsBubbleState = false }
         .accessibilityElement(children: .combine)
     }
 
     private func pet() {
-        reactionNonce += 1
-        let nonce = reactionNonce
-        happiness = min(100, happiness + 4)
-        reactionState = .jumping
-        touchedMessage = true
-        showsBubble = canShowBubble
+        store.apply(.touch)
         heartBurst += 1
+        showsBubbleState = canShowBubble
         UIImpactFeedbackGenerator(style: .soft).impactOccurred()
-
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_400_000_000)
-            guard nonce == reactionNonce else { return }
-            reactionState = nil
-            touchedMessage = false
-            try? await Task.sleep(nanoseconds: 2_200_000_000)
-            guard nonce == reactionNonce else { return }
-            showsBubble = false
-        }
     }
 }
 
@@ -227,13 +201,5 @@ private struct PetHeartBurst: View {
             .offset(x: x, y: y)
             .rotationEffect(.degrees(rotation))
             .scaleEffect(expanded ? 1 : 0.4)
-    }
-}
-
-#Preview {
-    ZStack(alignment: .bottomTrailing) {
-        MoonColor.canvas.ignoresSafeArea()
-        PetCompanionView(state: .idle)
-            .padding()
     }
 }
