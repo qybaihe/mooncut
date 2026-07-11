@@ -24,6 +24,15 @@
 
 > **En una frase:** MoonCut no arroja un vídeo a una caja negra. Convierte la creación de vídeos hablados en una ruta controlable: aclarar el mensaje, grabar con confianza y terminar con subtítulos reales, planos semánticos y puertas de calidad.
 
+## Ver los vídeos terminados
+
+Las dos demostraciones siguientes están incluidas en este repositorio como medios Git LFS y se pueden abrir o descargar directamente.
+
+| Demo | Vídeo terminado | Qué demuestra |
+| --- | --- | --- |
+| **Moonshot Plan · Hackathon de Physical AI, en directo**<br />41 s · 1280×720 | [▶ Ver el MP4](./remotion-studio/out/moonshot-gpt56-horizontal-v2-xhs.mp4)<br />[Crónica en Xiaohongshu: «El hackathon Moonshot Plan fue realmente impresionante»](http://xhslink.com/o/R8BbBY1Qe1) | Un ejemplo de creación en vivo que une contexto del evento, evidencia web real, vídeo del presentador y subtítulos enfatizados. |
+| **Argentina vs. Egipto · Análisis de partido del Mundial**<br />97 s · 1920×1080 | [▶ Ver el MP4](./remotion-studio/out/argentina-egypt-analysis-v2.mp4) | Combina resúmenes oficiales, línea de tiempo de eventos, tarjetas de marcador y presentador en un vídeo de análisis con ritmo. |
+
 ## Para quién es
 
 MoonCut está pensado para quienes necesitan aparecer ante la cámara con frecuencia, pero no quieren gastar su energía en escribir desde cero, repetir tomas y ajustar una línea de tiempo al milímetro: divulgadores, equipos de producto y marca, creadores independientes, comunidades estudiantiles y cualquiera que quiera expresar una idea con claridad.

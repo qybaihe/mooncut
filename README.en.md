@@ -24,6 +24,15 @@
 
 > **In one line:** MoonCut turns talking-head creation into a deliberate, inspectable path: clarify the message, record with confidence, then use real captions, semantic story beats, and quality gates to make the final video.
 
+## Watch the finished videos
+
+Both selected demos are versioned in this repository as Git LFS media and can be opened or downloaded directly.
+
+| Demo | Finished video | What it shows |
+| --- | --- | --- |
+| **Moonshot Plan · Physical AI Hackathon, on site**<br />41 s · 1280×720 | [▶ Watch the MP4](./remotion-studio/out/moonshot-gpt56-horizontal-v2-xhs.mp4)<br />[Xiaohongshu field note: “The Moonshot Plan hackathon was genuinely astonishing”](http://xhslink.com/o/R8BbBY1Qe1) | A live creation example that brings together event context, real web evidence, speaker footage, and emphasized captions. |
+| **Argentina vs. Egypt · World Cup match analysis**<br />97 s · 1920×1080 | [▶ Watch the MP4](./remotion-studio/out/argentina-egypt-analysis-v2.mp4) | Combines official match highlights, an event timeline, score cards, and the presenter into a paced analysis video. |
+
 ## Who it is for
 
 MoonCut is for people who need to show up on camera consistently but would rather not spend their energy on blank-page scripting, repeated takes, and timeline micro-edits: educators, product and brand teams, independent creators, student communities, and anyone with a point worth saying clearly.
