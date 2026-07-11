@@ -36,3 +36,11 @@
 
 # Generated web shot/output artifacts
 /mooncut-web/output/
+
+# MoonCut Studio generated / heavy local artifacts
+/mooncut-studio/apps/desktop/release/
+/mooncut-studio/apps/desktop/dist/
+/mooncut-studio/apps/desktop/dist-electron/
+/mooncut-studio/apps/desktop/resources/mooncut-runtime/
+/mooncut-studio/packages/*/dist/
+/mooncut-pi-agent/dist/
