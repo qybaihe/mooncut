@@ -14,6 +14,7 @@ import {
   MailCheck,
   MessageSquareMore,
   MapPin,
+  PackageCheck,
   RotateCcw,
   Scissors,
   Share2,
@@ -24,8 +25,8 @@ import {
 } from '@lucide/vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useTheme } from '../composables/useTheme'
-import { artifactUrl, confirmJobMail, createEditJob, createSubtitleRepair, getEditJob, getMailStatus, listSubtitleRepairs, prepareJobMail, publishCommunityPost, uploadAsset } from '../services/api'
-import type { EditJob, PetAnimationState, VideoAsset } from '../types'
+import { artifactUrl, confirmJobMail, createEditJob, createSubtitleRepair, getEditJob, getMailStatus, listCapabilityInstallations, listSubtitleRepairs, prepareJobMail, publishCommunityPost, uploadAsset } from '../services/api'
+import type { CapabilityInstallation, EditJob, PetAnimationState, VideoAsset } from '../types'
 import ToastMessage from './ToastMessage.vue'
 import VideoSurface from './VideoSurface.vue'
 
@@ -74,6 +75,10 @@ const inputRef = ref<HTMLInputElement | null>(null)
 const subtitleStyle = ref<'重点词强调' | '极简白字' | '综艺描边'>('重点词强调')
 const intensity = ref<'轻' | '自然' | '紧凑'>('自然')
 const imageGenerationMode = ref<'auto' | 'off'>('auto')
+const installedCapabilities = ref<CapabilityInstallation[]>([])
+const selectedCapabilityIds = ref<string[]>([])
+const fifaEvidenceRequested = ref(false)
+const fifaEvidenceMatchId = ref('')
 const notificationEnabled = ref(false)
 const notificationEmailKey = `mooncut:notification-email:${props.userEmail}`
 const communityAuthorKey = `mooncut:community-author:${props.userEmail}`
@@ -135,6 +140,9 @@ const resultDuration = computed(() => {
 const resultModel = computed(() => completedJob.value?.result?.models?.planner ?? '—')
 const resultQuality = computed(() => completedJob.value?.result?.quality?.ok ? '通过' : '待检查')
 const generatedVisualCount = computed(() => completedJob.value?.result?.visuals?.assets?.length ?? 0)
+const usedCapabilities = computed(() => completedJob.value?.capabilities ?? [])
+const enabledTaskCapabilities = computed(() => installedCapabilities.value.filter((capability) => capability.status === 'enabled' && capability.tasks.includes('video-edit')))
+const selectedFifaInstallation = computed(() => enabledTaskCapabilities.value.find((capability) => capability.slug === 'fifa-official-highlights' && selectedCapabilityIds.value.includes(capability.id)))
 const currentProcessingSteps = computed(() => isSubtitleRepairing.value ? subtitleRepairSteps : processingSteps)
 const repairAtMs = computed(() => {
   const raw = repairAtInput.value.trim()
@@ -188,6 +196,20 @@ watch(petState, (state) => emit('pet-state', state), { immediate: true })
 function formatSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+function toggleTaskCapability(id: string) {
+  const removing = selectedCapabilityIds.value.includes(id)
+  selectedCapabilityIds.value = removing
+    ? selectedCapabilityIds.value.filter((value) => value !== id)
+    : [...selectedCapabilityIds.value, id]
+  if (removing && installedCapabilities.value.find((capability) => capability.id === id)?.slug === 'fifa-official-highlights') {
+    fifaEvidenceRequested.value = false
+  }
+}
+
+function usedCapabilityLabel(installationId: string, slug: string) {
+  return installedCapabilities.value.find((capability) => capability.id === installationId)?.name ?? slug
 }
 
 function isVideoFile(file: File) {
@@ -395,6 +417,10 @@ async function beginProcessing() {
     toast.value = '请填写有效的收件邮箱'
     return
   }
+  if (fifaEvidenceRequested.value && selectedFifaInstallation.value && !fifaEvidenceMatchId.value.trim()) {
+    toast.value = '请填写 FIFA 比赛编号，才能把确认过的赛况截图加入任务'
+    return
+  }
   const generation = ++pollGeneration
   isSubtitleRepairing.value = false
   progress.value = 2
@@ -409,9 +435,18 @@ async function beginProcessing() {
     const created = await createEditJob({
       assetId: uploaded.assetId,
       title: asset.value.name.replace(/\.[^.]+$/, ''),
-      prompt: `使用${subtitleStyle.value}字幕，节奏强度${intensity.value}，保留自然语气。`,
+      prompt: `使用${subtitleStyle.value}字幕，节奏强度${intensity.value}，保留自然语气。${selectedCapabilityIds.value.length ? '仅在相关事实需要时使用用户选定的 Pi 能力，并保留其来源与版本。' : ''}`,
       imageGeneration: imageGenerationMode.value,
       notificationEmail: notificationEnabled.value ? notificationEmail.value.trim() : undefined,
+      capabilityInstallIds: selectedCapabilityIds.value,
+      capabilityRequests: fifaEvidenceRequested.value && selectedFifaInstallation.value
+        ? [{
+            installationId: selectedFifaInstallation.value.id,
+            tool: 'fifa_match_context' as const,
+            input: { matchId: fifaEvidenceMatchId.value.trim(), includeChineseContext: true, screenshotView: 'ratings' as const },
+            confirmedArtifact: true,
+          }]
+        : undefined,
     })
     jobId.value = created.id
     localStorage.setItem(activeJobKey, created.id)
@@ -542,10 +577,11 @@ onBeforeUnmount(() => {
 
 onMounted(async () => {
   try {
-    const status = await getMailStatus()
+    const [status, capabilities] = await Promise.all([getMailStatus(), listCapabilityInstallations()])
     mailAuthorized.value = status.authorized
     mailAutomatic.value = status.automatic
     mailSender.value = status.aliases.find((alias) => alias.is_primary)?.email ?? status.aliases[0]?.email ?? ''
+    installedCapabilities.value = capabilities.items
   } catch {
     mailAuthorized.value = false
   }
@@ -673,6 +709,26 @@ onMounted(async () => {
             >关闭</button>
           </div>
         </div>
+        <section v-if="enabledTaskCapabilities.length" class="task-capability-picker" aria-label="本次任务使用的 Pi 能力">
+          <div><span><PackageCheck :size="16" /> 本次让 Pi 使用</span><small>仅将你主动选定的已安装能力写入任务版本快照。</small></div>
+          <button
+            v-for="capability in enabledTaskCapabilities"
+            :key="capability.id"
+            type="button"
+            :class="{ 'is-selected': selectedCapabilityIds.includes(capability.id) }"
+            :aria-pressed="selectedCapabilityIds.includes(capability.id)"
+            @click="toggleTaskCapability(capability.id)"
+          >
+            <span><Check v-if="selectedCapabilityIds.includes(capability.id)" :size="13" /><template v-else>+</template></span>
+            <strong>{{ capability.name }}</strong><small>v{{ capability.version }}</small>
+          </button>
+          <div v-if="selectedFifaInstallation" class="task-capability-evidence">
+            <strong><ImagePlus :size="14" /> FIFA 赛况证据（可选）</strong>
+            <input v-model.trim="fifaEvidenceMatchId" maxlength="48" placeholder="比赛编号，例如 M95">
+            <label><input v-model="fifaEvidenceRequested" type="checkbox"> <span>将中文赛况截图加入本次视频</span></label>
+            <small>勾选并开始任务，即明确同意访问百度体育公开页面，保存一张任务私有截图；不会下载视频、不会使用登录态，也不会自动发布。</small>
+          </div>
+        </section>
         <div class="email-delivery-card" :class="{ 'is-enabled': notificationEnabled }">
           <button
             class="email-delivery-toggle"
@@ -766,6 +822,13 @@ onMounted(async () => {
           <span v-if="generatedVisualCount > 0"><ImagePlus :size="14" /> AI 示例图 {{ generatedVisualCount }} 张</span>
           <span v-else><Check :size="14" /> 未滥用生成素材</span>
         </div>
+        <section v-if="usedCapabilities.length" class="result-capability-proof" aria-label="本视频使用的 Pi 能力">
+          <strong><PackageCheck :size="15" /> 本视频使用的 Pi 能力</strong>
+          <span v-for="capability in usedCapabilities" :key="capability.installationId">
+            {{ usedCapabilityLabel(capability.installationId, capability.slug) }} · v{{ capability.version }} · {{ capability.manifestHash.slice(0, 10) }}
+          </span>
+          <small>任务已固定此 release 快照；对应的来源与证据产物可在能力调用记录中追溯。</small>
+        </section>
         <section class="subtitle-repair-card" :class="{ 'is-open': repairOpen }" aria-label="人工字幕修复">
           <button v-if="!repairOpen" type="button" class="subtitle-repair-launch" @click="repairOpen = true">
             <span class="subtitle-repair-icon"><MessageSquareMore :size="17" /></span>

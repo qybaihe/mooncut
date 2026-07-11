@@ -15,8 +15,9 @@ test('resolvePostAuthPage restores intent or falls back to landing', () => {
   assert.equal(resolvePostAuthPage(null, 'queue'), 'queue')
 })
 
-test('requiresAuth only for non-landing pages', () => {
+test('requiresAuth leaves landing and public community open', () => {
   assert.equal(requiresAuth('landing'), false)
+  assert.equal(requiresAuth('public-community'), false)
   assert.equal(requiresAuth('edit'), true)
   assert.equal(requiresAuth('record'), true)
   assert.equal(requiresAuth('community'), true)

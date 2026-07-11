@@ -25,103 +25,60 @@ const emit = defineEmits<{
   navigateCreate: []
   navigateEdit: []
   openAuth: [mode: AuthMode]
+  openCommunity: []
   logout: []
 }>()
 
-/**
- * Outcome comparison (below Hero): vertical benchmark-style column charts.
- * Delivery uses a compressed / log-like time scale (not linear 0–5h) so minute-level bars stay legible.
- * Completion is an illustrative linear 0–100 composite (structure · natural delivery · rhythm · subtitle readiness).
- * All figures are local product-design estimates, not public benchmarks or competitor measurements.
- *
- * Delivery heightPct = log-compressed minutes (floor ≈0.4 min → 5 h = 300 min):
- *   h = (log10(m) - log10(0.4)) / (log10(300) - log10(0.4)) * 100
- */
 const outcomeCompare = {
-  scopeLabel: '单条约 3 分钟口播 · 本地演示估算，不是公开基准测试',
-  heading: '把 5 小时，留给表达',
-  deliveryTitle: '从录制就绪到可发布',
-  deliveryCaption:
-    '柱顶数值为本地演示估算的实际时间；纵轴为压缩/对数示意刻度（1 分钟 / 10 分钟 / 1 小时 / 5 小时），仅为分钟级可读性，非线性等比例时间轴。',
-  completionTitle: '口播成片完成度（0–100）',
-  completionCaption:
-    '完成度为结构、表达自然、节奏与字幕就绪程度的产品设计示意综合分，不是通用客观质量分。本地演示估算。',
-  footnote:
-    '通用 AI 剪辑工具为本地演示估算中的泛指对照，不点名真实竞品；全部数值为产品设计示意，非公开基准测试或独立实测。',
-  /** Y-axis ticks for compressed time scale (bottom % of plot). */
-  deliveryTicks: [
-    { label: '5 小时', pct: 100 },
-    { label: '1 小时', pct: 76 },
-    { label: '10 分钟', pct: 49 },
-    { label: '1 分钟', pct: 14 },
-  ],
-  deliveryColumns: [
+  heading: '把时间，留给表达',
+  charts: [
     {
-      key: 'manual',
-      label: '人工精剪',
-      tone: 'manual' as const,
-      display: '5 小时',
-      heightPct: 100,
+      key: 'delivery',
+      title: '从录制就绪到可发布',
+      ariaLabel: '从录制就绪到可发布：人工精剪 5 小时；通用 AI 18 分钟；MoonCut 1 分钟。',
+      ticks: [{ pct: 25 }, { pct: 50 }, { pct: 75 }, { pct: 100 }],
+      columns: [
+        { key: 'manual', label: '人工精剪', tone: 'manual' as const, display: '5 小时', heightPct: 100 },
+        { key: 'ai', label: '通用 AI', tone: 'ai' as const, display: '18 分钟', heightPct: 57 },
+        { key: 'mooncut', label: 'MoonCut', tone: 'mooncut' as const, display: '1 分钟', heightPct: 14, lead: true },
+      ],
     },
     {
-      key: 'ai',
-      label: '通用 AI 剪辑工具（估算）',
-      tone: 'ai' as const,
-      display: '18 分钟',
-      heightPct: 57,
+      key: 'completion',
+      title: '成片完成度',
+      ariaLabel: '成片完成度：原始口播 60；人工精剪 90；通用 AI 78；MoonCut 92。',
+      ticks: [{ pct: 25 }, { pct: 50 }, { pct: 75 }, { pct: 100 }],
+      columns: [
+        { key: 'raw', label: '原始口播', tone: 'raw' as const, display: '60', heightPct: 60 },
+        { key: 'manual', label: '人工精剪', tone: 'manual' as const, display: '90', heightPct: 90 },
+        { key: 'ai', label: '通用 AI', tone: 'ai' as const, display: '78', heightPct: 78 },
+        { key: 'mooncut', label: 'MoonCut', tone: 'mooncut' as const, display: '92', heightPct: 92, lead: true },
+      ],
     },
     {
-      key: 'mooncut',
-      label: 'MoonCut 口播工作流',
-      tone: 'mooncut' as const,
-      display: '1 分钟',
-      heightPct: 14,
-      lead: true,
-    },
-  ],
-  completionTicks: [
-    { label: '100', pct: 100 },
-    { label: '75', pct: 75 },
-    { label: '50', pct: 50 },
-    { label: '25', pct: 25 },
-    { label: '0', pct: 0 },
-  ],
-  completionColumns: [
-    {
-      key: 'raw',
-      label: '原始口播',
-      tone: 'raw' as const,
-      display: '60',
-      heightPct: 60,
+      key: 'control',
+      title: '创作链路可控性',
+      ariaLabel: '创作链路可控性：原始口播 1 步；人工精剪 4 步；通用 AI 2 步；MoonCut 5 步。',
+      ticks: [{ pct: 20 }, { pct: 40 }, { pct: 60 }, { pct: 80 }, { pct: 100 }],
+      columns: [
+        { key: 'raw', label: '原始口播', tone: 'raw' as const, display: '1 步', heightPct: 20 },
+        { key: 'manual', label: '人工精剪', tone: 'manual' as const, display: '4 步', heightPct: 80 },
+        { key: 'ai', label: '通用 AI', tone: 'ai' as const, display: '2 步', heightPct: 40 },
+        { key: 'mooncut', label: 'MoonCut', tone: 'mooncut' as const, display: '5 步', heightPct: 100, lead: true },
+      ],
     },
     {
-      key: 'manual',
-      label: '人工精剪',
-      tone: 'manual' as const,
-      display: '90',
-      heightPct: 90,
+      key: 'deliverables',
+      title: '可交付创作资产',
+      ariaLabel: '可交付创作资产：原始口播 1 项；人工精剪 3 项；通用 AI 2 项；MoonCut 5 项。',
+      ticks: [{ pct: 20 }, { pct: 40 }, { pct: 60 }, { pct: 80 }, { pct: 100 }],
+      columns: [
+        { key: 'raw', label: '原始口播', tone: 'raw' as const, display: '1 项', heightPct: 20 },
+        { key: 'manual', label: '人工精剪', tone: 'manual' as const, display: '3 项', heightPct: 60 },
+        { key: 'ai', label: '通用 AI', tone: 'ai' as const, display: '2 项', heightPct: 40 },
+        { key: 'mooncut', label: 'MoonCut', tone: 'mooncut' as const, display: '5 项', heightPct: 100, lead: true },
+      ],
     },
-    {
-      key: 'ai',
-      label: '通用 AI（估算）',
-      tone: 'ai' as const,
-      display: '78',
-      heightPct: 78,
-    },
-    {
-      key: 'mooncut',
-      label: 'MoonCut',
-      tone: 'mooncut' as const,
-      display: '92',
-      heightPct: 92,
-      lead: true,
-    },
-  ],
-  legend: [
-    { tone: 'raw' as const, label: '原始口播' },
-    { tone: 'manual' as const, label: '人工精剪' },
-    { tone: 'ai' as const, label: '通用 AI（估算）' },
-    { tone: 'mooncut' as const, label: 'MoonCut' },
   ],
 }
 
@@ -204,6 +161,7 @@ async function tryPlayHeroVideo() {
   try {
     el.muted = true
     el.defaultMuted = true
+    el.loop = true
     await el.play()
   } catch {
     // Autoplay blocked or decode failure — poster remains visible.
@@ -325,6 +283,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
         <nav class="landing-anchors" aria-label="Landing 页内导航">
           <a href="#features" @click="handleAnchorClick($event, 'features')">功能</a>
           <a href="#workflow" @click="handleAnchorClick($event, 'workflow')">工作流</a>
+          <button type="button" @click="emit('openCommunity')">社区</button>
           <a href="#demo" @click="handleAnchorClick($event, 'demo')">隐私与边界</a>
           <button
             v-if="userEmail"
@@ -365,8 +324,17 @@ function handleAnchorClick(event: MouseEvent, id: string) {
     </header>
 
     <main class="landing-content">
-      <section class="landing-hero" aria-labelledby="hero-title">
-        <!-- Atmospheric ignition only: supports product story, never replaces it. -->
+      <!--
+        Cinematic 16:9 hero board. Video is full-bleed atmosphere only —
+        product copy lives in the protected left zone; never as text-in-video.
+      -->
+      <section
+        class="landing-hero"
+        aria-labelledby="hero-title"
+        :class="{
+          'is-video-ready': videoReady && shouldRunHeroVideo,
+        }"
+      >
         <div class="hero-atmosphere" aria-hidden="true">
           <div
             class="hero-poster"
@@ -381,52 +349,49 @@ function handleAnchorClick(event: MouseEvent, id: string) {
             loop
             playsinline
             preload="metadata"
-            poster="/landing/hero-poster.png"
+            poster="/landing/hero-city-orbit-poster.png"
             @canplay="onVideoCanPlay"
             @error="onVideoError"
           >
-            <source src="/landing/hero-ignition.mp4" type="video/mp4">
+            <source src="/landing/hero-city-orbit.mp4" type="video/mp4">
           </video>
           <div class="hero-contrast" />
-          <div class="hero-film-grain" />
-          <div class="hero-frame-marks">
-            <span class="hero-corner tl" />
-            <span class="hero-corner tr" />
-            <span class="hero-corner bl" />
-            <span class="hero-corner br" />
-          </div>
+          <div class="hero-vignette" />
         </div>
 
         <div class="hero-stage">
-          <div class="hero-copy">
-            <span class="hero-eyebrow">AI 口播创作工作台</span>
-            <h1 id="hero-title" class="hero-title">
-              从一个想法，<br>
-              到一条能发的口播。
-            </h1>
-            <p class="hero-desc">
-              一起聊出脚本、对着提词器录下来，<br>
-              再把停顿、重复和字幕交给 MoonCut。
-            </p>
-            <div class="hero-actions">
-              <button class="landing-cta-primary hero-cta" type="button" @click="goRecord">
-                开始创作 <ArrowRight :size="18" aria-hidden="true" />
-              </button>
-              <button class="landing-cta-secondary" type="button" @click="goEdit">
-                <Upload :size="16" aria-hidden="true" /> 直接剪视频
-              </button>
+          <div class="hero-copy-zone">
+            <div class="hero-copy">
+              <span class="hero-eyebrow">AI 口播创作工作台</span>
+              <h1 id="hero-title" class="hero-title">
+                从一个想法，<br>
+                到一条能发的口播。
+              </h1>
+              <p class="hero-desc">
+                一起聊出脚本、对着提词器录下来，
+                再把停顿、重复和字幕交给 MoonCut。
+              </p>
+              <div class="hero-actions">
+                <button class="landing-cta-primary hero-cta" type="button" @click="goRecord">
+                  开始创作 <ArrowRight :size="18" aria-hidden="true" />
+                </button>
+                <button class="landing-cta-secondary" type="button" @click="goEdit">
+                  <Upload :size="16" aria-hidden="true" /> 直接剪视频
+                </button>
+              </div>
+              <p class="hero-note">
+                <Sparkles :size="13" aria-hidden="true" />
+                {{ userEmail ? '已登录 · 可直接进入工作区' : '未登录可先了解产品 · 创作时再登录' }}
+              </p>
+              <p class="hero-journey" aria-label="创作路径">
+                <span>脚本</span><i aria-hidden="true" />
+                <span>提词录制</span><i aria-hidden="true" />
+                <span>剪辑时间线</span><i aria-hidden="true" />
+                <span>导出</span>
+              </p>
             </div>
-            <p class="hero-note">
-              <Sparkles :size="13" aria-hidden="true" />
-              {{ userEmail ? '已登录 · 可直接进入工作区' : '未登录可先了解产品 · 创作时再登录' }}
-            </p>
-            <p class="hero-journey" aria-hidden="true">
-              <span>脚本</span><i />
-              <span>提词录制</span><i />
-              <span>剪辑时间线</span><i />
-              <span>导出</span>
-            </p>
           </div>
+          <div class="hero-focal" aria-hidden="true" />
         </div>
       </section>
 
@@ -441,7 +406,6 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       >
         <div class="outcome-compare">
           <header class="outcome-compare-head">
-            <span class="outcome-compare-badge">{{ outcomeCompare.scopeLabel }}</span>
             <h2 id="outcome-heading" class="outcome-compare-heading">
               {{ outcomeCompare.heading }}
             </h2>
@@ -449,43 +413,34 @@ function handleAnchorClick(event: MouseEvent, id: string) {
 
           <div class="outcome-charts">
             <section
+              v-for="chart in outcomeCompare.charts"
+              :key="chart.key"
               class="result-chart"
-              aria-labelledby="delivery-chart-title"
+              :aria-labelledby="`${chart.key}-chart-title`"
             >
               <div class="result-chart-head">
-                <h3 id="delivery-chart-title" class="result-chart-title">
-                  {{ outcomeCompare.deliveryTitle }}
-                </h3>
-                <p class="result-chart-caption">{{ outcomeCompare.deliveryCaption }}</p>
+                <h3 :id="`${chart.key}-chart-title`" class="result-chart-title">{{ chart.title }}</h3>
               </div>
 
               <div
                 class="bench-plot"
                 role="img"
-                :aria-label="`从录制就绪到可发布：${outcomeCompare.deliveryColumns.map((c) => `${c.label} ${c.display}`).join('；')}。纵轴为压缩时间刻度。`"
+                :aria-label="chart.ariaLabel"
               >
                 <div class="bench-body">
-                  <div class="bench-y" aria-hidden="true">
-                    <span
-                      v-for="tick in outcomeCompare.deliveryTicks"
-                      :key="`d-tick-${tick.label}`"
-                      class="bench-y-tick"
-                      :style="{ '--tick-pct': tick.pct }"
-                    >{{ tick.label }}</span>
-                  </div>
                   <div class="bench-area">
                     <div class="bench-grid" aria-hidden="true">
                       <i
-                        v-for="tick in outcomeCompare.deliveryTicks"
-                        :key="`d-grid-${tick.label}`"
+                        v-for="tick in chart.ticks"
+                        :key="`${chart.key}-grid-${tick.pct}`"
                         class="bench-grid-line"
                         :style="{ '--tick-pct': tick.pct }"
                       />
                     </div>
                     <ul class="bench-cols" role="list">
                       <li
-                        v-for="col in outcomeCompare.deliveryColumns"
-                        :key="`delivery-${col.key}`"
+                        v-for="col in chart.columns"
+                        :key="`${chart.key}-${col.key}`"
                         class="bench-col"
                         :class="[`tone-${col.tone}`, { 'is-lead': col.lead }]"
                         :style="{ '--col-h': `${col.heightPct}%` }"
@@ -494,7 +449,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
                         <span
                           class="bench-col-bar"
                           role="img"
-                          :aria-label="`${col.label} 从录制就绪到可发布 ${col.display}`"
+                          :aria-label="`${col.label} ${chart.title} ${col.display}`"
                         />
                       </li>
                     </ul>
@@ -503,72 +458,8 @@ function handleAnchorClick(event: MouseEvent, id: string) {
                 </div>
                 <ul class="bench-x" aria-hidden="true">
                   <li
-                    v-for="col in outcomeCompare.deliveryColumns"
-                    :key="`d-x-${col.key}`"
-                    class="bench-x-label"
-                    :class="[`tone-${col.tone}`, { 'is-lead': col.lead }]"
-                  >{{ col.label }}</li>
-                </ul>
-              </div>
-            </section>
-
-            <section
-              class="result-chart"
-              aria-labelledby="completion-chart-title"
-            >
-              <div class="result-chart-head">
-                <h3 id="completion-chart-title" class="result-chart-title">
-                  {{ outcomeCompare.completionTitle }}
-                </h3>
-                <p class="result-chart-caption">{{ outcomeCompare.completionCaption }}</p>
-              </div>
-
-              <div
-                class="bench-plot"
-                role="img"
-                :aria-label="`口播成片完成度：${outcomeCompare.completionColumns.map((c) => `${c.label} ${c.display}`).join('；')}。纵轴 0 至 100。`"
-              >
-                <div class="bench-body">
-                  <div class="bench-y" aria-hidden="true">
-                    <span
-                      v-for="tick in outcomeCompare.completionTicks"
-                      :key="`c-tick-${tick.label}`"
-                      class="bench-y-tick"
-                      :style="{ '--tick-pct': tick.pct }"
-                    >{{ tick.label }}</span>
-                  </div>
-                  <div class="bench-area">
-                    <div class="bench-grid" aria-hidden="true">
-                      <i
-                        v-for="tick in outcomeCompare.completionTicks"
-                        :key="`c-grid-${tick.label}`"
-                        class="bench-grid-line"
-                        :style="{ '--tick-pct': tick.pct }"
-                      />
-                    </div>
-                    <ul class="bench-cols" role="list">
-                      <li
-                        v-for="col in outcomeCompare.completionColumns"
-                        :key="`completion-${col.key}`"
-                        class="bench-col"
-                        :class="[`tone-${col.tone}`, { 'is-lead': col.lead }]"
-                        :style="{ '--col-h': `${col.heightPct}%` }"
-                      >
-                        <span class="bench-col-value">{{ col.display }}</span>
-                        <span
-                          class="bench-col-bar"
-                          role="img"
-                          :aria-label="`${col.label} 口播成片完成度 ${col.display}`"
-                        />
-                      </li>
-                    </ul>
-                    <div class="bench-baseline" aria-hidden="true" />
-                  </div>
-                </div>
-                <ul class="bench-x" aria-hidden="true">
-                  <li
-                    v-for="col in outcomeCompare.completionColumns"
-                    :key="`c-x-${col.key}`"
+                    v-for="col in chart.columns"
+                    :key="`${chart.key}-x-${col.key}`"
                     class="bench-x-label"
                     :class="[`tone-${col.tone}`, { 'is-lead': col.lead }]"
                   >{{ col.label }}</li>
@@ -576,22 +467,6 @@ function handleAnchorClick(event: MouseEvent, id: string) {
               </div>
             </section>
           </div>
-
-          <ul class="bench-legend" aria-label="图例">
-            <li
-              v-for="item in outcomeCompare.legend"
-              :key="`legend-${item.tone}`"
-              class="bench-legend-item"
-              :class="`tone-${item.tone}`"
-            >
-              <i class="bench-legend-swatch" aria-hidden="true" />
-              <span>{{ item.label }}</span>
-            </li>
-          </ul>
-
-          <footer class="outcome-compare-foot">
-            <p class="outcome-compare-footnote">{{ outcomeCompare.footnote }}</p>
-          </footer>
         </div>
       </section>
 
@@ -609,7 +484,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <section id="features" class="capability" aria-labelledby="capability-title">
-        <header class="section-head">
+        <header class="section-head section-head--left">
           <span class="section-eyebrow">核心能力</span>
           <h2 id="capability-title" class="section-title">想清楚、说自然、只剪该剪的</h2>
           <p class="section-desc">不是三个不相干的功能，而是一条顺着口播创作走的连贯路径。</p>
@@ -697,7 +572,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <section id="workflow" class="workflow" aria-labelledby="workflow-title">
-        <header class="section-head">
+        <header class="section-head section-head--left">
           <span class="section-eyebrow">完整工作流</span>
           <h2 id="workflow-title" class="section-title">一条连续的口播创作路</h2>
           <p class="section-desc">不是五个按钮，是一条顺着走的路。</p>
@@ -722,7 +597,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <section class="showcase" aria-labelledby="showcase-title">
-        <header class="section-head">
+        <header class="section-head section-head--left">
           <span class="section-eyebrow">产品实景</span>
           <h2 id="showcase-title" class="section-title">两段创作路径的真实样子</h2>
         </header>
@@ -782,7 +657,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <section id="demo" class="privacy" aria-labelledby="privacy-title">
-        <header class="section-head">
+        <header class="section-head section-head--left">
           <span class="section-eyebrow">隐私与服务边界</span>
           <h2 id="privacy-title" class="section-title">哪些留在浏览器，哪些交给 Agent</h2>
         </header>
@@ -803,23 +678,25 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <section class="final-cta" aria-labelledby="final-title">
-        <h2 id="final-title" class="final-title">下一条口播，从一句还没想完整的话开始。</h2>
-        <div class="final-actions">
-          <button class="landing-cta-primary" type="button" @click="goRecord">
-            开始创作 <ArrowRight :size="18" aria-hidden="true" />
-          </button>
-          <button class="landing-cta-secondary" type="button" @click="goEdit">
-            <Upload :size="16" aria-hidden="true" /> 上传视频
-          </button>
+        <div class="final-cta-inner">
+          <h2 id="final-title" class="final-title">下一条口播，从一句还没想完整的话开始。</h2>
+          <div class="final-actions">
+            <button class="landing-cta-primary" type="button" @click="goRecord">
+              开始创作 <ArrowRight :size="18" aria-hidden="true" />
+            </button>
+            <button class="landing-cta-secondary" type="button" @click="goEdit">
+              <Upload :size="16" aria-hidden="true" /> 上传视频
+            </button>
+          </div>
+          <p v-if="!userEmail" class="final-auth-hint">
+            已有账户？
+            <button type="button" @click="emit('openAuth', 'login')">登录</button>
+            · 新用户可
+            <button type="button" @click="emit('openAuth', 'register')">
+              <UserPlus :size="13" aria-hidden="true" /> 创建账户
+            </button>
+          </p>
         </div>
-        <p v-if="!userEmail" class="final-auth-hint">
-          已有账户？
-          <button type="button" @click="emit('openAuth', 'login')">登录</button>
-          · 新用户可
-          <button type="button" @click="emit('openAuth', 'register')">
-            <UserPlus :size="13" aria-hidden="true" /> 创建账户
-          </button>
-        </p>
       </section>
 
       <footer class="landing-footer">

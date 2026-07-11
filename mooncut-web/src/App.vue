@@ -6,6 +6,7 @@ import ClipStudio from './components/ClipStudio.vue'
 import CommunityStudio from './components/CommunityStudio.vue'
 import LandingPage from './components/LandingPage.vue'
 import PetCompanion from './components/PetCompanion.vue'
+import PublicCommunity from './components/PublicCommunity.vue'
 import RecordStudio from './components/RecordStudio.vue'
 import QueueStudio from './components/QueueStudio.vue'
 import {
@@ -36,6 +37,7 @@ const activePetState = computed(() => {
   if (activePage.value === 'edit') return clipPetState.value
   if (activePage.value === 'record') return recordPetState.value
   if (activePage.value === 'community') return 'review'
+  if (activePage.value === 'public-community') return 'review'
   if (activePage.value === 'queue') return 'running'
   return 'idle'
 })
@@ -185,7 +187,15 @@ onBeforeUnmount(() => {
         @navigate-create="requestNavigate('record', 'cta-create')"
         @navigate-edit="requestNavigate('edit', 'cta-edit')"
         @open-auth="openAccount"
+        @open-community="activePage = 'public-community'"
         @logout="handleLogout"
+      />
+      <PublicCommunity
+        v-show="activePage === 'public-community'"
+        :signed-in="Boolean(authUser)"
+        @home="activePage = 'landing'"
+        @open-auth="openAccount('login')"
+        @create="requestNavigate('record', 'cta-create')"
       />
       <template v-if="authUser">
         <ClipStudio

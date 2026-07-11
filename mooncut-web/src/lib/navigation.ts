@@ -1,7 +1,7 @@
 import type { WorkspacePage } from '../types'
 
 /** Workspace destinations that require authentication. */
-export type WorkspaceDestination = Exclude<WorkspacePage, 'landing'>
+export type WorkspaceDestination = Exclude<WorkspacePage, 'landing' | 'public-community'>
 
 export type AuthMode = 'login' | 'register'
 
@@ -13,9 +13,9 @@ export function resolvePostAuthPage(
   return intent ?? fallback
 }
 
-/** Pages other than landing require a signed-in user. */
+/** Community browsing is public; all creation and capability pages require a session. */
 export function requiresAuth(page: WorkspacePage): boolean {
-  return page !== 'landing'
+  return page !== 'landing' && page !== 'public-community'
 }
 
 /** Human-readable destination labels for the auth surface. */
@@ -28,7 +28,7 @@ export function destinationLabel(
   const labels: Record<WorkspaceDestination, string> = {
     record: `${verb}进入录制间，从想法开始写稿、提词录制。`,
     edit: `${verb}进入剪辑台，上传或继续剪辑素材。`,
-    community: `${verb}浏览社区作品。`,
+    community: `${verb}发现并管理 Pi 能力。`,
     queue: `${verb}查看渲染队列。`,
   }
   return labels[intent]

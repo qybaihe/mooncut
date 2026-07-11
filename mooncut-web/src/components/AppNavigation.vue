@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, Home, LogOut, Mic2, Scissors, UsersRound } from '@lucide/vue'
+import { Activity, Home, LogOut, Mic2, PackageCheck, Scissors, UsersRound } from '@lucide/vue'
 import { onMounted, ref } from 'vue'
 import { getServiceModels } from '../services/api'
 import type { WorkspacePage } from '../types'
@@ -23,7 +23,8 @@ onMounted(async () => {
 const destinations = [
   { id: 'edit' as const, label: '剪辑台', icon: Scissors },
   { id: 'record' as const, label: '录制间', icon: Mic2 },
-  { id: 'community' as const, label: '社区', icon: UsersRound },
+  { id: 'public-community' as const, label: '社区', icon: UsersRound },
+  { id: 'community' as const, label: '能力', icon: PackageCheck },
   { id: 'queue' as const, label: '队列', icon: Activity },
 ]
 const userInitial = props.userEmail.slice(0, 1).toUpperCase() || 'M'

@@ -1,4 +1,4 @@
-import type { AuthUser, CoachAdviceResponse, CommunityPost, EditJob, RenderQueueSnapshot, ScriptAssistantResponse } from '../types'
+import type { AuthUser, CapabilityCatalogItem, CapabilityInstallation, CapabilityInvocation, CoachAdviceResponse, CommunityPost, EditJob, RenderQueueSnapshot, ScriptAssistantResponse } from '../types'
 
 const apiBase = (import.meta.env.VITE_MOONCUT_API_BASE_URL || 'http://127.0.0.1:4317').replace(/\/$/, '')
 
@@ -78,6 +78,11 @@ export async function createEditJob(payload: {
   prompt?: string
   notificationEmail?: string
   imageGeneration?: 'auto' | 'off'
+  capabilityInstallIds?: string[]
+  capabilityRequests?: Array<
+    | { installationId: string; tool: 'fifa_find_highlights'; input: { query: string } }
+    | { installationId: string; tool: 'fifa_match_context'; input: { matchId: string; includeChineseContext?: boolean; screenshotView?: 'ratings' | 'match' | 'chat' }; confirmedArtifact?: boolean }
+  >
 }) {
   return request<{ id: string; status: EditJob['status']; statusUrl: string }>('/v1/edit-jobs', {
     method: 'POST',
@@ -166,6 +171,48 @@ export async function publishCommunityPost(payload: {
   caption?: string
 }) {
   return request<{ created: boolean; post: CommunityPost }>('/v1/community/posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function listCapabilities(query?: string) {
+  const params = new URLSearchParams()
+  if (query?.trim()) params.set('query', query.trim())
+  return request<{ items: CapabilityCatalogItem[] }>(`/v1/capabilities${params.size ? `?${params}` : ''}`)
+}
+
+export async function listCapabilityInstallations() {
+  return request<{ items: CapabilityInstallation[] }>('/v1/me/capability-installations')
+}
+
+export async function installCapability(slug: string) {
+  return request<{ created: boolean; installation: CapabilityInstallation }>(`/v1/capabilities/${encodeURIComponent(slug)}/install`, { method: 'POST' })
+}
+
+export async function setCapabilityInstallationStatus(id: string, status: 'enabled' | 'disabled') {
+  return request<{ installation: CapabilityInstallation }>(`/v1/me/capability-installations/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  })
+}
+
+export async function uninstallCapability(id: string) {
+  return request<{ ok: true }>(`/v1/me/capability-installations/${id}`, { method: 'DELETE' })
+}
+
+export async function reconfirmCapability(id: string) {
+  return request<{ installation: CapabilityInstallation }>(`/v1/me/capability-installations/${id}/reconfirm`, { method: 'POST' })
+}
+
+export async function preflightCapability(id: string) {
+  return request<{ checkedAt: string; ok: boolean; message: string }>(`/v1/me/capability-installations/${id}/preflight`, { method: 'POST' })
+}
+
+export async function invokeCapability(id: string, payload: { tool: 'fifa_find_highlights'; input: { query: string } } | { tool: 'fifa_match_context'; input: { matchId: string; includeChineseContext?: boolean; screenshotView?: 'ratings' | 'match' | 'chat' }; confirmedArtifact?: boolean }) {
+  return request<CapabilityInvocation>(`/v1/me/capability-installations/${id}/invoke`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
