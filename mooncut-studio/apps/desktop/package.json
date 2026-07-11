@@ -1,0 +1,110 @@
+{
+  "name": "@mooncut/studio-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MoonCut Studio desktop application",
+  "author": "MoonCut",
+  "main": "dist-electron/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/dev-desktop.mjs",
+    "build": "node ../../scripts/build-desktop.mjs",
+    "typecheck": "tsc -p tsconfig.node.json --noEmit && vue-tsc -p tsconfig.web.json --noEmit",
+    "test": "npm run build && node --test test/*.test.js",
+    "prepare:runtime": "node ../../scripts/prepare-runtime-bundle.mjs",
+    "pack:mac": "npm run prepare:runtime && npm run build && electron-builder --mac",
+    "pack:win": "npm run prepare:runtime && npm run build && electron-builder --win",
+    "start": "electron .",
+    "pack:linux": "npm run prepare:runtime && npm run build && electron-builder --linux",
+    "pack:ci": "MOONCUT_RUNTIME_PROFILE=minimal npm run prepare:runtime && npm run build && electron-builder --publish never",
+    "dist": "npm run pack:ci"
+  },
+  "dependencies": {
+    "@mooncut/studio-agent-host": "0.1.0",
+    "@mooncut/studio-bootstrapper": "0.1.0",
+    "@mooncut/studio-project-format": "0.1.0",
+    "@mooncut/studio-shared": "0.1.0",
+    "vue": "^3.5.39"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.4",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "electron": "35.1.2",
+    "electron-builder": "26.0.12",
+    "esbuild": "^0.25.12",
+    "typescript": "5.9.3",
+    "vite": "6.2.5",
+    "vue-tsc": "2.2.8"
+  },
+  "build": {
+    "appId": "com.mooncut.studio",
+    "productName": "MoonCut Studio",
+    "copyright": "Copyright \u00a9 MoonCut",
+    "electronVersion": "35.1.2",
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/mooncut-runtime",
+        "to": "mooncut-runtime",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.video",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "identity": null
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "AudioVideo"
+    }
+  }
+}
