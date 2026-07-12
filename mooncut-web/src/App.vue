@@ -273,6 +273,7 @@ onBeforeUnmount(() => {
       </template>
     </main>
     <PetCompanion
+      v-if="!immersive"
       :state="activePetState"
       :message="petMessage"
       :immersive="immersive"

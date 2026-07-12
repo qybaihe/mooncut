@@ -83,14 +83,17 @@ export function resolveSpokenSentenceIndex(transcript: string, sentenceList: str
   if (!sentenceList.length) return 0
   const spoken = speakable(transcript)
   if (!spoken) return currentIndex
-  // Primary: progress by spoken length through the script.
+  // A length estimate keeps the cue moving if recognition gets no exact hit, but
+  // it must never turn one bad transcript into a jump to the end of the script.
   const byLength = resolveIndexFromCharacterCount(spoken.length, sentenceList)
-  // Secondary: fuzzy match last chunk to a nearby sentence (handles ASR reorder).
+  // Primary: match the newest recognised words against the nearby script lines.
+  // Keeping this window tight protects the teleprompter from unrelated speech,
+  // room noise, or a duplicated chunk from a stateless ASR request.
   const tailPairs = bigrams(spoken.slice(-28))
   let bestIndex = currentIndex
   let bestScore = 0
   const from = Math.max(0, currentIndex - 1)
-  const to = Math.min(sentenceList.length - 1, currentIndex + 2)
+  const to = Math.min(sentenceList.length - 1, currentIndex + 3)
   for (let index = from; index <= to; index += 1) {
     const pairs = bigrams(speakable(sentenceList[index]))
     const score = Array.from(tailPairs).filter((pair) => pairs.has(pair)).length
@@ -99,9 +102,33 @@ export function resolveSpokenSentenceIndex(transcript: string, sentenceList: str
       bestScore = score
     }
   }
-  const fuzzy = bestScore >= 2 ? bestIndex : byLength
-  // Never jump backwards; take the furthest credible progress.
-  return clamp(Math.max(currentIndex, byLength, fuzzy), 0, sentenceList.length - 1)
+  const matchedPairs = bigrams(speakable(sentenceList[bestIndex]))
+  const overlapRatio = bestScore / Math.max(1, Math.min(tailPairs.size, matchedPairs.size))
+  const fuzzy = bestScore >= 2 && overlapRatio >= 0.38 ? bestIndex : currentIndex
+  // An imperfect ASR result may still be useful, but only as one-line momentum.
+  // The independent timed cursor remains the safety net when it is consistently wrong.
+  const cautiousLength = Math.min(byLength, currentIndex + 1)
+  return clamp(Math.max(currentIndex, cautiousLength, fuzzy), 0, sentenceList.length - 1)
+}
+
+/**
+ * Pull only explicit terminology from the script for Nova-3 keyterm prompting.
+ * We deliberately avoid feeding every Chinese phrase back to the model: a small,
+ * meaningful vocabulary improves names and product terms without over-biasing
+ * ordinary spoken copy.
+ */
+export function extractAsrKeyterms(script: string) {
+  const terms = new Set<string>()
+  const add = (value: string) => {
+    const term = value.trim().replace(/^[#@]/, '')
+    if (term.length >= 2 && term.length <= 48) terms.add(term)
+  }
+
+  for (const match of script.matchAll(/[《「『](.+?)[》」』]/gu)) add(match[1] ?? '')
+  for (const match of script.matchAll(/[#@][\p{L}\p{N}_+-]{2,48}/gu)) add(match[0] ?? '')
+  for (const match of script.matchAll(/[A-Za-z][A-Za-z0-9+._-]{1,47}/gu)) add(match[0] ?? '')
+
+  return Array.from(terms).slice(0, 20)
 }
 
 /** Shared warm cache so enter-teleprompter can preload before recording. */
@@ -241,7 +268,10 @@ export function useSpeakingCoach(script: Ref<string>) {
   let deepgramSampleCount = 0
   let deepgramInputRate = 48000
   const DEEPGRAM_TARGET_RATE = 16_000
-  const DEEPGRAM_CHUNK_SECONDS = 1.6
+  // Short slices are responsive but frequently split a Chinese word in half.
+  // A modest overlap preserves phrase context while keeping the cue near realtime.
+  const DEEPGRAM_CHUNK_SECONDS = 2.4
+  const DEEPGRAM_OVERLAP_SECONDS = 0.55
   const cooldowns: Record<string, number> = {}
 
   const DELIVERY_TIPS: Array<{ id: string; text: string; category: AdviceCategory }> = [
@@ -365,7 +395,25 @@ export function useSpeakingCoach(script: Ref<string>) {
         return `${existing}${next.slice(overlap)}`
       }
     }
-    const needSpace = !/[\s，。！？、]$/u.test(existing) && !/^[，。！？、]/.test(next)
+    // Deepgram may alter punctuation across overlapping chunks. Compare the
+    // speakable characters too, then retain just the non-duplicated raw suffix.
+    const existingSpoken = speakable(existing)
+    const nextSpoken = speakable(next)
+    if (nextSpoken && existingSpoken.endsWith(nextSpoken)) return existing
+    for (let overlap = Math.min(existingSpoken.length, nextSpoken.length); overlap >= 2; overlap -= 1) {
+      if (existingSpoken.slice(-overlap) !== nextSpoken.slice(0, overlap)) continue
+      let passed = 0
+      let rawOffset = 0
+      for (const character of next) {
+        rawOffset += character.length
+        if (/[\u3400-\u9fffA-Za-z0-9]/.test(character)) passed += 1
+        if (passed >= overlap) break
+      }
+      return `${existing}${next.slice(rawOffset).replace(/^[\s，。！？、]+/u, '')}`
+    }
+    // Chinese ASR chunks do not need an artificial separator. Keep one only
+    // between two ASCII word fragments, where it improves legibility.
+    const needSpace = /[A-Za-z0-9]$/u.test(existing) && /^[A-Za-z0-9]/u.test(next)
     return needSpace ? `${existing} ${next}` : `${existing}${next}`
   }
 
@@ -410,8 +458,13 @@ export function useSpeakingCoach(script: Ref<string>) {
       merged.set(part, offset)
       offset += part.length
     }
-    deepgramSamples = []
-    deepgramSampleCount = 0
+    const overlapSamples = Math.min(
+      merged.length,
+      Math.round(deepgramInputRate * DEEPGRAM_OVERLAP_SECONDS),
+    )
+    const overlap = overlapSamples ? merged.slice(-overlapSamples) : null
+    deepgramSamples = overlap ? [overlap] : []
+    deepgramSampleCount = overlap?.length ?? 0
 
     const pcm = downsampleTo16k(merged, deepgramInputRate)
     // Skip near-silence to save quota
@@ -427,7 +480,7 @@ export function useSpeakingCoach(script: Ref<string>) {
         encoding: 'linear16',
         sampleRate: DEEPGRAM_TARGET_RATE,
         language: 'zh-CN',
-        model: 'nova-2',
+        keyterms: extractAsrKeyterms(script.value),
       })
       if (result.transcript) ingestCloudTranscript(result.transcript, result.confidence)
       else if (asrResultCount === 0) speechStatus.value = 'Deepgram 聆听中…'

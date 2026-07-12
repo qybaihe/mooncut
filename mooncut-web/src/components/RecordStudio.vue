@@ -14,6 +14,7 @@ import {
   Mic2,
   Pause,
   Play,
+  Plus,
   RotateCcw,
   Scissors,
   Send,
@@ -37,7 +38,15 @@ const { currentTheme } = useTheme()
 type StudioMode = 'compose' | 'teleprompter' | 'review'
 type RecordState = 'idle' | 'countdown' | 'recording' | 'paused'
 type CameraStatus = 'requesting' | 'live' | 'error'
+type AspectRatioId = '16:9' | '4:3' | '1:1' | '9:16'
 type ChatMessage = { id: number; role: 'assistant' | 'user'; content: string }
+
+const ASPECT_PRESETS: Array<{ id: AspectRatioId; label: string; short: string; w: number; h: number }> = [
+  { id: '16:9', label: '横屏 16:9', short: '16:9', w: 16, h: 9 },
+  { id: '4:3', label: '横屏 4:3', short: '4:3', w: 4, h: 3 },
+  { id: '1:1', label: '方形 1:1', short: '1:1', w: 1, h: 1 },
+  { id: '9:16', label: '竖屏 9:16', short: '9:16', w: 9, h: 16 },
+]
 
 const props = defineProps<{ userEmail: string }>()
 const emit = defineEmits<{
@@ -103,9 +112,12 @@ const cameraError = ref('')
 const recordState = ref<RecordState>('idle')
 const countdown = ref<number | null>(null)
 const elapsed = ref(0)
-const fontSize = ref(34)
+/** Preference slider (not absolute px); short scripts stay compact in a fixed rail. */
+const fontSize = ref(24)
 const scrollSpeed = ref(3)
 const mirror = ref(true)
+/** Default landscape 4:3 — camera is wide; we crop the sensor into this frame. */
+const aspectRatio = ref<AspectRatioId>('4:3')
 const reviewUrl = ref<string | null>(null)
 const recordedMime = ref('video/webm')
 const recordedBlob = ref<Blob | null>(null)
@@ -116,8 +128,10 @@ const liveAdviceModel = ref('本地实时分析')
 
 const chatEndRef = ref<HTMLDivElement | null>(null)
 const cameraVideoRef = ref<HTMLVideoElement | null>(null)
+const scriptScrollRef = ref<HTMLDivElement | null>(null)
 let stream: MediaStream | null = null
 let recorder: MediaRecorder | null = null
+let recordStream: MediaStream | null = null
 let chunks: Blob[] = []
 let countdownTimer: number | null = null
 let elapsedTimer: number | null = null
@@ -130,6 +144,8 @@ let coachAdvicePending = false
 let lastCoachRequestAt = 0
 let lastCoachTranscriptLength = 0
 let lastLocalAdviceAt = 0
+let canvasDrawRaf = 0
+let recordCanvas: HTMLCanvasElement | null = null
 
 const characterCount = computed(() => draft.value.replace(/\s/g, '').length)
 const estimatedSeconds = computed(() => characterCount.value ? Math.max(8, Math.round(characterCount.value / 4.1)) : 0)
@@ -167,6 +183,27 @@ const nextSentenceText = computed(() => {
   return sentences.value[next] ?? ''
 })
 const hasNextSentence = computed(() => currentSentence.value < sentences.value.length - 1)
+const activeAspect = computed(
+  () => ASPECT_PRESETS.find((item) => item.id === aspectRatio.value) ?? ASPECT_PRESETS[1],
+)
+const aspectCss = computed(() => `${activeAspect.value.w} / ${activeAspect.value.h}`)
+/**
+ * Keep the full script in a fixed-height rail: short 口播 uses modest type so it
+ * sits in one glanceable block; long copy shrinks further and scrolls.
+ */
+const scriptDisplaySize = computed(() => {
+  const n = characterCount.value
+  let base = 14
+  if (n <= 0) base = 13
+  else if (n <= 140) base = 14
+  else if (n <= 260) base = 13
+  else if (n <= 420) base = 12
+  else base = 11
+  // fontSize 16–36 → bias about −2…+2
+  const bias = Math.round((fontSize.value - 24) / 6)
+  return Math.min(16, Math.max(11, base + bias))
+})
+const scriptIsCompact = computed(() => characterCount.value > 0 && characterCount.value <= 280)
 const visibleCoachTranscript = computed(() => {
   const text = coachTranscript.value.trim()
   return text.length > 120 ? `…${text.slice(-120)}` : text
@@ -193,7 +230,7 @@ watch([messages, isThinking], async () => {
   await nextTick()
   chatEndRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 })
-watch(currentSentence, (index, prev) => {
+watch(currentSentence, async (index, prev) => {
   if (
     (recordState.value === 'recording' || recordState.value === 'paused') &&
     typeof prev === 'number' &&
@@ -207,6 +244,11 @@ watch(currentSentence, (index, prev) => {
         : '最后一句了，把金句钉稳一点。',
     )
   }
+  // Keep the active line visible in the full-script rail.
+  await nextTick()
+  const root = scriptScrollRef.value
+  const active = root?.querySelector<HTMLElement>('.is-current')
+  active?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 })
 watch(coachLocalAdvice, (message) => {
   lastLocalAdviceAt = Date.now()
@@ -641,6 +683,83 @@ function selectMimeType() {
     .find((type) => MediaRecorder.isTypeSupported?.(type)) ?? ''
 }
 
+function stopCanvasRecordPipeline() {
+  if (canvasDrawRaf) cancelAnimationFrame(canvasDrawRaf)
+  canvasDrawRaf = 0
+  recordStream?.getTracks().forEach((track) => {
+    if (track.kind === 'video') track.stop()
+  })
+  recordStream = null
+  recordCanvas = null
+}
+
+/**
+ * Camera sensors are landscape. We center-crop every frame into the chosen aspect
+ * (4:3 / 16:9 / 1:1 / 9:16) so preview frame === exported file.
+ */
+function createAspectRecordStream(video: HTMLVideoElement, media: MediaStream) {
+  stopCanvasRecordPipeline()
+  const preset = activeAspect.value
+  const targetRatio = preset.w / Math.max(0.001, preset.h)
+  // Prefer 1280 on the longer side for quality without huge files.
+  const longSide = 1280
+  let outW: number
+  let outH: number
+  if (preset.w >= preset.h) {
+    outW = longSide
+    outH = Math.round(longSide * (preset.h / preset.w))
+  } else {
+    outH = longSide
+    outW = Math.round(longSide * (preset.w / preset.h))
+  }
+  // Even dimensions help some encoders.
+  outW = Math.max(2, outW - (outW % 2))
+  outH = Math.max(2, outH - (outH % 2))
+
+  const canvas = document.createElement('canvas')
+  canvas.width = outW
+  canvas.height = outH
+  const ctx = canvas.getContext('2d', { alpha: false })
+  if (!ctx) throw new Error('无法创建画布录制')
+
+  const draw = () => {
+    const vw = video.videoWidth || 1280
+    const vh = video.videoHeight || 720
+    const sourceRatio = vw / Math.max(1, vh)
+    // Cover-crop: landscape cam into 4:3 crops left/right; into 9:16 crops top/bottom.
+    let sx = 0
+    let sy = 0
+    let sw = vw
+    let sh = vh
+    if (sourceRatio > targetRatio) {
+      sw = vh * targetRatio
+      sx = (vw - sw) / 2
+    } else {
+      sh = vw / targetRatio
+      sy = (vh - sh) / 2
+    }
+    ctx.save()
+    if (mirror.value) {
+      ctx.translate(canvas.width, 0)
+      ctx.scale(-1, 1)
+    }
+    ctx.fillStyle = '#0a0a0a'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
+    ctx.restore()
+    canvasDrawRaf = requestAnimationFrame(draw)
+  }
+  draw()
+
+  const canvasStream = canvas.captureStream(30)
+  const videoTrack = canvasStream.getVideoTracks()[0]
+  const audioTrack = media.getAudioTracks().find((track) => track.readyState === 'live')
+  const tracks = [videoTrack, audioTrack].filter(Boolean) as MediaStreamTrack[]
+  recordCanvas = canvas
+  recordStream = new MediaStream(tracks)
+  return recordStream
+}
+
 function startElapsedTimer() {
   if (elapsedTimer) window.clearInterval(elapsedTimer)
   elapsedTimer = window.setInterval(() => (elapsed.value += 1), 1000)
@@ -728,8 +847,12 @@ function beginRecording() {
     return
   }
   try {
+    const videoEl = cameraVideoRef.value
+    if (!videoEl || !stream) throw new Error('预览画面未就绪')
+    // Record the same cropped aspect the user sees (not raw camera orientation).
+    const composed = createAspectRecordStream(videoEl, stream)
     const mimeType = selectMimeType()
-    recorder = mimeType ? new MediaRecorder(stream!, { mimeType }) : new MediaRecorder(stream!)
+    recorder = mimeType ? new MediaRecorder(composed, { mimeType }) : new MediaRecorder(composed)
     recordedMime.value = recorder.mimeType || mimeType || 'video/webm'
     recorder.ondataavailable = (event) => {
       if (event.data.size) chunks.push(event.data)
@@ -741,6 +864,7 @@ function beginRecording() {
       stopElapsedTimer()
       stopCoachAdviceTimer()
       stopCoach()
+      stopCanvasRecordPipeline()
       const hasRecording = reviewAfterStop && chunks.length > 0
       if (hasRecording) {
         if (reviewUrl.value && !handedOff) URL.revokeObjectURL(reviewUrl.value)
@@ -761,6 +885,7 @@ function beginRecording() {
     recorder.start(250)
   } catch (error) {
     recorder = null
+    stopCanvasRecordPipeline()
     stopCamera()
     cameraStatus.value = 'error'
     cameraError.value = error instanceof Error ? `无法开始录制：${error.message}` : '无法开始录制，请重新连接摄像头。'
@@ -891,12 +1016,92 @@ async function copyDraft() {
   }
 }
 
+/** Wipe chat history, draft, suggestions and recording state — start a brand-new 口播. */
+function startNewSpeakSession() {
+  const hasWork =
+    messages.value.length > 1 ||
+    Boolean(draft.value.trim()) ||
+    suggestionOptions.value.length > 0 ||
+    mode.value !== 'compose' ||
+    Boolean(reviewUrl.value) ||
+    Boolean(recordedBlob.value)
+  if (
+    hasWork &&
+    !window.confirm('开始新口播？当前对话、口播稿和录制状态都会清空，无法恢复。')
+  ) {
+    return
+  }
+
+  if (countdownTimer) window.clearTimeout(countdownTimer)
+  countdownTimer = null
+  stopElapsedTimer()
+  stopCoachAdviceTimer()
+  stopCoach()
+  stopCanvasRecordPipeline()
+  reviewAfterStop = false
+  if (recorder && recorder.state !== 'inactive') {
+    try {
+      recorder.onstop = null
+      recorder.stop()
+    } catch {
+      // ignore
+    }
+  }
+  recorder = null
+  chunks = []
+  stopCamera()
+  if (reviewUrl.value && !handedOff) URL.revokeObjectURL(reviewUrl.value)
+
+  mode.value = 'compose'
+  mobilePanel.value = 'chat'
+  messages.value = [
+    {
+      ...initialMessage,
+      id: Date.now(),
+    },
+  ]
+  input.value = ''
+  isThinking.value = false
+  selectedSuggestions.value = new Set()
+  suggestionOptions.value = []
+  draft.value = ''
+  assistantError.value = ''
+  lastFailedMessage.value = ''
+  lastResponseModel.value = ''
+  cameraStatus.value = 'idle'
+  cameraError.value = ''
+  recordState.value = 'idle'
+  countdown.value = null
+  elapsed.value = 0
+  reviewUrl.value = null
+  recordedBlob.value = null
+  recordedMime.value = 'video/webm'
+  liveAdvice.value = '看镜头，按自己的节奏开始。'
+  liveAdviceCategory.value = 'steady'
+  liveAdvicePositive.value = true
+  liveAdviceModel.value = '本地实时分析'
+  handedOff = false
+  resetCoach()
+
+  try {
+    localStorage.setItem(messagesStorageKey, JSON.stringify(messages.value))
+    localStorage.setItem(draftStorageKey, '')
+    localStorage.removeItem(modelStorageKey)
+  } catch {
+    // private mode / quota
+  }
+
+  toast.value = '已开始新口播'
+  emit('pet-message', '新的一条，我们从头聊。')
+}
+
 onBeforeUnmount(() => {
   if (countdownTimer) window.clearTimeout(countdownTimer)
   if (toastTimer) window.clearTimeout(toastTimer)
   stopElapsedTimer()
   stopCoachAdviceTimer()
   stopCoach()
+  stopCanvasRecordPipeline()
   reviewAfterStop = false
   if (recorder && recorder.state !== 'inactive') {
     recorder.onstop = null
@@ -929,9 +1134,14 @@ onBeforeUnmount(() => {
       <span class="teleprompter-brand">MOONCUT <img v-if="currentTheme === 'memphis'" class="memphis-sticker brand-sticker" src="/memphis-icons/camera-line.png" alt="" width="16" height="16">✦</span>
     </div>
 
-    <div class="teleprompter-layout is-pro-layout">
-      <!-- Left: large camera — eye contact is the product, keep it dominant -->
-      <div class="camera-stage is-hero" :class="{ 'is-mirrored': mirror, 'is-coaching': recordState === 'recording' || recordState === 'paused' }">
+    <div class="teleprompter-layout is-pro-layout is-landscape-first">
+      <!-- Left: aspect-locked camera (preview = export crop) -->
+      <div
+        class="camera-stage is-hero"
+        :class="{ 'is-mirrored': mirror, 'is-coaching': recordState === 'recording' || recordState === 'paused' }"
+        :style="{ aspectRatio: aspectCss }"
+        :data-aspect="aspectRatio"
+      >
         <video
           ref="cameraVideoRef"
           class="camera-video"
@@ -955,6 +1165,7 @@ onBeforeUnmount(() => {
           </template>
         </div>
         <div class="camera-vignette" />
+        <div class="camera-aspect-chip">裁剪 {{ activeAspect.short }}</div>
         <div v-if="recordState === 'recording' || recordState === 'paused'" class="camera-live-badge">
           <span class="record-dot" /> 跟读 {{ currentSentence + 1 }}/{{ sentences.length || 1 }}
         </div>
@@ -974,38 +1185,54 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <!-- Right rail: teleprompter + coach + controls (misalignment is less critical off-camera) -->
+      <!-- Right: fixed full script + settings + record controls -->
       <aside class="prompt-rail">
         <div class="prompt-rail-head">
-          <span class="mini-label">{{ recordState === 'recording' || recordState === 'paused' ? '侧边提词' : '提词设置' }}</span>
-          <h2>{{ recordState === 'recording' || recordState === 'paused' ? '看镜头，侧眼扫词。' : '看镜头，慢慢说。' }}</h2>
+          <span class="mini-label">全文提词</span>
+          <h2>{{ recordState === 'recording' || recordState === 'paused' ? '看镜头，右侧扫稿。' : '选画幅 · 开录' }}</h2>
           <p class="prompt-rail-status">
             <template v-if="recordState === 'recording' || recordState === 'paused'">
               {{ coachVisionStatus }} · {{ coachSpeechStatus }}
             </template>
-            <template v-else>提词在右侧，画面尽量铺满左侧，对不齐也没关系。</template>
+            <template v-else>
+              摄像头是横屏，按所选比例居中裁剪成片。短稿会缩进右侧固定区域，可直接开录。
+            </template>
           </p>
         </div>
 
+        <div class="aspect-picker" role="group" aria-label="录制画幅（从横屏镜头裁剪）">
+          <button
+            v-for="preset in ASPECT_PRESETS"
+            :key="preset.id"
+            type="button"
+            class="aspect-chip"
+            :class="{ 'is-active': aspectRatio === preset.id }"
+            :disabled="recordState === 'recording' || recordState === 'paused' || recordState === 'countdown'"
+            :aria-pressed="aspectRatio === preset.id"
+            @click="aspectRatio = preset.id"
+          >
+            <i :data-ratio="preset.id" />
+            <span>{{ preset.label }}</span>
+          </button>
+        </div>
+
         <div
-          class="side-teleprompter"
-          :class="{ 'is-live': recordState === 'recording' || recordState === 'paused' }"
-          :style="{ fontSize: `${Math.min(fontSize, 28)}px` }"
+          ref="scriptScrollRef"
+          class="side-teleprompter is-full-script is-fixed-region"
+          :class="{
+            'is-live': recordState === 'recording' || recordState === 'paused',
+            'is-compact': scriptIsCompact,
+          }"
+          :style="{ fontSize: `${scriptDisplaySize}px` }"
           aria-live="polite"
         >
           <div class="side-tele-progress">
             <Sparkles :size="13" />
-            {{ currentSentence + 1 }} / {{ sentences.length || 1 }}
+            全文 · {{ currentSentence + 1 }}/{{ sentences.length || 1 }}
+            <em v-if="characterCount">{{ characterCount }} 字</em>
           </div>
-          <p v-if="previousSentenceText" class="side-tele-prev">{{ previousSentenceText }}</p>
-          <strong class="side-tele-current">{{ currentSentenceText }}</strong>
-          <div v-if="hasNextSentence" class="side-tele-next">
-            <span>下一句</span>
-            <p>{{ nextSentenceText }}</p>
-          </div>
-          <p v-else class="side-tele-end">最后一句 · 说完点完成</p>
-          <div class="side-tele-list" aria-hidden="true">
-            <span
+          <div class="side-tele-list is-visible-full">
+            <p
               v-for="(sentence, index) in sentences"
               :key="`${index}-${sentence.slice(0, 12)}`"
               :class="{
@@ -1013,7 +1240,8 @@ onBeforeUnmount(() => {
                 'is-past': index < currentSentence,
                 'is-next': index === currentSentence + 1,
               }"
-            >{{ sentence }}</span>
+            >{{ sentence }}</p>
+            <p v-if="!sentences.length" class="side-tele-empty">还没有口播稿，请先回到对话生成。</p>
           </div>
         </div>
 
@@ -1032,15 +1260,15 @@ onBeforeUnmount(() => {
 
         <div class="prompt-controls prompt-controls-compact">
           <label class="range-setting">
-            <span><Type :size="17" /> 字号 <strong>{{ fontSize }}</strong></span>
-            <input v-model.number="fontSize" type="range" min="22" max="40">
+            <span><Type :size="17" /> 字号偏好 <strong>{{ scriptDisplaySize }}px</strong></span>
+            <input v-model.number="fontSize" type="range" min="16" max="36">
           </label>
           <label class="range-setting">
-            <span><Gauge :size="17" /> 滚动速度 <strong>{{ scrollSpeed }}</strong></span>
+            <span><Gauge :size="17" /> 跟读速度 <strong>{{ scrollSpeed }}</strong></span>
             <input v-model.number="scrollSpeed" type="range" min="1" max="5">
           </label>
           <button class="toggle-setting" :class="{ 'is-on': mirror }" type="button" aria-label="镜像画面" :aria-pressed="mirror" @click="mirror = !mirror">
-            <span><Video :size="17" /> 镜像画面</span><i><b /></i>
+            <span><Video :size="17" /> 镜像预览</span><i><b /></i>
           </button>
           <div class="control-spacer" />
           <button
@@ -1054,7 +1282,7 @@ onBeforeUnmount(() => {
             <span><Circle :size="18" fill="currentColor" /></span>
             {{
               cameraStatus === 'live'
-                ? '3 秒后开始录制'
+                ? `裁剪 ${activeAspect.short} · 开始录`
                 : cameraStatus === 'requesting'
                   ? '等待镜头权限…'
                   : '请先重新连接镜头'
@@ -1075,6 +1303,9 @@ onBeforeUnmount(() => {
             </button>
             <button class="finish-button" type="button" @click="finishRecording"><Square :size="16" fill="currentColor" /> 完成录制</button>
           </div>
+          <p class="camera-note">
+            镜头是横屏；选 {{ activeAspect.label }} 会从中间裁进左侧框，导出与预览一致。
+          </p>
           <p v-if="cameraStatus === 'error'" class="camera-note">录制只会使用真实摄像头和麦克风，不会进入演示模式。</p>
         </div>
       </aside>
@@ -1105,6 +1336,7 @@ onBeforeUnmount(() => {
         <div class="review-flow"><span class="is-done"><Check :size="13" /> 想法</span><i /><span class="is-done"><Check :size="13" /> 口播稿</span><i /><span class="is-done"><Check :size="13" /> 录制</span><i /><span>剪辑</span></div>
         <button class="primary-button large-button" type="button" @click="handoffToEdit">一键去剪辑 <ArrowRight :size="18" /></button>
         <button class="secondary-button large-button" type="button" @click="rerecord"><RotateCcw :size="17" /> 重新录制</button>
+        <button class="secondary-button large-button" type="button" @click="startNewSpeakSession"><Plus :size="17" /> 新口播</button>
         <button class="text-button" type="button" @click="copyDraft"><Copy :size="15" /> 保存口播稿</button>
       </aside>
     </div>
@@ -1118,7 +1350,12 @@ onBeforeUnmount(() => {
         <h1>先聊明白，再开口录。</h1>
         <p>说说你想讲什么，助手会陪你把它变成一篇能直接念的口播稿。</p>
       </div>
-      <div class="record-flow-indicator" aria-label="口播创作流程"><span class="is-current">1 聊想法</span><i /><span>2 成稿</span><i /><span>3 录制</span></div>
+      <div class="record-heading-actions">
+        <button class="secondary-button new-speak-button" type="button" @click="startNewSpeakSession">
+          <Plus :size="16" /> 新口播
+        </button>
+        <div class="record-flow-indicator" aria-label="口播创作流程"><span class="is-current">1 聊想法</span><i /><span>2 成稿</span><i /><span>3 录制</span></div>
+      </div>
     </div>
 
     <div class="mobile-compose-tabs" role="tablist" aria-label="口播创作面板">
@@ -1136,7 +1373,12 @@ onBeforeUnmount(() => {
               <small><span class="status-dot" :class="{ amber: isThinking }" /> {{ isThinking ? '正在调用真实模型' : lastResponseModel ? `${lastResponseModel} · 真实响应` : '真实模型等待输入' }}</small>
             </div>
           </div>
-          <span class="context-pill">懂口播节奏</span>
+          <div class="panel-header-actions">
+            <button class="text-button new-speak-inline" type="button" :disabled="isThinking" @click="startNewSpeakSession">
+              <Plus :size="14" /> 新口播
+            </button>
+            <span class="context-pill">懂口播节奏</span>
+          </div>
         </div>
 
         <div class="chat-scroll">

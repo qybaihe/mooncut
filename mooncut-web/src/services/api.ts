@@ -262,6 +262,8 @@ export async function transcribeAudioChunk(
     sampleRate?: number
     language?: string
     model?: string
+    /** Nova-3 terminology hints from the known teleprompter script. */
+    keyterms?: string[]
   },
 ) {
   const params = new URLSearchParams()
@@ -269,6 +271,10 @@ export async function transcribeAudioChunk(
   if (options?.sampleRate) params.set('sample_rate', String(options.sampleRate))
   if (options?.language) params.set('language', options.language)
   if (options?.model) params.set('model', options.model)
+  for (const keyterm of options?.keyterms ?? []) {
+    const value = keyterm.trim()
+    if (value) params.append('keyterm', value)
+  }
   const query = params.size ? `?${params}` : ''
   const body = audio instanceof Blob ? audio : new Blob([audio])
   return request<{

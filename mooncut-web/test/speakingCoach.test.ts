@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  extractAsrKeyterms,
   resolveIndexFromCharacterCount,
   resolveSpokenSentenceIndex,
 } from '../src/composables/useSpeakingCoach.ts'
@@ -29,8 +30,15 @@ test('character-count progress maps through cumulative sentence lengths', () => 
   assert.equal(resolveIndexFromCharacterCount(200, sentences), sentences.length - 1)
 })
 
-test('long unmatched ASR still advances by spoken length rather than freezing', () => {
+test('long unmatched ASR only provides one-line momentum, never a runaway skip', () => {
   const long = '完全不匹配'.repeat(30)
   const index = resolveSpokenSentenceIndex(long, sentences, 0)
-  assert.ok(index >= 1, `expected progress beyond first line, got ${index}`)
+  assert.equal(index, 1)
+})
+
+test('extracts only explicit names and marked terminology for ASR prompting', () => {
+  assert.deepEqual(
+    extractAsrKeyterms('今天聊 MoonCut、GPT-5 和《提词录制工作台》。#口播创作'),
+    ['提词录制工作台', '口播创作', 'MoonCut', 'GPT-5'],
+  )
 })

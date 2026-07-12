@@ -2,7 +2,7 @@
 
 export type AsrEnv = {
   DEEPGRAM_API_KEY?: string
-  /** e.g. nova-2 | nova-3 | nova-2-general */
+  /** e.g. nova-3 | nova-2 | nova-2-general */
   DEEPGRAM_MODEL?: string
   /** e.g. zh-CN | zh | en | multi */
   DEEPGRAM_LANGUAGE?: string
@@ -20,7 +20,7 @@ export const handleAsrStatus = (env: AsrEnv) =>
   json({
     configured: isAsrConfigured(env),
     provider: 'deepgram',
-    model: env.DEEPGRAM_MODEL || 'nova-2',
+    model: env.DEEPGRAM_MODEL || 'nova-3',
     language: env.DEEPGRAM_LANGUAGE || 'zh-CN',
     mode: 'chunked-http',
     note: isAsrConfigured(env)
@@ -30,7 +30,7 @@ export const handleAsrStatus = (env: AsrEnv) =>
 
 /**
  * POST raw audio body (wav / webm / ogg / mp3 / linear16).
- * Query: encoding, sample_rate, channels, language, model
+ * Query: encoding, sample_rate, channels, language, model, repeated keyterm
  */
 export const handleAsrTranscribe = async (request: Request, env: AsrEnv) => {
   const apiKey = (env.DEEPGRAM_API_KEY || '').trim()
@@ -39,11 +39,16 @@ export const handleAsrTranscribe = async (request: Request, env: AsrEnv) => {
   }
 
   const url = new URL(request.url)
-  const model = url.searchParams.get('model') || env.DEEPGRAM_MODEL || 'nova-2'
+  const model = url.searchParams.get('model') || env.DEEPGRAM_MODEL || 'nova-3'
   const language = url.searchParams.get('language') || env.DEEPGRAM_LANGUAGE || 'zh-CN'
   const encoding = url.searchParams.get('encoding') || ''
   const sampleRate = url.searchParams.get('sample_rate') || ''
   const channels = url.searchParams.get('channels') || '1'
+  const keyterms = url.searchParams
+    .getAll('keyterm')
+    .map((value) => value.trim().slice(0, 48))
+    .filter(Boolean)
+    .slice(0, 20)
 
   const contentType = request.headers.get('Content-Type') || 'application/octet-stream'
   const audio = await request.arrayBuffer()
@@ -64,6 +69,11 @@ export const handleAsrTranscribe = async (request: Request, env: AsrEnv) => {
   dg.searchParams.set('filler_words', 'false')
   // Help short live chunks
   dg.searchParams.set('endpointing', '300')
+  // Native keyterm prompting is Nova-3-only. Ignore client hints on a
+  // deliberately configured older model rather than making recording fail.
+  if (model.startsWith('nova-3')) {
+    for (const keyterm of keyterms) dg.searchParams.append('keyterm', keyterm)
+  }
   if (encoding) {
     dg.searchParams.set('encoding', encoding)
     if (sampleRate) dg.searchParams.set('sample_rate', sampleRate)

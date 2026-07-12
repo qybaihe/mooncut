@@ -26,7 +26,7 @@ ASSISTANT_COACH_MODEL = "deepseek-v4-flash"
 # Thinking budget for reasoning models; edge clamps so it never eats all max_tokens.
 ASSISTANT_THINKING_BUDGET = "4096"
 # Deepgram live teleprompter ASR (chunked HTTP via /api/v1/asr/transcribe)
-DEEPGRAM_MODEL = "nova-2"
+DEEPGRAM_MODEL = "nova-3"
 DEEPGRAM_LANGUAGE = "zh-CN"
 # Resend: put RESEND_API_KEY via `wrangler pages secret put` (never commit the key).
 # mooncut.me is verified in Resend — do not use onboarding@resend.dev (test-only sender).
