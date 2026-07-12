@@ -9,6 +9,9 @@
 # Secrets (Dashboard or wrangler pages secret put):
 #   AGENT_ORIGIN         https://<tunnel-hostname>
 #   AGENT_INTERNAL_KEY   same value as local MOONCUT_API_KEY
+#   BILLING_CHECKOUT_URL hosted checkout page; receives checkoutRequestId, plan, customer
+#   BILLING_CHECKOUT_SIGNING_SECRET HMAC key shared with checkout backend
+#   BILLING_WEBHOOK_SECRET provider callback Bearer token; never put this value in source
 
 name = "mooncut"
 compatibility_date = "2025-01-01"

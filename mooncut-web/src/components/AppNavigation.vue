@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, Home, LogOut, Mic2, Scissors, UserRound, UsersRound } from '@lucide/vue'
+import { Home, LogOut, Mic2, Scissors, UserRound, UsersRound } from '@lucide/vue'
 import { onMounted, ref } from 'vue'
 import { getServiceModels } from '../services/api'
 import type { WorkspacePage } from '../types'
@@ -24,7 +24,6 @@ const destinations = [
   { id: 'edit' as const, label: '剪辑台', icon: Scissors },
   { id: 'record' as const, label: '录制间', icon: Mic2 },
   { id: 'public-community' as const, label: '社区', icon: UsersRound },
-  { id: 'queue' as const, label: '队列', icon: Activity },
   { id: 'me' as const, label: '我的', icon: UserRound },
 ]
 const userInitial = props.userEmail.slice(0, 1).toUpperCase() || 'M'
@@ -36,7 +35,7 @@ const userInitial = props.userEmail.slice(0, 1).toUpperCase() || 'M'
       <button class="brand-home-button" type="button" aria-label="返回 MoonCut 首页" @click="activePage = 'landing'">
         <BrandMark />
       </button>
-      <nav class="desktop-nav" aria-label="主导航">
+      <nav class="desktop-nav" aria-label="创作工作台主导航">
         <button
           v-for="destination in destinations"
           :key="destination.id"

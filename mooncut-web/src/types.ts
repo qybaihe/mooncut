@@ -1,35 +1,41 @@
 export type WorkspacePage =
   | 'landing'
+  | 'studio'
   | 'public-community'
   | 'pricing'
   | 'privacy'
   | 'edit'
   | 'record'
   | 'me'
-  | 'queue'
-
-export type RenderQueueItem = {
-  name: string
-  status: 'queued' | 'running' | 'completed' | 'failed'
-  stage: string
-  progress: number
-  createdAt: string
-  updatedAt: string
-  queuePosition?: number
-  mine: boolean
-}
-
-export type RenderQueueSnapshot = {
-  updatedAt: string
-  summary: { running: number; queued: number; completedToday: number }
-  active: RenderQueueItem[]
-  recent: RenderQueueItem[]
-}
 
 export type AuthUser = {
   id: string
   email: string
   createdAt: string
+}
+
+export type BillingPlanId = 'free' | 'creator' | 'pro'
+
+export type BillingSummary = {
+  account: {
+    plan: BillingPlanId
+    planLabel: string
+    subscriptionStatus: 'free' | 'active' | 'canceling' | 'past_due'
+    periodStartedAt: string
+    periodEndsAt: string | null
+    cancelAtPeriodEnd: boolean
+    exportQuality: '720P' | '1080P' | '4K'
+    maxParallelJobs: number
+  }
+  usage: {
+    videoGenerations: { used: number; completed: number; inProgress: number; limit: number | null; remaining: number | null }
+    smartMinutes: { used: number; completed: number; limit: number | null; remaining: number | null }
+    creativePoints: { used: number; inProgress: number; limit: number; remaining: number }
+  }
+  limits: { maxSourceSeconds: number | null; checkoutConfigured: boolean }
+  upgradePrompt: null | { level: 'info' | 'warning' | 'critical'; title: string; detail: string; recommendedPlan: 'creator' | 'pro' }
+  checkoutRequests: Array<{ id: string; requested_plan: 'creator' | 'pro'; status: string; checkout_url: string | null; created_at: string; updated_at: string }>
+  plans: Array<{ id: BillingPlanId; label: string; priceCny: number; smartMinuteLimit: number | null; creativePointLimit: number; exportQuality: '720P' | '1080P' | '4K'; maxParallelJobs: number }>
 }
 
 export type CommunityPost = {
@@ -111,6 +117,20 @@ export type CapabilityInvocation = {
   error?: string
 }
 
+export type CommunityRegistryPackage = {
+  slug: string
+  publisher: { id: string; label: string; trust: 'community' }
+  display: { name: string; tagline: string; category: string }
+  kinds: string[]
+  permissions: Array<{ name: string; reason: string }>
+  release: {
+    version: string
+    publishedAt: string
+    files: { package: string; manifest: string; skill: string; connector: string }
+    integrity: { manifestSha256: string; skillSha256: string; connectorSha256: string; packageSha256: string }
+  }
+}
+
 export type Theme = 'light' | 'dark' | 'memphis'
 
 export type PetAnimationState =
@@ -129,6 +149,7 @@ export type VideoAsset = {
   file?: Blob
   resultUrl?: string
   jobId?: string
+  durationSeconds?: number
   source: 'upload' | 'recording'
 }
 

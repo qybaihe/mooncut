@@ -5,12 +5,13 @@
 ```
 用户浏览器 ──HTTPS──> Cloudflare Pages (全球边缘 CDN)
   ├─ 静态资源 (/, /assets/*, /定价…)  → Pages CDN 缓存（快）
-  └─ /api/* → Pages Function → Cloudflare Tunnel → 你电脑:4317 (Agent)
+  ├─ /api/v1/auth/* + /api/v1/community/packages/* + /api/v1/billing/* → Pages Function → D1
+  └─ 剪辑任务 + 社区“连接 Agent” → Pages Function → Cloudflare Tunnel → 你电脑:4317
 ```
 
-- **平时**：只服务静态资源，全球 CDN 缓存，不碰你电脑。
-- **Agent 运行时**：录制/成片/任务请求经 `/api/*` 反代到你电脑。
-- **Agent 不在线**：`/api/*` 返回 502，静态页（定价/社区/落地）照常可用。
+- **平时**：静态资源、登录和社区能力包（浏览、上传、下载）都在 Cloudflare，不碰你电脑。
+- **Agent 运行时**：录制/成片/任务请求和社区“连接到 Agent”才经 Tunnel 到你电脑。
+- **Agent 不在线**：社区仍可用，只有剪辑与连接操作会提示 Agent 不可达。
 
 ## 第一步：部署前端到 Cloudflare Pages
 
@@ -26,7 +27,6 @@
    | 变量名 | 值 | 说明 |
    |---|---|---|
    | `AGENT_ORIGIN` | `https://agent.你的域名` | Pages Function 反代目标（Tunnel 公网地址） |
-   | `VITE_MOONCUT_COMMUNITY_REGISTRY_URL` | `https://mc.classby.cn` | 社区注册表地址 |
 5. 保存，Cloudflare 自动构建部署。每次 push 自动更新。
 
 ### 方式 B：CLI 直推
@@ -38,6 +38,53 @@ npx wrangler pages deploy dist --project-name mooncut-web --branch main
 ```
 
 环境变量在 Dashboard → 项目 → Settings → Environment variables 里设。
+
+### 部署社区数据表
+
+社区能力包现在由 **Pages Functions + 同一个 D1 数据库** 托管，不再读取 EdgeOne 或其他外部目录。首次部署此版本前，执行：
+
+```bash
+cd mooncut-web
+npx wrangler d1 migrations apply mooncut --remote
+```
+
+这会创建 `community_packages` 与 `community_releases`。能力包只允许上传小型声明文件（`manifest.json`、`SKILL.md`、`connector.json`）；Pages 校验后存入 D1，可公开下载，无需开通 R2。
+
+### 部署账户额度与支付回调
+
+同一条 D1 迁移还会创建套餐账户、生成任务额度预留、用量流水和升级请求表。浏览器只能发起升级请求，**不能自行开通 Creator / Pro**。
+
+在 Pages Production（也建议 Preview）配置以下机密变量：
+
+| 变量 | 用途 |
+|---|---|
+| `BILLING_CHECKOUT_URL` | 你的 HTTPS 托管收银台入口。MoonCut 会追加 `checkoutRequestId`、`plan`、`customer` 与签名令牌。未配置时，账户页只记录“等待支付通道配置”的升级请求，不扣款、不授予权益。 |
+| `BILLING_CHECKOUT_SIGNING_SECRET` | 与收银台后端共享的长随机 HMAC 密钥。收银台必须验证 `checkoutToken = HMAC-SHA256(checkoutRequestId + '.' + plan + '.' + customer)`，不能信任浏览器自行改写的价格或套餐参数。 |
+| `BILLING_WEBHOOK_SECRET` | 支付服务回调专用的长随机 Bearer 密钥；绝不能放在前端或仓库。 |
+
+例如：
+
+```bash
+npx wrangler pages secret put BILLING_CHECKOUT_URL --project-name mooncut
+npx wrangler pages secret put BILLING_CHECKOUT_SIGNING_SECRET --project-name mooncut
+npx wrangler pages secret put BILLING_WEBHOOK_SECRET --project-name mooncut
+```
+
+支付服务在确认到账后，需要由它的**服务器**请求：
+
+```http
+POST https://mooncut.me/api/v1/billing/provider/webhook
+Authorization: Bearer <BILLING_WEBHOOK_SECRET>
+Content-Type: application/json
+
+{
+  "checkoutRequestId": "MoonCut 创建升级请求时返回的 id",
+  "providerReference": "支付平台不可重复的订单号",
+  "periodEndsAt": "2026-08-11T00:00:00.000Z"
+}
+```
+
+回调只接受处于 `ready_for_payment` 的升级请求；成功后才会把账户更新为 `active` 的 Creator / Pro，并记录平台订单号。相同订单号的重试是幂等的。不要把这个接口交给浏览器调用。
 
 ## 第二步：在你电脑上装 Cloudflare Tunnel
 
@@ -125,8 +172,8 @@ npm start
    然后打开 Pages 域名，录制/成片请求会路由到你电脑。
 
 2. **你电脑关机/Agent 没跑时**：
-   - 前端 Pages 照常访问（定价/社区/落地页）。
-   - 需要登录或任务的请求返回 502，前端显示"Agent 不可达"。
+   - 前端 Pages、登录、社区浏览、能力包上传与下载照常可用。
+   - 剪辑任务及社区“连接到 Agent”会提示本机 Agent 尚未连接。
 
 ## 本地开发（不走 Pages）
 

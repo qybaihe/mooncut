@@ -13,17 +13,17 @@ test('resolvePostAuthPage restores intent, supports pricing, or falls back to la
   assert.equal(resolvePostAuthPage('pricing'), 'pricing')
   assert.equal(resolvePostAuthPage(null), 'landing')
   assert.equal(resolvePostAuthPage(undefined), 'landing')
-  assert.equal(resolvePostAuthPage(null, 'queue'), 'queue')
+  assert.equal(resolvePostAuthPage(null, 'me'), 'me')
 })
 
-test('requiresAuth leaves landing, public community and pricing open', () => {
+test('requiresAuth leaves all public product pages open', () => {
   assert.equal(requiresAuth('landing'), false)
+  assert.equal(requiresAuth('studio'), false)
   assert.equal(requiresAuth('public-community'), false)
   assert.equal(requiresAuth('pricing'), false)
   assert.equal(requiresAuth('edit'), true)
   assert.equal(requiresAuth('record'), true)
   assert.equal(requiresAuth('me'), true)
-  assert.equal(requiresAuth('queue'), true)
 })
 
 test('destinationLabel explains next step without exaggerating', () => {

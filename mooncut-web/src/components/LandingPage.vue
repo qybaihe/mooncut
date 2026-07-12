@@ -3,8 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import {
   ArrowRight,
   Captions,
+  CircleHelp,
   LogIn,
   LogOut,
+  Mail,
   MessagesSquare,
   Mic2,
   Scissors,
@@ -13,7 +15,7 @@ import {
   Upload,
   UserPlus,
 } from '@lucide/vue'
-import type { AuthMode, WorkspaceDestination } from '../lib/navigation'
+import type { AuthMode } from '../lib/navigation'
 import BrandLogo from './BrandLogo.vue'
 
 defineProps<{
@@ -21,15 +23,18 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  navigate: [page: WorkspaceDestination]
   navigateCreate: []
   navigateEdit: []
   openAuth: [mode: AuthMode]
   openCommunity: []
+  openStudio: []
   openPricing: []
   openPrivacy: []
   logout: []
 }>()
+
+// Kept on the root element so CDN clients always receive the matching app bundle after a landing release.
+const landingRelease = '2026-07-11-workflow-glow'
 
 const outcomeCompare = {
   heading: '把时间，留给表达',
@@ -128,11 +133,11 @@ function onWorkPlay(id: string) {
 }
 
 const workflowSteps = [
-  { num: '01', label: '说出想法', hint: '和助手聊清楚要讲什么' },
-  { num: '02', label: '整理成稿', hint: '生成可念、可改的口播稿' },
-  { num: '03', label: '提词录制', hint: '看着稿，对着镜头录下来' },
-  { num: '04', label: '自动精简', hint: '去掉停顿、重复和空档' },
-  { num: '05', label: '检查并导出', hint: '加上字幕，成片完成' },
+  { num: '01', label: '说出想法', hint: '和助手聊清楚要讲什么', status: '已准备' },
+  { num: '02', label: '整理成稿', hint: '生成可念、可改的口播稿', status: '脚本生成' },
+  { num: '03', label: '提词录制', hint: '看着稿，对着镜头录下来', status: '录制就绪' },
+  { num: '04', label: '自动精简', hint: '去掉停顿、重复和空档', status: '节奏处理中' },
+  { num: '05', label: '检查并导出', hint: '加上字幕，成片完成', status: '准备发布' },
 ]
 
 const prefersReducedMotion = ref(
@@ -269,10 +274,6 @@ function goEdit() {
   emit('navigateEdit')
 }
 
-function goWorkspace(page: WorkspaceDestination) {
-  emit('navigate', page)
-}
-
 function handleAnchorClick(event: MouseEvent, id: string) {
   const target = document.getElementById(id)
   if (target) {
@@ -283,7 +284,7 @@ function handleAnchorClick(event: MouseEvent, id: string) {
 </script>
 
 <template>
-  <div class="landing-shell">
+  <div class="landing-shell" :data-release="landingRelease">
     <header class="landing-nav" role="banner">
       <div class="landing-nav-inner">
         <div class="landing-brand" aria-label="MoonCut">
@@ -297,16 +298,10 @@ function handleAnchorClick(event: MouseEvent, id: string) {
         <nav class="landing-anchors" aria-label="Landing 页内导航">
           <a href="#works" @click="handleAnchorClick($event, 'works')">成片</a>
           <a href="#workflow" @click="handleAnchorClick($event, 'workflow')">工作流</a>
+          <button type="button" @click="emit('openStudio')">了解 MoonCut Studio</button>
           <button type="button" @click="emit('openPricing')">定价</button>
           <button type="button" @click="emit('openCommunity')">社区</button>
           <button type="button" @click="emit('openPrivacy')">隐私与政策</button>
-          <button
-            v-if="userEmail"
-            type="button"
-            @click="goWorkspace('queue')"
-          >
-            <span class="landing-live-dot" aria-hidden="true" /> 运行队列
-          </button>
         </nav>
 
         <div class="landing-nav-actions">
@@ -537,11 +532,18 @@ function handleAnchorClick(event: MouseEvent, id: string) {
       </section>
 
       <section id="workflow" class="workflow" aria-labelledby="workflow-title">
-        <header class="section-head section-head--left">
-          <span class="section-eyebrow">完整工作流</span>
-          <h2 id="workflow-title" class="section-title">一条连续的口播创作路</h2>
-          <p class="section-desc">不是五个按钮，是一条顺着走的路。</p>
-        </header>
+        <div class="workflow-topline">
+          <header class="section-head section-head--left">
+            <span class="section-eyebrow">完整工作流</span>
+            <h2 id="workflow-title" class="section-title">一条连续的口播创作路</h2>
+            <p class="section-desc">不是五个按钮，是一条顺着走的路。每一步完成后，下一步自然亮起。</p>
+          </header>
+          <div class="workflow-live" aria-label="工作流实时渲染演示">
+            <span class="workflow-live-dot" aria-hidden="true" />
+            <span>实时创作路径</span>
+            <small>LIVE</small>
+          </div>
+        </div>
 
         <ol class="workflow-track">
           <li
@@ -551,35 +553,52 @@ function handleAnchorClick(event: MouseEvent, id: string) {
             :data-flow-index="index"
             :class="{ 'is-lit': revealSteps.has(index) }"
           >
+            <span class="flow-orb" aria-hidden="true"><i /></span>
             <span class="flow-node-num">{{ step.num }}</span>
             <div class="flow-node-body">
               <strong>{{ step.label }}</strong>
               <span>{{ step.hint }}</span>
             </div>
-            <i v-if="index < workflowSteps.length - 1" class="flow-link" aria-hidden="true" />
+            <span class="flow-node-status"><i aria-hidden="true" />{{ step.status }}</span>
+            <i v-if="index < workflowSteps.length - 1" class="flow-link" aria-hidden="true">
+              <b /><b /><b />
+            </i>
           </li>
         </ol>
       </section>
 
       <section class="final-cta" aria-labelledby="final-title">
         <div class="final-cta-inner">
-          <h2 id="final-title" class="final-title">下一条口播，从一句还没想完整的话开始。</h2>
-          <div class="final-actions">
-            <button class="landing-cta-primary" type="button" @click="goRecord">
-              开始创作 <ArrowRight :size="18" aria-hidden="true" />
-            </button>
-            <button class="landing-cta-secondary" type="button" @click="goEdit">
-              <Upload :size="16" aria-hidden="true" /> 上传视频
-            </button>
+          <div class="final-copy">
+            <span class="section-eyebrow">准备好开始了吗</span>
+            <h2 id="final-title" class="final-title">下一条口播，从一句还没想完整的话开始。</h2>
+            <p>把思路交给对话，把镜头留给表达。其余的，我们陪你走完。</p>
+            <div class="final-actions">
+              <button class="landing-cta-primary" type="button" @click="goRecord">
+                开始创作 <ArrowRight :size="18" aria-hidden="true" />
+              </button>
+              <button class="landing-cta-secondary" type="button" @click="goEdit">
+                <Upload :size="16" aria-hidden="true" /> 上传视频
+              </button>
+            </div>
+            <p v-if="!userEmail" class="final-auth-hint">
+              已有账户？
+              <button type="button" @click="emit('openAuth', 'login')">登录</button>
+              · 新用户可
+              <button type="button" @click="emit('openAuth', 'register')">
+                <UserPlus :size="13" aria-hidden="true" /> 创建账户
+              </button>
+            </p>
           </div>
-          <p v-if="!userEmail" class="final-auth-hint">
-            已有账户？
-            <button type="button" @click="emit('openAuth', 'login')">登录</button>
-            · 新用户可
-            <button type="button" @click="emit('openAuth', 'register')">
-              <UserPlus :size="13" aria-hidden="true" /> 创建账户
-            </button>
-          </p>
+          <aside class="support-card" aria-label="MoonCut 支持">
+            <div class="support-card-icon"><CircleHelp :size="20" aria-hidden="true" /></div>
+            <div>
+              <span>需要一点帮助？</span>
+              <strong>支持与反馈</strong>
+              <p>遇到录制、导出或账户问题，直接联系我们。</p>
+              <a href="mailto:support@mooncut.me"><Mail :size="15" aria-hidden="true" />support@mooncut.me</a>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -590,7 +609,9 @@ function handleAnchorClick(event: MouseEvent, id: string) {
         </div>
         <p class="footer-note">从一句话开始，陪你走到一条能发的口播。</p>
         <p class="landing-footer-links">
+          <button type="button" @click="emit('openStudio')">了解 Studio</button>
           <button type="button" @click="emit('openPrivacy')">隐私与政策</button>
+          <a href="mailto:support@mooncut.me">支持中心</a>
         </p>
       </footer>
     </main>

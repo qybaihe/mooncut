@@ -1,5 +1,6 @@
 # MoonCut Web · Cloudflare Pages SPA fallback
-# 单页应用：所有非静态资源路径回退到 index.html，由前端 activePage 状态机接管。
-# 注意：/api/* 由 Pages Function (functions/api/[[path]].ts) 处理，
-# Cloudflare Pages 中 Functions 优先级高于 _redirects，因此无需在此排除。
+# 静态文件（/assets/*、/mediapipe/* 等）只要存在于 dist，Pages 会优先直出，
+# 不会走下面的 SPA 回退。部署竞态下若短暂 404，/* 回退 HTML 可能被错误缓存，
+# 因此 /assets/* 在 _headers 里强制 JS/CSS MIME，并用文件名哈希做缓存破坏。
+# /api/* 由 Pages Function 处理（优先级高于 _redirects）。
 /*    /index.html   200

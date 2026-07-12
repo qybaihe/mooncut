@@ -1,4 +1,4 @@
-import type { AuthUser, CapabilityCatalogItem, CapabilityInstallation, CapabilityInvocation, CoachAdviceResponse, CommunityPost, EditJob, RenderQueueSnapshot, ScriptAssistantResponse } from '../types'
+import type { AuthUser, BillingPlanId, BillingSummary, CapabilityCatalogItem, CapabilityInstallation, CapabilityInvocation, CoachAdviceResponse, CommunityPost, CommunityRegistryPackage, EditJob, ScriptAssistantResponse } from '../types'
 
 // 生产（Cloudflare Pages）：同域 /api/* → Pages Functions（auth/助手）+ 剪辑走 Tunnel。
 // 本地开发：可设 VITE_MOONCUT_API_BASE_URL=http://127.0.0.1:4317
@@ -92,6 +92,21 @@ export async function getCurrentUser() {
   return request<{ user: AuthUser | null }>('/v1/auth/session')
 }
 
+export async function getBillingSummary() {
+  return request<BillingSummary>('/v1/billing/summary')
+}
+
+export async function createBillingCheckout(plan: Exclude<BillingPlanId, 'free'>) {
+  return request<{
+    checkout: { id: string; plan: Exclude<BillingPlanId, 'free'>; status: string; checkoutUrl: string | null; createdAt: string }
+    message: string
+  }>('/v1/billing/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ plan }),
+  })
+}
+
 export type AuthOtpPurpose = 'login' | 'register'
 
 export async function sendAuthOtp(email: string, purpose: AuthOtpPurpose) {
@@ -166,10 +181,6 @@ export async function getMailStatus() {
   }>('/v1/mail/status')
 }
 
-export async function getRenderQueue() {
-  return request<RenderQueueSnapshot>('/v1/render-queue')
-}
-
 export async function uploadAsset(file: Blob, filename: string) {
   return request<{ assetId: string; filename: string; bytes: number }>(
     `/v1/assets?filename=${encodeURIComponent(filename)}`,
@@ -182,6 +193,8 @@ export async function createEditJob(payload: {
   title?: string
   prompt?: string
   notificationEmail?: string
+  /** Browser-derived source duration for quota reservation; server reconciles with completed probe. */
+  billingEstimateSeconds?: number
   imageGeneration?: 'auto' | 'off'
   capabilityInstallIds?: string[]
   capabilityRequests?: Array<
@@ -331,6 +344,31 @@ export async function publishCommunityPost(payload: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
+}
+
+export function communityPackageAssetUrl(path: string) {
+  if (!path.startsWith('/api/v1/community/packages/')) throw new Error('能力包资源地址无效')
+  return `${apiBase}${path.slice('/api'.length)}`
+}
+
+export async function listCommunityPackages(query?: string) {
+  const params = new URLSearchParams()
+  if (query?.trim()) params.set('query', query.trim())
+  return request<{ items: CommunityRegistryPackage[] }>(`/v1/community/packages${params.size ? `?${params}` : ''}`)
+}
+
+export async function uploadCommunityPackage(form: FormData) {
+  return request<{ item: CommunityRegistryPackage }>('/v1/community/packages', {
+    method: 'POST',
+    body: form,
+  })
+}
+
+export async function connectCommunityPackage(slug: string) {
+  return request<{ created: boolean; installation: CapabilityInstallation }>(
+    `/v1/community/packages/${encodeURIComponent(slug)}/connect`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+  )
 }
 
 export async function listCapabilities(query?: string) {

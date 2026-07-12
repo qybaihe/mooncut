@@ -11,6 +11,7 @@ defineProps<{
 const emit = defineEmits<{
   home: []
   openPricing: []
+  openStudio: []
   openCommunity: []
   openAuth: [mode: AuthMode]
   create: []
@@ -33,6 +34,7 @@ const updatedAt = '2026-07-11'
 
         <nav class="landing-anchors" aria-label="隐私页主导航">
           <button type="button" @click="emit('home')">首页</button>
+          <button type="button" @click="emit('openStudio')">了解 MoonCut Studio</button>
           <button type="button" @click="emit('openPricing')">定价</button>
           <button type="button" @click="emit('openCommunity')">社区</button>
           <button class="is-active" type="button" aria-current="page">隐私与政策</button>
@@ -70,7 +72,7 @@ const updatedAt = '2026-07-11'
         <section class="privacy-doc-section" aria-labelledby="p-scope">
           <h2 id="p-scope">1. 适用范围</h2>
           <p>
-            本文适用于 mooncut.me 官网、登录账户、录制工作室、剪辑台、运行队列，以及与之配套的边缘 API 服务。社区能力目录若由独立注册表托管，浏览与下载规则以其自身说明为准；我们会在相关界面标明来源。
+            本文适用于 mooncut.me 官网、登录账户、录制工作室、剪辑台、由 Cloudflare Pages + D1 托管的社区能力目录，以及与之配套的边缘 API 服务。社区能力包只保存声明文件；下载或连接不会执行包内代码。
           </p>
           <p>
             MoonCut 是竖屏口播创作工具：帮你从想法写成稿、提词录制，再进入剪辑与任务队列。功能在演进中；凡涉及「演示」「本机 Agent」「待开放」的表述，均按当前真实能力描述，不替代正式合规认证。

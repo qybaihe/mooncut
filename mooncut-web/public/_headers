@@ -1,8 +1,19 @@
 # MoonCut Web · Cloudflare Pages 缓存与安全头
 #
-# 带内容哈希的构建产物：永久缓存，浏览器与边缘节点均可长缓存。
+# 带内容哈希的构建产物：永久缓存。必须显式声明 JS MIME + CORS：
+# <script type="module" crossorigin> 会带 Origin 请求；若边缘曾把 SPA
+# 回退 HTML 错误缓存到该 URL，浏览器会因 MIME=text/html 白屏。
+/assets/*.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+/assets/*.css
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 
 # MediaPipe WASM / 模型文件：体积大、按文件名版本化，录制间才按需拉取。
 # 明确 MIME + CORS，避免部分浏览器把 .wasm/.task 当 HTML SPA 回退或拦截 Worker 加载。
@@ -33,11 +44,15 @@
 /memphis-icons/*
   Cache-Control: public, max-age=604800
 
-# 入口 HTML：必须始终取最新，否则新版本发布后旧 index.html 会引用过期资源。
+# 入口 HTML：禁止缓存，避免旧 index 继续引用已中毒的 /assets/*.js 哈希。
 /index.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
 /
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
 
 # 通用安全头（静态站点基线）。
 /*

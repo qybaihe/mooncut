@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,10 +13,8 @@ import {
   Mic2,
   Minus,
   Scissors,
-  ShieldAlert,
   Sparkles,
   Upload,
-  X,
 } from '@lucide/vue'
 import type { AuthMode, PostAuthIntent, WorkspaceDestination } from '../lib/navigation'
 import BrandLogo from './BrandLogo.vue'
@@ -32,13 +30,15 @@ const emit = defineEmits<{
   navigate: [page: WorkspaceDestination]
   'open-auth': [payload: { mode: AuthMode; destination: PostAuthIntent }]
   'open-community': []
+  'open-studio': []
   'open-privacy': []
+  'open-billing': [plan: 'creator' | 'pro']
 }>()
 
 /* ------------------------------------------------------------------ *
- * Lively selection: any plan card can be “picked”. Picking a paid plan
- * when signed-in opens the honest “preparing” panel; when signed-out
- * it still routes to auth. The selection also drives the bottom CTA.
+ * Lively selection: any plan card can be “picked”. Paid plans route a
+ * signed-in creator to the account centre, where checkout intents and
+ * entitlements are handled by the server instead of this presentation page.
  * ------------------------------------------------------------------ */
 type PlanId = 'free' | 'creator' | 'pro'
 const selectedPlan = ref<PlanId>('creator')
@@ -110,7 +110,7 @@ function chooseFree() {
 
 function choosePaid(plan: 'creator' | 'pro') {
   if (props.signedIn) {
-    openPreparing(plan)
+    emit('open-billing', plan)
   } else {
     emit('open-auth', { mode: 'register', destination: 'pricing' })
   }
@@ -123,82 +123,6 @@ function startEditing() {
     emit('open-auth', { mode: 'login', destination: 'edit' })
   }
 }
-
-/* ------------------------------------------------------------------ *
- * Subscription “preparing” dialog — honest, non-charging, self-contained.
- * No localStorage, no authUser mutation, no plan/entitlement writes.
- * The payment-method chips are visual placeholders only: choosing one
- * or submitting never issues a charge or opens an entitlement.
- * ------------------------------------------------------------------ */
-type PaymentMethodId = 'wechat' | 'alipay' | 'card'
-const paymentMethods: { id: PaymentMethodId; label: string; hint: string }[] = [
-  { id: 'wechat', label: '微信支付', hint: '扫码或扣款' },
-  { id: 'alipay', label: '支付宝', hint: '余额或花呗' },
-  { id: 'card', label: '银行卡', hint: '借记 / 信用卡' },
-]
-const selectedPayment = ref<PaymentMethodId>('wechat')
-const submittingPreparing = ref(false)
-const preparingAcknowledged = ref(false)
-
-const preparingPlan = ref<'creator' | 'pro' | null>(null)
-const preparingDialogEl = ref<HTMLElement | null>(null)
-const preparingCloseRef = ref<HTMLButtonElement | null>(null)
-const preparingTriggerRef = ref<HTMLElement | null>(null)
-
-const preparingPlanLabel = computed(() =>
-  preparingPlan.value === 'creator'
-    ? 'Creator 创作版'
-    : preparingPlan.value === 'pro'
-      ? 'Pro 专业版'
-      : '',
-)
-
-function openPreparing(plan: 'creator' | 'pro') {
-  preparingPlan.value = plan
-  preparingAcknowledged.value = false
-  submittingPreparing.value = false
-  preparingTriggerRef.value = document.activeElement as HTMLElement | null
-  nextTick(() => {
-    preparingCloseRef.value?.focus()
-  })
-  if (typeof history !== 'undefined') {
-    const state = history.state as { mooncutView?: string } | null
-    if (state?.mooncutView !== 'preparing') {
-      history.pushState({ mooncutView: 'preparing' }, '')
-    }
-  }
-}
-
-function closePreparing(returnFocus = true) {
-  if (!preparingPlan.value) return
-  preparingPlan.value = null
-  preparingAcknowledged.value = false
-  submittingPreparing.value = false
-  if (typeof history !== 'undefined') {
-    const state = history.state as { mooncutView?: string } | null
-    if (state?.mooncutView === 'preparing') history.back()
-  }
-  if (returnFocus) preparingTriggerRef.value?.focus()
-}
-
-function onPreparingKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    event.preventDefault()
-    closePreparing(true)
-  }
-}
-
-function onPopStatePreparing() {
-  if (preparingPlan.value) {
-    preparingPlan.value = null
-  }
-}
-
-watch(preparingPlan, (next) => {
-  if (typeof document !== 'undefined') {
-    document.body.style.overflow = next ? 'hidden' : ''
-  }
-})
 
 /* ------------------------------------------------------------------ *
  * FAQ accordion
@@ -408,37 +332,12 @@ const flow = [
 
 const clarityVisual = { '720P': '720P', '1080P': '1080P', '4K': '4K' } as const
 
-/* ------------------------------------------------------------------ *
- * Payment-method chips inside the “preparing” dialog. These are visual
- * placeholders only — choosing one never issues a charge or opens an
- * entitlement. The confirmation button always reveals the honest
- * “支付能力准备中” status.
- * ------------------------------------------------------------------ */
-function choosePayment(id: PaymentMethodId) {
-  selectedPayment.value = id
-  preparingAcknowledged.value = false
-}
-
-function submitPreparing() {
-  if (submittingPreparing.value) return
-  submittingPreparing.value = true
-  preparingAcknowledged.value = false
-  // Simulated handoff to the (not-yet-built) checkout — ends honestly.
-  window.setTimeout(() => {
-    submittingPreparing.value = false
-    preparingAcknowledged.value = true
-  }, 900)
-}
-
-/* ------------------------------------------------------------------ */
 onMounted(() => {
   updateMotion()
   if (typeof window !== 'undefined' && window.matchMedia) {
     motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)')
     motionMedia.addEventListener?.('change', updateMotion)
   }
-  window.addEventListener('popstate', onPopStatePreparing)
-
   // Reveal-on-scroll for [data-reveal] elements.
   if (typeof IntersectionObserver !== 'undefined' && !prefersReducedMotion.value) {
     revealObserver = new IntersectionObserver(
@@ -470,10 +369,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   motionMedia?.removeEventListener?.('change', updateMotion)
-  window.removeEventListener('popstate', onPopStatePreparing)
   revealObserver?.disconnect()
   stopFlowTrail()
-  if (typeof document !== 'undefined') document.body.style.overflow = ''
 })
 </script>
 
@@ -491,6 +388,7 @@ onBeforeUnmount(() => {
 
         <nav class="landing-anchors" aria-label="定价页主导航">
           <button type="button" @click="emit('home')">返回首页</button>
+          <button type="button" @click="emit('open-studio')">了解 MoonCut Studio</button>
           <button class="is-active" type="button" aria-current="page">定价</button>
           <button type="button" @click="emit('open-community')">社区</button>
           <button type="button" @click="emit('open-privacy')">隐私与政策</button>
@@ -526,7 +424,7 @@ onBeforeUnmount(() => {
         <p class="hero-desc reveal-stagger-item" data-reveal="hero-desc" :class="{ 'is-lit': revealed.has('hero-desc') }">
           从免费走完整条路径，在需要更高频、更高清时再升级。
           Free 可以进入 Studio 完整体验；付费买的是 AI 处理量、高清导出与工作流效率，而非被锁住的基础功能。
-          当前页面仅介绍方案，不发起扣款，也不代表演示版已完成商用化。
+          选择套餐后会进入账户中心创建安全结算请求；只有支付服务的后台回调才会开通权益。
         </p>
 
         <ol class="pricing-flow reveal-stagger-item" aria-label="创作额度流转" data-reveal="hero-flow" :class="{ 'is-lit': revealed.has('hero-flow') }">
@@ -719,100 +617,12 @@ onBeforeUnmount(() => {
           <BrandLogo variant="mark" class="footer-logo-mark" />
           <span class="footer-brand-name">MoonCut</span>
         </div>
-        <p class="footer-note">定价权益正在为正式订阅能力准备；当前页面不会发起扣款。</p>
+        <p class="footer-note">套餐选择、用量和支付请求统一在「我的」账户中心管理。</p>
         <div class="pricing-footer-nav">
           <button type="button" @click="emit('home')"><ArrowLeft :size="13" aria-hidden="true" /> 返回首页</button>
         </div>
       </footer>
     </main>
 
-    <!-- 订阅能力准备中 面板 -->
-    <Transition name="preparing">
-      <div
-        v-if="preparingPlan"
-        ref="preparingDialogEl"
-        class="pricing-preparing-overlay"
-        @click.self="closePreparing(true)"
-        @keydown="onPreparingKeydown"
-      >
-        <div
-          class="pricing-preparing-dialog"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="preparing-title"
-          aria-describedby="preparing-body"
-        >
-          <header class="pricing-preparing-head">
-            <div>
-              <h2 id="preparing-title">{{ preparingPlanLabel }} · 订阅能力准备中</h2>
-              <p>本页操作不会扣款，也不会自动开通任何付费权益。</p>
-            </div>
-            <button
-              ref="preparingCloseRef"
-              type="button"
-              class="pricing-preparing-close"
-              aria-label="关闭订阅准备中提示"
-              @click="closePreparing(true)"
-            >
-              <X :size="18" aria-hidden="true" />
-            </button>
-          </header>
-
-          <div id="preparing-body" class="pricing-preparing-body">
-            <span class="pricing-preparing-icon" aria-hidden="true"><ShieldAlert :size="22" /></span>
-            <p>
-              订阅能力正在准备中。本页不会发起扣款，也不会自动为你开通
-              <strong>{{ preparingPlanLabel }}</strong> 的付费权益。
-            </p>
-            <p>
-              后端在任务创建、导出与渲染队列层仍会按当前可用量执行，
-              真实的订阅、续订、退款与额度变更将在支付系统接入后正式上线。
-            </p>
-          </div>
-
-          <div class="pricing-preparing-pay" role="radiogroup" aria-label="选择支付方式（占位，暂不可用）">
-            <span class="pricing-preparing-pay-label">选择支付方式</span>
-            <div class="pricing-pay-chips">
-              <button
-                v-for="method in paymentMethods"
-                :key="method.id"
-                type="button"
-                class="pricing-pay-chip"
-                role="radio"
-                :aria-checked="selectedPayment === method.id"
-                :class="{ 'is-selected': selectedPayment === method.id }"
-                @click="choosePayment(method.id)"
-              >
-                <span class="pricing-pay-chip-mark" aria-hidden="true" :data-method="method.id" />
-                <span class="pricing-pay-chip-label">{{ method.label }}</span>
-                <small>{{ method.hint }}</small>
-              </button>
-            </div>
-            <p class="pricing-preparing-pay-note">支付方式仅为占位展示，提交不会扣款、不会开通权益。</p>
-          </div>
-
-          <Transition name="preparing-note">
-            <p v-if="preparingAcknowledged" class="pricing-preparing-ack" role="status">
-              <ShieldAlert :size="14" aria-hidden="true" />
-              支付能力准备中：未发起扣款，权益未变更。接入后这里会跳转到安全结算页。
-            </p>
-          </Transition>
-
-          <div class="pricing-preparing-actions">
-            <button
-              class="landing-cta-primary"
-              type="button"
-              :disabled="submittingPreparing"
-              @click="submitPreparing"
-            >
-              <span v-if="submittingPreparing" class="pricing-preparing-spinner" aria-hidden="true" />
-              {{ submittingPreparing ? '处理中…' : `确认选择 ${preparingPlanLabel}` }}
-            </button>
-            <button class="landing-cta-secondary" type="button" @click="closePreparing(true)">稍后再说</button>
-            <button type="button" class="pricing-preparing-workspace-btn" @click="emit('navigate', 'record')">先回工作台</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>

@@ -3,7 +3,7 @@ import type { WorkspacePage } from '../types'
 /** Workspace destinations that require authentication. */
 export type WorkspaceDestination = Exclude<
   WorkspacePage,
-  'landing' | 'public-community' | 'pricing' | 'privacy'
+  'landing' | 'studio' | 'public-community' | 'pricing' | 'privacy'
 >
 
 /**
@@ -29,6 +29,7 @@ export function resolvePostAuthPage(
 export function requiresAuth(page: WorkspacePage): boolean {
   return (
     page !== 'landing' &&
+    page !== 'studio' &&
     page !== 'public-community' &&
     page !== 'pricing' &&
     page !== 'privacy'
@@ -46,7 +47,6 @@ export function destinationLabel(
     record: `${verb}进入录制间，从想法开始写稿、提词录制。`,
     edit: `${verb}进入剪辑台，上传或继续剪辑素材。`,
     me: `${verb}进入「我的」页，管理账户与创作偏好。`,
-    queue: `${verb}查看渲染队列。`,
     pricing: `${verb}回到定价页继续选择适合你的套餐。`,
   }
   return labels[intent]

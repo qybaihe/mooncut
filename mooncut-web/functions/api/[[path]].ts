@@ -19,13 +19,47 @@ import {
 } from '../lib/auth'
 import { handleAsrStatus, handleAsrTranscribe, type AsrEnv } from '../lib/asr'
 import { isAuthPath, isVideoAgentPath, proxyToAgent } from '../lib/proxy'
+import { communityReleaseForConnect, handleCommunityRequest } from '../lib/community'
+import {
+  assertCreativePointsAvailable,
+  attachGenerationReservation,
+  handleBillingRequest,
+  recordCreativePoints,
+  reconcileGeneration,
+  releaseGenerationReservation,
+  reserveGeneration,
+  type BillingEnv,
+} from '../lib/billing'
 import { handleCoachAssistant, handleModels, handleScriptAssistant, type UpstreamEnv } from '../lib/upstream'
 
-type FullEnv = Env & UpstreamEnv & AsrEnv
+type FullEnv = Env & UpstreamEnv & AsrEnv & BillingEnv
 
 const readJson = async (request: Request) => {
   try {
     return await request.json()
+  } catch {
+    return null
+  }
+}
+
+const generationBillingEstimate = async (request: Request) => {
+  if (!request.headers.get('content-type')?.includes('application/json')) return { seconds: 60, reservedCreativePoints: 8 }
+  try {
+    const payload = await request.clone().json() as { billingEstimateSeconds?: unknown; imageGeneration?: unknown }
+    const seconds = Number(payload.billingEstimateSeconds)
+    return {
+      seconds: Number.isFinite(seconds) && seconds > 0 ? Math.min(Math.ceil(seconds), 24 * 60 * 60) : 60,
+      reservedCreativePoints: payload.imageGeneration === 'off' ? 0 : 8,
+    }
+  } catch {
+    return { seconds: 60, reservedCreativePoints: 8 }
+  }
+}
+
+const responseJob = async (response: Response) => {
+  try {
+    const payload = await response.clone().json() as { id?: unknown }
+    return typeof payload.id === 'string' ? payload.id : null
   } catch {
     return null
   }
@@ -186,14 +220,15 @@ const handleEdgeApis = async (request: Request, env: FullEnv, pathname: string) 
     return json({ items: [] })
   }
 
-  if (request.method === 'GET' && pathname.startsWith('/v1/community')) {
-    return json({ items: [], nextCursor: null })
-  }
-
   if (request.method === 'POST' && pathname === '/v1/assistant/script') {
     const user = await getUserBySession(env, parseSessionCookie(request.headers.get('cookie')))
     if (!user) return json({ error: '请先登录', code: 'AUTH_REQUIRED' }, 401)
-    return handleScriptAssistant(env, await readJson(request))
+    const payload = await readJson(request)
+    const chargePoint = Boolean(payload && typeof payload === 'object' && (payload as { action?: unknown }).action !== 'guide')
+    if (chargePoint) await assertCreativePointsAvailable(env, user.id)
+    const response = await handleScriptAssistant(env, payload)
+    if (chargePoint && response.ok) await recordCreativePoints(env, user.id, 1, '脚本生成与润色')
+    return response
   }
 
   if (request.method === 'POST' && pathname === '/v1/assistant/coach') {
@@ -241,6 +276,29 @@ export const onRequest: PagesFunction<FullEnv> = async (context) => {
       return await handleAuth(request, env, pathname)
     }
 
+    // Community registry is fully hosted by Pages + D1. It is intentionally
+    // handled before the local-agent tunnel so browsing, upload and download
+    // remain available while a creator's Mac is offline.
+    const communityUser = await getUserBySession(env, parseSessionCookie(request.headers.get('cookie')))
+    const billing = await handleBillingRequest(request, env, pathname, communityUser)
+    if (billing) return billing
+    const community = await handleCommunityRequest(request, env, pathname, communityUser)
+    if (community) return community
+
+    const connectMatch = pathname.match(/^\/v1\/community\/packages\/([a-z0-9-]{3,80})\/connect$/u)
+    if (request.method === 'POST' && connectMatch) {
+      if (!communityUser) return json({ error: '请先登录', code: 'AUTH_REQUIRED' }, 401)
+      const release = await communityReleaseForConnect(env, connectMatch[1])
+      // The agent receives only declarative files whose Connector has already
+      // been checked for a reviewed local adapter. It never executes package code.
+      const agentRequest = new Request(request.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(release),
+      })
+      return await proxyToAgent(agentRequest, env, '/v1/capabilities/import', communityUser)
+    }
+
     const edge = await handleEdgeApis(request, env, pathname)
     if (edge) return edge
 
@@ -252,7 +310,36 @@ export const onRequest: PagesFunction<FullEnv> = async (context) => {
       }
       const agentPath =
         pathname === '/v1/agent/health' ? '/healthz' + url.search : targetPath
-      return await proxyToAgent(request, env, agentPath, user)
+      const isGeneration = request.method === 'POST' && (pathname === '/v1/edit-jobs' || pathname === '/v1/edits')
+      if (isGeneration && user) {
+        const estimate = await generationBillingEstimate(request)
+        const reservation = await reserveGeneration(env, user.id, estimate.seconds, estimate.reservedCreativePoints)
+        try {
+          const response = await proxyToAgent(request, env, agentPath, user, { maxOutputHeight: reservation.maxOutputHeight })
+          if (!response.ok) {
+            await releaseGenerationReservation(env, reservation.id)
+            return response
+          }
+          const jobId = await responseJob(response)
+          if (!jobId) {
+            await releaseGenerationReservation(env, reservation.id)
+            return response
+          }
+          await attachGenerationReservation(env, reservation.id, jobId)
+          return response
+        } catch (error) {
+          await releaseGenerationReservation(env, reservation.id)
+          throw error
+        }
+      }
+      const isSubtitleRepair = request.method === 'POST' && /^\/v1\/edit-jobs\/[a-f0-9]{32}\/subtitle-repairs$/u.test(pathname)
+      if (isSubtitleRepair && user) await assertCreativePointsAvailable(env, user.id)
+      const response = await proxyToAgent(request, env, agentPath, user)
+      if (isSubtitleRepair && user && response.ok) await recordCreativePoints(env, user.id, 1, '字幕定点修复')
+      if (request.method === 'GET' && /^\/v1\/edit-jobs\/[a-f0-9]{32}$/u.test(pathname) && user && response.ok) {
+        try { await reconcileGeneration(env, user.id, await response.clone().json()) } catch { /* billing must not break status polling */ }
+      }
+      return response
     }
 
     return json(

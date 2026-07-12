@@ -233,6 +233,21 @@ function useFile(file?: File) {
     file,
     source: 'upload',
   }
+  const durationProbe = document.createElement('video')
+  durationProbe.preload = 'metadata'
+  durationProbe.src = localUrl
+  durationProbe.onloadedmetadata = () => {
+    const durationSeconds = durationProbe.duration
+    if (asset.value?.file === file && Number.isFinite(durationSeconds) && durationSeconds > 0) {
+      asset.value = { ...asset.value, durationSeconds }
+    }
+    durationProbe.removeAttribute('src')
+    durationProbe.load()
+  }
+  durationProbe.onerror = () => {
+    durationProbe.removeAttribute('src')
+    durationProbe.load()
+  }
   videoFailed.value = false
   stage.value = 'ready'
 }
@@ -438,6 +453,7 @@ async function beginProcessing() {
       prompt: `使用${subtitleStyle.value}字幕，节奏强度${intensity.value}，保留自然语气。${selectedCapabilityIds.value.length ? '仅在相关事实需要时使用用户选定的 Pi 能力，并保留其来源与版本。' : ''}`,
       imageGeneration: imageGenerationMode.value,
       notificationEmail: notificationEnabled.value ? notificationEmail.value.trim() : undefined,
+      billingEstimateSeconds: Math.max(1, Math.ceil(asset.value.durationSeconds ?? 60)),
       capabilityInstallIds: selectedCapabilityIds.value,
       capabilityRequests: fifaEvidenceRequested.value && selectedFifaInstallation.value
         ? [{

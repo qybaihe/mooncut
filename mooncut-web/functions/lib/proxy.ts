@@ -13,6 +13,12 @@ export const isVideoAgentPath = (pathname: string) => {
   if (pathname === '/v1/edit-jobs') return true
   // Status / cancel / artifacts / subtitle repair for in-flight jobs
   if (pathname.startsWith('/v1/edit-jobs/')) return true
+  // A community package is installed only into the user's own local Agent.
+  // Its bytes stay on Pages/D1; this route forwards a verified declaration.
+  if (pathname === '/v1/capabilities/import') return true
+  // Finished-video sharing remains local because the render artifacts live on
+  // the creator's Agent. Package uploads/downloads are handled by Pages/D1.
+  if (pathname.startsWith('/v1/community/posts')) return true
   // Health probe only
   if (pathname === '/healthz' || pathname === '/v1/agent/health') return true
   // LLM relay: CF edge → tunnel → local gateway (when CF cannot reach the LLM IP)
@@ -57,6 +63,7 @@ export const proxyToAgent = async (
   env: Env,
   targetPath: string,
   user: EdgeUser | null,
+  entitlements?: { maxOutputHeight?: 720 | 1080 | 2160 },
 ) => {
   const origin = (env.AGENT_ORIGIN || '').replace(/\/$/, '')
   const key = env.AGENT_INTERNAL_KEY || ''
@@ -83,6 +90,11 @@ export const proxyToAgent = async (
 
   const patched = withNotificationEmail(request, targetPath, user)
   let path = patched.targetPath
+  if (entitlements?.maxOutputHeight && request.method === 'POST' && path.startsWith('/v1/edits')) {
+    const agentUrl = new URL(path, 'https://agent.local')
+    agentUrl.searchParams.set('maxOutputHeight', String(entitlements.maxOutputHeight))
+    path = agentUrl.pathname + agentUrl.search
+  }
   let body: ArrayBuffer | undefined
 
   const headers = new Headers()
@@ -105,11 +117,13 @@ export const proxyToAgent = async (
       contentType?.includes('application/json') &&
       user?.email
     ) {
-      const raw = await request.text()
-      try {
-        const parsed = JSON.parse(raw || '{}') as Record<string, unknown>
-        if (!parsed.notificationEmail) parsed.notificationEmail = user.email
-        body = new TextEncoder().encode(JSON.stringify(parsed)).buffer
+        const raw = await request.text()
+        try {
+          const parsed = JSON.parse(raw || '{}') as Record<string, unknown>
+          if (!parsed.notificationEmail) parsed.notificationEmail = user.email
+          // Edge-owned entitlement: never accept a browser supplied export height.
+          if (entitlements?.maxOutputHeight) parsed.maxOutputHeight = entitlements.maxOutputHeight
+          body = new TextEncoder().encode(JSON.stringify(parsed)).buffer
         headers.set('content-type', 'application/json')
       } catch {
         body = new TextEncoder().encode(raw).buffer
