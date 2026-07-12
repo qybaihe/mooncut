@@ -2478,6 +2478,25 @@ button:disabled {
   font-size: 13px;
 }
 
+/* Keep the lens-line prompt readable in every app theme.  These rules live
+   after the generic side rail so the light theme cannot wash the copy out. */
+.side-teleprompter.lens-teleprompter {
+  border-color: rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    rgba(8, 12, 18, 0.96);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.side-teleprompter.lens-teleprompter .side-tele-progress { color: rgba(255, 255, 255, 0.64); }
+.side-teleprompter.lens-teleprompter .side-tele-list.is-visible-full p { color: rgba(255, 255, 255, 0.66); }
+.side-teleprompter.lens-teleprompter .side-tele-list.is-visible-full p.is-past { color: rgba(255, 255, 255, 0.42); }
+.side-teleprompter.lens-teleprompter .side-tele-list.is-visible-full p.is-current {
+  color: #fff9e9;
+  background: linear-gradient(180deg, rgba(255, 190, 60, 0.2), rgba(255, 190, 60, 0.08));
+}
+.side-teleprompter.lens-teleprompter .side-tele-list.is-visible-full p.is-next { color: rgba(255, 255, 255, 0.9); }
+
 .side-coach-card {
   display: flex;
   gap: 10px;
@@ -3114,7 +3133,8 @@ button:disabled {
   .result-layout,
   .review-layout,
   .teleprompter-layout,
-  .teleprompter-layout.is-pro-layout {
+  .teleprompter-layout.is-pro-layout,
+  .teleprompter-layout.is-pro-layout.is-lens-first {
     grid-template-columns: 1fr;
   }
 
