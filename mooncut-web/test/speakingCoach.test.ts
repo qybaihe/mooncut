@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   extractAsrKeyterms,
+  findScriptAlignment,
   resolveIndexFromCharacterCount,
   resolveSpokenSentenceIndex,
 } from '../src/composables/useSpeakingCoach.ts'
@@ -30,10 +31,26 @@ test('character-count progress maps through cumulative sentence lengths', () => 
   assert.equal(resolveIndexFromCharacterCount(200, sentences), sentences.length - 1)
 })
 
-test('long unmatched ASR only provides one-line momentum, never a runaway skip', () => {
+test('unmatched ASR does not move the script cue', () => {
   const long = '完全不匹配'.repeat(30)
   const index = resolveSpokenSentenceIndex(long, sentences, 0)
-  assert.equal(index, 1)
+  assert.equal(index, 0)
+})
+
+test('requires a substantial local script anchor before marking ASR aligned', () => {
+  const uncertain = findScriptAlignment('这里有一句完全无关的话', sentences, 0)
+  assert.equal(uncertain.isConfident, false)
+  assert.equal(uncertain.index, 0)
+
+  const aligned = findScriptAlignment('第二句解释原因', sentences, 0)
+  assert.equal(aligned.isConfident, true)
+  assert.equal(aligned.index, 1)
+})
+
+test('will not skip several sentences on a weak partial coincidence', () => {
+  const alignment = findScriptAlignment('第三句', sentences, 0)
+  assert.equal(alignment.isConfident, false)
+  assert.equal(alignment.index, 0)
 })
 
 test('extracts only explicit names and marked terminology for ASR prompting', () => {

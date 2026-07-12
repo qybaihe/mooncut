@@ -55,6 +55,30 @@ const bigrams = (value: string) => {
   for (let index = 0; index < value.length - 1; index += 1) result.add(value.slice(index, index + 2))
   return result
 }
+const longestCommonSubstringLength = (left: string, right: string) => {
+  if (!left || !right) return 0
+  let previous = new Array<number>(right.length + 1).fill(0)
+  let longest = 0
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    const current = new Array<number>(right.length + 1).fill(0)
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      if (left[leftIndex - 1] !== right[rightIndex - 1]) continue
+      const length = (previous[rightIndex - 1] ?? 0) + 1
+      current[rightIndex] = length
+      longest = Math.max(longest, length)
+    }
+    previous = current
+  }
+  return longest
+}
+const bigramDice = (left: string, right: string) => {
+  const leftPairs = bigrams(left)
+  const rightPairs = bigrams(right)
+  if (!leftPairs.size || !rightPairs.size) return 0
+  let overlap = 0
+  for (const pair of leftPairs) if (rightPairs.has(pair)) overlap += 1
+  return (2 * overlap) / (leftPairs.size + rightPairs.size)
+}
 const resultIsStable = (results: SpeechRecognitionResultList) =>
   results.length > 0 && results[results.length - 1]?.isFinal === true
 
@@ -79,36 +103,59 @@ export function resolveIndexFromCharacterCount(characters: number, sentenceList:
   return sentenceList.length - 1
 }
 
-export function resolveSpokenSentenceIndex(transcript: string, sentenceList: string[], currentIndex = 0) {
-  if (!sentenceList.length) return 0
+export type ScriptAlignment = {
+  index: number
+  isConfident: boolean
+  contiguous: number
+  pairRatio: number
+}
+
+/**
+ * Align ASR output to the known script using local sequential anchors, not its
+ * raw character count. This lets a misheard or repeated audio chunk stay put
+ * instead of skipping the reader several sentences ahead.
+ */
+export function findScriptAlignment(transcript: string, sentenceList: string[], currentIndex = 0): ScriptAlignment {
+  if (!sentenceList.length) return { index: 0, isConfident: false, contiguous: 0, pairRatio: 0 }
   const spoken = speakable(transcript)
-  if (!spoken) return currentIndex
-  // A length estimate keeps the cue moving if recognition gets no exact hit, but
-  // it must never turn one bad transcript into a jump to the end of the script.
-  const byLength = resolveIndexFromCharacterCount(spoken.length, sentenceList)
-  // Primary: match the newest recognised words against the nearby script lines.
-  // Keeping this window tight protects the teleprompter from unrelated speech,
-  // room noise, or a duplicated chunk from a stateless ASR request.
-  const tailPairs = bigrams(spoken.slice(-28))
-  let bestIndex = currentIndex
-  let bestScore = 0
+  const stable = clamp(currentIndex, 0, sentenceList.length - 1)
+  if (!spoken) return { index: stable, isConfident: false, contiguous: 0, pairRatio: 0 }
+
+  const tail = spoken.slice(-72)
+  let best: ScriptAlignment = { index: stable, isConfident: false, contiguous: 0, pairRatio: 0 }
+  let bestScore = -1
   const from = Math.max(0, currentIndex - 1)
   const to = Math.min(sentenceList.length - 1, currentIndex + 3)
   for (let index = from; index <= to; index += 1) {
-    const pairs = bigrams(speakable(sentenceList[index]))
-    const score = Array.from(tailPairs).filter((pair) => pairs.has(pair)).length
-    if (score > bestScore || (score === bestScore && score > 0 && index > bestIndex)) {
-      bestIndex = index
+    const target = speakable(sentenceList[index] ?? '')
+    if (!target) continue
+    const contiguous = longestCommonSubstringLength(tail, target)
+    const pairRatio = bigramDice(tail, target)
+    const coverage = contiguous / target.length
+    const minimumContiguous = target.length <= 4
+      ? Math.max(2, Math.ceil(target.length * 0.65))
+      : Math.max(3, Math.ceil(target.length * 0.42))
+    const isConfident = contiguous >= minimumContiguous && (coverage >= 0.42 || pairRatio >= 0.48)
+    const score = contiguous * 10 + pairRatio * 10
+    const closerToCurrent = Math.abs(index - stable) < Math.abs(best.index - stable)
+    if (score > bestScore || (score === bestScore && closerToCurrent)) {
+      best = { index, isConfident, contiguous, pairRatio }
       bestScore = score
     }
   }
-  const matchedPairs = bigrams(speakable(sentenceList[bestIndex]))
-  const overlapRatio = bestScore / Math.max(1, Math.min(tailPairs.size, matchedPairs.size))
-  const fuzzy = bestScore >= 2 && overlapRatio >= 0.38 ? bestIndex : currentIndex
-  // An imperfect ASR result may still be useful, but only as one-line momentum.
-  // The independent timed cursor remains the safety net when it is consistently wrong.
-  const cautiousLength = Math.min(byLength, currentIndex + 1)
-  return clamp(Math.max(currentIndex, cautiousLength, fuzzy), 0, sentenceList.length - 1)
+  const targetLength = speakable(sentenceList[best.index] ?? '').length
+  const skipsMultipleLines = best.index > stable + 1
+  const canSkip = !skipsMultipleLines || best.contiguous >= Math.ceil(targetLength * 0.8)
+  const isConfident = best.isConfident && canSkip
+  return {
+    ...best,
+    index: isConfident ? Math.max(stable, best.index) : stable,
+    isConfident,
+  }
+}
+
+export function resolveSpokenSentenceIndex(transcript: string, sentenceList: string[], currentIndex = 0) {
+  return findScriptAlignment(transcript, sentenceList, currentIndex).index
 }
 
 /**
@@ -221,6 +268,7 @@ export function useSpeakingCoach(script: Ref<string>) {
   const adviceCategory = ref<AdviceCategory>('steady')
   const advicePositive = ref(true)
   const stableSentenceIndex = ref(0)
+  const isScriptAligned = ref(false)
 
   let active = false
   let recognition: BrowserSpeechRecognition | null = null
@@ -327,6 +375,7 @@ export function useSpeakingCoach(script: Ref<string>) {
     adviceCategory.value = 'steady'
     advicePositive.value = true
     stableSentenceIndex.value = 0
+    isScriptAligned.value = false
     lastAudioFrame = performance.now()
     lastUiUpdate = 0
     speechActiveMs = 0
@@ -432,19 +481,15 @@ export function useSpeakingCoach(script: Ref<string>) {
         recognizedTimeline.shift()
       }
     }
-    const asrIndex = resolveSpokenSentenceIndex(
+    const alignment = findScriptAlignment(
       transcriptFinal.value,
       sentences.value,
       stableSentenceIndex.value,
     )
-    if (asrIndex > stableSentenceIndex.value) {
-      stableSentenceIndex.value = asrIndex
-      lastSentenceBumpAt = performance.now()
-    }
-    bumpSentenceFromProgress(characters)
+    const aligned = commitScriptAlignment(alignment, confidence)
     const conf =
       typeof confidence === 'number' && confidence > 0 ? ` · ${(confidence * 100).toFixed(0)}%` : ''
-    speechStatus.value = `Deepgram 跟读${conf}`
+    speechStatus.value = aligned ? `Deepgram 已对齐稿件${conf}` : `Deepgram 正在核对稿件${conf}`
   }
 
   async function flushDeepgramChunk() {
@@ -596,20 +641,24 @@ export function useSpeakingCoach(script: Ref<string>) {
     }
   }
 
-  function bumpSentenceFromProgress(spokenChars: number) {
-    if (!active || !sentences.value.length) return
-    const next = resolveIndexFromCharacterCount(spokenChars, sentences.value)
-    if (next > stableSentenceIndex.value) {
-      stableSentenceIndex.value = next
+  function commitScriptAlignment(alignment: ScriptAlignment, confidence: number | null = null) {
+    const trusted = alignment.isConfident && (
+      confidence === null || confidence >= 0.48 || alignment.contiguous >= 6
+    )
+    if (!trusted) return false
+    isScriptAligned.value = true
+    if (alignment.index > stableSentenceIndex.value) {
+      stableSentenceIndex.value = alignment.index
       lastSentenceBumpAt = performance.now()
       // Delivery / 语气 tips when the teleprompter advances.
       const now = Date.now()
       if (now - lastDeliveryAdviceAt > 11_000) {
-        const tip = DELIVERY_TIPS[next % DELIVERY_TIPS.length]
-        emitLocalAdvice(`delivery-${tip.id}-${next}`, tip.category, tip.text, false, 55)
+        const tip = DELIVERY_TIPS[alignment.index % DELIVERY_TIPS.length]
+        emitLocalAdvice(`delivery-${tip.id}-${alignment.index}`, tip.category, tip.text, false, 55)
         lastDeliveryAdviceAt = now
       }
     }
+    return true
   }
 
   function setAcousticFallback(reason: string) {
@@ -679,19 +728,15 @@ export function useSpeakingCoach(script: Ref<string>) {
             recognizedTimeline.shift()
           }
         }
-        const asrIndex = resolveSpokenSentenceIndex(
+        const alignment = findScriptAlignment(
           `${transcriptFinal.value}${interim}`,
           sentences.value,
           stableSentenceIndex.value,
         )
-        if (asrIndex > stableSentenceIndex.value) {
-          stableSentenceIndex.value = asrIndex
-          lastSentenceBumpAt = performance.now()
-        }
-        bumpSentenceFromProgress(characters)
-        speechStatus.value = resultIsStable(event.results)
+        const aligned = commitScriptAlignment(alignment)
+        speechStatus.value = aligned && resultIsStable(event.results)
           ? '本地 ASR · 已对齐稿件'
-          : '本地 ASR · 跟随中'
+          : '本地 ASR · 正在核对稿件'
       }
 
       recognition.onerror = (event) => {
@@ -838,36 +883,9 @@ export function useSpeakingCoach(script: Ref<string>) {
         uninterruptedSpeechMs = 0
       }
 
-      // Acoustic teleprompter: ~1.15 汉字 per syllable peak when ASR is thin.
+      // Keep acoustic signals for pace/volume only. They must never advance the
+      // script: a pause or a loud breath is not proof that a sentence was read.
       const acousticChars = Math.round(syllablePeaks * 1.15)
-      const progressChars = Math.max(lastRecognizedCharacters, acousticChars)
-      // After a pause following speech, assume the current line finished → nudge forward.
-      if (
-        !speaking &&
-        hasSpoken &&
-        silenceStartedAt &&
-        now - silenceStartedAt > 650 &&
-        now - lastSentenceBumpAt > 900 &&
-        stableSentenceIndex.value < Math.max(0, sentences.value.length - 1)
-      ) {
-        const lineLen = Math.max(1, speakable(sentences.value[stableSentenceIndex.value] || '').length)
-        // Only auto-nudge if we've roughly covered this line by energy or time.
-        const covered =
-          progressChars >=
-          sentences.value
-            .slice(0, stableSentenceIndex.value)
-            .reduce((sum, s) => sum + Math.max(1, speakable(s).length), 0) +
-            lineLen * 0.4
-        if (covered || speechActiveMs > (stableSentenceIndex.value + 1) * 3500) {
-          bumpSentenceFromProgress(
-            sentences.value
-              .slice(0, stableSentenceIndex.value + 1)
-              .reduce((sum, s) => sum + Math.max(1, speakable(s).length), 0) + 1,
-          )
-        }
-      } else {
-        bumpSentenceFromProgress(progressChars)
-      }
 
       if (now - lastUiUpdate > 90) {
         volume.value = volumePercent
@@ -876,7 +894,7 @@ export function useSpeakingCoach(script: Ref<string>) {
         wordCount.value = lastRecognizedCharacters > 0 ? lastRecognizedCharacters : acousticChars
         lastUiUpdate = now
         if (recognitionMode === 'acoustic' && hasSpoken && speechActiveMs > 1200) {
-          speechStatus.value = '声学跟读中 · 提词器按说话进度推进'
+          speechStatus.value = '声学监听中 · 等待语音稿件对齐'
         }
       }
       audioFrame = requestAnimationFrame(analyse)
@@ -1034,6 +1052,7 @@ export function useSpeakingCoach(script: Ref<string>) {
     adviceCategory,
     advicePositive,
     activeSentenceIndex,
+    isScriptAligned,
     sentences,
     start,
     stop,

@@ -101,6 +101,7 @@ const {
   adviceCategory: coachAdviceCategory,
   advicePositive: coachLocalPositive,
   activeSentenceIndex: coachSentenceIndex,
+  isScriptAligned: coachScriptAligned,
   start: startCoach,
   stop: stopCoach,
   reset: resetCoach,
@@ -162,18 +163,14 @@ const timedSentence = computed(() => {
   const secondsPerLine = Math.max(2.8, 8.2 - scrollSpeed.value * 1.05)
   return Math.min(sentences.value.length - 1, Math.floor(elapsed.value / secondsPerLine))
 })
-/**
- * Hybrid teleprompter cursor:
- * - ASR/acoustic index from coach (follows speech when available)
- * - timed fallback so it NEVER freezes if ASR is empty
- * Always take the furthest progress (never jump backward mid-take).
- */
+/** ASR drives the cue after a verified script anchor; time is startup fallback only. */
 const currentSentence = computed(() => {
   if (!sentences.value.length) return 0
   const timed = timedSentence.value
   if (recordState.value !== 'recording' && recordState.value !== 'paused') return timed
-  const live = coachSentenceIndex.value
-  return Math.min(sentences.value.length - 1, Math.max(timed, live))
+  return coachScriptAligned.value
+    ? Math.min(sentences.value.length - 1, coachSentenceIndex.value)
+    : timed
 })
 const previousSentenceText = computed(() => sentences.value[Math.max(0, currentSentence.value - 1)] ?? '')
 const currentSentenceText = computed(() => sentences.value[currentSentence.value] ?? '准备好后，从第一句自然开口。')
@@ -1134,14 +1131,53 @@ onBeforeUnmount(() => {
       <span class="teleprompter-brand">MOONCUT <img v-if="currentTheme === 'memphis'" class="memphis-sticker brand-sticker" src="/memphis-icons/camera-line.png" alt="" width="16" height="16">✦</span>
     </div>
 
-    <div class="teleprompter-layout is-pro-layout is-landscape-first">
-      <!-- Left: aspect-locked camera (preview = export crop) -->
-      <div
-        class="camera-stage is-hero"
-        :class="{ 'is-mirrored': mirror, 'is-coaching': recordState === 'recording' || recordState === 'paused' }"
-        :style="{ aspectRatio: aspectCss }"
-        :data-aspect="aspectRatio"
-      >
+    <div class="teleprompter-layout is-pro-layout is-lens-first">
+      <main class="recording-focus">
+        <section
+          ref="scriptScrollRef"
+          class="side-teleprompter is-full-script is-fixed-region lens-teleprompter"
+          :class="{
+            'is-live': recordState === 'recording' || recordState === 'paused',
+            'is-compact': scriptIsCompact,
+          }"
+          :style="{ fontSize: `${scriptDisplaySize}px` }"
+          aria-live="polite"
+        >
+          <div class="lens-teleprompter-head">
+            <div>
+              <span class="mini-label">对镜提词</span>
+              <strong>{{ recordState === 'recording' || recordState === 'paused' ? '读稿时，目光留在镜头附近。' : '稿在镜头正上方，开录后自然扫读。' }}</strong>
+            </div>
+            <span class="lens-alignment" :class="{ 'is-synced': coachScriptAligned }">
+              {{ coachScriptAligned ? '已精准对齐' : '等待语音对齐' }}
+            </span>
+          </div>
+          <div class="side-tele-progress">
+            <Sparkles :size="13" />
+            全文 · {{ currentSentence + 1 }}/{{ sentences.length || 1 }}
+            <em v-if="characterCount">{{ characterCount }} 字</em>
+          </div>
+          <div class="side-tele-list is-visible-full">
+            <p
+              v-for="(sentence, index) in sentences"
+              :key="`${index}-${sentence.slice(0, 12)}`"
+              :class="{
+                'is-current': index === currentSentence,
+                'is-past': index < currentSentence,
+                'is-next': index === currentSentence + 1,
+              }"
+            >{{ sentence }}</p>
+            <p v-if="!sentences.length" class="side-tele-empty">还没有口播稿，请先回到对话生成。</p>
+          </div>
+        </section>
+
+        <!-- Aspect-locked camera: preview and exported crop stay identical. -->
+        <div
+          class="camera-stage is-hero"
+          :class="{ 'is-mirrored': mirror, 'is-coaching': recordState === 'recording' || recordState === 'paused' }"
+          :style="{ aspectRatio: aspectCss }"
+          :data-aspect="aspectRatio"
+        >
         <video
           ref="cameraVideoRef"
           class="camera-video"
@@ -1183,19 +1219,20 @@ onBeforeUnmount(() => {
         <div v-if="recordState === 'countdown' && countdown !== null" class="countdown-overlay" aria-live="assertive">
           <strong>{{ countdown || '开始' }}</strong>
         </div>
-      </div>
+        </div>
+      </main>
 
-      <!-- Right: fixed full script + settings + record controls -->
-      <aside class="prompt-rail">
+      <!-- Secondary rail: aspect, coaching, and record controls. -->
+      <aside class="prompt-rail recording-control-rail">
         <div class="prompt-rail-head">
-          <span class="mini-label">全文提词</span>
-          <h2>{{ recordState === 'recording' || recordState === 'paused' ? '看镜头，右侧扫稿。' : '选画幅 · 开录' }}</h2>
+          <span class="mini-label">录制控制</span>
+          <h2>{{ recordState === 'recording' || recordState === 'paused' ? '保持镜头感。' : '选画幅 · 开录' }}</h2>
           <p class="prompt-rail-status">
             <template v-if="recordState === 'recording' || recordState === 'paused'">
               {{ coachVisionStatus }} · {{ coachSpeechStatus }}
             </template>
             <template v-else>
-              摄像头是横屏，按所选比例居中裁剪成片。短稿会缩进右侧固定区域，可直接开录。
+              摄像头是横屏，按所选比例居中裁剪成片；稿件已放到镜头正上方。
             </template>
           </p>
         </div>
@@ -1214,35 +1251,6 @@ onBeforeUnmount(() => {
             <i :data-ratio="preset.id" />
             <span>{{ preset.label }}</span>
           </button>
-        </div>
-
-        <div
-          ref="scriptScrollRef"
-          class="side-teleprompter is-full-script is-fixed-region"
-          :class="{
-            'is-live': recordState === 'recording' || recordState === 'paused',
-            'is-compact': scriptIsCompact,
-          }"
-          :style="{ fontSize: `${scriptDisplaySize}px` }"
-          aria-live="polite"
-        >
-          <div class="side-tele-progress">
-            <Sparkles :size="13" />
-            全文 · {{ currentSentence + 1 }}/{{ sentences.length || 1 }}
-            <em v-if="characterCount">{{ characterCount }} 字</em>
-          </div>
-          <div class="side-tele-list is-visible-full">
-            <p
-              v-for="(sentence, index) in sentences"
-              :key="`${index}-${sentence.slice(0, 12)}`"
-              :class="{
-                'is-current': index === currentSentence,
-                'is-past': index < currentSentence,
-                'is-next': index === currentSentence + 1,
-              }"
-            >{{ sentence }}</p>
-            <p v-if="!sentences.length" class="side-tele-empty">还没有口播稿，请先回到对话生成。</p>
-          </div>
         </div>
 
         <div

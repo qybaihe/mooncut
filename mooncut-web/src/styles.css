@@ -2159,7 +2159,69 @@ button:disabled {
   min-height: min(72vh, 760px);
 }
 
-.teleprompter-layout.is-pro-layout.is-landscape-first .camera-stage.is-hero {
+/* Lens-first recording: the script sits directly over the camera, so reading
+   stays close to the audience's eyeline instead of pulling it sideways. */
+.teleprompter-layout.is-pro-layout.is-lens-first {
+  grid-template-columns: minmax(0, 1fr) minmax(288px, 340px);
+  align-items: start;
+}
+
+.recording-focus {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.lens-teleprompter {
+  width: min(100%, 760px);
+  height: min(29vh, 264px) !important;
+  max-height: min(29vh, 264px) !important;
+  margin-inline: auto;
+  border-color: rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    rgba(8, 12, 18, 0.92);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.lens-teleprompter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.lens-teleprompter-head > div { display: grid; gap: 3px; }
+.lens-teleprompter-head .mini-label { color: rgba(255, 224, 140, 0.86); }
+.lens-teleprompter-head strong { color: rgba(255, 255, 255, 0.92); font-size: 13px; font-weight: 720; }
+
+.lens-alignment {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.lens-alignment.is-synced {
+  border-color: rgba(103, 220, 149, 0.38);
+  color: rgba(176, 245, 196, 0.92);
+  background: rgba(103, 220, 149, 0.1);
+}
+
+.lens-teleprompter .side-tele-progress { color: rgba(255, 255, 255, 0.56); }
+.lens-teleprompter .side-tele-list.is-visible-full p { color: rgba(255, 255, 255, 0.5); }
+.lens-teleprompter .side-tele-list.is-visible-full p.is-current { color: #fff9e9; }
+.lens-teleprompter .side-tele-list.is-visible-full p.is-next { color: rgba(255, 255, 255, 0.86); }
+
+.recording-control-rail { padding-top: 6px; }
+
+.teleprompter-layout.is-pro-layout:is(.is-landscape-first, .is-lens-first) .camera-stage.is-hero {
   width: 100%;
   min-height: 0;
   /* Keep landscape stage roomy but not portrait-tall */
@@ -2170,17 +2232,17 @@ button:disabled {
   background: #050505;
 }
 
-.teleprompter-layout.is-pro-layout.is-landscape-first .camera-stage.is-hero[data-aspect='16:9'] {
+.teleprompter-layout.is-pro-layout:is(.is-landscape-first, .is-lens-first) .camera-stage.is-hero[data-aspect='16:9'] {
   max-height: min(62vh, 560px);
 }
 
-.teleprompter-layout.is-pro-layout.is-landscape-first .camera-stage.is-hero[data-aspect='9:16'] {
+.teleprompter-layout.is-pro-layout:is(.is-landscape-first, .is-lens-first) .camera-stage.is-hero[data-aspect='9:16'] {
   max-width: min(100%, 360px);
   max-height: min(72vh, 680px);
   margin-inline: auto;
 }
 
-.teleprompter-layout.is-pro-layout.is-landscape-first .camera-stage.is-hero .camera-video {
+.teleprompter-layout.is-pro-layout:is(.is-landscape-first, .is-lens-first) .camera-stage.is-hero .camera-video {
   /* Cover = same center-crop the encoder uses */
   object-fit: cover;
   object-position: center;
@@ -3056,10 +3118,21 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .teleprompter-layout.is-pro-layout.is-landscape-first .camera-stage.is-hero {
+  .teleprompter-layout.is-pro-layout:is(.is-landscape-first, .is-lens-first) .camera-stage.is-hero {
     min-height: 0;
     max-height: min(46vh, 420px);
     max-width: none;
+  }
+
+  .teleprompter-layout.is-pro-layout.is-lens-first .camera-stage.is-hero {
+    min-height: 0;
+    max-height: min(46vh, 420px);
+  }
+
+  .lens-teleprompter {
+    width: 100%;
+    height: min(27vh, 240px) !important;
+    max-height: min(27vh, 240px) !important;
   }
 
   .side-teleprompter.is-full-script.is-fixed-region,
