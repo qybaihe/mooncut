@@ -48,4 +48,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: mooncut-web
-          command: pages deploy dist --project-name mooncut-web --branch ${{ github.head_ref || github.ref_name }}
+          command: pages deploy dist --project-name mooncut --branch ${{ github.head_ref || github.ref_name }}
