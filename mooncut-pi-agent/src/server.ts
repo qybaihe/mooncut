@@ -1,6 +1,6 @@
 import {randomUUID, timingSafeEqual} from "node:crypto";
 import {createReadStream, createWriteStream, existsSync} from "node:fs";
-import {mkdir, stat, unlink} from "node:fs/promises";
+import {mkdir, readFile, rm, stat, unlink, writeFile} from "node:fs/promises";
 import {extname, join} from "node:path";
 import {pipeline} from "node:stream/promises";
 import {createServer, type IncomingMessage, type ServerResponse} from "node:http";
@@ -11,11 +11,13 @@ import {
   type CapabilityInstallation,
   type CapabilityInvocation,
   type CapabilityInvocationRequest,
+  type CommunityCapabilityImport,
 } from "./capabilities.ts";
 import {agentRoot, assetsRoot, config} from "./config.ts";
 import {authStore, AuthError, clearSessionCookie, parseSessionCookie, sessionCookie, type AuthUser} from "./auth.ts";
 import {communityStore, CommunityStoreError, type CommunityPost, type PublishCommunityPostInput} from "./community.ts";
 import {listGatewayModels} from "./gateway.ts";
+import {runProcess} from "./process.ts";
 import {assetDataPath, friendlyJobName, jobManager, saveAssetMetadata, type StoredAsset} from "./jobs.ts";
 import {confirmJobMail, isEmail, mailAccountStatus, prepareJobMail, verifyArtifactDownloadToken} from "./mail.ts";
 import type {EditJobRecord, EditJobRequest, SubtitleRepairFeedback} from "./types.ts";
@@ -188,6 +190,7 @@ const isEditJobRequest = (value: unknown): value is EditJobRequest => {
     (record.title === undefined || typeof record.title === "string") &&
     (record.notificationEmail === undefined || typeof record.notificationEmail === "string") &&
     (record.imageGeneration === undefined || record.imageGeneration === "auto" || record.imageGeneration === "off") &&
+    (record.maxOutputHeight === undefined || record.maxOutputHeight === 720 || record.maxOutputHeight === 1080 || record.maxOutputHeight === 2160) &&
     (record.capabilityInstallIds === undefined || Array.isArray(record.capabilityInstallIds) && record.capabilityInstallIds.length <= 4 && record.capabilityInstallIds.every((id) => typeof id === "string" && /^[a-f0-9]{32}$/u.test(id))) &&
     (record.capabilityRequests === undefined || Array.isArray(record.capabilityRequests) && record.capabilityRequests.length <= 1 && record.capabilityRequests.every((request) => {
       if (!request || typeof request !== "object") return false;
@@ -237,6 +240,18 @@ const isCommunityPublishRequest = (value: unknown): value is PublishCommunityPos
     (record.authorName === undefined || typeof record.authorName === "string") &&
     (record.title === undefined || typeof record.title === "string") &&
     (record.caption === undefined || typeof record.caption === "string");
+};
+
+const isCommunityCapabilityImport = (value: unknown): value is CommunityCapabilityImport => {
+  if (!value || typeof value !== "object") return false;
+  const record = value as Record<string, unknown>;
+  const integrity = record.integrity;
+  return Object.keys(record).every((key) => ["slug", "version", "manifest", "skill", "connector", "integrity"].includes(key)) &&
+    typeof record.slug === "string" && typeof record.version === "string" &&
+    typeof record.manifest === "string" && typeof record.skill === "string" && typeof record.connector === "string" &&
+    !!integrity && typeof integrity === "object" &&
+    typeof (integrity as Record<string, unknown>).skillSha256 === "string" &&
+    typeof (integrity as Record<string, unknown>).connectorSha256 === "string";
 };
 
 const isInstallationStatusPatch = (value: unknown): value is {status: "enabled" | "disabled"} => {
@@ -406,9 +421,26 @@ export const startServer = async () => {
         json(response, 200, {
           ok: true,
           service: "mooncut-pi-video-editor",
-          plannerModel: config.plannerModel,
+          agentExecutionMode: config.agentExecutionMode,
+          plannerModel: config.agentExecutionMode === "codex" ? config.codexModel : config.plannerModel,
+          gatewayPlannerModel: config.plannerModel,
+          codex: config.agentExecutionMode === "codex" ? {
+            model: config.codexModel,
+            reasoningEffort: config.codexReasoningEffort,
+            sandbox: "workspace-write",
+          } : undefined,
+          renderAcceleration: {
+            gl: config.renderGl,
+            concurrency: config.renderConcurrency,
+            hardwareEncoding: config.renderHardwareAcceleration ? "required" : "disabled",
+          },
           visionModels: config.visionModels,
-          imageGenerationConfigured: Boolean(config.imageGenerationBaseUrl && config.imageGenerationApiKey && config.imageGenerationModel),
+          imageGenerationConfigured: config.agentExecutionMode === "codex" || Boolean(
+            config.imageGenerationBaseUrl && config.imageGenerationApiKey && config.imageGenerationModel,
+          ),
+          imageGenerationProvider: config.agentExecutionMode === "codex" ? "codex-imagegen" : (
+            config.imageGenerationModel || null
+          ),
           communityPosts: communityStore.count(),
           gatewayReachable,
         });
@@ -570,6 +602,17 @@ export const startServer = async () => {
         if (!isCapabilityPackageRequest(payload)) throw new HttpError(400, "Body requires a lowercase slug and optional trustLevel");
         const created = capabilityStore.createPackage(payload.slug, payload.trustLevel);
         json(response, created.created ? 201 : 200, created);
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/v1/capabilities/import") {
+        const user = requireUser();
+        const payload = await readJson(request);
+        if (!isCommunityCapabilityImport(payload)) throw new HttpError(400, "Body requires a Pages community package declaration");
+        const imported = capabilityStore.importCommunityRelease(user.id, payload);
+        json(response, imported.created ? 201 : 200, {
+          created: imported.created,
+          installation: publicCapabilityInstallation(imported.installation),
+        });
         return;
       }
       const capabilityReleasePublishMatch = url.pathname.match(/^\/v1\/admin\/capability-packages\/([A-Za-z0-9_-]{3,120})\/releases$/u);
@@ -742,6 +785,58 @@ export const startServer = async () => {
         json(response, 200, await mailAccountStatus());
         return;
       }
+      // ── ASR (P4: local Whisper) ──────────────────────────────
+      if (request.method === "GET" && url.pathname === "/v1/asr/status") {
+        const script = join(agentRoot, "scripts/transcribe_faster_whisper.py");
+        const configured = existsSync(config.transcribePython) && existsSync(script);
+        json(response, 200, {
+          configured,
+          provider: configured ? "whisper" : "none",
+          model: config.whisperModel,
+          language: config.whisperLanguage,
+          mode: configured ? "local" : "unavailable",
+          note: configured ? undefined : "Whisper 未安装。需要 transcribe Python venv 和 transcribe_faster_whisper.py 脚本。",
+        });
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/v1/asr/transcribe") {
+        const script = join(agentRoot, "scripts/transcribe_faster_whisper.py");
+        if (!existsSync(config.transcribePython) || !existsSync(script)) {
+          json(response, 503, {error: "ASR 未配置：Whisper Python venv 或脚本缺失"});
+          return;
+        }
+        // Read raw audio body to temp file, run whisper, return transcript.
+        const tmpDir = join(agentRoot, ".tmp-asr");
+        await mkdir(tmpDir, {recursive: true});
+        const inputPath = join(tmpDir, `chunk-${Date.now()}.wav`);
+        const chunks: Buffer[] = [];
+        for await (const chunk of request) {
+          chunks.push(Buffer.from(chunk));
+        }
+        await writeFile(inputPath, Buffer.concat(chunks));
+        try {
+          const result = await runProcess(config.transcribePython, [
+            script,
+            inputPath,
+            "--model", config.whisperModel,
+            "--language", url.searchParams.get("language") || config.whisperLanguage,
+            "--duration-ms", "0",
+          ], {cwd: agentRoot, timeoutMs: 30_000});
+          const payload = JSON.parse(result.stdout) as {text?: string; segments?: Array<{text: string; start: number; end: number}>};
+          const transcript = (payload.text ?? (payload.segments ?? []).map((s) => s.text).join("")).trim();
+          json(response, 200, {
+            transcript,
+            confidence: null,
+            duration: null,
+            provider: "whisper",
+            model: config.whisperModel,
+            language: url.searchParams.get("language") || config.whisperLanguage,
+          });
+        } finally {
+          await rm(inputPath, {force: true}).catch(() => undefined);
+        }
+        return;
+      }
       if (request.method === "POST" && url.pathname === "/v1/community/posts") {
         const payload = await readJson(request);
         if (!isCommunityPublishRequest(payload)) throw new HttpError(400, "Body requires jobId and optional authorName, title, caption");
@@ -774,8 +869,19 @@ export const startServer = async () => {
           throw new HttpError(400, "imageGeneration must be auto or off");
         }
         const imageGeneration = imageGenerationParam === "off" ? "off" as const : "auto" as const;
+        const outputHeightParam = Number(url.searchParams.get("maxOutputHeight") || "");
+        if (url.searchParams.has("maxOutputHeight") && outputHeightParam !== 720 && outputHeightParam !== 1080 && outputHeightParam !== 2160) {
+          throw new HttpError(400, "maxOutputHeight must be 720, 1080 or 2160");
+        }
         const asset = await storeUploadedAsset(request, url, ownerUserId);
-        const job = await jobManager.create({assetId: asset.id, prompt, title, notificationEmail, imageGeneration}, ownerUserId);
+        const job = await jobManager.create({
+          assetId: asset.id,
+          prompt,
+          title,
+          notificationEmail,
+          imageGeneration,
+          ...(outputHeightParam ? {maxOutputHeight: outputHeightParam as 720 | 1080 | 2160} : {}),
+        }, ownerUserId);
         const baseUrl = publicBaseUrl(request);
         json(response, 202, {
           id: job.id,

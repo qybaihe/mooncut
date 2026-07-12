@@ -26,6 +26,9 @@ const error = ref("");
 const busy = ref(false);
 const showAdvanced = ref(false);
 const intensity = ref<"轻" | "自然" | "紧凑">("自然");
+const subtitleStyle = ref<"重点词强调" | "极简白字" | "综艺描边">("重点词强调");
+const imageGenerationMode = ref<"auto" | "off">("off");
+const subtitleStyles = ["重点词强调", "极简白字", "综艺描边"] as const;
 let pollTimer: number | undefined;
 
 const selectedMedia = computed(() => media.value.find((item) => item.id === selectedMediaId.value) ?? null);
@@ -64,15 +67,83 @@ const activeStepIndex = computed(() => {
   return 4;
 });
 
+// P2: result detail computeds
+const resultDuration = computed(() => {
+  const ms = selectedJob.value?.result?.probe?.durationMs;
+  return ms ? `${(ms / 1000).toFixed(1)}秒` : "—";
+});
+const resultModel = computed(() => selectedJob.value?.result?.models?.planner ?? "—");
+const resultQuality = computed(() => (selectedJob.value?.result?.quality?.ok ? "通过" : "待检查"));
+const resultVisualCount = computed(() => selectedJob.value?.result?.visuals?.assets?.length ?? 0);
+const resultSummary = computed(() => {
+  const s = selectedJob.value?.result?.summary;
+  if (!s) return "";
+  return s.replace(/```[\s\S]*?```/g, "").replace(/[#*>|-]/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
+});
+
+// P3: subtitle repair state
+const repairOpen = ref(false);
+const repairInstruction = ref("");
+const repairAtInput = ref("");
+const repairReplacement = ref("");
+const isRepairing = ref(false);
+const repairAnalysis = computed(() => selectedJob.value?.subtitleRepair?.analysis);
+const repairVersions = ref<StudioJob[]>([]);
+
+function formatRepairTime(ms: number): string {
+  const seconds = ms / 1000;
+  const m = Math.floor(seconds / 60);
+  const s = (seconds % 60).toFixed(1);
+  return `${m}:${s.padStart(4, "0")}`;
+}
+
+async function submitSubtitleRepair() {
+  if (repairInstruction.value.trim().length < 2 || !selectedJob.value) return;
+  isRepairing.value = true;
+  error.value = "";
+  try {
+    const atMs = repairAtInput.value.trim() ? Math.round(parseFloat(repairAtInput.value) * 1000) : undefined;
+    const result = await getMooncut().createSubtitleRepair(selectedJob.value.id, {
+      instruction: repairInstruction.value.trim(),
+      ...(atMs !== undefined ? {atMs} : {}),
+      ...(repairReplacement.value.trim() ? {replacementText: repairReplacement.value.trim()} : {}),
+    }) as {id: string};
+    selectedJobId.value = result.id;
+    repairOpen.value = false;
+    repairInstruction.value = "";
+    repairAtInput.value = "";
+    repairReplacement.value = "";
+    await refresh();
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : "字幕修复提交失败";
+  } finally {
+    isRepairing.value = false;
+  }
+}
+
+async function loadRepairHistory() {
+  if (!selectedJob.value) return;
+  try {
+    const history = await getMooncut().listSubtitleRepairs(selectedJob.value.id) as {rootJobId: string; items: StudioJob[]};
+    const root = history.items.find((j) => j.id === history.rootJobId) ?? selectedJob.value;
+    repairVersions.value = [root, ...history.items.filter((j) => j.id !== history.rootJobId)];
+  } catch {
+    repairVersions.value = [selectedJob.value];
+  }
+}
+
 function formatSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function buildPrompt() {
-  const intensityHint =
-    intensity.value === "轻" ? "节奏偏松，少删。" : intensity.value === "紧凑" ? "节奏紧凑，适度精简停顿。" : "自然节奏，轻度精简。";
-  return `${DEFAULT_PROMPT} ${intensityHint}`;
+  return `使用${subtitleStyle.value}字幕，节奏强度${intensity.value}，保留自然语气。`;
+}
+
+function cycleSubtitleStyle() {
+  const idx = subtitleStyles.indexOf(subtitleStyle.value);
+  subtitleStyle.value = subtitleStyles[(idx + 1) % subtitleStyles.length];
 }
 
 async function loadPreview(absolutePath: string | undefined) {
@@ -149,6 +220,7 @@ async function startJob() {
       mediaAssetId: selectedMediaId.value,
       prompt: buildPrompt(),
       title: props.project.name,
+      imageGeneration: imageGenerationMode.value,
     });
     selectedJobId.value = job.id;
     await refresh();
@@ -313,6 +385,14 @@ onUnmounted(() => {
         <span class="mini-label">本次剪辑</span>
 
         <div class="setting-row">
+          <span><UiIcon name="sparkles" :size="15" /> 字幕</span>
+          <button type="button" class="cycle-button" @click="cycleSubtitleStyle">
+            {{ subtitleStyle }}
+            <UiIcon name="chevron-right" :size="12" />
+          </button>
+        </div>
+
+        <div class="setting-row">
           <span><UiIcon name="layers" :size="15" /> 节奏</span>
           <div class="segmented-control" role="group" aria-label="节奏强度">
             <button
@@ -323,6 +403,26 @@ onUnmounted(() => {
               @click="intensity = option"
             >
               {{ option }}
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <span><UiIcon name="media" :size="15" /> 配图</span>
+          <div class="segmented-control" role="group" aria-label="AI 配图">
+            <button
+              type="button"
+              :class="{'is-selected': imageGenerationMode === 'auto'}"
+              @click="imageGenerationMode = 'auto'"
+            >
+              按需
+            </button>
+            <button
+              type="button"
+              :class="{'is-selected': imageGenerationMode === 'off'}"
+              @click="imageGenerationMode = 'off'"
+            >
+              关闭
             </button>
           </div>
         </div>
@@ -419,9 +519,74 @@ onUnmounted(() => {
       </div>
       <aside class="settings-card">
         <span class="mini-label">已完成</span>
-        <p class="meta" style="margin: 0 0 0.75rem; line-height: 1.5">
+        <p v-if="resultSummary" class="meta result-summary">{{ resultSummary }}</p>
+        <p v-else class="meta" style="margin: 0 0 0.75rem; line-height: 1.5">
           成片已保存在本机项目目录，音频、画面与字幕检查已跑完。
         </p>
+
+        <!-- P2: result stats -->
+        <div class="result-stats">
+          <span><small>成片时长</small><strong>{{ resultDuration }}</strong></span>
+          <span><small>规划模型</small><strong>{{ resultModel }}</strong></span>
+          <span><small>质量检查</small><strong>{{ resultQuality }}</strong></span>
+        </div>
+        <div class="result-checks">
+          <span v-if="resultVisualCount > 0" class="badge ready">AI 示例图 {{ resultVisualCount }} 张</span>
+          <span v-else class="badge">未滥用生成素材</span>
+          <span class="badge ready">节奏字幕已生成</span>
+        </div>
+
+        <!-- P3: subtitle repair -->
+        <div class="repair-section">
+          <button v-if="!repairOpen" type="button" class="ghost compact" @click="repairOpen = true">
+            <UiIcon name="sparkles" :size="13" />
+            字幕有问题？让 Agent 修一版
+          </button>
+          <div v-else class="repair-form">
+            <textarea
+              v-model="repairInstruction"
+              rows="2"
+              placeholder="描述字幕问题，例如「12 秒处 MoonCut 被误识别为梦卡」"
+              maxlength="2000"
+            />
+            <div class="repair-form-row">
+              <input v-model="repairAtInput" type="text" placeholder="时间点（秒，可选）" class="repair-at-input" />
+              <button type="button" class="primary compact" :disabled="repairInstruction.trim().length < 2 || isRepairing" @click="submitSubtitleRepair">
+                {{ isRepairing ? "提交中…" : "提交修复" }}
+              </button>
+            </div>
+            <input v-model="repairReplacement" type="text" placeholder="替换为（可选）" maxlength="160" />
+          </div>
+
+          <!-- repair analysis -->
+          <div v-if="repairAnalysis" class="repair-analysis">
+            <small class="meta">{{ repairAnalysis.model }}</small>
+            <p class="meta">{{ repairAnalysis.summary }}</p>
+            <ul class="repair-changes">
+              <li v-for="(change, idx) in repairAnalysis.changes" :key="idx">
+                <span class="repair-time">{{ formatRepairTime(change.startMs) }}</span>
+                <del>{{ change.before }}</del>
+                <UiIcon name="chevron-right" :size="11" />
+                <ins>{{ change.after }}</ins>
+              </li>
+            </ul>
+          </div>
+
+          <!-- repair version switcher -->
+          <div v-if="repairVersions.length > 1" class="repair-versions">
+            <button
+              v-for="(version, idx) in repairVersions"
+              :key="version.id"
+              type="button"
+              class="ghost compact"
+              :disabled="version.status !== 'completed'"
+              @click="selectedJobId = version.id; refresh()"
+            >
+              {{ idx === 0 ? '初版' : `修订 ${idx}` }}
+            </button>
+          </div>
+        </div>
+
         <button type="button" class="primary start-cut" @click="revealVideo">
           <UiIcon name="download" :size="16" />
           打开成片位置
