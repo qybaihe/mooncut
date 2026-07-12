@@ -1,0 +1,41 @@
+{
+  "duration_ms": 14833,
+  "transcript": "来，我在这个 Physical AI 的 Hackathon 这块，在这里向大家介绍一下这个企鹅的玩偶。这个企鹅的玩偶穿的衣服很有意思，然后售价九十九，现在去拍。",
+  "segments": [
+    {
+      "index": 1,
+      "text": "来，我在这个 Physical AI 的 Hackathon 这块。",
+      "start_ms": 0,
+      "end_ms": 2700
+    },
+    {
+      "index": 2,
+      "text": "在这里向大家介绍一下这个企鹅的玩偶。",
+      "start_ms": 2700,
+      "end_ms": 7420
+    },
+    {
+      "index": 3,
+      "text": "这个企鹅的玩偶穿的衣服很有意思。",
+      "start_ms": 7420,
+      "end_ms": 10780
+    },
+    {
+      "index": 4,
+      "text": "然后售价九十九，现在去拍。",
+      "start_ms": 11440,
+      "end_ms": 14000
+    }
+  ],
+  "words": [
+    {"text": "Physical AI", "start_ms": 620, "end_ms": 1760, "confidence": 0.89},
+    {"text": "Hackathon", "start_ms": 1760, "end_ms": 2440, "confidence": 0.74},
+    {"text": "企鹅", "start_ms": 5020, "end_ms": 5420, "confidence": 0.66},
+    {"text": "玩偶", "start_ms": 5540, "end_ms": 7420, "confidence": 0.90},
+    {"text": "衣服", "start_ms": 8800, "end_ms": 10300, "confidence": 0.82},
+    {"text": "售价", "start_ms": 11440, "end_ms": 12020, "confidence": 0.75},
+    {"text": "九十九", "start_ms": 12020, "end_ms": 12440, "confidence": 0.92},
+    {"text": "现在去拍", "start_ms": 13040, "end_ms": 14000, "confidence": 0.94}
+  ],
+  "provider": "mimo-v2.5-asr + faster-whisper-small"
+}

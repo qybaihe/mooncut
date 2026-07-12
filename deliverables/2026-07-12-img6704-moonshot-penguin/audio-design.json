@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "mooncut.audio-design.v1",
+  "voiceFirst": true,
+  "bgm": {
+    "trackId": "funky-pop",
+    "source": "remotion-studio/public/audio/bgm/tracks/funky-pop.mp3",
+    "license": "CC0-1.0",
+    "gainDb": -25,
+    "fadeInMs": 700,
+    "fadeOutMs": 900
+  },
+  "cues": [
+    {"atMs": 2600, "id": "transition-whoosh-quick", "gainDb": -22, "purpose": "海报窗口进入"},
+    {"atMs": 7350, "id": "text-pop-bubble", "gainDb": -24, "purpose": "企鹅完整亮相"},
+    {"atMs": 12020, "id": "emphasis-impact-soft", "gainDb": -23, "purpose": "售价 99 落点"}
+  ],
+  "spacingRuleMs": 1500,
+  "mastering": {"integratedLufs": -16, "truePeakDbtp": -1.5}
+}

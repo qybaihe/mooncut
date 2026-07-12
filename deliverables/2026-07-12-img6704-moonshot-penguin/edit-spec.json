@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "mooncut.edit.v1",
+  "title": "探月计划企鹅·现场展示",
+  "summary": "竖屏自拍保留真实现场和企鹅玩偶，Physical AI 语义段切入探月计划真实微信长海报滚动，回到玩偶衣服细节，并以售价 99 收束。",
+  "accent": "#ffd166",
+  "fps": 30,
+  "durationInFrames": 445,
+  "width": 1920,
+  "height": 1080,
+  "source": {
+    "src": "agent-jobs/7593a8fc8cc94d469495678b397c9a35/source.mov",
+    "aspectRatio": 0.5625
+  },
+  "transcript": "来，我在这个 Physical AI 的 Hackathon 这块，在这里向大家介绍一下这个企鹅的玩偶。这个企鹅的玩偶穿的衣服很有意思，然后售价九十九，现在去拍。",
+  "subtitles": [
+    {"index": 1, "text": "来，我在这个 Physical AI 的 Hackathon 这块。", "start_ms": 0, "end_ms": 2700},
+    {"index": 2, "text": "在这里向大家介绍一下这个企鹅的玩偶。", "start_ms": 2700, "end_ms": 7420},
+    {"index": 3, "text": "这个企鹅的玩偶穿的衣服很有意思。", "start_ms": 7420, "end_ms": 10780},
+    {"index": 4, "text": "然后售价九十九，现在去拍。", "start_ms": 11440, "end_ms": 14000}
+  ],
+  "beats": [
+    {
+      "startMs": 0,
+      "endMs": 2700,
+      "kind": "speaker",
+      "headline": "Physical AI 现场",
+      "body": "保留真实自拍开场，让人物先建立现场语境。",
+      "keywords": ["Physical AI", "Hackathon"],
+      "speakerLayout": "native"
+    },
+    {
+      "startMs": 2700,
+      "endMs": 7420,
+      "kind": "evidence",
+      "headline": "探月计划企鹅登场",
+      "body": "真实探月计划微信长海报在 Safari 窗口内平滑滚动，人物保持稳定圆形小窗。",
+      "keywords": ["探月计划", "企鹅", "玩偶"],
+      "evidenceId": "moonshot-wechat-poster",
+      "evidencePanels": [
+        {
+          "evidenceId": "moonshot-wechat-poster",
+          "role": "primary",
+          "purpose": "探月计划活动背景长海报",
+          "scrollStartPct": 0,
+          "scrollEndPct": 58
+        }
+      ],
+      "evidenceMode": "single",
+      "speakerLayout": "circle"
+    },
+    {
+      "startMs": 7420,
+      "endMs": 11440,
+      "kind": "speaker",
+      "headline": "企鹅玩偶完整亮相",
+      "body": "回到原始自拍，保留企鹅正面、服装纹样与人物互动。",
+      "keywords": ["企鹅", "玩偶", "衣服"],
+      "speakerLayout": "native"
+    },
+    {
+      "startMs": 11440,
+      "endMs": 14833,
+      "kind": "impact",
+      "headline": "售价 99",
+      "body": "唯一主冲击对齐价格口播，之后保持原镜头自然结束。",
+      "keywords": ["售价", "九十九", "现在去拍"],
+      "impactText": "售价 99",
+      "impactAtMs": 12020,
+      "speakerLayout": "native"
+    }
+  ],
+  "evidenceAssets": [
+    {
+      "id": "moonshot-wechat-poster",
+      "kind": "webpage",
+      "label": "北京探月计划 · 微信长海报",
+      "url": "https://mp.weixin.qq.com/",
+      "src": "assets/moonshot-wechat-article.webp",
+      "localPath": "/Users/baihe/Documents/moonbot/remotion-studio/public/assets/moonshot-wechat-article.webp",
+      "evidencePath": "/Users/baihe/Documents/moonbot/remotion-studio/public/assets/moonshot-wechat-article.webp"
+    }
+  ],
+  "generatedVisuals": [],
+  "speechCleanup": {
+    "schemaVersion": "mooncut.speech-cleanup.v1",
+    "status": "skipped",
+    "reason": "短素材没有可安全移除的独立长停顿；保留完整 14.833 秒真实表达。",
+    "policy": {"enabled": true, "minSilenceMs": 750, "retainedSilenceMs": 190, "fillerPaddingMs": 80, "wordGuardMs": 55},
+    "sourceDurationMs": 14833,
+    "outputDurationMs": 14833,
+    "removedDurationMs": 0,
+    "cuts": [],
+    "keptRanges": [{"sourceStartMs": 0, "sourceEndMs": 14833, "outputStartMs": 0, "outputEndMs": 14833}]
+  },
+  "audioDesign": {
+    "narration": {"targetIntegratedLufs": -16, "targetTruePeakDbtp": -1.5},
+    "bgm": {"trackId": "funky-pop", "src": "audio/bgm/tracks/funky-pop.mp3", "gainDb": -25, "fadeInMs": 700, "fadeOutMs": 900},
+    "cues": [
+      {"atMs": 2600, "preset": "scene-transition-fast", "sfxId": "transition-whoosh-quick", "gainDb": -22},
+      {"atMs": 7350, "preset": "text-pop", "sfxId": "text-pop-bubble", "gainDb": -24},
+      {"atMs": 12020, "preset": "card-land", "sfxId": "emphasis-impact-soft", "gainDb": -23}
+    ]
+  },
+  "generationPreset": "macos-sonoma-native",
+  "cameraPolicy": {
+    "mode": "track-small-overlays-only",
+    "trackedLayout": "circle",
+    "nativeReframe": "preserve-source",
+    "minimumLayoutHoldMs": 2500,
+    "transitionMs": 220,
+    "recenterDurationMs": 650
+  }
+}

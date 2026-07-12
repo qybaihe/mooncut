@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "mooncut.verification.v1",
+  "ok": true,
+  "verifiedAt": "2026-07-12T01:36:00.000Z",
+  "render": {
+    "path": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/7593a8fc8cc94d469495678b397c9a35/final.mp4",
+    "sha256": "0bbdcae65370b37c6b37b3fb96746e711c4ad6b777374d45749ecfba874d6c39",
+    "durationMs": 14833,
+    "sourceDurationMs": 14833,
+    "durationDriftMs": 0,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "audioSampleRateHz": 48000,
+    "audioChannels": 2,
+    "bytes": 28324036
+  },
+  "audio": {
+    "integratedLufs": -17.15,
+    "truePeakDbtp": -1.5,
+    "loudnessRangeLu": 2.1,
+    "targetIntegratedLufs": -16,
+    "targetTruePeakDbtp": -1.5,
+    "withinDeliveryWindow": true,
+    "voiceFirst": true,
+    "bgmPresent": true,
+    "sfxCueCount": 3,
+    "minimumCueSpacingMs": 4670
+  },
+  "visual": {
+    "contactSheet": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/7593a8fc8cc94d469495678b397c9a35/final-contact-sheet.jpg",
+    "contactSheetSha256": "afe0005c983b6d24564983f7916bf3be515aec4f2425325676186eaf39a362c3",
+    "sourceOrientationHandled": true,
+    "subtitleSafeAreaPass": true,
+    "speakerVisiblePass": true,
+    "posterScrollPass": true,
+    "penguinRevealPass": true,
+    "impactLegibilityPass": true,
+    "layoutStabilityPass": true,
+    "blackFramePass": true
+  },
+  "spec": {
+    "path": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/7593a8fc8cc94d469495678b397c9a35/edit-spec.json",
+    "sha256": "46c129b867946a3b149a493b48b417b2de13e71864a864b74d1c92b392c3f159",
+    "timelineContiguous": true,
+    "cameraRunsMeetMinimum": true,
+    "realPosterUsed": true,
+    "generatedImageCount": 0,
+    "typecheckPass": true
+  },
+  "findings": []
+}
