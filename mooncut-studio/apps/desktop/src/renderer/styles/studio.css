@@ -1157,6 +1157,169 @@ button .ui-icon,
   font-size: 12.5px;
 }
 
+/* ── Queue dashboard ── */
+.queue-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.queue-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  background: var(--bg-secondary);
+}
+.queue-stat-card small {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+.queue-stat-card strong {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.queue-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.queue-section .mini-label {
+  margin-bottom: 2px;
+}
+.queue-board {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  background: var(--bg-secondary);
+  padding: 6px;
+}
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-md);
+  transition: background 120ms ease;
+}
+.queue-item:hover {
+  background: var(--bg-hover);
+}
+.queue-index {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+  min-width: 20px;
+}
+.queue-item-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.queue-item-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.queue-item-top strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.queue-stage {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+.queue-progress {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+.queue-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 300ms ease;
+}
+.queue-status {
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.queue-mine-tag {
+  display: inline-flex;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  flex: 0 0 auto;
+}
+.queue-empty {
+  padding: 18px 14px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 12.5px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  background: var(--bg-secondary);
+}
+.queue-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  background: var(--bg-secondary);
+  padding: 6px;
+}
+.queue-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+}
+.queue-recent-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.queue-recent-meta {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.queue-recent-item svg {
+  color: var(--signal);
+  flex: 0 0 auto;
+}
+
 /* Modal dialog */
 .modal-backdrop {
   position: fixed;
@@ -2535,6 +2698,147 @@ button.linkish,
   gap: 10px;
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+/* ── Result detail (P2) + subtitle repair (P3) ── */
+.result-summary {
+  margin: 0 0 0.5rem;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.result-stats span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-sm);
+  background: var(--bg-secondary);
+}
+.result-stats small {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+.result-stats strong {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.result-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.repair-section {
+  border-top: 1px solid var(--border-default);
+  padding-top: 10px;
+  margin-bottom: 10px;
+}
+.repair-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.repair-form textarea {
+  min-height: 50px;
+  font-size: 12px;
+  padding: 8px 10px;
+}
+.repair-form-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.repair-at-input {
+  flex: 1;
+  min-height: 30px;
+  font-size: 12px;
+}
+.repair-analysis {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-sm);
+  background: var(--bg-secondary);
+}
+.repair-analysis p {
+  margin: 4px 0 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.repair-changes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.repair-changes li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+.repair-time {
+  color: var(--text-tertiary);
+  font-family: var(--mono);
+  font-size: 10px;
+  flex: 0 0 auto;
+}
+.repair-changes del {
+  color: var(--alert);
+  text-decoration: line-through;
+}
+.repair-changes ins {
+  color: var(--signal);
+  text-decoration: none;
+  font-weight: 500;
+}
+.repair-versions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* Cycle button (subtitle style picker) */
+.cycle-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+}
+.cycle-button:hover {
+  border-color: var(--border-accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.cycle-button svg {
+  color: var(--text-tertiary);
+  transition: transform 150ms ease;
 }
 
 .segmented-control {
