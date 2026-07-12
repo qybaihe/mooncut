@@ -1,0 +1,855 @@
+{
+  "duration_ms": 35538,
+  "transcript": "大家好现在是北京探月计划的尾声阶段了。现在我们晋级的项目已经在这里全部开始参展，准备后面的路演。然后我们的项目也是成功的晋级，进入到路演阶段。然后我们的官网已经上线了在这里可以看到是 mooncut.me 是我们的官网。然后我们希望你投给我们一票然后也希望你体验到我们的神奇产品，助力你做出属于你的更好的口播。然后我们也希望你的口播可以在这个平台上刷到。好，加油！",
+  "segments": [
+    {
+      "index": 1,
+      "text": "大家好现在是北京探月计划的尾声阶段了。",
+      "start_ms": 460,
+      "end_ms": 4949
+    },
+    {
+      "index": 2,
+      "text": "现在我们晋级的项目已经在这里全部开始参展，准备后面的路演。",
+      "start_ms": 4950,
+      "end_ms": 10129
+    },
+    {
+      "index": 3,
+      "text": "然后我们的项目也是成功的晋级，进入到路演阶段。",
+      "start_ms": 10130,
+      "end_ms": 13889
+    },
+    {
+      "index": 4,
+      "text": "然后我们的官网已经上线了",
+      "start_ms": 13890,
+      "end_ms": 15889
+    },
+    {
+      "index": 5,
+      "text": "在这里可以看到是 mooncut.me 是我们的官网。",
+      "start_ms": 15890,
+      "end_ms": 19289
+    },
+    {
+      "index": 6,
+      "text": "然后我们希望你投给我们一票",
+      "start_ms": 19290,
+      "end_ms": 23129
+    },
+    {
+      "index": 7,
+      "text": "然后也希望你体验到我们的神奇产品，助力你做出属于你的更好的口播。",
+      "start_ms": 23130,
+      "end_ms": 28709
+    },
+    {
+      "index": 8,
+      "text": "然后我们也希望你的口播可以在这个平台上刷到。",
+      "start_ms": 29070,
+      "end_ms": 32649
+    },
+    {
+      "index": 9,
+      "text": "好，加油！",
+      "start_ms": 33840,
+      "end_ms": 34719
+    }
+  ],
+  "words": [
+    {
+      "text": "大家",
+      "start_ms": 460,
+      "end_ms": 952,
+      "confidence": 0.9595677256584167,
+      "character_start": 0,
+      "character_end": 2
+    },
+    {
+      "text": "好",
+      "start_ms": 953,
+      "end_ms": 1199,
+      "confidence": 0.9595677256584167,
+      "character_start": 2,
+      "character_end": 3
+    },
+    {
+      "text": "现在",
+      "start_ms": 1310,
+      "end_ms": 1549,
+      "confidence": 0.9784269332885742,
+      "character_start": 4,
+      "character_end": 6
+    },
+    {
+      "text": "是",
+      "start_ms": 1550,
+      "end_ms": 2129,
+      "confidence": 0.9967449903488159,
+      "character_start": 6,
+      "character_end": 7
+    },
+    {
+      "text": "北京",
+      "start_ms": 2130,
+      "end_ms": 2909,
+      "confidence": 0.9862557053565979,
+      "character_start": 7,
+      "character_end": 9
+    },
+    {
+      "text": "探月",
+      "start_ms": 2910,
+      "end_ms": 3449,
+      "confidence": 0.7079945623874664,
+      "character_start": 9,
+      "character_end": 11
+    },
+    {
+      "text": "计划",
+      "start_ms": 3450,
+      "end_ms": 3909,
+      "confidence": 0.9937760680913925,
+      "character_start": 11,
+      "character_end": 13
+    },
+    {
+      "text": "的",
+      "start_ms": 3910,
+      "end_ms": 4089,
+      "confidence": 0.984836757183075,
+      "character_start": 13,
+      "character_end": 14
+    },
+    {
+      "text": "尾声",
+      "start_ms": 4090,
+      "end_ms": 4509,
+      "confidence": 0.9906072467565536,
+      "character_start": 14,
+      "character_end": 16
+    },
+    {
+      "text": "阶段",
+      "start_ms": 4510,
+      "end_ms": 4829,
+      "confidence": 0.9965446591377258,
+      "character_start": 16,
+      "character_end": 18
+    },
+    {
+      "text": "了",
+      "start_ms": 4830,
+      "end_ms": 4949,
+      "confidence": 0.9769872426986694,
+      "character_start": 18,
+      "character_end": 19
+    },
+    {
+      "text": "现在",
+      "start_ms": 4950,
+      "end_ms": 5189,
+      "confidence": 0.7803467512130737,
+      "character_start": 19,
+      "character_end": 21
+    },
+    {
+      "text": "我们",
+      "start_ms": 5190,
+      "end_ms": 5589,
+      "confidence": 0.9883269667625427,
+      "character_start": 21,
+      "character_end": 23
+    },
+    {
+      "text": "晋级",
+      "start_ms": 5590,
+      "end_ms": 6069,
+      "confidence": 0.8590202555060387,
+      "character_start": 23,
+      "character_end": 25
+    },
+    {
+      "text": "的",
+      "start_ms": 6070,
+      "end_ms": 6189,
+      "confidence": 0.9942337870597839,
+      "character_start": 25,
+      "character_end": 26
+    },
+    {
+      "text": "项目",
+      "start_ms": 6190,
+      "end_ms": 6429,
+      "confidence": 0.9980300664901733,
+      "character_start": 26,
+      "character_end": 28
+    },
+    {
+      "text": "已经",
+      "start_ms": 6430,
+      "end_ms": 6549,
+      "confidence": 0.7275999784469604,
+      "character_start": 28,
+      "character_end": 30
+    },
+    {
+      "text": "在",
+      "start_ms": 6550,
+      "end_ms": 6649,
+      "confidence": 0.9959237575531006,
+      "character_start": 30,
+      "character_end": 31
+    },
+    {
+      "text": "这里",
+      "start_ms": 6650,
+      "end_ms": 6869,
+      "confidence": 0.9872167706489563,
+      "character_start": 31,
+      "character_end": 33
+    },
+    {
+      "text": "全部",
+      "start_ms": 6870,
+      "end_ms": 7209,
+      "confidence": 0.8279266357421875,
+      "character_start": 33,
+      "character_end": 35
+    },
+    {
+      "text": "开始",
+      "start_ms": 7210,
+      "end_ms": 7549,
+      "confidence": 0.9747162461280823,
+      "character_start": 35,
+      "character_end": 37
+    },
+    {
+      "text": "参展",
+      "start_ms": 7550,
+      "end_ms": 8109,
+      "confidence": 0.9806754142045975,
+      "character_start": 37,
+      "character_end": 39
+    },
+    {
+      "text": "准备",
+      "start_ms": 8110,
+      "end_ms": 8729,
+      "confidence": 0.9591176807880402,
+      "character_start": 39,
+      "character_end": 41
+    },
+    {
+      "text": "后面",
+      "start_ms": 8730,
+      "end_ms": 9649,
+      "confidence": 0.9846051037311554,
+      "character_start": 41,
+      "character_end": 43
+    },
+    {
+      "text": "的",
+      "start_ms": 9650,
+      "end_ms": 9789,
+      "confidence": 0.9980441331863403,
+      "character_start": 43,
+      "character_end": 44
+    },
+    {
+      "text": "路演",
+      "start_ms": 9790,
+      "end_ms": 10129,
+      "confidence": 0.6942930519580841,
+      "character_start": 44,
+      "character_end": 46
+    },
+    {
+      "text": "然后",
+      "start_ms": 10130,
+      "end_ms": 10409,
+      "confidence": 0.7977558970451355,
+      "character_start": 46,
+      "character_end": 48
+    },
+    {
+      "text": "我们",
+      "start_ms": 10410,
+      "end_ms": 10749,
+      "confidence": 0.9830880761146545,
+      "character_start": 48,
+      "character_end": 50
+    },
+    {
+      "text": "的",
+      "start_ms": 10750,
+      "end_ms": 10909,
+      "confidence": 0.9960165619850159,
+      "character_start": 50,
+      "character_end": 51
+    },
+    {
+      "text": "项目",
+      "start_ms": 10910,
+      "end_ms": 11329,
+      "confidence": 0.9997663050889969,
+      "character_start": 51,
+      "character_end": 53
+    },
+    {
+      "text": "也",
+      "start_ms": 11330,
+      "end_ms": 11559,
+      "confidence": 0.9893186688423157,
+      "character_start": 53,
+      "character_end": 54
+    },
+    {
+      "text": "是",
+      "start_ms": 11560,
+      "end_ms": 11789,
+      "confidence": 0.9893186688423157,
+      "character_start": 54,
+      "character_end": 55
+    },
+    {
+      "text": "成功",
+      "start_ms": 11790,
+      "end_ms": 12269,
+      "confidence": 0.9982361495494843,
+      "character_start": 55,
+      "character_end": 57
+    },
+    {
+      "text": "的",
+      "start_ms": 12270,
+      "end_ms": 12369,
+      "confidence": 0.9676347970962524,
+      "character_start": 57,
+      "character_end": 58
+    },
+    {
+      "text": "晋级",
+      "start_ms": 12370,
+      "end_ms": 12749,
+      "confidence": 0.9975364804267883,
+      "character_start": 58,
+      "character_end": 60
+    },
+    {
+      "text": "进入",
+      "start_ms": 12750,
+      "end_ms": 13069,
+      "confidence": 0.9253794252872467,
+      "character_start": 60,
+      "character_end": 62
+    },
+    {
+      "text": "到",
+      "start_ms": 13070,
+      "end_ms": 13169,
+      "confidence": 0.9915908575057983,
+      "character_start": 62,
+      "character_end": 63
+    },
+    {
+      "text": "路演",
+      "start_ms": 13170,
+      "end_ms": 13509,
+      "confidence": 0.9873417615890503,
+      "character_start": 63,
+      "character_end": 65
+    },
+    {
+      "text": "阶段",
+      "start_ms": 13510,
+      "end_ms": 13889,
+      "confidence": 0.9966648072004318,
+      "character_start": 65,
+      "character_end": 67
+    },
+    {
+      "text": "然后",
+      "start_ms": 13890,
+      "end_ms": 14429,
+      "confidence": 0.9398508667945862,
+      "character_start": 67,
+      "character_end": 69
+    },
+    {
+      "text": "我们",
+      "start_ms": 14430,
+      "end_ms": 14749,
+      "confidence": 0.9883924126625061,
+      "character_start": 69,
+      "character_end": 71
+    },
+    {
+      "text": "的",
+      "start_ms": 14750,
+      "end_ms": 14869,
+      "confidence": 0.9970445036888123,
+      "character_start": 71,
+      "character_end": 72
+    },
+    {
+      "text": "官网",
+      "start_ms": 14870,
+      "end_ms": 15189,
+      "confidence": 0.9984061866998672,
+      "character_start": 72,
+      "character_end": 74
+    },
+    {
+      "text": "已经",
+      "start_ms": 15190,
+      "end_ms": 15329,
+      "confidence": 0.9848397374153137,
+      "character_start": 74,
+      "character_end": 76
+    },
+    {
+      "text": "上线",
+      "start_ms": 15330,
+      "end_ms": 15769,
+      "confidence": 0.9934388846158981,
+      "character_start": 76,
+      "character_end": 78
+    },
+    {
+      "text": "了",
+      "start_ms": 15770,
+      "end_ms": 15889,
+      "confidence": 0.9758366346359253,
+      "character_start": 78,
+      "character_end": 79
+    },
+    {
+      "text": "在",
+      "start_ms": 15890,
+      "end_ms": 16009,
+      "confidence": 0.7007118463516235,
+      "character_start": 79,
+      "character_end": 80
+    },
+    {
+      "text": "这里",
+      "start_ms": 16010,
+      "end_ms": 16229,
+      "confidence": 0.9933670163154602,
+      "character_start": 80,
+      "character_end": 82
+    },
+    {
+      "text": "可以",
+      "start_ms": 16230,
+      "end_ms": 16849,
+      "confidence": 0.9489117860794067,
+      "character_start": 82,
+      "character_end": 84
+    },
+    {
+      "text": "看到",
+      "start_ms": 16850,
+      "end_ms": 17169,
+      "confidence": 0.9964409470558167,
+      "character_start": 84,
+      "character_end": 86
+    },
+    {
+      "text": "是",
+      "start_ms": 17170,
+      "end_ms": 17429,
+      "confidence": 0.9628288745880127,
+      "character_start": 86,
+      "character_end": 87
+    },
+    {
+      "text": "mooncut",
+      "start_ms": 17430,
+      "end_ms": 18049,
+      "confidence": 0.4236288075787681,
+      "character_start": 87,
+      "character_end": 94
+    },
+    {
+      "text": "点",
+      "start_ms": 18050,
+      "end_ms": 18249,
+      "confidence": 0.35,
+      "character_start": 94,
+      "character_end": 95
+    },
+    {
+      "text": "me",
+      "start_ms": 18250,
+      "end_ms": 18489,
+      "confidence": 0.984459400177002,
+      "character_start": 95,
+      "character_end": 97
+    },
+    {
+      "text": "是",
+      "start_ms": 18490,
+      "end_ms": 18669,
+      "confidence": 0.8517866730690002,
+      "character_start": 97,
+      "character_end": 98
+    },
+    {
+      "text": "我们",
+      "start_ms": 18670,
+      "end_ms": 18809,
+      "confidence": 0.9963452219963074,
+      "character_start": 98,
+      "character_end": 100
+    },
+    {
+      "text": "的",
+      "start_ms": 18810,
+      "end_ms": 18909,
+      "confidence": 0.9934391379356384,
+      "character_start": 100,
+      "character_end": 101
+    },
+    {
+      "text": "官网",
+      "start_ms": 18910,
+      "end_ms": 19289,
+      "confidence": 0.9985447227954865,
+      "character_start": 101,
+      "character_end": 103
+    },
+    {
+      "text": "然后",
+      "start_ms": 19290,
+      "end_ms": 20069,
+      "confidence": 0.9216145277023315,
+      "character_start": 103,
+      "character_end": 105
+    },
+    {
+      "text": "我们",
+      "start_ms": 20070,
+      "end_ms": 21969,
+      "confidence": 0.9813137054443359,
+      "character_start": 105,
+      "character_end": 107
+    },
+    {
+      "text": "希望",
+      "start_ms": 21970,
+      "end_ms": 22229,
+      "confidence": 0.9983929991722107,
+      "character_start": 107,
+      "character_end": 109
+    },
+    {
+      "text": "你",
+      "start_ms": 22230,
+      "end_ms": 22369,
+      "confidence": 0.9954630732536316,
+      "character_start": 109,
+      "character_end": 110
+    },
+    {
+      "text": "投给",
+      "start_ms": 22370,
+      "end_ms": 22629,
+      "confidence": 0.9874124526977539,
+      "character_start": 110,
+      "character_end": 112
+    },
+    {
+      "text": "我们",
+      "start_ms": 22630,
+      "end_ms": 22829,
+      "confidence": 0.9983252882957458,
+      "character_start": 112,
+      "character_end": 114
+    },
+    {
+      "text": "一票",
+      "start_ms": 22830,
+      "end_ms": 23129,
+      "confidence": 0.9815070331096649,
+      "character_start": 114,
+      "character_end": 116
+    },
+    {
+      "text": "然后",
+      "start_ms": 23130,
+      "end_ms": 23509,
+      "confidence": 0.8659264445304871,
+      "character_start": 116,
+      "character_end": 118
+    },
+    {
+      "text": "也",
+      "start_ms": 23510,
+      "end_ms": 23689,
+      "confidence": 0.9951890707015991,
+      "character_start": 118,
+      "character_end": 119
+    },
+    {
+      "text": "希望",
+      "start_ms": 23690,
+      "end_ms": 24049,
+      "confidence": 0.996807873249054,
+      "character_start": 119,
+      "character_end": 121
+    },
+    {
+      "text": "你",
+      "start_ms": 24050,
+      "end_ms": 24229,
+      "confidence": 0.9918478727340698,
+      "character_start": 121,
+      "character_end": 122
+    },
+    {
+      "text": "体验",
+      "start_ms": 24230,
+      "end_ms": 24629,
+      "confidence": 0.9893582463264465,
+      "character_start": 122,
+      "character_end": 124
+    },
+    {
+      "text": "到",
+      "start_ms": 24630,
+      "end_ms": 24789,
+      "confidence": 0.9986581802368164,
+      "character_start": 124,
+      "character_end": 125
+    },
+    {
+      "text": "我们",
+      "start_ms": 24790,
+      "end_ms": 25049,
+      "confidence": 0.997645914554596,
+      "character_start": 125,
+      "character_end": 127
+    },
+    {
+      "text": "的",
+      "start_ms": 25050,
+      "end_ms": 25229,
+      "confidence": 0.997917115688324,
+      "character_start": 127,
+      "character_end": 128
+    },
+    {
+      "text": "神奇",
+      "start_ms": 25230,
+      "end_ms": 25509,
+      "confidence": 0.8557915091514587,
+      "character_start": 128,
+      "character_end": 130
+    },
+    {
+      "text": "产品",
+      "start_ms": 25510,
+      "end_ms": 25909,
+      "confidence": 0.9995534867048264,
+      "character_start": 130,
+      "character_end": 132
+    },
+    {
+      "text": "助力",
+      "start_ms": 25910,
+      "end_ms": 26249,
+      "confidence": 0.6039825826883316,
+      "character_start": 132,
+      "character_end": 134
+    },
+    {
+      "text": "你",
+      "start_ms": 26250,
+      "end_ms": 26429,
+      "confidence": 0.9391841888427734,
+      "character_start": 134,
+      "character_end": 135
+    },
+    {
+      "text": "做出",
+      "start_ms": 26430,
+      "end_ms": 26909,
+      "confidence": 0.9598561227321625,
+      "character_start": 135,
+      "character_end": 137
+    },
+    {
+      "text": "属于",
+      "start_ms": 26910,
+      "end_ms": 27309,
+      "confidence": 0.9977362006902695,
+      "character_start": 137,
+      "character_end": 139
+    },
+    {
+      "text": "你",
+      "start_ms": 27310,
+      "end_ms": 27509,
+      "confidence": 0.9822114109992981,
+      "character_start": 139,
+      "character_end": 140
+    },
+    {
+      "text": "的",
+      "start_ms": 27510,
+      "end_ms": 27709,
+      "confidence": 0.9822114109992981,
+      "character_start": 140,
+      "character_end": 141
+    },
+    {
+      "text": "更好",
+      "start_ms": 27710,
+      "end_ms": 28569,
+      "confidence": 0.9949375987052917,
+      "character_start": 141,
+      "character_end": 143
+    },
+    {
+      "text": "的",
+      "start_ms": 28570,
+      "end_ms": 28709,
+      "confidence": 0.9982057809829712,
+      "character_start": 143,
+      "character_end": 144
+    },
+    {
+      "text": "口播",
+      "start_ms": 28710,
+      "end_ms": 29109,
+      "confidence": 0.4612203389406204,
+      "character_start": 144,
+      "character_end": 146
+    },
+    {
+      "text": "然后",
+      "start_ms": 29070,
+      "end_ms": 29409,
+      "confidence": 0.3030706372857094,
+      "character_start": 146,
+      "character_end": 148
+    },
+    {
+      "text": "我们",
+      "start_ms": 29410,
+      "end_ms": 29629,
+      "confidence": 0.9792192578315735,
+      "character_start": 148,
+      "character_end": 150
+    },
+    {
+      "text": "也",
+      "start_ms": 29630,
+      "end_ms": 29809,
+      "confidence": 0.9863172173500061,
+      "character_start": 150,
+      "character_end": 151
+    },
+    {
+      "text": "希望",
+      "start_ms": 29810,
+      "end_ms": 30169,
+      "confidence": 0.9991794228553772,
+      "character_start": 151,
+      "character_end": 153
+    },
+    {
+      "text": "你",
+      "start_ms": 30170,
+      "end_ms": 30319,
+      "confidence": 0.9715220332145691,
+      "character_start": 153,
+      "character_end": 154
+    },
+    {
+      "text": "的",
+      "start_ms": 30320,
+      "end_ms": 30469,
+      "confidence": 0.9715220332145691,
+      "character_start": 154,
+      "character_end": 155
+    },
+    {
+      "text": "口播",
+      "start_ms": 30470,
+      "end_ms": 30869,
+      "confidence": 0.6204287201166153,
+      "character_start": 155,
+      "character_end": 157
+    },
+    {
+      "text": "可以",
+      "start_ms": 30870,
+      "end_ms": 31069,
+      "confidence": 0.9724407196044922,
+      "character_start": 157,
+      "character_end": 159
+    },
+    {
+      "text": "在",
+      "start_ms": 31070,
+      "end_ms": 31309,
+      "confidence": 0.9949139356613159,
+      "character_start": 159,
+      "character_end": 160
+    },
+    {
+      "text": "这个",
+      "start_ms": 31310,
+      "end_ms": 31589,
+      "confidence": 0.45647790849208836,
+      "character_start": 160,
+      "character_end": 162
+    },
+    {
+      "text": "平台",
+      "start_ms": 31590,
+      "end_ms": 31949,
+      "confidence": 0.9979846179485321,
+      "character_start": 162,
+      "character_end": 164
+    },
+    {
+      "text": "上刷",
+      "start_ms": 31950,
+      "end_ms": 32449,
+      "confidence": 0.9966437965631485,
+      "character_start": 164,
+      "character_end": 166
+    },
+    {
+      "text": "到",
+      "start_ms": 32450,
+      "end_ms": 32649,
+      "confidence": 0.9881410598754883,
+      "character_start": 166,
+      "character_end": 167
+    },
+    {
+      "text": "好",
+      "start_ms": 33840,
+      "end_ms": 34279,
+      "confidence": 0.9705682992935181,
+      "character_start": 167,
+      "character_end": 168
+    },
+    {
+      "text": "加油",
+      "start_ms": 34280,
+      "end_ms": 34719,
+      "confidence": 0.998979389667511,
+      "character_start": 168,
+      "character_end": 170
+    }
+  ],
+  "provider": "mimo-v2.5-asr + faster-whisper-0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf + speech-cleanup"
+}

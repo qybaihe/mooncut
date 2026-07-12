@@ -14,8 +14,15 @@ import {FaceTrackedVideo, type FaceTrackManifest} from '../components/FaceTracke
 import {FullscreenImpactText} from '../extensions/community-motion/FullscreenImpactText';
 import {MacDesktop, MacFloatingVideoWindow, MacWindow} from '../extensions/community-motion/MacDesktop';
 
-export type AgentEditBeatKind = 'speaker' | 'desktop' | 'quote' | 'impact' | 'evidence' | 'illustration';
+export type AgentEditBeatKind = 'speaker' | 'desktop' | 'quote' | 'impact' | 'evidence' | 'illustration' | 'diagram';
 export type SpeakerLayout = 'native' | 'circle';
+export type AgentEvidencePanel = {
+  evidenceId: string;
+  role: 'primary' | 'supporting' | 'contrast' | 'step';
+  purpose: string;
+  scrollStartPct?: number;
+  scrollEndPct?: number;
+};
 
 export type AgentCameraPolicy = {
   mode: 'track-small-overlays-only';
@@ -37,7 +44,12 @@ export type AgentEditBeat = {
   /** Absolute source-timeline time where the impact pulse lands. */
   impactAtMs?: number;
   evidenceId?: string;
+  evidencePanels?: AgentEvidencePanel[];
+  evidenceMode?: 'single' | 'parallel' | 'comparison' | 'sequence';
   generatedVisualId?: string;
+  diagramId?: string;
+  desktopTemplate?: 'editorial' | 'workflow' | 'comparison' | 'dashboard';
+  visualItems?: Array<{title: string; detail: string; value?: string}>;
   /** Explicit in generated specs; optional here so existing v1 jobs remain renderable. */
   speakerLayout?: SpeakerLayout;
 };
@@ -54,7 +66,7 @@ export type AgentEvidenceAsset = {
 
 export type AgentGeneratedVisualAsset = {
   id: string;
-  kind: 'generated-illustration';
+  kind: 'generated-illustration' | 'handdrawn-diagram';
   label: string;
   purpose: string;
   prompt: string;
@@ -63,6 +75,7 @@ export type AgentGeneratedVisualAsset = {
   metadataPath: string;
   model: string;
   generatedAt: string;
+  sourceJsonPath?: string;
 };
 
 export type AgentEditSpec = {
@@ -134,7 +147,8 @@ const beatAt = (spec: AgentEditSpec, timeMs: number) =>
 /** Face tracking is a crop tool for supporting-content overlays, never a global camera effect. */
 export const resolveSpeakerLayout = (beat: AgentEditBeat): SpeakerLayout => {
   const semanticLayout = beat.kind === 'desktop' || beat.kind === 'quote' ||
-    beat.kind === 'illustration' || (beat.kind === 'evidence' && Boolean(beat.evidenceId))
+    beat.kind === 'illustration' || beat.kind === 'diagram' ||
+    (beat.kind === 'evidence' && Boolean(beat.evidenceId || beat.evidencePanels?.length))
     ? 'circle'
     : 'native';
   // The renderer owns this invariant so a malformed/legacy spec cannot turn
@@ -267,42 +281,55 @@ const DesktopBeat = ({
   beat: AgentEditBeat;
   enter: number;
   spec: AgentEditSpec;
-}) => (
-  <>
+}) => {
+  const template = beat.desktopTemplate ?? (beat.visualItems?.some((item) => item.value) ? 'dashboard' : 'editorial');
+  const items = beat.visualItems?.length
+    ? beat.visualItems.slice(0, 4)
+    : beat.keywords.slice(0, 4).map((keyword, index) => ({
+        title: keyword,
+        detail: index === 0 ? beat.body : `围绕「${keyword}」展开当前讲解`,
+        value: template === 'dashboard' ? `${String(index + 1).padStart(2, '0')}` : undefined,
+      }));
+  return (
     <MacWindow
       kind="app"
-      title={`${spec.title} · Story Beat`}
+      title={`${spec.title} · ${template.toUpperCase()}`}
       tone="dark"
-      toolbar={<span style={{color: spec.accent, fontSize: 13, fontWeight: 800}}>● LIVE</span>}
-      style={{
-        height: 700,
-        left: 76,
-        opacity: enter,
-        position: 'absolute',
-        right: 76,
-        top: 164,
-        transform: `translateX(${(1 - enter) * 42}px)`,
-        width: 1768,
-        zIndex: 2,
-      }}
+      toolbar={<span style={{color: spec.accent, fontSize: 13, fontWeight: 850}}>● SEMANTIC CANVAS · 16:9</span>}
+      style={{height: 864, left: 192, opacity: enter, position: 'absolute', top: 104, transform: `translateX(${(1 - enter) * 42}px) scale(${0.985 + enter * 0.015})`, width: 1536, zIndex: 2}}
     >
-      <div style={{boxSizing: 'border-box', height: '100%', padding: '76px 82px'}}>
-        <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 16, fontWeight: 800, letterSpacing: 2}}>MOONCUT · SEMANTIC EDIT</div>
-        <h1 style={{color: '#f7fbf8', fontSize: 72, letterSpacing: '-0.045em', lineHeight: 1.08, margin: '24px 0 22px', maxWidth: 920}}>{beat.headline}</h1>
-        <p style={{color: 'rgba(240,248,244,.72)', fontSize: 30, lineHeight: 1.55, margin: 0, maxWidth: 900}}>{beat.body}</p>
-        <KeywordChips accent={spec.accent} keywords={beat.keywords} />
-        <div style={{bottom: 52, display: 'grid', gap: 12, gridTemplateColumns: 'repeat(3, 1fr)', left: 82, position: 'absolute', right: 82}}>
-          {['ASR TIMING', 'FACE TRACK', 'REMOTION'].map((label, index) => (
-            <div key={label} style={{borderTop: '1px solid rgba(255,255,255,.13)', paddingTop: 14}}>
-              <small style={{color: 'rgba(255,255,255,.4)', fontSize: 12, letterSpacing: 1.5}}>{label}</small>
-              <div style={{color: index === 1 ? spec.accent : '#fff', fontFamily: 'Menlo, monospace', fontSize: 17, fontWeight: 800, marginTop: 8}}>{index === 0 ? 'WORD LEVEL' : index === 1 ? 'LOCKED' : 'FRAME DRIVEN'}</div>
+      <div style={{background: 'radial-gradient(circle at 88% 8%, rgba(101,217,182,.14), transparent 34%), linear-gradient(145deg,#0b1110,#111a17)', boxSizing: 'border-box', height: '100%', overflow: 'hidden', padding: '54px 60px', position: 'relative'}}>
+        <div style={{display: 'grid', gap: 48, gridTemplateColumns: 'minmax(0, 1.08fr) minmax(430px, .92fr)', height: '100%'}}>
+          <section style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0}}>
+            <div>
+              <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 15, fontWeight: 850, letterSpacing: 2.2}}>MOONCUT · {template.toUpperCase()}</div>
+              <h1 style={{color: '#f7fbf8', fontSize: 68, letterSpacing: '-0.05em', lineHeight: 1.04, margin: '22px 0 20px', maxWidth: 780}}>{beat.headline}</h1>
+              <p style={{color: 'rgba(240,248,244,.7)', fontSize: 27, lineHeight: 1.5, margin: 0, maxWidth: 760}}>{beat.body}</p>
             </div>
-          ))}
+            <div style={{display: 'flex', gap: 10}}>
+              {[0, 1, 2, 3].map((index) => <div key={index} style={{background: index === 0 ? spec.accent : 'rgba(255,255,255,.16)', borderRadius: 99, height: 7, width: index === 0 ? 86 : 28}} />)}
+            </div>
+          </section>
+          <section style={{alignContent: 'center', display: 'grid', gap: 16, gridTemplateColumns: template === 'workflow' ? '1fr' : 'repeat(2,minmax(0,1fr))'}}>
+            {items.map((item, index) => (
+              <React.Fragment key={`${item.title}-${index}`}>
+                <div style={{background: index === 0 ? `${spec.accent}18` : 'rgba(255,255,255,.055)', border: `1px solid ${index === 0 ? `${spec.accent}66` : 'rgba(255,255,255,.11)'}`, borderRadius: 22, boxShadow: '0 18px 42px rgba(0,0,0,.18)', minHeight: template === 'workflow' ? 112 : 182, padding: template === 'workflow' ? '22px 26px' : '26px', position: 'relative'}}>
+                  <div style={{alignItems: 'center', display: 'flex', gap: 14}}>
+                    <div style={{alignItems: 'center', background: index === 0 ? spec.accent : 'rgba(255,255,255,.1)', borderRadius: 14, color: index === 0 ? '#07100d' : '#fff', display: 'flex', fontFamily: 'Menlo, monospace', fontSize: 16, fontWeight: 900, height: 42, justifyContent: 'center', width: 42}}>{item.value ?? index + 1}</div>
+                    <div style={{color: '#fff', fontSize: 24, fontWeight: 830}}>{item.title}</div>
+                  </div>
+                  <div style={{color: 'rgba(255,255,255,.56)', fontSize: 17, lineHeight: 1.45, marginTop: 15}}>{item.detail}</div>
+                  {template === 'dashboard' ? <div style={{background: 'rgba(255,255,255,.08)', borderRadius: 99, bottom: 20, height: 7, left: 26, overflow: 'hidden', position: 'absolute', right: 26}}><div style={{background: spec.accent, height: '100%', width: `${42 + index * 14}%`}} /></div> : null}
+                </div>
+                {template === 'workflow' && index < items.length - 1 ? <div style={{color: spec.accent, fontSize: 26, height: 12, lineHeight: '12px', paddingLeft: 38}}>↓</div> : null}
+              </React.Fragment>
+            ))}
+          </section>
         </div>
       </div>
     </MacWindow>
-  </>
-);
+  );
+};
 
 const SpeakerBeat = ({
   beat,
@@ -318,11 +345,11 @@ const SpeakerBeat = ({
       title="Camera · Focus"
       tone="dark"
       style={{
-        height: 760,
+        height: 788,
         left: 260,
         opacity: enter,
         position: 'absolute',
-        top: 122,
+        top: 104,
         transform: `translateY(${(1 - enter) * 30}px) scale(${0.965 + enter * 0.035})`,
         width: 1400,
         zIndex: 2,
@@ -352,7 +379,7 @@ const QuoteBeat = ({
       kind="utility"
       title="Key Message · Notes"
       tone="light"
-      style={{height: 650, left: 130, opacity: enter, position: 'absolute', top: 190, transform: `translateY(${(1 - enter) * 34}px)`, width: 1450, zIndex: 2}}
+      style={{height: 816, left: 160, opacity: enter, position: 'absolute', top: 118, transform: `translateY(${(1 - enter) * 34}px)`, width: 1450, zIndex: 2}}
     >
       <div style={{boxSizing: 'border-box', height: '100%', padding: '66px 72px'}}>
         <div style={{color: '#376f61', fontFamily: 'Menlo, monospace', fontSize: 15, fontWeight: 900, letterSpacing: 2}}>KEY MESSAGE</div>
@@ -364,79 +391,112 @@ const QuoteBeat = ({
   </>
 );
 
-const EvidenceBeat = ({
-  beat,
+const evidencePanelsForBeat = (beat: AgentEditBeat): AgentEvidencePanel[] => beat.evidencePanels?.length
+  ? beat.evidencePanels.slice(0, 3)
+  : beat.evidenceId
+    ? [{evidenceId: beat.evidenceId, role: 'primary', purpose: beat.body || beat.headline}]
+    : [];
+
+const safeHostname = (url: string) => {
+  try { return new URL(url).hostname; } catch { return url; }
+};
+
+const EvidencePanelWindow = ({
+  asset,
   beatDurationFrames,
   enter,
+  index,
   localFrame,
-  spec,
+  panel,
+  style,
 }: {
+  asset: AgentEvidenceAsset;
+  beatDurationFrames: number;
+  enter: number;
+  index: number;
+  localFrame: number;
+  panel: AgentEvidencePanel;
+  style: React.CSSProperties;
+}) => {
+  const scrollStart = panel.scrollStartPct ?? Math.min(12, index * 4);
+  const scrollEnd = panel.scrollEndPct ?? Math.min(62, 24 + index * 9);
+  const scroll = asset.kind === 'webpage'
+    ? interpolate(localFrame, [0, Math.max(1, beatDurationFrames - 1)], [scrollStart, scrollEnd], {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      })
+    : 0;
+  return (
+    <MacWindow
+      kind="browser"
+      title={`${asset.label} — Safari`}
+      tone="light"
+      toolbar={<span style={{color: '#376f61', fontFamily: 'Menlo, monospace', fontSize: 11, fontWeight: 850}}>{panel.role.toUpperCase()} · VERIFIED</span>}
+      style={{...style, opacity: enter, transform: `translateY(${(1 - enter) * (18 + index * 7)}px) scale(${0.98 + enter * 0.02})`, zIndex: 2 + index}}
+    >
+      <div style={{background: '#e8ecea', borderBottom: '1px solid rgba(0,0,0,.12)', boxSizing: 'border-box', display: 'flex', gap: 12, height: 46, padding: '8px 14px'}}>
+        <span style={{color: '#6b7470', fontSize: 21}}>‹  ›</span>
+        <div style={{background: 'rgba(255,255,255,.86)', border: '1px solid rgba(0,0,0,.09)', borderRadius: 8, color: '#4d5753', flex: 1, fontSize: 13, lineHeight: '28px', overflow: 'hidden', padding: '0 13px', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{safeHostname(asset.url)}</div>
+      </div>
+      <div style={{background: '#f6f7f6', bottom: 0, left: 0, overflow: 'hidden', position: 'absolute', right: 0, top: 46}}>
+        <Img
+          src={staticFile(asset.src)}
+          style={asset.kind === 'x-post'
+            ? {boxSizing: 'border-box', height: '100%', objectFit: 'contain', padding: 18, width: '100%'}
+            : {height: 'auto', minHeight: '118%', objectFit: 'cover', objectPosition: 'top center', transform: `translateY(-${scroll}%)`, width: '100%'}}
+        />
+        <div style={{background: 'linear-gradient(transparent,rgba(0,0,0,.76))', bottom: 0, height: 92, left: 0, position: 'absolute', right: 0}} />
+        <div style={{bottom: 15, color: '#fff', fontSize: 16, fontWeight: 760, left: 18, position: 'absolute', right: 18}}>{panel.purpose}</div>
+      </div>
+    </MacWindow>
+  );
+};
+
+const EvidenceBeat = ({beat, beatDurationFrames, enter, localFrame, spec}: {
   beat: AgentEditBeat;
   beatDurationFrames: number;
   enter: number;
   localFrame: number;
   spec: AgentEditSpec;
 }) => {
-  const evidence = (spec.evidenceAssets ?? []).find((asset) => asset.id === beat.evidenceId);
-  const scroll = evidence?.kind === 'webpage'
-    ? interpolate(localFrame, [0, Math.max(1, beatDurationFrames - 1)], [0, -24], {
-        extrapolateLeft: 'clamp',
-        extrapolateRight: 'clamp',
-      })
-    : 0;
-  const hostname = evidence ? new URL(evidence.url).hostname : 'source footage';
-
-  return (
-    <>
-      {evidence ? (
-        <>
-          <MacWindow
-            kind="browser"
-            title={`${evidence.label} — Safari`}
-            tone="light"
-            toolbar={<span style={{color: '#376f61', fontFamily: 'Menlo, monospace', fontSize: 12}}>VERIFIED SOURCE</span>}
-            style={{height: 730, left: 90, opacity: enter, position: 'absolute', top: 145, transform: `scale(${0.97 + enter * 0.03})`, width: 1240, zIndex: 2}}
-          >
-            <div style={{background: '#e8ecea', borderBottom: '1px solid rgba(0,0,0,.12)', boxSizing: 'border-box', display: 'flex', gap: 16, height: 52, padding: '10px 18px'}}>
-              <span style={{color: '#6b7470', fontSize: 24}}>‹  ›</span>
-              <div style={{background: 'rgba(255,255,255,.8)', border: '1px solid rgba(0,0,0,.1)', borderRadius: 9, color: '#4d5753', flex: 1, fontSize: 15, lineHeight: '30px', overflow: 'hidden', padding: '0 18px', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{evidence.url}</div>
-            </div>
-            <div style={{background: '#f6f7f6', bottom: 0, left: 0, overflow: 'hidden', position: 'absolute', right: 0, top: 52}}>
-              <Img
-                src={staticFile(evidence.src)}
-                style={evidence.kind === 'x-post'
-                  ? {height: '100%', objectFit: 'contain', padding: 32, width: '100%'}
-                  : {height: 'auto', minHeight: '106%', objectFit: 'cover', objectPosition: 'top center', transform: `translateY(${scroll}%)`, width: '100%'}}
-              />
-            </div>
-          </MacWindow>
-        </>
-      ) : (
-        <MacFloatingVideoWindow
-          title="Source Monitor · Original Footage"
-          tone="dark"
-          toolbar={<span style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 12}}>● SOURCE</span>}
-          style={{height: 730, left: 90, opacity: enter, position: 'absolute', top: 145, transform: `scale(${0.97 + enter * 0.03})`, width: 1240, zIndex: 2}}
-        >
-          <NativeSourceVideo spec={spec} />
-        </MacFloatingVideoWindow>
-      )}
-    <MacWindow
-      kind="utility"
-      title="Inspector"
-      tone="dark"
-      style={{height: 590, opacity: enter, position: 'absolute', right: 90, top: 215, transform: `translateX(${(1 - enter) * 30}px)`, width: 420, zIndex: 3}}
-    >
-      <div style={{padding: '44px 38px'}}>
-        <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 900}}>{evidence ? 'REAL WEB EVIDENCE' : 'VISIBLE CONTEXT'}</div>
-        <h2 style={{color: '#fff', fontSize: 42, letterSpacing: '-.035em', lineHeight: 1.15, margin: '24px 0'}}>{beat.headline}</h2>
-        <p style={{color: 'rgba(255,255,255,.62)', fontSize: 22, lineHeight: 1.55}}>{beat.body}</p>
-        <KeywordChips accent={spec.accent} keywords={beat.keywords} />
-        <div style={{bottom: 34, color: 'rgba(255,255,255,.38)', fontFamily: 'Menlo, monospace', fontSize: 12, left: 38, position: 'absolute', right: 38}}>{hostname}</div>
-      </div>
-    </MacWindow>
-    </>
-  );
+  const panels = evidencePanelsForBeat(beat)
+    .map((panel) => ({panel, asset: (spec.evidenceAssets ?? []).find((asset) => asset.id === panel.evidenceId)}))
+    .filter((item): item is {panel: AgentEvidencePanel; asset: AgentEvidenceAsset} => Boolean(item.asset));
+  const mode = beat.evidenceMode ?? (panels.length > 1 ? 'parallel' : 'single');
+  if (panels.length === 0) {
+    return <MacFloatingVideoWindow title="Source Monitor · Original Footage" tone="dark" style={{height: 702, left: 110, opacity: enter, position: 'absolute', top: 145, width: 1248, zIndex: 2}}><NativeSourceVideo spec={spec} /></MacFloatingVideoWindow>;
+  }
+  if (panels.length === 1) {
+    const [{panel, asset}] = panels;
+    return <>
+      <EvidencePanelWindow asset={asset} beatDurationFrames={beatDurationFrames} enter={enter} index={0} localFrame={localFrame} panel={panel} style={{height: 702, left: 86, position: 'absolute', top: 142, width: 1248}} />
+      <MacWindow kind="utility" title="Evidence Inspector" tone="dark" style={{height: 620, opacity: enter, position: 'absolute', right: 88, top: 182, width: 430, zIndex: 4}}>
+        <div style={{padding: '42px 38px'}}>
+          <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 900}}>REAL WEB EVIDENCE · 01</div>
+          <h2 style={{color: '#fff', fontSize: 42, letterSpacing: '-.035em', lineHeight: 1.12, margin: '24px 0'}}>{beat.headline}</h2>
+          <p style={{color: 'rgba(255,255,255,.62)', fontSize: 21, lineHeight: 1.55}}>{beat.body}</p>
+          <KeywordChips accent={spec.accent} keywords={beat.keywords} />
+          <div style={{bottom: 30, color: 'rgba(255,255,255,.38)', fontFamily: 'Menlo, monospace', fontSize: 12, left: 38, position: 'absolute'}}>{safeHostname(asset.url)}</div>
+        </div>
+      </MacWindow>
+    </>;
+  }
+  const width = panels.length === 2 ? 820 : 560;
+  const height = Math.round(width * 9 / 16);
+  const gap = panels.length === 2 ? 40 : 40;
+  const totalWidth = width * panels.length + gap * (panels.length - 1);
+  const left = (1920 - totalWidth) / 2;
+  return <>
+    <div style={{left: 82, maxWidth: 1310, opacity: enter, position: 'absolute', top: 68, zIndex: 3}}>
+      <div style={{color: spec.accent, fontFamily: 'Menlo, monospace', fontSize: 14, fontWeight: 900, letterSpacing: 2}}>{mode.toUpperCase()} EVIDENCE · {String(panels.length).padStart(2, '0')} SOURCES</div>
+      <h2 style={{color: '#fff', fontSize: 48, letterSpacing: '-.04em', margin: '13px 0 8px'}}>{beat.headline}</h2>
+      <p style={{color: 'rgba(255,255,255,.62)', fontSize: 21, margin: 0}}>{beat.body}</p>
+    </div>
+    {panels.map(({panel, asset}, index) => <EvidencePanelWindow key={asset.id} asset={asset} beatDurationFrames={beatDurationFrames} enter={enter} index={index} localFrame={localFrame} panel={panel} style={{height, left: left + index * (width + gap), position: 'absolute', top: panels.length === 2 ? 250 : 270, width}} />)}
+    <div style={{bottom: 112, display: 'flex', gap: 12, left, opacity: enter, position: 'absolute', right: left, zIndex: 8}}>
+      {panels.map(({panel, asset}, index) => <div key={asset.id} style={{background: 'rgba(7,12,11,.88)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 14, color: 'rgba(255,255,255,.72)', flex: 1, fontSize: 14, padding: '12px 15px'}}><strong style={{color: index === 0 ? spec.accent : '#fff'}}>{panel.role.toUpperCase()}</strong> · {safeHostname(asset.url)}</div>)}
+    </div>
+  </>;
 };
 
 const IllustrationBeat = ({
@@ -448,7 +508,7 @@ const IllustrationBeat = ({
   enter: number;
   spec: AgentEditSpec;
 }) => {
-  const visual = (spec.generatedVisuals ?? []).find((asset) => asset.id === beat.generatedVisualId);
+  const visual = (spec.generatedVisuals ?? []).find((asset) => asset.id === beat.generatedVisualId && asset.kind === 'generated-illustration');
   return (
     <>
       <MacWindow
@@ -456,7 +516,7 @@ const IllustrationBeat = ({
         title="MoonCut Creative Preview"
         tone="dark"
         toolbar={<span style={{color: '#ffd166', fontFamily: 'Menlo, monospace', fontSize: 12, fontWeight: 900}}>AI GENERATED EXAMPLE</span>}
-        style={{height: 730, left: 88, opacity: enter, position: 'absolute', top: 145, transform: `scale(${0.97 + enter * 0.03})`, width: 1260, zIndex: 2}}
+        style={{height: 729, left: 72, opacity: enter, position: 'absolute', top: 144, transform: `scale(${0.97 + enter * 0.03})`, width: 1296, zIndex: 2}}
       >
         <div style={{background: '#0b1110', height: '100%', overflow: 'hidden', position: 'relative'}}>
           {visual ? (
@@ -489,9 +549,36 @@ const IllustrationBeat = ({
   );
 };
 
+const DiagramBeat = ({beat, enter, spec}: {beat: AgentEditBeat; enter: number; spec: AgentEditSpec}) => {
+  const diagram = (spec.generatedVisuals ?? []).find((asset) => asset.id === beat.diagramId && asset.kind === 'handdrawn-diagram');
+  return <>
+    <MacWindow
+      kind="app"
+      title="MoonCut Hand-drawn Explainer"
+      tone="light"
+      toolbar={<span style={{color: '#2f6c5d', fontFamily: 'Menlo, monospace', fontSize: 12, fontWeight: 900}}>EXCALIDRAW · EDITABLE SOURCE</span>}
+      style={{height: 765, left: 66, opacity: enter, position: 'absolute', top: 132, transform: `scale(${0.97 + enter * 0.03})`, width: 1360, zIndex: 2}}
+    >
+      <div style={{background: '#fffdf7', height: '100%', overflow: 'hidden', position: 'relative'}}>
+        {diagram ? <Img src={staticFile(diagram.src)} style={{height: '100%', objectFit: 'contain', padding: 24, width: '100%'}} /> : <div style={{alignItems: 'center', color: '#66716d', display: 'flex', fontSize: 28, height: '100%', justifyContent: 'center'}}>手绘图不可用</div>}
+        <div style={{background: '#fff4c2', border: '1px solid #d6b94d', borderRadius: 999, bottom: 24, color: '#5a4910', fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 900, left: 28, padding: '9px 14px', position: 'absolute'}}>解释性手绘图 · 非事实证据</div>
+      </div>
+    </MacWindow>
+    <MacWindow kind="utility" title="Diagram Notes" tone="dark" style={{height: 610, opacity: enter, position: 'absolute', right: 70, top: 190, width: 390, zIndex: 4}}>
+      <div style={{padding: '42px 34px'}}>
+        <div style={{color: '#ffd166', fontFamily: 'Menlo, monospace', fontSize: 13, fontWeight: 900}}>HAND-DRAWN LOGIC</div>
+        <h2 style={{color: '#fff', fontSize: 40, letterSpacing: '-.04em', lineHeight: 1.12, margin: '24px 0'}}>{beat.headline}</h2>
+        <p style={{color: 'rgba(255,255,255,.62)', fontSize: 20, lineHeight: 1.55}}>{beat.body}</p>
+        <KeywordChips accent={spec.accent} keywords={beat.keywords} />
+        <div style={{bottom: 30, color: 'rgba(255,255,255,.38)', fontSize: 12, left: 34, position: 'absolute'}}>{diagram?.purpose ?? 'STRUCTURE OVER DECORATION'}</div>
+      </div>
+    </MacWindow>
+  </>;
+};
+
 export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({faceTrack, spec}) => {
   const frame = useCurrentFrame();
-  const {fps, durationInFrames} = useVideoConfig();
+  const {fps, durationInFrames, width, height} = useVideoConfig();
   const timeMs = frame / fps * 1000;
   const beat = beatAt(spec, timeMs);
   const subtitle = subtitleAt(spec, timeMs);
@@ -511,9 +598,13 @@ export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({fac
     extrapolateRight: 'clamp',
   });
   const progress = clamp(frame / Math.max(1, durationInFrames - 1), 0, 1);
+  const designScale = Math.min(width / 1920, height / 1080);
+  const designLeft = (width - 1920 * designScale) / 2;
+  const designTop = (height - 1080 * designScale) / 2;
 
   return (
     <AbsoluteFill style={{background: '#050908', color: '#fff', fontFamily: 'Inter, "PingFang SC", sans-serif', overflow: 'hidden'}}>
+      <div style={{height: 1080, left: designLeft, overflow: 'hidden', position: 'absolute', top: designTop, transform: `scale(${designScale})`, transformOrigin: 'top left', width: 1920}}>
       <MacDesktop applicationName="MoonCut" shade={0.42} showDock={false} showMenuBar />
       <div style={{background: 'rgba(255,255,255,.12)', height: 3, left: 0, position: 'absolute', right: 0, top: 32, zIndex: 10}}>
         <div style={{background: spec.accent, boxShadow: `0 0 18px ${spec.accent}`, height: '100%', width: `${progress * 100}%`}} />
@@ -524,6 +615,7 @@ export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({fac
       {beat.kind === 'quote' ? <QuoteBeat beat={beat} enter={enter} spec={spec} /> : null}
       {beat.kind === 'evidence' ? <EvidenceBeat beat={beat} beatDurationFrames={beatDurationFrames} enter={enter} localFrame={localFrame} spec={spec} /> : null}
       {beat.kind === 'illustration' ? <IllustrationBeat beat={beat} enter={enter} spec={spec} /> : null}
+      {beat.kind === 'diagram' ? <DiagramBeat beat={beat} enter={enter} spec={spec} /> : null}
       {beat.kind === 'impact' ? (
         <>
           <AbsoluteFill style={{zIndex: 1}}>
@@ -580,6 +672,7 @@ export const AgentTalkingHeadVideo: React.FC<AgentTalkingHeadVideoProps> = ({fac
           <CaptionText accent={spec.accent} keywords={beat.keywords} text={subtitle.text} />
         </div>
       ) : null}
+      </div>
     </AbsoluteFill>
   );
 };

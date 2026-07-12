@@ -1,0 +1,42 @@
+[0:v]fps=30,split=3[narration_intro][narration_pip_one][narration_pip_two];
+[1:v]fps=30,split=2[screen_one_src][screen_two_src];
+
+[narration_intro]trim=duration=8.3,setpts=PTS-STARTPTS,scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,eq=brightness=-0.04:saturation=1.08,
+ drawbox=x=0:y=0:w=1920:h=1080:color=black@0.30:t=fill,
+ drawbox=x=88:y=255:w=10:h=420:color=0x00C8FF@0.96:t=fill,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='让镜头开始说话':fontcolor=white:fontsize=70:x=130:y=252,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='MoonCut':fontcolor=white:fontsize=142:x=124:y=350,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='从一段口播，到一条可以发布的作品':fontcolor=white@0.92:fontsize=42:x=130:y=525,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='AI VIDEO EDITOR  ·  PRODUCT DEMO':fontcolor=white@0.70:fontsize=26:x=130:y=950,
+ fade=t=in:st=0:d=0.35,fade=t=out:st=7.95:d=0.35[intro];
+
+[screen_one_src]trim=start=0:end=21,setpts=PTS-STARTPTS,scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,eq=brightness=-0.05:saturation=1.10[screen_one];
+[narration_pip_one]trim=start=7.8:end=28.8,setpts=PTS-STARTPTS,crop=1000:1000:600:0,scale=360:360:flags=lanczos,pad=376:376:8:8:color=0x00C8FF[portrait_one];
+[screen_one]drawbox=x=1428:y=54:w=414:h=484:color=black@0.46:t=fill[screen_one_card];
+[screen_one_card][portrait_one]overlay=x=1447:y=72:shortest=1,
+ drawbox=x=0:y=0:w=1920:h=10:color=0x00C8FF@0.95:t=fill,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='MOONCUT  /  官网实操演示':fontcolor=white@0.95:fontsize=30:x=92:y=74,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='素材进来，成片出去':fontcolor=white:fontsize=64:x=92:y=790,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='录制 · 上传 · 自动剪辑 · 交付':fontcolor=white@0.85:fontsize=34:x=96:y=875,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='真人讲解':fontcolor=white@0.85:fontsize=24:x=1452:y=472,
+ fade=t=in:st=0:d=0.35,fade=t=out:st=20.65:d=0.35[screen_one_final];
+
+[2:v]fps=30,trim=start=0:end=48,setpts=PTS-STARTPTS,scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,
+ drawbox=x=56:y=52:w=430:h=58:color=black@0.60:t=fill,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='MOONCUT  /  ONE-CLICK EDIT':fontcolor=white:fontsize=26:x=78:y=68,
+ drawbox=x=0:y=0:w=1920:h=8:color=0x00C8FF@0.95:t=fill,
+ fade=t=in:st=0:d=0.35,fade=t=out:st=47.65:d=0.35[generated_demo];
+
+[screen_two_src]trim=start=36:end=49.521667,setpts=PTS-STARTPTS,scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,eq=brightness=-0.06:saturation=1.08[screen_two];
+[narration_pip_two]trim=start=77.3:end=90.821667,setpts=PTS-STARTPTS,crop=1000:1000:600:0,scale=360:360:flags=lanczos,pad=376:376:8:8:color=0x00C8FF[portrait_two];
+[screen_two]drawbox=x=1428:y=54:w=414:h=484:color=black@0.46:t=fill[screen_two_card];
+[screen_two_card][portrait_two]overlay=x=1447:y=72:shortest=1,
+ drawbox=x=0:y=0:w=1920:h=10:color=0x00C8FF@0.95:t=fill,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='交给 MoonCut，把时间留给创作':fontcolor=white:fontsize=60:x=92:y=785,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='MOONCUT  /  AI VIDEO EDITOR':fontcolor=white@0.85:fontsize=30:x=96:y=875,
+ drawtext=fontfile=/Users/baihe/Library/Fonts/NotoSansCJKsc-Regular.otf:text='真人讲解':fontcolor=white@0.85:fontsize=24:x=1452:y=472,
+ fade=t=in:st=0:d=0.35,fade=t=out:st=13.17:d=0.35[screen_two_final];
+
+[intro][screen_one_final][generated_demo][screen_two_final]concat=n=4:v=1:a=0,format=yuv420p[video];
+
+[0:a]atrim=duration=90.821667,asetpts=PTS-STARTPTS,aresample=48000,volume=1.10,alimiter=limit=0.95[audio]

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "mooncut.audio-design.v1",
+  "voicePolicy": "voice-first",
+  "bgm": {
+    "track": "an-ocean-in-outer-space",
+    "source": "remotion-studio/public/audio/bgm/tracks/an-ocean-in-outer-space.mp3",
+    "gainDb": -30,
+    "fadeInMs": 1200,
+    "fadeOutStartMs": 33000,
+    "fadeOutMs": 2500
+  },
+  "sfx": [
+    {
+      "atMs": 4860,
+      "id": "transition-whoosh-quick",
+      "gainDb": -22,
+      "purpose": "hand-drawn progress diagram slides in"
+    },
+    {
+      "atMs": 13800,
+      "id": "transition-whoosh-tech",
+      "gainDb": -24,
+      "purpose": "website information card enters"
+    },
+    {
+      "atMs": 22480,
+      "id": "emphasis-impact-soft",
+      "gainDb": -21,
+      "purpose": "vote call-to-action lands"
+    }
+  ],
+  "spacingRuleMs": 1500,
+  "mastering": {
+    "integratedLufsTarget": -16,
+    "truePeakDbtpTarget": -1.5,
+    "measuredIntegratedLufs": -16.2,
+    "measuredTruePeakDbtp": -1.3,
+    "measuredLra": 4.5
+  }
+}

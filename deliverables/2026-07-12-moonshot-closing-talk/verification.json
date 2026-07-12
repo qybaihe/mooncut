@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "video": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/final.mp4",
+  "contactSheet": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/final-contact-sheet.jpg",
+  "probe": {
+    "durationMs": 35700,
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "hasAudio": true,
+    "formatName": "mov,mp4,m4a,3gp,3g2,mj2"
+  },
+  "expectedDurationMs": 35567,
+  "qualityReview": {
+    "schemaVersion": "mooncut.quality.v1",
+    "ok": true,
+    "reviewedAt": "2026-07-12T01:22:22.008Z",
+    "findings": [],
+    "qaAssets": {
+      "02-diagram": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/quality/02-diagram-sequence.jpg",
+      "04-impact": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/quality/04-impact-sequence.jpg"
+    }
+  }
+}

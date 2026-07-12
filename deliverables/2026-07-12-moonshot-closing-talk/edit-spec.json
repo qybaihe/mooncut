@@ -1,0 +1,253 @@
+{
+  "schemaVersion": "mooncut.edit.v1",
+  "title": "探月计划·现场口播",
+  "summary": "以现场展会环境为主视觉，按参展、晋级、路演与产品邀约重组；官网只作口播信息卡，未伪造网页证据。",
+  "accent": "#65d9b6",
+  "fps": 30,
+  "durationInFrames": 1067,
+  "width": 1920,
+  "height": 1080,
+  "source": {
+    "src": "agent-jobs/0db89adfc3914f28a7dd3f29bef4a8dd/speech-clean.mp4",
+    "aspectRatio": 1.7777777777777777
+  },
+  "transcript": "大家好现在是北京探月计划的尾声阶段了。现在我们晋级的项目已经在这里全部开始参展，准备后面的路演。然后我们的项目也是成功的晋级，进入到路演阶段。然后我们的官网已经上线了在这里可以看到是 mooncut.me 是我们的官网。然后我们希望你投给我们一票然后也希望你体验到我们的神奇产品，助力你做出属于你的更好的口播。然后我们也希望你的口播可以在这个平台上刷到。好，加油！",
+  "subtitles": [
+    {
+      "index": 1,
+      "text": "大家好现在是北京探月计划的尾声阶段了。",
+      "start_ms": 460,
+      "end_ms": 4949
+    },
+    {
+      "index": 2,
+      "text": "现在我们晋级的项目已经在这里全部开始参展，准备后面的路演。",
+      "start_ms": 4950,
+      "end_ms": 10129
+    },
+    {
+      "index": 3,
+      "text": "然后我们的项目也是成功的晋级，进入到路演阶段。",
+      "start_ms": 10130,
+      "end_ms": 13889
+    },
+    {
+      "index": 4,
+      "text": "然后我们的官网已经上线了",
+      "start_ms": 13890,
+      "end_ms": 15889
+    },
+    {
+      "index": 5,
+      "text": "在这里可以看到是 mooncut.me 是我们的官网。",
+      "start_ms": 15890,
+      "end_ms": 19289
+    },
+    {
+      "index": 6,
+      "text": "然后我们希望你投给我们一票",
+      "start_ms": 19290,
+      "end_ms": 23129
+    },
+    {
+      "index": 7,
+      "text": "然后也希望你体验到我们的神奇产品，助力你做出属于你的更好的口播。",
+      "start_ms": 23130,
+      "end_ms": 28709
+    },
+    {
+      "index": 8,
+      "text": "然后我们也希望你的口播可以在这个平台上刷到。",
+      "start_ms": 29070,
+      "end_ms": 32649
+    },
+    {
+      "index": 9,
+      "text": "好，加油！",
+      "start_ms": 33840,
+      "end_ms": 34719
+    }
+  ],
+  "beats": [
+    {
+      "startMs": 0,
+      "endMs": 4950,
+      "kind": "speaker",
+      "headline": "探月计划·现场",
+      "body": "现场收声开场，保留人物、展会与环境的真实感。",
+      "keywords": [
+        "北京",
+        "探月计划",
+        "尾声阶段"
+      ],
+      "speakerLayout": "native"
+    },
+    {
+      "startMs": 4950,
+      "endMs": 13890,
+      "kind": "diagram",
+      "headline": "从参展到路演",
+      "body": "按口播中的参展、晋级、路演三步快速交代现场进度。",
+      "keywords": [
+        "现场参展",
+        "项目晋级",
+        "路演"
+      ],
+      "diagramId": "diagram-01-dda55d81",
+      "speakerLayout": "circle"
+    },
+    {
+      "startMs": 13890,
+      "endMs": 19290,
+      "kind": "quote",
+      "headline": "官网已上线",
+      "body": "口播中提及 mooncut.me；未提供网页截图，本卡仅为口播信息整理。",
+      "keywords": [
+        "官网",
+        "上线",
+        "mooncut.me"
+      ],
+      "speakerLayout": "circle"
+    },
+    {
+      "startMs": 19290,
+      "endMs": 23130,
+      "kind": "impact",
+      "headline": "投给我们一票",
+      "body": "在口播邀请落点全屏强调，随后自然回到现场表达。",
+      "keywords": [
+        "投给",
+        "一票"
+      ],
+      "impactText": "投给我们一票",
+      "impactAtMs": 22830,
+      "speakerLayout": "native"
+    },
+    {
+      "startMs": 23130,
+      "endMs": 28709,
+      "kind": "desktop",
+      "headline": "让口播更好表达",
+      "body": "用简洁的原生 macOS 解释卡承接产品体验邀约，人物继续作为表达主体。",
+      "keywords": [
+        "体验",
+        "产品",
+        "更好的口播"
+      ],
+      "desktopTemplate": "editorial",
+      "visualItems": [
+        {
+          "title": "体验产品",
+          "detail": "承接口播中的体验邀请"
+        },
+        {
+          "title": "更好的口播",
+          "detail": "把表达诉求收束为清晰重点"
+        }
+      ],
+      "speakerLayout": "circle"
+    },
+    {
+      "startMs": 28709,
+      "endMs": 32649,
+      "kind": "speaker",
+      "headline": "期待你的口播被刷到",
+      "body": "回到完整现场镜头，让展会人群、机器人和活动海报自然存在。",
+      "keywords": [
+        "口播",
+        "平台",
+        "刷到"
+      ],
+      "speakerLayout": "native"
+    },
+    {
+      "startMs": 32649,
+      "endMs": 35538,
+      "kind": "speaker",
+      "headline": "好，加油！",
+      "body": "保留简短收束与现场余韵，干净结束。",
+      "keywords": [
+        "加油"
+      ],
+      "speakerLayout": "native"
+    }
+  ],
+  "evidenceAssets": [],
+  "generatedVisuals": [
+    {
+      "id": "diagram-01-dda55d81",
+      "kind": "handdrawn-diagram",
+      "label": "参展至路演进程示意",
+      "purpose": "将现场口播中的参展、晋级、路演三步关系压缩为非证据型说明图",
+      "prompt": "Local Excalidraw skill render",
+      "src": "agent-jobs/0db89adfc3914f28a7dd3f29bef4a8dd/generated-visuals/0db89adfc3914f28a7dd3f29bef4a8dd/diagram-01-dda55d81.png",
+      "localPath": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/generated-visuals/diagram-01-dda55d81.png",
+      "metadataPath": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/generated-visuals/diagram-01-dda55d81.json",
+      "sourceJsonPath": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/generated-visuals/diagram-01-dda55d81.excalidraw",
+      "model": "excalidraw-skill",
+      "generatedAt": "2026-07-12T01:12:36.819Z"
+    }
+  ],
+  "speechCleanup": {
+    "schemaVersion": "mooncut.speech-cleanup.v1",
+    "policy": {
+      "enabled": true,
+      "minSilenceMs": 750,
+      "retainedSilenceMs": 190,
+      "fillerPaddingMs": 80,
+      "wordGuardMs": 55
+    },
+    "sourceDurationMs": 35908,
+    "status": "applied",
+    "reason": "removed isolated fillers and excess silence",
+    "outputDurationMs": 35538,
+    "removedDurationMs": 370,
+    "cuts": [
+      {
+        "startMs": 1255,
+        "endMs": 1465,
+        "kind": "filler",
+        "reasons": [
+          "filler:啊"
+        ]
+      },
+      {
+        "startMs": 33455,
+        "endMs": 33645,
+        "kind": "silence",
+        "reasons": [
+          "timed-word-gap"
+        ]
+      }
+    ],
+    "keptRanges": [
+      {
+        "sourceStartMs": 0,
+        "sourceEndMs": 1255,
+        "outputStartMs": 0,
+        "outputEndMs": 1255
+      },
+      {
+        "sourceStartMs": 1465,
+        "sourceEndMs": 33455,
+        "outputStartMs": 1255,
+        "outputEndMs": 33245
+      },
+      {
+        "sourceStartMs": 33645,
+        "sourceEndMs": 35908,
+        "outputStartMs": 33245,
+        "outputEndMs": 35508
+      }
+    ]
+  },
+  "generationPreset": "macos-sonoma-native",
+  "cameraPolicy": {
+    "mode": "track-small-overlays-only",
+    "trackedLayout": "circle",
+    "nativeReframe": "preserve-source",
+    "minimumLayoutHoldMs": 2500,
+    "transitionMs": 220,
+    "recenterDurationMs": 650
+  }
+}

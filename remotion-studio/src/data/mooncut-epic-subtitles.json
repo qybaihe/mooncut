@@ -1,0 +1,6898 @@
+{
+  "job_id": "913f39a173d24b908f383eb6480045c9",
+  "language": "zh-CN",
+  "duration_ms": 87275,
+  "transcript": "各位探月巨神智能社区的小伙伴们，大家好啊！我们带来的项目是 MoenCut，一个让你的普通的素口播直接变成可以发布的神奇口播的网站，还有我们对应的 Studio，你也可以到时候可以来下载。这里你需要登录注册一下，这里你可以在我们的网站上看到已经真实我们做出来的口播是什么样子的，一键导出的这都是。这个就是我们的官网 moencut.com，不要记错了。然后开始创作，一进来这里会有录制间，你可以看到我之前跟他对话，我想讲一个诸葛亮的生平，他会建议我哪些角度，然后我加入之后，他这里就会有对应的口播稿，然后。然后这里是我们上一次生成的口播的成片预览，它这里是GLM点二规划的，这些它都会记录，你可以重新剪一版，剪下一个。然后对应我们的社区，社区功能是怎么样的呢？就是比如说我想让我们的MoenChat支持剪一点FIFA的赛事材料，那么你就可以在这里制作好一个FIFA的技能包，让这个派agent可以调用，那到时候它就会把这个FIFA的材料加进去，让你做出来更精美的足球视频。这个我相信随着我们的产品影响力不断扩大，这个社区会越来越壮大，到时候可以做世界上一切的口播视频。这里就是我们的一个产品介绍，到最后你生成到的视频会以邮件的形式发给你，就像这样，它会他会发给你一个邮件，然后你可以在这里直接下载下来，就可以去看了。",
+  "segments": [
+    {
+      "index": 1,
+      "text": "各位探月巨神智能社区的小伙伴们，\n大家好啊！",
+      "start_ms": 0,
+      "end_ms": 2860
+    },
+    {
+      "index": 2,
+      "text": "我们带来的项目是 MoenCut，",
+      "start_ms": 2860,
+      "end_ms": 4880
+    },
+    {
+      "index": 3,
+      "text": "一个让你的普通的素口播直接变成可\n以发布的神奇口播的",
+      "start_ms": 4880,
+      "end_ms": 11040
+    },
+    {
+      "index": 4,
+      "text": "网站，还有我们对应的\nStudio，你也可以到时候可以来下载。",
+      "start_ms": 11040,
+      "end_ms": 16040
+    },
+    {
+      "index": 5,
+      "text": "这里你需要登录注册一下，",
+      "start_ms": 16040,
+      "end_ms": 17840
+    },
+    {
+      "index": 6,
+      "text": "这里你可以在我们的网站上看到已经\n真实我们做出来的口播是什么样子的",
+      "start_ms": 17840,
+      "end_ms": 22640
+    },
+    {
+      "index": 7,
+      "text": "，一键导出的这都是。",
+      "start_ms": 22640,
+      "end_ms": 23540
+    },
+    {
+      "index": 8,
+      "text": "这个就是我们的官网\nmoencut.com，不要记错了。",
+      "start_ms": 23980,
+      "end_ms": 27120
+    },
+    {
+      "index": 9,
+      "text": "然后开始创作，\n一进来这里会有录制间，你可以看到我之前跟他对话，",
+      "start_ms": 27120,
+      "end_ms": 31640
+    },
+    {
+      "index": 10,
+      "text": "我想讲一个诸葛亮的生平，\n他会建议我哪些角度，然后我加入之后，",
+      "start_ms": 31640,
+      "end_ms": 35760
+    },
+    {
+      "index": 11,
+      "text": "他这里就会有对应的口播稿，然后。",
+      "start_ms": 35760,
+      "end_ms": 38180
+    },
+    {
+      "index": 12,
+      "text": "然后这里是我们上一次生成的口播的\n成片预览，",
+      "start_ms": 38754,
+      "end_ms": 41974
+    },
+    {
+      "index": 13,
+      "text": "它这里是GLM点二规划的，\n这些它都会记录，你可以重新剪一版，",
+      "start_ms": 41974,
+      "end_ms": 46634
+    },
+    {
+      "index": 14,
+      "text": "剪下一个。",
+      "start_ms": 46814,
+      "end_ms": 47374
+    },
+    {
+      "index": 15,
+      "text": "然后对应我们的社区，\n社区功能是怎么样的呢？",
+      "start_ms": 47754,
+      "end_ms": 50694
+    },
+    {
+      "index": 16,
+      "text": "就是比如说我想让我们的MoenC\nhat支持剪一点FIFA的赛事材",
+      "start_ms": 50694,
+      "end_ms": 54934
+    },
+    {
+      "index": 17,
+      "text": "料，\n那么你就可以在这里制作好一个FIFA的技能包，",
+      "start_ms": 54934,
+      "end_ms": 58674
+    },
+    {
+      "index": 18,
+      "text": "让这个派agent可以调用，",
+      "start_ms": 58674,
+      "end_ms": 60814
+    },
+    {
+      "index": 19,
+      "text": "那到时候它就会把这个FIFA的材\n料加进去，",
+      "start_ms": 60814,
+      "end_ms": 63934
+    },
+    {
+      "index": 20,
+      "text": "让你做出来更精美的足球视频。",
+      "start_ms": 63934,
+      "end_ms": 65554
+    },
+    {
+      "index": 21,
+      "text": "这个我相信随着我们的产品影响力不\n断扩大，这个社区会越来越壮大，",
+      "start_ms": 65554,
+      "end_ms": 70414
+    },
+    {
+      "index": 22,
+      "text": "到时候可以做世界上一切的口播视频\n。",
+      "start_ms": 70414,
+      "end_ms": 73414
+    },
+    {
+      "index": 23,
+      "text": "这里就是我们的一个产品介绍，",
+      "start_ms": 75874,
+      "end_ms": 78354
+    },
+    {
+      "index": 24,
+      "text": "到最后你生成到的视频会以邮件的形\n式发给你，就像这样，",
+      "start_ms": 78354,
+      "end_ms": 81854
+    },
+    {
+      "index": 25,
+      "text": "它会他会发给你一个邮件，\n然后你可以在这里直接下载下来，",
+      "start_ms": 81854,
+      "end_ms": 85182
+    },
+    {
+      "index": 26,
+      "text": "就可以去看了。",
+      "start_ms": 85182,
+      "end_ms": 85922
+    }
+  ],
+  "words": [
+    {
+      "text": "各位",
+      "start_ms": 0,
+      "end_ms": 400,
+      "confidence": 0.4769491846859455,
+      "character_start": 0,
+      "character_end": 2
+    },
+    {
+      "text": "探月",
+      "start_ms": 400,
+      "end_ms": 980,
+      "confidence": 0.7528925758600236,
+      "character_start": 2,
+      "character_end": 4
+    },
+    {
+      "text": "巨",
+      "start_ms": 980,
+      "end_ms": 1360,
+      "confidence": 0.6139309033751488,
+      "character_start": 4,
+      "character_end": 5
+    },
+    {
+      "text": "神智",
+      "start_ms": 1360,
+      "end_ms": 1620,
+      "confidence": 0.5772903177142144,
+      "character_start": 5,
+      "character_end": 7
+    },
+    {
+      "text": "能",
+      "start_ms": 1620,
+      "end_ms": 1740,
+      "confidence": 0.9949085116386414,
+      "character_start": 7,
+      "character_end": 8
+    },
+    {
+      "text": "社区",
+      "start_ms": 1740,
+      "end_ms": 1980,
+      "confidence": 0.7482608705759048,
+      "character_start": 8,
+      "character_end": 10
+    },
+    {
+      "text": "的",
+      "start_ms": 1980,
+      "end_ms": 2100,
+      "confidence": 0.821006715297699,
+      "character_start": 10,
+      "character_end": 11
+    },
+    {
+      "text": "小伙伴",
+      "start_ms": 2100,
+      "end_ms": 2380,
+      "confidence": 0.9224012891451517,
+      "character_start": 11,
+      "character_end": 14
+    },
+    {
+      "text": "们",
+      "start_ms": 2380,
+      "end_ms": 2480,
+      "confidence": 0.9546043872833252,
+      "character_start": 14,
+      "character_end": 15
+    },
+    {
+      "text": "大家",
+      "start_ms": 2480,
+      "end_ms": 2733,
+      "confidence": 0.589557945728302,
+      "character_start": 15,
+      "character_end": 17
+    },
+    {
+      "text": "好",
+      "start_ms": 2733,
+      "end_ms": 2860,
+      "confidence": 0.589557945728302,
+      "character_start": 17,
+      "character_end": 18
+    },
+    {
+      "text": "啊",
+      "start_ms": 2820,
+      "end_ms": 2900,
+      "confidence": 0.35,
+      "character_start": 18,
+      "character_end": 19
+    },
+    {
+      "text": "我们",
+      "start_ms": 2860,
+      "end_ms": 3240,
+      "confidence": 0.6345623135566711,
+      "character_start": 19,
+      "character_end": 21
+    },
+    {
+      "text": "带来",
+      "start_ms": 3240,
+      "end_ms": 3500,
+      "confidence": 0.9756235927343369,
+      "character_start": 21,
+      "character_end": 23
+    },
+    {
+      "text": "的",
+      "start_ms": 3500,
+      "end_ms": 3560,
+      "confidence": 0.9941072463989258,
+      "character_start": 23,
+      "character_end": 24
+    },
+    {
+      "text": "项目",
+      "start_ms": 3560,
+      "end_ms": 3960,
+      "confidence": 0.9917896538972855,
+      "character_start": 24,
+      "character_end": 26
+    },
+    {
+      "text": "是",
+      "start_ms": 3960,
+      "end_ms": 4140,
+      "confidence": 0.9408043622970581,
+      "character_start": 26,
+      "character_end": 27
+    },
+    {
+      "text": "MoenCut",
+      "start_ms": 4020,
+      "end_ms": 4880,
+      "confidence": 0.32820215821266174,
+      "character_start": 27,
+      "character_end": 34
+    },
+    {
+      "text": "一个",
+      "start_ms": 4880,
+      "end_ms": 5100,
+      "confidence": 0.8503172993659973,
+      "character_start": 34,
+      "character_end": 36
+    },
+    {
+      "text": "让",
+      "start_ms": 5100,
+      "end_ms": 5320,
+      "confidence": 0.9957262277603149,
+      "character_start": 36,
+      "character_end": 37
+    },
+    {
+      "text": "你",
+      "start_ms": 5320,
+      "end_ms": 5460,
+      "confidence": 0.9645910859107971,
+      "character_start": 37,
+      "character_end": 38
+    },
+    {
+      "text": "的",
+      "start_ms": 5460,
+      "end_ms": 5600,
+      "confidence": 0.9645910859107971,
+      "character_start": 38,
+      "character_end": 39
+    },
+    {
+      "text": "普通",
+      "start_ms": 5600,
+      "end_ms": 7120,
+      "confidence": 0.9963371753692627,
+      "character_start": 39,
+      "character_end": 41
+    },
+    {
+      "text": "的",
+      "start_ms": 7120,
+      "end_ms": 7260,
+      "confidence": 0.9960408210754395,
+      "character_start": 41,
+      "character_end": 42
+    },
+    {
+      "text": "素口播",
+      "start_ms": 7260,
+      "end_ms": 7760,
+      "confidence": 0.5746193166573842,
+      "character_start": 42,
+      "character_end": 45
+    },
+    {
+      "text": "直接",
+      "start_ms": 7760,
+      "end_ms": 8000,
+      "confidence": 0.9906876683235168,
+      "character_start": 45,
+      "character_end": 47
+    },
+    {
+      "text": "变成",
+      "start_ms": 8000,
+      "end_ms": 8380,
+      "confidence": 0.9983033388853073,
+      "character_start": 47,
+      "character_end": 49
+    },
+    {
+      "text": "可以",
+      "start_ms": 8380,
+      "end_ms": 8720,
+      "confidence": 0.9959283471107483,
+      "character_start": 49,
+      "character_end": 51
+    },
+    {
+      "text": "发布",
+      "start_ms": 8720,
+      "end_ms": 9180,
+      "confidence": 0.9964977502822876,
+      "character_start": 51,
+      "character_end": 53
+    },
+    {
+      "text": "的",
+      "start_ms": 9180,
+      "end_ms": 9400,
+      "confidence": 0.9957621693611145,
+      "character_start": 53,
+      "character_end": 54
+    },
+    {
+      "text": "神奇",
+      "start_ms": 9400,
+      "end_ms": 10420,
+      "confidence": 0.9782340228557587,
+      "character_start": 54,
+      "character_end": 56
+    },
+    {
+      "text": "口播",
+      "start_ms": 10420,
+      "end_ms": 10780,
+      "confidence": 0.6320718711614608,
+      "character_start": 56,
+      "character_end": 58
+    },
+    {
+      "text": "的",
+      "start_ms": 10780,
+      "end_ms": 11040,
+      "confidence": 0.9976806640625,
+      "character_start": 58,
+      "character_end": 59
+    },
+    {
+      "text": "网站",
+      "start_ms": 11040,
+      "end_ms": 12820,
+      "confidence": 0.9974260777235031,
+      "character_start": 59,
+      "character_end": 61
+    },
+    {
+      "text": "还有",
+      "start_ms": 12820,
+      "end_ms": 13140,
+      "confidence": 0.9014483690261841,
+      "character_start": 61,
+      "character_end": 63
+    },
+    {
+      "text": "我们",
+      "start_ms": 13140,
+      "end_ms": 13480,
+      "confidence": 0.9886580109596252,
+      "character_start": 63,
+      "character_end": 65
+    },
+    {
+      "text": "对应",
+      "start_ms": 13480,
+      "end_ms": 13740,
+      "confidence": 0.9569095969200134,
+      "character_start": 65,
+      "character_end": 67
+    },
+    {
+      "text": "的",
+      "start_ms": 13740,
+      "end_ms": 13840,
+      "confidence": 0.9968125224113464,
+      "character_start": 67,
+      "character_end": 68
+    },
+    {
+      "text": "Studio",
+      "start_ms": 13840,
+      "end_ms": 14300,
+      "confidence": 0.7295059561729431,
+      "character_start": 68,
+      "character_end": 74
+    },
+    {
+      "text": "你",
+      "start_ms": 14300,
+      "end_ms": 14580,
+      "confidence": 0.9156210422515869,
+      "character_start": 74,
+      "character_end": 75
+    },
+    {
+      "text": "也",
+      "start_ms": 14580,
+      "end_ms": 14667,
+      "confidence": 0.960238516330719,
+      "character_start": 75,
+      "character_end": 76
+    },
+    {
+      "text": "可以",
+      "start_ms": 14667,
+      "end_ms": 14840,
+      "confidence": 0.960238516330719,
+      "character_start": 76,
+      "character_end": 78
+    },
+    {
+      "text": "到时候",
+      "start_ms": 14840,
+      "end_ms": 15300,
+      "confidence": 0.9961083730061849,
+      "character_start": 78,
+      "character_end": 81
+    },
+    {
+      "text": "可以",
+      "start_ms": 15300,
+      "end_ms": 15500,
+      "confidence": 0.9586201906204224,
+      "character_start": 81,
+      "character_end": 83
+    },
+    {
+      "text": "来",
+      "start_ms": 15500,
+      "end_ms": 15660,
+      "confidence": 0.975737452507019,
+      "character_start": 83,
+      "character_end": 84
+    },
+    {
+      "text": "下载",
+      "start_ms": 15660,
+      "end_ms": 16040,
+      "confidence": 0.9943535178899765,
+      "character_start": 84,
+      "character_end": 86
+    },
+    {
+      "text": "这里",
+      "start_ms": 16040,
+      "end_ms": 16520,
+      "confidence": 0.9572679400444031,
+      "character_start": 86,
+      "character_end": 88
+    },
+    {
+      "text": "你",
+      "start_ms": 16520,
+      "end_ms": 16720,
+      "confidence": 0.9650694131851196,
+      "character_start": 88,
+      "character_end": 89
+    },
+    {
+      "text": "需要",
+      "start_ms": 16720,
+      "end_ms": 16880,
+      "confidence": 0.99783855676651,
+      "character_start": 89,
+      "character_end": 91
+    },
+    {
+      "text": "登录",
+      "start_ms": 16880,
+      "end_ms": 17200,
+      "confidence": 0.9434885829687119,
+      "character_start": 91,
+      "character_end": 93
+    },
+    {
+      "text": "注册",
+      "start_ms": 17200,
+      "end_ms": 17580,
+      "confidence": 0.89180788397789,
+      "character_start": 93,
+      "character_end": 95
+    },
+    {
+      "text": "一下",
+      "start_ms": 17580,
+      "end_ms": 17840,
+      "confidence": 0.9806243777275085,
+      "character_start": 95,
+      "character_end": 97
+    },
+    {
+      "text": "这里",
+      "start_ms": 17840,
+      "end_ms": 18260,
+      "confidence": 0.9339323043823242,
+      "character_start": 97,
+      "character_end": 99
+    },
+    {
+      "text": "你",
+      "start_ms": 18260,
+      "end_ms": 18400,
+      "confidence": 0.9696718454360962,
+      "character_start": 99,
+      "character_end": 100
+    },
+    {
+      "text": "可以",
+      "start_ms": 18400,
+      "end_ms": 18680,
+      "confidence": 0.9696718454360962,
+      "character_start": 100,
+      "character_end": 102
+    },
+    {
+      "text": "在",
+      "start_ms": 18680,
+      "end_ms": 18880,
+      "confidence": 0.9990492463111877,
+      "character_start": 102,
+      "character_end": 103
+    },
+    {
+      "text": "我们",
+      "start_ms": 18880,
+      "end_ms": 19000,
+      "confidence": 0.9940978288650513,
+      "character_start": 103,
+      "character_end": 105
+    },
+    {
+      "text": "的",
+      "start_ms": 19000,
+      "end_ms": 19080,
+      "confidence": 0.9980735778808594,
+      "character_start": 105,
+      "character_end": 106
+    },
+    {
+      "text": "网站",
+      "start_ms": 19080,
+      "end_ms": 19380,
+      "confidence": 0.9996666610240936,
+      "character_start": 106,
+      "character_end": 108
+    },
+    {
+      "text": "上",
+      "start_ms": 19380,
+      "end_ms": 19560,
+      "confidence": 0.9515175223350525,
+      "character_start": 108,
+      "character_end": 109
+    },
+    {
+      "text": "看到",
+      "start_ms": 19560,
+      "end_ms": 19820,
+      "confidence": 0.9969636797904968,
+      "character_start": 109,
+      "character_end": 111
+    },
+    {
+      "text": "已经",
+      "start_ms": 20200,
+      "end_ms": 20560,
+      "confidence": 0.9594584107398987,
+      "character_start": 111,
+      "character_end": 113
+    },
+    {
+      "text": "真实",
+      "start_ms": 20560,
+      "end_ms": 21000,
+      "confidence": 0.8087854087352753,
+      "character_start": 113,
+      "character_end": 115
+    },
+    {
+      "text": "我们",
+      "start_ms": 21000,
+      "end_ms": 21260,
+      "confidence": 0.7602209448814392,
+      "character_start": 115,
+      "character_end": 117
+    },
+    {
+      "text": "做",
+      "start_ms": 21260,
+      "end_ms": 21480,
+      "confidence": 0.9889018535614014,
+      "character_start": 117,
+      "character_end": 118
+    },
+    {
+      "text": "出来",
+      "start_ms": 21480,
+      "end_ms": 21660,
+      "confidence": 0.9899085760116577,
+      "character_start": 118,
+      "character_end": 120
+    },
+    {
+      "text": "的",
+      "start_ms": 21660,
+      "end_ms": 21760,
+      "confidence": 0.9990173578262329,
+      "character_start": 120,
+      "character_end": 121
+    },
+    {
+      "text": "口播",
+      "start_ms": 21760,
+      "end_ms": 22060,
+      "confidence": 0.7864075350761414,
+      "character_start": 121,
+      "character_end": 123
+    },
+    {
+      "text": "是",
+      "start_ms": 22060,
+      "end_ms": 22180,
+      "confidence": 0.45452043414115906,
+      "character_start": 123,
+      "character_end": 124
+    },
+    {
+      "text": "什么",
+      "start_ms": 22180,
+      "end_ms": 22320,
+      "confidence": 0.9948928356170654,
+      "character_start": 124,
+      "character_end": 126
+    },
+    {
+      "text": "样子",
+      "start_ms": 22320,
+      "end_ms": 22600,
+      "confidence": 0.9860879182815552,
+      "character_start": 126,
+      "character_end": 128
+    },
+    {
+      "text": "的",
+      "start_ms": 22600,
+      "end_ms": 22640,
+      "confidence": 0.8575538396835327,
+      "character_start": 128,
+      "character_end": 129
+    },
+    {
+      "text": "一键",
+      "start_ms": 22640,
+      "end_ms": 22820,
+      "confidence": 0.7594276016950607,
+      "character_start": 129,
+      "character_end": 131
+    },
+    {
+      "text": "导出",
+      "start_ms": 22820,
+      "end_ms": 23160,
+      "confidence": 0.8532605171203613,
+      "character_start": 131,
+      "character_end": 133
+    },
+    {
+      "text": "的",
+      "start_ms": 23160,
+      "end_ms": 23260,
+      "confidence": 0.9838850498199463,
+      "character_start": 133,
+      "character_end": 134
+    },
+    {
+      "text": "这",
+      "start_ms": 23260,
+      "end_ms": 23340,
+      "confidence": 0.9308314323425293,
+      "character_start": 134,
+      "character_end": 135
+    },
+    {
+      "text": "都",
+      "start_ms": 23340,
+      "end_ms": 23440,
+      "confidence": 0.9833866953849792,
+      "character_start": 135,
+      "character_end": 136
+    },
+    {
+      "text": "是",
+      "start_ms": 23440,
+      "end_ms": 23540,
+      "confidence": 0.9833866953849792,
+      "character_start": 136,
+      "character_end": 137
+    },
+    {
+      "text": "这个",
+      "start_ms": 23980,
+      "end_ms": 24340,
+      "confidence": 0.6390059590339661,
+      "character_start": 137,
+      "character_end": 139
+    },
+    {
+      "text": "就是",
+      "start_ms": 24340,
+      "end_ms": 24620,
+      "confidence": 0.9852327704429626,
+      "character_start": 139,
+      "character_end": 141
+    },
+    {
+      "text": "我们",
+      "start_ms": 24620,
+      "end_ms": 24740,
+      "confidence": 0.9976813793182373,
+      "character_start": 141,
+      "character_end": 143
+    },
+    {
+      "text": "的",
+      "start_ms": 24740,
+      "end_ms": 24840,
+      "confidence": 0.9969658255577087,
+      "character_start": 143,
+      "character_end": 144
+    },
+    {
+      "text": "官网",
+      "start_ms": 24840,
+      "end_ms": 25100,
+      "confidence": 0.7732825288176537,
+      "character_start": 144,
+      "character_end": 146
+    },
+    {
+      "text": "moencut",
+      "start_ms": 24940,
+      "end_ms": 25540,
+      "confidence": 0.45815764631543837,
+      "character_start": 146,
+      "character_end": 153
+    },
+    {
+      "text": "com",
+      "start_ms": 25540,
+      "end_ms": 25980,
+      "confidence": 0.5094985009233156,
+      "character_start": 153,
+      "character_end": 156
+    },
+    {
+      "text": "不要",
+      "start_ms": 25980,
+      "end_ms": 26500,
+      "confidence": 0.9020752310752869,
+      "character_start": 156,
+      "character_end": 158
+    },
+    {
+      "text": "记错",
+      "start_ms": 26500,
+      "end_ms": 26940,
+      "confidence": 0.9361647069454193,
+      "character_start": 158,
+      "character_end": 160
+    },
+    {
+      "text": "了",
+      "start_ms": 26940,
+      "end_ms": 27120,
+      "confidence": 0.9836651682853699,
+      "character_start": 160,
+      "character_end": 161
+    },
+    {
+      "text": "然后",
+      "start_ms": 27120,
+      "end_ms": 27360,
+      "confidence": 0.9318583011627197,
+      "character_start": 161,
+      "character_end": 163
+    },
+    {
+      "text": "开始",
+      "start_ms": 27360,
+      "end_ms": 28060,
+      "confidence": 0.9682117700576782,
+      "character_start": 163,
+      "character_end": 165
+    },
+    {
+      "text": "创作",
+      "start_ms": 28060,
+      "end_ms": 28540,
+      "confidence": 0.9957232922315598,
+      "character_start": 165,
+      "character_end": 167
+    },
+    {
+      "text": "一",
+      "start_ms": 28540,
+      "end_ms": 28860,
+      "confidence": 0.6567721962928772,
+      "character_start": 167,
+      "character_end": 168
+    },
+    {
+      "text": "进来",
+      "start_ms": 28860,
+      "end_ms": 29140,
+      "confidence": 0.9870441257953644,
+      "character_start": 168,
+      "character_end": 170
+    },
+    {
+      "text": "这里",
+      "start_ms": 29140,
+      "end_ms": 29300,
+      "confidence": 0.8979727029800415,
+      "character_start": 170,
+      "character_end": 172
+    },
+    {
+      "text": "会",
+      "start_ms": 29300,
+      "end_ms": 29480,
+      "confidence": 0.9943299293518066,
+      "character_start": 172,
+      "character_end": 173
+    },
+    {
+      "text": "有",
+      "start_ms": 29480,
+      "end_ms": 29580,
+      "confidence": 0.9989845156669617,
+      "character_start": 173,
+      "character_end": 174
+    },
+    {
+      "text": "录制",
+      "start_ms": 29580,
+      "end_ms": 29880,
+      "confidence": 0.879527360200882,
+      "character_start": 174,
+      "character_end": 176
+    },
+    {
+      "text": "间",
+      "start_ms": 29880,
+      "end_ms": 30060,
+      "confidence": 0.9980975985527039,
+      "character_start": 176,
+      "character_end": 177
+    },
+    {
+      "text": "你",
+      "start_ms": 30060,
+      "end_ms": 30167,
+      "confidence": 0.8502625823020935,
+      "character_start": 177,
+      "character_end": 178
+    },
+    {
+      "text": "可以",
+      "start_ms": 30167,
+      "end_ms": 30380,
+      "confidence": 0.8502625823020935,
+      "character_start": 178,
+      "character_end": 180
+    },
+    {
+      "text": "看到",
+      "start_ms": 30380,
+      "end_ms": 30660,
+      "confidence": 0.9652901887893677,
+      "character_start": 180,
+      "character_end": 182
+    },
+    {
+      "text": "我",
+      "start_ms": 30660,
+      "end_ms": 30960,
+      "confidence": 0.9855680465698242,
+      "character_start": 182,
+      "character_end": 183
+    },
+    {
+      "text": "之前",
+      "start_ms": 30960,
+      "end_ms": 31100,
+      "confidence": 0.9677409529685974,
+      "character_start": 183,
+      "character_end": 185
+    },
+    {
+      "text": "跟",
+      "start_ms": 31100,
+      "end_ms": 31190,
+      "confidence": 0.46122406125068666,
+      "character_start": 185,
+      "character_end": 186
+    },
+    {
+      "text": "他",
+      "start_ms": 31190,
+      "end_ms": 31280,
+      "confidence": 0.46122406125068666,
+      "character_start": 186,
+      "character_end": 187
+    },
+    {
+      "text": "对话",
+      "start_ms": 31280,
+      "end_ms": 31640,
+      "confidence": 0.9921530187129974,
+      "character_start": 187,
+      "character_end": 189
+    },
+    {
+      "text": "我",
+      "start_ms": 31640,
+      "end_ms": 31750,
+      "confidence": 0.873230516910553,
+      "character_start": 189,
+      "character_end": 190
+    },
+    {
+      "text": "想",
+      "start_ms": 31750,
+      "end_ms": 31860,
+      "confidence": 0.873230516910553,
+      "character_start": 190,
+      "character_end": 191
+    },
+    {
+      "text": "讲",
+      "start_ms": 31860,
+      "end_ms": 32060,
+      "confidence": 0.997990608215332,
+      "character_start": 191,
+      "character_end": 192
+    },
+    {
+      "text": "一个",
+      "start_ms": 32060,
+      "end_ms": 32220,
+      "confidence": 0.9634279012680054,
+      "character_start": 192,
+      "character_end": 194
+    },
+    {
+      "text": "诸葛亮",
+      "start_ms": 32220,
+      "end_ms": 32480,
+      "confidence": 0.3006755355000496,
+      "character_start": 194,
+      "character_end": 197
+    },
+    {
+      "text": "的",
+      "start_ms": 32480,
+      "end_ms": 32580,
+      "confidence": 0.9978420734405518,
+      "character_start": 197,
+      "character_end": 198
+    },
+    {
+      "text": "生平",
+      "start_ms": 32580,
+      "end_ms": 32980,
+      "confidence": 0.3724686488509178,
+      "character_start": 198,
+      "character_end": 200
+    },
+    {
+      "text": "他会",
+      "start_ms": 32980,
+      "end_ms": 33620,
+      "confidence": 0.6605777025222779,
+      "character_start": 200,
+      "character_end": 202
+    },
+    {
+      "text": "建议",
+      "start_ms": 33620,
+      "end_ms": 33940,
+      "confidence": 0.99270299077034,
+      "character_start": 202,
+      "character_end": 204
+    },
+    {
+      "text": "我",
+      "start_ms": 33940,
+      "end_ms": 34060,
+      "confidence": 0.9549833536148071,
+      "character_start": 204,
+      "character_end": 205
+    },
+    {
+      "text": "哪些",
+      "start_ms": 34060,
+      "end_ms": 34300,
+      "confidence": 0.8844065964221954,
+      "character_start": 205,
+      "character_end": 207
+    },
+    {
+      "text": "角度",
+      "start_ms": 34300,
+      "end_ms": 34700,
+      "confidence": 0.9990797340869904,
+      "character_start": 207,
+      "character_end": 209
+    },
+    {
+      "text": "然后",
+      "start_ms": 34700,
+      "end_ms": 34920,
+      "confidence": 0.8461480140686035,
+      "character_start": 209,
+      "character_end": 211
+    },
+    {
+      "text": "我",
+      "start_ms": 34920,
+      "end_ms": 35100,
+      "confidence": 0.9982486963272095,
+      "character_start": 211,
+      "character_end": 212
+    },
+    {
+      "text": "加入",
+      "start_ms": 35100,
+      "end_ms": 35340,
+      "confidence": 0.9974798560142517,
+      "character_start": 212,
+      "character_end": 214
+    },
+    {
+      "text": "之后",
+      "start_ms": 35340,
+      "end_ms": 35760,
+      "confidence": 0.9983495473861694,
+      "character_start": 214,
+      "character_end": 216
+    },
+    {
+      "text": "他",
+      "start_ms": 35760,
+      "end_ms": 36340,
+      "confidence": 0.5106664383411408,
+      "character_start": 216,
+      "character_end": 217
+    },
+    {
+      "text": "这里",
+      "start_ms": 36340,
+      "end_ms": 36580,
+      "confidence": 0.9955328702926636,
+      "character_start": 217,
+      "character_end": 219
+    },
+    {
+      "text": "就",
+      "start_ms": 36580,
+      "end_ms": 36760,
+      "confidence": 0.9698160290718079,
+      "character_start": 219,
+      "character_end": 220
+    },
+    {
+      "text": "会",
+      "start_ms": 36760,
+      "end_ms": 36880,
+      "confidence": 0.9946573376655579,
+      "character_start": 220,
+      "character_end": 221
+    },
+    {
+      "text": "有",
+      "start_ms": 36880,
+      "end_ms": 37000,
+      "confidence": 0.9947142004966736,
+      "character_start": 221,
+      "character_end": 222
+    },
+    {
+      "text": "对应",
+      "start_ms": 37000,
+      "end_ms": 37180,
+      "confidence": 0.9092855453491211,
+      "character_start": 222,
+      "character_end": 224
+    },
+    {
+      "text": "的",
+      "start_ms": 37180,
+      "end_ms": 37260,
+      "confidence": 0.9920666217803955,
+      "character_start": 224,
+      "character_end": 225
+    },
+    {
+      "text": "口播",
+      "start_ms": 37260,
+      "end_ms": 37580,
+      "confidence": 0.39743824869394306,
+      "character_start": 225,
+      "character_end": 227
+    },
+    {
+      "text": "稿",
+      "start_ms": 37580,
+      "end_ms": 37740,
+      "confidence": 0.5212414836883544,
+      "character_start": 227,
+      "character_end": 228
+    },
+    {
+      "text": "然后",
+      "start_ms": 37740,
+      "end_ms": 38180,
+      "confidence": 0.9752891063690186,
+      "character_start": 228,
+      "character_end": 230
+    },
+    {
+      "text": "然后",
+      "start_ms": 38754,
+      "end_ms": 39314,
+      "confidence": 0.9144775867462158,
+      "character_start": 230,
+      "character_end": 232
+    },
+    {
+      "text": "这里",
+      "start_ms": 39314,
+      "end_ms": 39474,
+      "confidence": 0.46520696878433226,
+      "character_start": 232,
+      "character_end": 234
+    },
+    {
+      "text": "是",
+      "start_ms": 39434,
+      "end_ms": 39554,
+      "confidence": 0.5804139375686646,
+      "character_start": 234,
+      "character_end": 235
+    },
+    {
+      "text": "我们",
+      "start_ms": 39554,
+      "end_ms": 39954,
+      "confidence": 0.943795382976532,
+      "character_start": 235,
+      "character_end": 237
+    },
+    {
+      "text": "上",
+      "start_ms": 39954,
+      "end_ms": 40174,
+      "confidence": 0.9781579375267029,
+      "character_start": 237,
+      "character_end": 238
+    },
+    {
+      "text": "一次",
+      "start_ms": 40174,
+      "end_ms": 40374,
+      "confidence": 0.9787622094154358,
+      "character_start": 238,
+      "character_end": 240
+    },
+    {
+      "text": "生成",
+      "start_ms": 40374,
+      "end_ms": 40774,
+      "confidence": 0.7521347403526306,
+      "character_start": 240,
+      "character_end": 242
+    },
+    {
+      "text": "的",
+      "start_ms": 40774,
+      "end_ms": 40934,
+      "confidence": 0.9203589558601379,
+      "character_start": 242,
+      "character_end": 243
+    },
+    {
+      "text": "口播",
+      "start_ms": 40934,
+      "end_ms": 41274,
+      "confidence": 0.3631593376398087,
+      "character_start": 243,
+      "character_end": 245
+    },
+    {
+      "text": "的",
+      "start_ms": 41274,
+      "end_ms": 41374,
+      "confidence": 0.9440942406654358,
+      "character_start": 245,
+      "character_end": 246
+    },
+    {
+      "text": "成片",
+      "start_ms": 41374,
+      "end_ms": 41674,
+      "confidence": 0.8610133230686188,
+      "character_start": 246,
+      "character_end": 248
+    },
+    {
+      "text": "预览",
+      "start_ms": 41674,
+      "end_ms": 41974,
+      "confidence": 0.8419452458620071,
+      "character_start": 248,
+      "character_end": 250
+    },
+    {
+      "text": "它",
+      "start_ms": 41974,
+      "end_ms": 42234,
+      "confidence": 0.798179566860199,
+      "character_start": 250,
+      "character_end": 251
+    },
+    {
+      "text": "这里",
+      "start_ms": 42234,
+      "end_ms": 42434,
+      "confidence": 0.9740217924118042,
+      "character_start": 251,
+      "character_end": 253
+    },
+    {
+      "text": "是",
+      "start_ms": 42434,
+      "end_ms": 42634,
+      "confidence": 0.9926395416259766,
+      "character_start": 253,
+      "character_end": 254
+    },
+    {
+      "text": "GLM",
+      "start_ms": 42634,
+      "end_ms": 43014,
+      "confidence": 0.36889536142349244,
+      "character_start": 254,
+      "character_end": 257
+    },
+    {
+      "text": "点二",
+      "start_ms": 43014,
+      "end_ms": 43314,
+      "confidence": 0.4845391911268234,
+      "character_start": 257,
+      "character_end": 259
+    },
+    {
+      "text": "规划",
+      "start_ms": 43314,
+      "end_ms": 43654,
+      "confidence": 0.37912485107779503,
+      "character_start": 259,
+      "character_end": 261
+    },
+    {
+      "text": "的",
+      "start_ms": 43654,
+      "end_ms": 43814,
+      "confidence": 0.9718791842460632,
+      "character_start": 261,
+      "character_end": 262
+    },
+    {
+      "text": "这些",
+      "start_ms": 43814,
+      "end_ms": 44554,
+      "confidence": 0.9477871656417847,
+      "character_start": 262,
+      "character_end": 264
+    },
+    {
+      "text": "它",
+      "start_ms": 44554,
+      "end_ms": 44674,
+      "confidence": 0.8210455775260925,
+      "character_start": 264,
+      "character_end": 265
+    },
+    {
+      "text": "都",
+      "start_ms": 44674,
+      "end_ms": 44794,
+      "confidence": 0.9978811144828796,
+      "character_start": 265,
+      "character_end": 266
+    },
+    {
+      "text": "会",
+      "start_ms": 44794,
+      "end_ms": 45014,
+      "confidence": 0.9972744584083557,
+      "character_start": 266,
+      "character_end": 267
+    },
+    {
+      "text": "记录",
+      "start_ms": 45014,
+      "end_ms": 45634,
+      "confidence": 0.9604871720075607,
+      "character_start": 267,
+      "character_end": 269
+    },
+    {
+      "text": "你",
+      "start_ms": 45634,
+      "end_ms": 45714,
+      "confidence": 0.7395119071006775,
+      "character_start": 269,
+      "character_end": 270
+    },
+    {
+      "text": "可以",
+      "start_ms": 45714,
+      "end_ms": 45874,
+      "confidence": 0.7395119071006775,
+      "character_start": 270,
+      "character_end": 272
+    },
+    {
+      "text": "重新",
+      "start_ms": 45874,
+      "end_ms": 46334,
+      "confidence": 0.9973344802856445,
+      "character_start": 272,
+      "character_end": 274
+    },
+    {
+      "text": "剪一版",
+      "start_ms": 46334,
+      "end_ms": 46634,
+      "confidence": 0.3960173545281092,
+      "character_start": 274,
+      "character_end": 277
+    },
+    {
+      "text": "剪下",
+      "start_ms": 46814,
+      "end_ms": 47044,
+      "confidence": 0.7348157238960267,
+      "character_start": 277,
+      "character_end": 279
+    },
+    {
+      "text": "一个",
+      "start_ms": 47044,
+      "end_ms": 47374,
+      "confidence": 0.6251685631275177,
+      "character_start": 279,
+      "character_end": 281
+    },
+    {
+      "text": "然后",
+      "start_ms": 47754,
+      "end_ms": 48114,
+      "confidence": 0.9632292985916138,
+      "character_start": 281,
+      "character_end": 283
+    },
+    {
+      "text": "对应",
+      "start_ms": 48114,
+      "end_ms": 48514,
+      "confidence": 0.7118529653549195,
+      "character_start": 283,
+      "character_end": 285
+    },
+    {
+      "text": "我们",
+      "start_ms": 48514,
+      "end_ms": 48694,
+      "confidence": 0.9927288889884949,
+      "character_start": 285,
+      "character_end": 287
+    },
+    {
+      "text": "的",
+      "start_ms": 48694,
+      "end_ms": 48834,
+      "confidence": 0.9833967089653015,
+      "character_start": 287,
+      "character_end": 288
+    },
+    {
+      "text": "社区",
+      "start_ms": 48834,
+      "end_ms": 49274,
+      "confidence": 0.9969952553510666,
+      "character_start": 288,
+      "character_end": 290
+    },
+    {
+      "text": "社区",
+      "start_ms": 49274,
+      "end_ms": 49854,
+      "confidence": 0.9529869258403778,
+      "character_start": 290,
+      "character_end": 292
+    },
+    {
+      "text": "功能",
+      "start_ms": 49854,
+      "end_ms": 50084,
+      "confidence": 0.3510553100705147,
+      "character_start": 292,
+      "character_end": 294
+    },
+    {
+      "text": "是",
+      "start_ms": 50084,
+      "end_ms": 50174,
+      "confidence": 0.7091785669326782,
+      "character_start": 294,
+      "character_end": 295
+    },
+    {
+      "text": "怎么样",
+      "start_ms": 50174,
+      "end_ms": 50394,
+      "confidence": 0.9512019157409668,
+      "character_start": 295,
+      "character_end": 298
+    },
+    {
+      "text": "的",
+      "start_ms": 50394,
+      "end_ms": 50594,
+      "confidence": 0.23035465836524963,
+      "character_start": 298,
+      "character_end": 299
+    },
+    {
+      "text": "呢",
+      "start_ms": 50594,
+      "end_ms": 50694,
+      "confidence": 0.8608267903327942,
+      "character_start": 299,
+      "character_end": 300
+    },
+    {
+      "text": "就是",
+      "start_ms": 50694,
+      "end_ms": 50794,
+      "confidence": 0.7212253212928772,
+      "character_start": 300,
+      "character_end": 302
+    },
+    {
+      "text": "比如说",
+      "start_ms": 50794,
+      "end_ms": 51254,
+      "confidence": 0.9890680511792501,
+      "character_start": 302,
+      "character_end": 305
+    },
+    {
+      "text": "我",
+      "start_ms": 51254,
+      "end_ms": 51364,
+      "confidence": 0.9572358131408691,
+      "character_start": 305,
+      "character_end": 306
+    },
+    {
+      "text": "想",
+      "start_ms": 51364,
+      "end_ms": 51474,
+      "confidence": 0.9572358131408691,
+      "character_start": 306,
+      "character_end": 307
+    },
+    {
+      "text": "让",
+      "start_ms": 51474,
+      "end_ms": 51634,
+      "confidence": 0.9915441274642944,
+      "character_start": 307,
+      "character_end": 308
+    },
+    {
+      "text": "我们",
+      "start_ms": 51634,
+      "end_ms": 51894,
+      "confidence": 0.9908129572868347,
+      "character_start": 308,
+      "character_end": 310
+    },
+    {
+      "text": "的",
+      "start_ms": 51894,
+      "end_ms": 52174,
+      "confidence": 0.9850382208824158,
+      "character_start": 310,
+      "character_end": 311
+    },
+    {
+      "text": "MoenChat",
+      "start_ms": 52014,
+      "end_ms": 53154,
+      "confidence": 0.41804089326411487,
+      "character_start": 311,
+      "character_end": 319
+    },
+    {
+      "text": "支持",
+      "start_ms": 53154,
+      "end_ms": 53394,
+      "confidence": 0.7890086770057678,
+      "character_start": 319,
+      "character_end": 321
+    },
+    {
+      "text": "剪",
+      "start_ms": 53394,
+      "end_ms": 53714,
+      "confidence": 0.6068780612945557,
+      "character_start": 321,
+      "character_end": 322
+    },
+    {
+      "text": "一点",
+      "start_ms": 53714,
+      "end_ms": 53974,
+      "confidence": 0.9757035970687866,
+      "character_start": 322,
+      "character_end": 324
+    },
+    {
+      "text": "FIFA",
+      "start_ms": 53894,
+      "end_ms": 54394,
+      "confidence": 0.4066367247700691,
+      "character_start": 324,
+      "character_end": 328
+    },
+    {
+      "text": "的",
+      "start_ms": 54394,
+      "end_ms": 54514,
+      "confidence": 0.9813791513442993,
+      "character_start": 328,
+      "character_end": 329
+    },
+    {
+      "text": "赛事",
+      "start_ms": 54514,
+      "end_ms": 54714,
+      "confidence": 0.8612013459205627,
+      "character_start": 329,
+      "character_end": 331
+    },
+    {
+      "text": "材料",
+      "start_ms": 54714,
+      "end_ms": 55134,
+      "confidence": 0.9980421215295792,
+      "character_start": 331,
+      "character_end": 333
+    },
+    {
+      "text": "那么",
+      "start_ms": 55134,
+      "end_ms": 55374,
+      "confidence": 0.9841845035552979,
+      "character_start": 333,
+      "character_end": 335
+    },
+    {
+      "text": "你",
+      "start_ms": 55374,
+      "end_ms": 55594,
+      "confidence": 0.6602470874786377,
+      "character_start": 335,
+      "character_end": 336
+    },
+    {
+      "text": "就",
+      "start_ms": 55594,
+      "end_ms": 55701,
+      "confidence": 0.9989458918571472,
+      "character_start": 336,
+      "character_end": 337
+    },
+    {
+      "text": "可以",
+      "start_ms": 55701,
+      "end_ms": 55914,
+      "confidence": 0.9989458918571472,
+      "character_start": 337,
+      "character_end": 339
+    },
+    {
+      "text": "在",
+      "start_ms": 55914,
+      "end_ms": 56134,
+      "confidence": 0.9962312579154968,
+      "character_start": 339,
+      "character_end": 340
+    },
+    {
+      "text": "这里",
+      "start_ms": 56134,
+      "end_ms": 56454,
+      "confidence": 0.9974749684333801,
+      "character_start": 340,
+      "character_end": 342
+    },
+    {
+      "text": "制作",
+      "start_ms": 56454,
+      "end_ms": 57314,
+      "confidence": 0.9856567978858948,
+      "character_start": 342,
+      "character_end": 344
+    },
+    {
+      "text": "好",
+      "start_ms": 57314,
+      "end_ms": 57454,
+      "confidence": 0.994878888130188,
+      "character_start": 344,
+      "character_end": 345
+    },
+    {
+      "text": "一个",
+      "start_ms": 57454,
+      "end_ms": 57574,
+      "confidence": 0.359331876039505,
+      "character_start": 345,
+      "character_end": 347
+    },
+    {
+      "text": "FIFA",
+      "start_ms": 57814,
+      "end_ms": 58274,
+      "confidence": 0.34510340332984923,
+      "character_start": 347,
+      "character_end": 351
+    },
+    {
+      "text": "的",
+      "start_ms": 58274,
+      "end_ms": 58354,
+      "confidence": 0.07403243124485016,
+      "character_start": 351,
+      "character_end": 352
+    },
+    {
+      "text": "技能",
+      "start_ms": 58354,
+      "end_ms": 58474,
+      "confidence": 0.2711074095964432,
+      "character_start": 352,
+      "character_end": 354
+    },
+    {
+      "text": "包",
+      "start_ms": 58474,
+      "end_ms": 58674,
+      "confidence": 0.6542074680328369,
+      "character_start": 354,
+      "character_end": 355
+    },
+    {
+      "text": "让",
+      "start_ms": 58674,
+      "end_ms": 58934,
+      "confidence": 0.7143978476524353,
+      "character_start": 355,
+      "character_end": 356
+    },
+    {
+      "text": "这个",
+      "start_ms": 58934,
+      "end_ms": 59174,
+      "confidence": 0.7398313283920288,
+      "character_start": 356,
+      "character_end": 358
+    },
+    {
+      "text": "派",
+      "start_ms": 59174,
+      "end_ms": 60034,
+      "confidence": 0.9188205301761627,
+      "character_start": 358,
+      "character_end": 359
+    },
+    {
+      "text": "agent",
+      "start_ms": 59954,
+      "end_ms": 60314,
+      "confidence": 0.33101065948605535,
+      "character_start": 359,
+      "character_end": 364
+    },
+    {
+      "text": "可以",
+      "start_ms": 60314,
+      "end_ms": 60474,
+      "confidence": 0.9261534214019775,
+      "character_start": 364,
+      "character_end": 366
+    },
+    {
+      "text": "调用",
+      "start_ms": 60474,
+      "end_ms": 60814,
+      "confidence": 0.9926614463329315,
+      "character_start": 366,
+      "character_end": 368
+    },
+    {
+      "text": "那",
+      "start_ms": 60814,
+      "end_ms": 60974,
+      "confidence": 0.36816444993019104,
+      "character_start": 368,
+      "character_end": 369
+    },
+    {
+      "text": "到时候",
+      "start_ms": 60974,
+      "end_ms": 61374,
+      "confidence": 0.9978830416997274,
+      "character_start": 369,
+      "character_end": 372
+    },
+    {
+      "text": "它",
+      "start_ms": 61374,
+      "end_ms": 61534,
+      "confidence": 0.8195356726646423,
+      "character_start": 372,
+      "character_end": 373
+    },
+    {
+      "text": "就",
+      "start_ms": 61534,
+      "end_ms": 61674,
+      "confidence": 0.9859846830368042,
+      "character_start": 373,
+      "character_end": 374
+    },
+    {
+      "text": "会",
+      "start_ms": 61674,
+      "end_ms": 61974,
+      "confidence": 0.9992491602897644,
+      "character_start": 374,
+      "character_end": 375
+    },
+    {
+      "text": "把",
+      "start_ms": 61974,
+      "end_ms": 62494,
+      "confidence": 0.9549386501312256,
+      "character_start": 375,
+      "character_end": 376
+    },
+    {
+      "text": "这个",
+      "start_ms": 62494,
+      "end_ms": 62734,
+      "confidence": 0.5356849521398545,
+      "character_start": 376,
+      "character_end": 378
+    },
+    {
+      "text": "FIFA",
+      "start_ms": 62654,
+      "end_ms": 63234,
+      "confidence": 0.4165197068452835,
+      "character_start": 378,
+      "character_end": 382
+    },
+    {
+      "text": "的",
+      "start_ms": 63234,
+      "end_ms": 63374,
+      "confidence": 0.9924018383026123,
+      "character_start": 382,
+      "character_end": 383
+    },
+    {
+      "text": "材料",
+      "start_ms": 63374,
+      "end_ms": 63714,
+      "confidence": 0.9989396184682846,
+      "character_start": 383,
+      "character_end": 385
+    },
+    {
+      "text": "加进去",
+      "start_ms": 63674,
+      "end_ms": 63934,
+      "confidence": 0.2576861391464869,
+      "character_start": 385,
+      "character_end": 388
+    },
+    {
+      "text": "让",
+      "start_ms": 63934,
+      "end_ms": 64114,
+      "confidence": 0.9582071304321289,
+      "character_start": 388,
+      "character_end": 389
+    },
+    {
+      "text": "你",
+      "start_ms": 64114,
+      "end_ms": 64234,
+      "confidence": 0.9967633485794067,
+      "character_start": 389,
+      "character_end": 390
+    },
+    {
+      "text": "做",
+      "start_ms": 64234,
+      "end_ms": 64354,
+      "confidence": 0.9802544713020325,
+      "character_start": 390,
+      "character_end": 391
+    },
+    {
+      "text": "出来",
+      "start_ms": 64354,
+      "end_ms": 64514,
+      "confidence": 0.5761844515800476,
+      "character_start": 391,
+      "character_end": 393
+    },
+    {
+      "text": "更",
+      "start_ms": 64514,
+      "end_ms": 64614,
+      "confidence": 0.2802797853946686,
+      "character_start": 393,
+      "character_end": 394
+    },
+    {
+      "text": "精美",
+      "start_ms": 64614,
+      "end_ms": 64974,
+      "confidence": 0.990237295627594,
+      "character_start": 394,
+      "character_end": 396
+    },
+    {
+      "text": "的",
+      "start_ms": 64974,
+      "end_ms": 65114,
+      "confidence": 0.8493568301200867,
+      "character_start": 396,
+      "character_end": 397
+    },
+    {
+      "text": "足球",
+      "start_ms": 65114,
+      "end_ms": 65214,
+      "confidence": 0.7314561605453491,
+      "character_start": 397,
+      "character_end": 399
+    },
+    {
+      "text": "视频",
+      "start_ms": 65214,
+      "end_ms": 65554,
+      "confidence": 0.850276917219162,
+      "character_start": 399,
+      "character_end": 401
+    },
+    {
+      "text": "这个",
+      "start_ms": 65554,
+      "end_ms": 65874,
+      "confidence": 0.40541719645261765,
+      "character_start": 401,
+      "character_end": 403
+    },
+    {
+      "text": "我",
+      "start_ms": 65874,
+      "end_ms": 66014,
+      "confidence": 0.7970799207687378,
+      "character_start": 403,
+      "character_end": 404
+    },
+    {
+      "text": "相信",
+      "start_ms": 66014,
+      "end_ms": 66254,
+      "confidence": 0.9975075721740723,
+      "character_start": 404,
+      "character_end": 406
+    },
+    {
+      "text": "随着",
+      "start_ms": 66854,
+      "end_ms": 67094,
+      "confidence": 0.9483632594347,
+      "character_start": 406,
+      "character_end": 408
+    },
+    {
+      "text": "我们",
+      "start_ms": 67094,
+      "end_ms": 67254,
+      "confidence": 0.9756218194961548,
+      "character_start": 408,
+      "character_end": 410
+    },
+    {
+      "text": "的",
+      "start_ms": 67254,
+      "end_ms": 67374,
+      "confidence": 0.9707173109054565,
+      "character_start": 410,
+      "character_end": 411
+    },
+    {
+      "text": "产品",
+      "start_ms": 67374,
+      "end_ms": 67674,
+      "confidence": 0.9995066225528717,
+      "character_start": 411,
+      "character_end": 413
+    },
+    {
+      "text": "影响力",
+      "start_ms": 67674,
+      "end_ms": 67994,
+      "confidence": 0.9974587460358938,
+      "character_start": 413,
+      "character_end": 416
+    },
+    {
+      "text": "不断扩大",
+      "start_ms": 67994,
+      "end_ms": 68634,
+      "confidence": 0.8075235375761985,
+      "character_start": 416,
+      "character_end": 420
+    },
+    {
+      "text": "这个",
+      "start_ms": 68634,
+      "end_ms": 69134,
+      "confidence": 0.1636416172981262,
+      "character_start": 420,
+      "character_end": 422
+    },
+    {
+      "text": "社区",
+      "start_ms": 69134,
+      "end_ms": 69534,
+      "confidence": 0.9757691323757172,
+      "character_start": 422,
+      "character_end": 424
+    },
+    {
+      "text": "会",
+      "start_ms": 69534,
+      "end_ms": 69774,
+      "confidence": 0.9142556190490723,
+      "character_start": 424,
+      "character_end": 425
+    },
+    {
+      "text": "越来越",
+      "start_ms": 69774,
+      "end_ms": 70094,
+      "confidence": 0.9933769106864929,
+      "character_start": 425,
+      "character_end": 428
+    },
+    {
+      "text": "壮大",
+      "start_ms": 70094,
+      "end_ms": 70414,
+      "confidence": 0.9862043857574463,
+      "character_start": 428,
+      "character_end": 430
+    },
+    {
+      "text": "到时候",
+      "start_ms": 70414,
+      "end_ms": 70774,
+      "confidence": 0.9390746355056763,
+      "character_start": 430,
+      "character_end": 433
+    },
+    {
+      "text": "可以",
+      "start_ms": 70774,
+      "end_ms": 71174,
+      "confidence": 0.468912273645401,
+      "character_start": 433,
+      "character_end": 435
+    },
+    {
+      "text": "做",
+      "start_ms": 71174,
+      "end_ms": 71594,
+      "confidence": 0.972467303276062,
+      "character_start": 435,
+      "character_end": 436
+    },
+    {
+      "text": "世界",
+      "start_ms": 71594,
+      "end_ms": 71894,
+      "confidence": 0.9008692502975464,
+      "character_start": 436,
+      "character_end": 438
+    },
+    {
+      "text": "上",
+      "start_ms": 71894,
+      "end_ms": 72094,
+      "confidence": 0.9941269159317017,
+      "character_start": 438,
+      "character_end": 439
+    },
+    {
+      "text": "一切",
+      "start_ms": 72094,
+      "end_ms": 72394,
+      "confidence": 0.9934045374393463,
+      "character_start": 439,
+      "character_end": 441
+    },
+    {
+      "text": "的",
+      "start_ms": 72394,
+      "end_ms": 72514,
+      "confidence": 0.9564797878265381,
+      "character_start": 441,
+      "character_end": 442
+    },
+    {
+      "text": "口播",
+      "start_ms": 72514,
+      "end_ms": 72754,
+      "confidence": 0.3932251054048538,
+      "character_start": 442,
+      "character_end": 444
+    },
+    {
+      "text": "视频",
+      "start_ms": 72754,
+      "end_ms": 73414,
+      "confidence": 0.9680642783641815,
+      "character_start": 444,
+      "character_end": 446
+    },
+    {
+      "text": "这里",
+      "start_ms": 75874,
+      "end_ms": 76454,
+      "confidence": 0.9320566654205322,
+      "character_start": 446,
+      "character_end": 448
+    },
+    {
+      "text": "就是",
+      "start_ms": 76454,
+      "end_ms": 76814,
+      "confidence": 0.9496506452560425,
+      "character_start": 448,
+      "character_end": 450
+    },
+    {
+      "text": "我们",
+      "start_ms": 76814,
+      "end_ms": 77054,
+      "confidence": 0.9952120780944824,
+      "character_start": 450,
+      "character_end": 452
+    },
+    {
+      "text": "的",
+      "start_ms": 77054,
+      "end_ms": 77254,
+      "confidence": 0.9884568452835083,
+      "character_start": 452,
+      "character_end": 453
+    },
+    {
+      "text": "一个",
+      "start_ms": 77254,
+      "end_ms": 77434,
+      "confidence": 0.9798622727394104,
+      "character_start": 453,
+      "character_end": 455
+    },
+    {
+      "text": "产品",
+      "start_ms": 77434,
+      "end_ms": 77994,
+      "confidence": 0.979852169752121,
+      "character_start": 455,
+      "character_end": 457
+    },
+    {
+      "text": "介绍",
+      "start_ms": 77994,
+      "end_ms": 78354,
+      "confidence": 0.998600035905838,
+      "character_start": 457,
+      "character_end": 459
+    },
+    {
+      "text": "到",
+      "start_ms": 78354,
+      "end_ms": 78514,
+      "confidence": 0.7897065877914429,
+      "character_start": 459,
+      "character_end": 460
+    },
+    {
+      "text": "最后",
+      "start_ms": 78514,
+      "end_ms": 78854,
+      "confidence": 0.9977397918701172,
+      "character_start": 460,
+      "character_end": 462
+    },
+    {
+      "text": "你",
+      "start_ms": 78854,
+      "end_ms": 79054,
+      "confidence": 0.6559604406356812,
+      "character_start": 462,
+      "character_end": 463
+    },
+    {
+      "text": "生成",
+      "start_ms": 79054,
+      "end_ms": 79334,
+      "confidence": 0.934848964214325,
+      "character_start": 463,
+      "character_end": 465
+    },
+    {
+      "text": "到",
+      "start_ms": 79294,
+      "end_ms": 79374,
+      "confidence": 0.35,
+      "character_start": 465,
+      "character_end": 466
+    },
+    {
+      "text": "的",
+      "start_ms": 79334,
+      "end_ms": 79414,
+      "confidence": 0.8565873503684998,
+      "character_start": 466,
+      "character_end": 467
+    },
+    {
+      "text": "视频",
+      "start_ms": 79414,
+      "end_ms": 79934,
+      "confidence": 0.754611074924469,
+      "character_start": 467,
+      "character_end": 469
+    },
+    {
+      "text": "会以",
+      "start_ms": 79934,
+      "end_ms": 80434,
+      "confidence": 0.7339659631252289,
+      "character_start": 469,
+      "character_end": 471
+    },
+    {
+      "text": "邮件",
+      "start_ms": 80434,
+      "end_ms": 80834,
+      "confidence": 0.3362182584404946,
+      "character_start": 471,
+      "character_end": 473
+    },
+    {
+      "text": "的",
+      "start_ms": 80834,
+      "end_ms": 80914,
+      "confidence": 0.9321336150169373,
+      "character_start": 473,
+      "character_end": 474
+    },
+    {
+      "text": "形式",
+      "start_ms": 80914,
+      "end_ms": 81134,
+      "confidence": 0.6655237823724747,
+      "character_start": 474,
+      "character_end": 476
+    },
+    {
+      "text": "发给你",
+      "start_ms": 81134,
+      "end_ms": 81494,
+      "confidence": 0.7868976990381876,
+      "character_start": 476,
+      "character_end": 479
+    },
+    {
+      "text": "就",
+      "start_ms": 81494,
+      "end_ms": 81574,
+      "confidence": 0.21829213201999664,
+      "character_start": 479,
+      "character_end": 480
+    },
+    {
+      "text": "像",
+      "start_ms": 81574,
+      "end_ms": 81634,
+      "confidence": 0.886216938495636,
+      "character_start": 480,
+      "character_end": 481
+    },
+    {
+      "text": "这样",
+      "start_ms": 81634,
+      "end_ms": 81854,
+      "confidence": 0.9955079555511475,
+      "character_start": 481,
+      "character_end": 483
+    },
+    {
+      "text": "它会",
+      "start_ms": 81854,
+      "end_ms": 82321,
+      "confidence": 0.35,
+      "character_start": 483,
+      "character_end": 485
+    },
+    {
+      "text": "他",
+      "start_ms": 82102,
+      "end_ms": 82582,
+      "confidence": 0.2583508253097534,
+      "character_start": 485,
+      "character_end": 486
+    },
+    {
+      "text": "会",
+      "start_ms": 82582,
+      "end_ms": 82682,
+      "confidence": 0.9531477093696594,
+      "character_start": 486,
+      "character_end": 487
+    },
+    {
+      "text": "发给你",
+      "start_ms": 82682,
+      "end_ms": 83022,
+      "confidence": 0.9265379905700684,
+      "character_start": 487,
+      "character_end": 490
+    },
+    {
+      "text": "一个",
+      "start_ms": 83022,
+      "end_ms": 83142,
+      "confidence": 0.9911320805549622,
+      "character_start": 490,
+      "character_end": 492
+    },
+    {
+      "text": "邮件",
+      "start_ms": 83142,
+      "end_ms": 83522,
+      "confidence": 0.9945725649595261,
+      "character_start": 492,
+      "character_end": 494
+    },
+    {
+      "text": "然后",
+      "start_ms": 83522,
+      "end_ms": 83742,
+      "confidence": 0.6428805589675903,
+      "character_start": 494,
+      "character_end": 496
+    },
+    {
+      "text": "你",
+      "start_ms": 83742,
+      "end_ms": 83809,
+      "confidence": 0.9132226705551147,
+      "character_start": 496,
+      "character_end": 497
+    },
+    {
+      "text": "可以",
+      "start_ms": 83809,
+      "end_ms": 83942,
+      "confidence": 0.9132226705551147,
+      "character_start": 497,
+      "character_end": 499
+    },
+    {
+      "text": "在",
+      "start_ms": 83942,
+      "end_ms": 84162,
+      "confidence": 0.9714524149894714,
+      "character_start": 499,
+      "character_end": 500
+    },
+    {
+      "text": "这里",
+      "start_ms": 84162,
+      "end_ms": 84362,
+      "confidence": 0.9958330988883972,
+      "character_start": 500,
+      "character_end": 502
+    },
+    {
+      "text": "直接",
+      "start_ms": 84362,
+      "end_ms": 84562,
+      "confidence": 0.9434114694595337,
+      "character_start": 502,
+      "character_end": 504
+    },
+    {
+      "text": "下载",
+      "start_ms": 84562,
+      "end_ms": 84922,
+      "confidence": 0.9622079730033875,
+      "character_start": 504,
+      "character_end": 506
+    },
+    {
+      "text": "下来",
+      "start_ms": 84922,
+      "end_ms": 85182,
+      "confidence": 0.9334965944290161,
+      "character_start": 506,
+      "character_end": 508
+    },
+    {
+      "text": "就",
+      "start_ms": 85182,
+      "end_ms": 85242,
+      "confidence": 0.8437372446060181,
+      "character_start": 508,
+      "character_end": 509
+    },
+    {
+      "text": "可以",
+      "start_ms": 85242,
+      "end_ms": 85362,
+      "confidence": 0.8437372446060181,
+      "character_start": 509,
+      "character_end": 511
+    },
+    {
+      "text": "去",
+      "start_ms": 85362,
+      "end_ms": 85582,
+      "confidence": 0.9959905743598938,
+      "character_start": 511,
+      "character_end": 512
+    },
+    {
+      "text": "看",
+      "start_ms": 85582,
+      "end_ms": 85762,
+      "confidence": 0.9535000324249268,
+      "character_start": 512,
+      "character_end": 513
+    },
+    {
+      "text": "了",
+      "start_ms": 85762,
+      "end_ms": 85922,
+      "confidence": 0.9930682182312012,
+      "character_start": 513,
+      "character_end": 514
+    }
+  ],
+  "characters": [
+    {
+      "text": "各",
+      "original_index": 0,
+      "start_ms": 0,
+      "end_ms": 160,
+      "confidence": 0.1017902484536171,
+      "source": "substitution"
+    },
+    {
+      "text": "位",
+      "original_index": 1,
+      "start_ms": 160,
+      "end_ms": 400,
+      "confidence": 0.8521081209182739,
+      "source": "deepgram"
+    },
+    {
+      "text": "探",
+      "original_index": 2,
+      "start_ms": 400,
+      "end_ms": 760,
+      "confidence": 0.9409038722515106,
+      "source": "deepgram"
+    },
+    {
+      "text": "月",
+      "original_index": 3,
+      "start_ms": 760,
+      "end_ms": 980,
+      "confidence": 0.5648812794685364,
+      "source": "substitution"
+    },
+    {
+      "text": "巨",
+      "original_index": 4,
+      "start_ms": 980,
+      "end_ms": 1360,
+      "confidence": 0.6139309033751488,
+      "source": "deepgram"
+    },
+    {
+      "text": "神",
+      "original_index": 5,
+      "start_ms": 1360,
+      "end_ms": 1500,
+      "confidence": 0.21005691349506378,
+      "source": "substitution"
+    },
+    {
+      "text": "智",
+      "original_index": 6,
+      "start_ms": 1500,
+      "end_ms": 1620,
+      "confidence": 0.9445237219333649,
+      "source": "deepgram"
+    },
+    {
+      "text": "能",
+      "original_index": 7,
+      "start_ms": 1620,
+      "end_ms": 1740,
+      "confidence": 0.9949085116386414,
+      "source": "deepgram"
+    },
+    {
+      "text": "社",
+      "original_index": 8,
+      "start_ms": 1740,
+      "end_ms": 1880,
+      "confidence": 0.7440046668052673,
+      "source": "deepgram"
+    },
+    {
+      "text": "区",
+      "original_index": 9,
+      "start_ms": 1880,
+      "end_ms": 1980,
+      "confidence": 0.7525170743465424,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 10,
+      "start_ms": 1980,
+      "end_ms": 2100,
+      "confidence": 0.821006715297699,
+      "source": "deepgram"
+    },
+    {
+      "text": "小",
+      "original_index": 11,
+      "start_ms": 2100,
+      "end_ms": 2180,
+      "confidence": 0.7742000818252563,
+      "source": "deepgram"
+    },
+    {
+      "text": "伙",
+      "original_index": 12,
+      "start_ms": 2180,
+      "end_ms": 2280,
+      "confidence": 0.9980106055736542,
+      "source": "deepgram"
+    },
+    {
+      "text": "伴",
+      "original_index": 13,
+      "start_ms": 2280,
+      "end_ms": 2380,
+      "confidence": 0.9949931800365448,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 14,
+      "start_ms": 2380,
+      "end_ms": 2480,
+      "confidence": 0.9546043872833252,
+      "source": "deepgram"
+    },
+    {
+      "text": "大",
+      "original_index": 16,
+      "start_ms": 2480,
+      "end_ms": 2607,
+      "confidence": 0.589557945728302,
+      "source": "deepgram"
+    },
+    {
+      "text": "家",
+      "original_index": 17,
+      "start_ms": 2607,
+      "end_ms": 2733,
+      "confidence": 0.589557945728302,
+      "source": "deepgram"
+    },
+    {
+      "text": "好",
+      "original_index": 18,
+      "start_ms": 2733,
+      "end_ms": 2860,
+      "confidence": 0.589557945728302,
+      "source": "deepgram"
+    },
+    {
+      "text": "啊",
+      "original_index": 19,
+      "start_ms": 2820,
+      "end_ms": 2900,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "我",
+      "original_index": 21,
+      "start_ms": 2860,
+      "end_ms": 3050,
+      "confidence": 0.6345623135566711,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 22,
+      "start_ms": 3050,
+      "end_ms": 3240,
+      "confidence": 0.6345623135566711,
+      "source": "deepgram"
+    },
+    {
+      "text": "带",
+      "original_index": 23,
+      "start_ms": 3240,
+      "end_ms": 3440,
+      "confidence": 0.9887523949146271,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 24,
+      "start_ms": 3440,
+      "end_ms": 3500,
+      "confidence": 0.9624947905540466,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 25,
+      "start_ms": 3500,
+      "end_ms": 3560,
+      "confidence": 0.9941072463989258,
+      "source": "deepgram"
+    },
+    {
+      "text": "项",
+      "original_index": 26,
+      "start_ms": 3560,
+      "end_ms": 3780,
+      "confidence": 0.9844399988651276,
+      "source": "deepgram"
+    },
+    {
+      "text": "目",
+      "original_index": 27,
+      "start_ms": 3780,
+      "end_ms": 3960,
+      "confidence": 0.9991393089294434,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 28,
+      "start_ms": 3960,
+      "end_ms": 4140,
+      "confidence": 0.9408043622970581,
+      "source": "deepgram"
+    },
+    {
+      "text": "M",
+      "original_index": 30,
+      "start_ms": 4020,
+      "end_ms": 4100,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "o",
+      "original_index": 31,
+      "start_ms": 4100,
+      "end_ms": 4180,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "e",
+      "original_index": 32,
+      "start_ms": 4180,
+      "end_ms": 4260,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "n",
+      "original_index": 33,
+      "start_ms": 4140,
+      "end_ms": 4340,
+      "confidence": 0.5483185642957688,
+      "source": "substitution"
+    },
+    {
+      "text": "C",
+      "original_index": 34,
+      "start_ms": 4340,
+      "end_ms": 4440,
+      "confidence": 0.43998502016067503,
+      "source": "substitution"
+    },
+    {
+      "text": "u",
+      "original_index": 35,
+      "start_ms": 4440,
+      "end_ms": 4660,
+      "confidence": 0.0930261492729187,
+      "source": "substitution"
+    },
+    {
+      "text": "t",
+      "original_index": 36,
+      "start_ms": 4660,
+      "end_ms": 4880,
+      "confidence": 0.1660853737592697,
+      "source": "substitution"
+    },
+    {
+      "text": "一",
+      "original_index": 38,
+      "start_ms": 4880,
+      "end_ms": 4990,
+      "confidence": 0.8503172993659973,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 39,
+      "start_ms": 4990,
+      "end_ms": 5100,
+      "confidence": 0.8503172993659973,
+      "source": "deepgram"
+    },
+    {
+      "text": "让",
+      "original_index": 40,
+      "start_ms": 5100,
+      "end_ms": 5320,
+      "confidence": 0.9957262277603149,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 41,
+      "start_ms": 5320,
+      "end_ms": 5460,
+      "confidence": 0.9645910859107971,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 42,
+      "start_ms": 5460,
+      "end_ms": 5600,
+      "confidence": 0.9645910859107971,
+      "source": "deepgram"
+    },
+    {
+      "text": "普",
+      "original_index": 43,
+      "start_ms": 5600,
+      "end_ms": 6980,
+      "confidence": 0.9930311441421509,
+      "source": "deepgram"
+    },
+    {
+      "text": "通",
+      "original_index": 44,
+      "start_ms": 6980,
+      "end_ms": 7120,
+      "confidence": 0.9996432065963745,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 45,
+      "start_ms": 7120,
+      "end_ms": 7260,
+      "confidence": 0.9960408210754395,
+      "source": "deepgram"
+    },
+    {
+      "text": "素",
+      "original_index": 46,
+      "start_ms": 7260,
+      "end_ms": 7420,
+      "confidence": 0.5563308811187744,
+      "source": "substitution"
+    },
+    {
+      "text": "口",
+      "original_index": 47,
+      "start_ms": 7420,
+      "end_ms": 7600,
+      "confidence": 0.35589991927146913,
+      "source": "substitution"
+    },
+    {
+      "text": "播",
+      "original_index": 48,
+      "start_ms": 7600,
+      "end_ms": 7760,
+      "confidence": 0.8116271495819092,
+      "source": "deepgram"
+    },
+    {
+      "text": "直",
+      "original_index": 49,
+      "start_ms": 7760,
+      "end_ms": 7880,
+      "confidence": 0.9906876683235168,
+      "source": "deepgram"
+    },
+    {
+      "text": "接",
+      "original_index": 50,
+      "start_ms": 7880,
+      "end_ms": 8000,
+      "confidence": 0.9906876683235168,
+      "source": "deepgram"
+    },
+    {
+      "text": "变",
+      "original_index": 51,
+      "start_ms": 8000,
+      "end_ms": 8200,
+      "confidence": 0.9979449212551117,
+      "source": "deepgram"
+    },
+    {
+      "text": "成",
+      "original_index": 52,
+      "start_ms": 8200,
+      "end_ms": 8380,
+      "confidence": 0.9986617565155029,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 53,
+      "start_ms": 8380,
+      "end_ms": 8550,
+      "confidence": 0.9959283471107483,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 54,
+      "start_ms": 8550,
+      "end_ms": 8720,
+      "confidence": 0.9959283471107483,
+      "source": "deepgram"
+    },
+    {
+      "text": "发",
+      "original_index": 55,
+      "start_ms": 8720,
+      "end_ms": 8980,
+      "confidence": 0.9973581433296204,
+      "source": "deepgram"
+    },
+    {
+      "text": "布",
+      "original_index": 56,
+      "start_ms": 8980,
+      "end_ms": 9180,
+      "confidence": 0.9956373572349548,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 57,
+      "start_ms": 9180,
+      "end_ms": 9400,
+      "confidence": 0.9957621693611145,
+      "source": "deepgram"
+    },
+    {
+      "text": "神",
+      "original_index": 58,
+      "start_ms": 9400,
+      "end_ms": 10240,
+      "confidence": 0.9619168043136597,
+      "source": "deepgram"
+    },
+    {
+      "text": "奇",
+      "original_index": 59,
+      "start_ms": 10240,
+      "end_ms": 10420,
+      "confidence": 0.9945512413978577,
+      "source": "deepgram"
+    },
+    {
+      "text": "口",
+      "original_index": 60,
+      "start_ms": 10420,
+      "end_ms": 10640,
+      "confidence": 0.5479041707515716,
+      "source": "substitution"
+    },
+    {
+      "text": "播",
+      "original_index": 61,
+      "start_ms": 10640,
+      "end_ms": 10780,
+      "confidence": 0.7162395715713501,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 62,
+      "start_ms": 10780,
+      "end_ms": 11040,
+      "confidence": 0.9976806640625,
+      "source": "deepgram"
+    },
+    {
+      "text": "网",
+      "original_index": 63,
+      "start_ms": 11040,
+      "end_ms": 12580,
+      "confidence": 0.9972918927669525,
+      "source": "deepgram"
+    },
+    {
+      "text": "站",
+      "original_index": 64,
+      "start_ms": 12580,
+      "end_ms": 12820,
+      "confidence": 0.9975602626800537,
+      "source": "deepgram"
+    },
+    {
+      "text": "还",
+      "original_index": 66,
+      "start_ms": 12820,
+      "end_ms": 12980,
+      "confidence": 0.9014483690261841,
+      "source": "deepgram"
+    },
+    {
+      "text": "有",
+      "original_index": 67,
+      "start_ms": 12980,
+      "end_ms": 13140,
+      "confidence": 0.9014483690261841,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 68,
+      "start_ms": 13140,
+      "end_ms": 13310,
+      "confidence": 0.9886580109596252,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 69,
+      "start_ms": 13310,
+      "end_ms": 13480,
+      "confidence": 0.9886580109596252,
+      "source": "deepgram"
+    },
+    {
+      "text": "对",
+      "original_index": 70,
+      "start_ms": 13480,
+      "end_ms": 13660,
+      "confidence": 0.9486432075500488,
+      "source": "deepgram"
+    },
+    {
+      "text": "应",
+      "original_index": 71,
+      "start_ms": 13660,
+      "end_ms": 13740,
+      "confidence": 0.965175986289978,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 72,
+      "start_ms": 13740,
+      "end_ms": 13840,
+      "confidence": 0.9968125224113464,
+      "source": "deepgram"
+    },
+    {
+      "text": "S",
+      "original_index": 74,
+      "start_ms": 13840,
+      "end_ms": 13880,
+      "confidence": 0.5947958827018738,
+      "source": "deepgram"
+    },
+    {
+      "text": "t",
+      "original_index": 75,
+      "start_ms": 13880,
+      "end_ms": 13920,
+      "confidence": 0.5947958827018738,
+      "source": "deepgram"
+    },
+    {
+      "text": "u",
+      "original_index": 76,
+      "start_ms": 13920,
+      "end_ms": 13960,
+      "confidence": 0.5947958827018738,
+      "source": "deepgram"
+    },
+    {
+      "text": "d",
+      "original_index": 77,
+      "start_ms": 13960,
+      "end_ms": 14000,
+      "confidence": 0.5947958827018738,
+      "source": "deepgram"
+    },
+    {
+      "text": "i",
+      "original_index": 78,
+      "start_ms": 14000,
+      "end_ms": 14150,
+      "confidence": 0.9989261031150818,
+      "source": "deepgram"
+    },
+    {
+      "text": "o",
+      "original_index": 79,
+      "start_ms": 14150,
+      "end_ms": 14300,
+      "confidence": 0.9989261031150818,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 81,
+      "start_ms": 14300,
+      "end_ms": 14580,
+      "confidence": 0.9156210422515869,
+      "source": "deepgram"
+    },
+    {
+      "text": "也",
+      "original_index": 82,
+      "start_ms": 14580,
+      "end_ms": 14667,
+      "confidence": 0.960238516330719,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 83,
+      "start_ms": 14667,
+      "end_ms": 14753,
+      "confidence": 0.960238516330719,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 84,
+      "start_ms": 14753,
+      "end_ms": 14840,
+      "confidence": 0.960238516330719,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 85,
+      "start_ms": 14840,
+      "end_ms": 15120,
+      "confidence": 0.9971121549606323,
+      "source": "deepgram"
+    },
+    {
+      "text": "时",
+      "original_index": 86,
+      "start_ms": 15120,
+      "end_ms": 15210,
+      "confidence": 0.9956064820289612,
+      "source": "deepgram"
+    },
+    {
+      "text": "候",
+      "original_index": 87,
+      "start_ms": 15210,
+      "end_ms": 15300,
+      "confidence": 0.9956064820289612,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 88,
+      "start_ms": 15300,
+      "end_ms": 15400,
+      "confidence": 0.9586201906204224,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 89,
+      "start_ms": 15400,
+      "end_ms": 15500,
+      "confidence": 0.9586201906204224,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 90,
+      "start_ms": 15500,
+      "end_ms": 15660,
+      "confidence": 0.975737452507019,
+      "source": "deepgram"
+    },
+    {
+      "text": "下",
+      "original_index": 91,
+      "start_ms": 15660,
+      "end_ms": 15860,
+      "confidence": 0.9974836707115173,
+      "source": "deepgram"
+    },
+    {
+      "text": "载",
+      "original_index": 92,
+      "start_ms": 15860,
+      "end_ms": 16040,
+      "confidence": 0.9912233650684357,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 94,
+      "start_ms": 16040,
+      "end_ms": 16280,
+      "confidence": 0.9572679400444031,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 95,
+      "start_ms": 16280,
+      "end_ms": 16520,
+      "confidence": 0.9572679400444031,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 96,
+      "start_ms": 16520,
+      "end_ms": 16720,
+      "confidence": 0.9650694131851196,
+      "source": "deepgram"
+    },
+    {
+      "text": "需",
+      "original_index": 97,
+      "start_ms": 16720,
+      "end_ms": 16800,
+      "confidence": 0.99783855676651,
+      "source": "deepgram"
+    },
+    {
+      "text": "要",
+      "original_index": 98,
+      "start_ms": 16800,
+      "end_ms": 16880,
+      "confidence": 0.99783855676651,
+      "source": "deepgram"
+    },
+    {
+      "text": "登",
+      "original_index": 99,
+      "start_ms": 16880,
+      "end_ms": 17060,
+      "confidence": 0.9890740513801575,
+      "source": "deepgram"
+    },
+    {
+      "text": "录",
+      "original_index": 100,
+      "start_ms": 17060,
+      "end_ms": 17200,
+      "confidence": 0.8979031145572662,
+      "source": "deepgram"
+    },
+    {
+      "text": "注",
+      "original_index": 101,
+      "start_ms": 17200,
+      "end_ms": 17400,
+      "confidence": 0.7853289842605591,
+      "source": "deepgram"
+    },
+    {
+      "text": "册",
+      "original_index": 102,
+      "start_ms": 17400,
+      "end_ms": 17580,
+      "confidence": 0.998286783695221,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 103,
+      "start_ms": 17580,
+      "end_ms": 17710,
+      "confidence": 0.9806243777275085,
+      "source": "deepgram"
+    },
+    {
+      "text": "下",
+      "original_index": 104,
+      "start_ms": 17710,
+      "end_ms": 17840,
+      "confidence": 0.9806243777275085,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 106,
+      "start_ms": 17840,
+      "end_ms": 18050,
+      "confidence": 0.9339323043823242,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 107,
+      "start_ms": 18050,
+      "end_ms": 18260,
+      "confidence": 0.9339323043823242,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 108,
+      "start_ms": 18260,
+      "end_ms": 18400,
+      "confidence": 0.9696718454360962,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 109,
+      "start_ms": 18400,
+      "end_ms": 18540,
+      "confidence": 0.9696718454360962,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 110,
+      "start_ms": 18540,
+      "end_ms": 18680,
+      "confidence": 0.9696718454360962,
+      "source": "deepgram"
+    },
+    {
+      "text": "在",
+      "original_index": 111,
+      "start_ms": 18680,
+      "end_ms": 18880,
+      "confidence": 0.9990492463111877,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 112,
+      "start_ms": 18880,
+      "end_ms": 18940,
+      "confidence": 0.9940978288650513,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 113,
+      "start_ms": 18940,
+      "end_ms": 19000,
+      "confidence": 0.9940978288650513,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 114,
+      "start_ms": 19000,
+      "end_ms": 19080,
+      "confidence": 0.9980735778808594,
+      "source": "deepgram"
+    },
+    {
+      "text": "网",
+      "original_index": 115,
+      "start_ms": 19080,
+      "end_ms": 19240,
+      "confidence": 0.9995619058609009,
+      "source": "deepgram"
+    },
+    {
+      "text": "站",
+      "original_index": 116,
+      "start_ms": 19240,
+      "end_ms": 19380,
+      "confidence": 0.9997714161872864,
+      "source": "deepgram"
+    },
+    {
+      "text": "上",
+      "original_index": 117,
+      "start_ms": 19380,
+      "end_ms": 19560,
+      "confidence": 0.9515175223350525,
+      "source": "deepgram"
+    },
+    {
+      "text": "看",
+      "original_index": 118,
+      "start_ms": 19560,
+      "end_ms": 19690,
+      "confidence": 0.9969636797904968,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 119,
+      "start_ms": 19690,
+      "end_ms": 19820,
+      "confidence": 0.9969636797904968,
+      "source": "deepgram"
+    },
+    {
+      "text": "已",
+      "original_index": 120,
+      "start_ms": 20200,
+      "end_ms": 20380,
+      "confidence": 0.9594584107398987,
+      "source": "deepgram"
+    },
+    {
+      "text": "经",
+      "original_index": 121,
+      "start_ms": 20380,
+      "end_ms": 20560,
+      "confidence": 0.9594584107398987,
+      "source": "deepgram"
+    },
+    {
+      "text": "真",
+      "original_index": 122,
+      "start_ms": 20560,
+      "end_ms": 20820,
+      "confidence": 0.6212641596794128,
+      "source": "deepgram"
+    },
+    {
+      "text": "实",
+      "original_index": 123,
+      "start_ms": 20820,
+      "end_ms": 21000,
+      "confidence": 0.9963066577911377,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 124,
+      "start_ms": 21000,
+      "end_ms": 21130,
+      "confidence": 0.7602209448814392,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 125,
+      "start_ms": 21130,
+      "end_ms": 21260,
+      "confidence": 0.7602209448814392,
+      "source": "deepgram"
+    },
+    {
+      "text": "做",
+      "original_index": 126,
+      "start_ms": 21260,
+      "end_ms": 21480,
+      "confidence": 0.9889018535614014,
+      "source": "deepgram"
+    },
+    {
+      "text": "出",
+      "original_index": 127,
+      "start_ms": 21480,
+      "end_ms": 21570,
+      "confidence": 0.9899085760116577,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 128,
+      "start_ms": 21570,
+      "end_ms": 21660,
+      "confidence": 0.9899085760116577,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 129,
+      "start_ms": 21660,
+      "end_ms": 21760,
+      "confidence": 0.9990173578262329,
+      "source": "deepgram"
+    },
+    {
+      "text": "口",
+      "original_index": 130,
+      "start_ms": 21760,
+      "end_ms": 21940,
+      "confidence": 0.5873873925209045,
+      "source": "substitution"
+    },
+    {
+      "text": "播",
+      "original_index": 131,
+      "start_ms": 21940,
+      "end_ms": 22060,
+      "confidence": 0.9854276776313782,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 132,
+      "start_ms": 22060,
+      "end_ms": 22180,
+      "confidence": 0.45452043414115906,
+      "source": "deepgram"
+    },
+    {
+      "text": "什",
+      "original_index": 133,
+      "start_ms": 22180,
+      "end_ms": 22250,
+      "confidence": 0.9948928356170654,
+      "source": "deepgram"
+    },
+    {
+      "text": "么",
+      "original_index": 134,
+      "start_ms": 22250,
+      "end_ms": 22320,
+      "confidence": 0.9948928356170654,
+      "source": "deepgram"
+    },
+    {
+      "text": "样",
+      "original_index": 135,
+      "start_ms": 22320,
+      "end_ms": 22440,
+      "confidence": 0.9990978240966797,
+      "source": "deepgram"
+    },
+    {
+      "text": "子",
+      "original_index": 136,
+      "start_ms": 22440,
+      "end_ms": 22600,
+      "confidence": 0.9730780124664307,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 137,
+      "start_ms": 22600,
+      "end_ms": 22640,
+      "confidence": 0.8575538396835327,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 139,
+      "start_ms": 22640,
+      "end_ms": 22720,
+      "confidence": 0.978411853313446,
+      "source": "deepgram"
+    },
+    {
+      "text": "键",
+      "original_index": 140,
+      "start_ms": 22720,
+      "end_ms": 22820,
+      "confidence": 0.5404433500766754,
+      "source": "substitution"
+    },
+    {
+      "text": "导",
+      "original_index": 141,
+      "start_ms": 22820,
+      "end_ms": 23000,
+      "confidence": 0.918485701084137,
+      "source": "deepgram"
+    },
+    {
+      "text": "出",
+      "original_index": 142,
+      "start_ms": 23000,
+      "end_ms": 23160,
+      "confidence": 0.7880353331565857,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 143,
+      "start_ms": 23160,
+      "end_ms": 23260,
+      "confidence": 0.9838850498199463,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 144,
+      "start_ms": 23260,
+      "end_ms": 23340,
+      "confidence": 0.9308314323425293,
+      "source": "deepgram"
+    },
+    {
+      "text": "都",
+      "original_index": 145,
+      "start_ms": 23340,
+      "end_ms": 23440,
+      "confidence": 0.9833866953849792,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 146,
+      "start_ms": 23440,
+      "end_ms": 23540,
+      "confidence": 0.9833866953849792,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 148,
+      "start_ms": 23980,
+      "end_ms": 24160,
+      "confidence": 0.6390059590339661,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 149,
+      "start_ms": 24160,
+      "end_ms": 24340,
+      "confidence": 0.6390059590339661,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 150,
+      "start_ms": 24340,
+      "end_ms": 24480,
+      "confidence": 0.9852327704429626,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 151,
+      "start_ms": 24480,
+      "end_ms": 24620,
+      "confidence": 0.9852327704429626,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 152,
+      "start_ms": 24620,
+      "end_ms": 24680,
+      "confidence": 0.9976813793182373,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 153,
+      "start_ms": 24680,
+      "end_ms": 24740,
+      "confidence": 0.9976813793182373,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 154,
+      "start_ms": 24740,
+      "end_ms": 24840,
+      "confidence": 0.9969658255577087,
+      "source": "deepgram"
+    },
+    {
+      "text": "官",
+      "original_index": 155,
+      "start_ms": 24840,
+      "end_ms": 24960,
+      "confidence": 0.5701863187551498,
+      "source": "substitution"
+    },
+    {
+      "text": "网",
+      "original_index": 156,
+      "start_ms": 24960,
+      "end_ms": 25100,
+      "confidence": 0.9763787388801575,
+      "source": "deepgram"
+    },
+    {
+      "text": "m",
+      "original_index": 158,
+      "start_ms": 24940,
+      "end_ms": 25020,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "o",
+      "original_index": 159,
+      "start_ms": 25020,
+      "end_ms": 25100,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "e",
+      "original_index": 160,
+      "start_ms": 25100,
+      "end_ms": 25180,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "n",
+      "original_index": 161,
+      "start_ms": 25180,
+      "end_ms": 25260,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "c",
+      "original_index": 162,
+      "start_ms": 25100,
+      "end_ms": 25300,
+      "confidence": 0.5906489193439484,
+      "source": "substitution"
+    },
+    {
+      "text": "u",
+      "original_index": 163,
+      "start_ms": 25300,
+      "end_ms": 25420,
+      "confidence": 0.6195399487018585,
+      "source": "substitution"
+    },
+    {
+      "text": "t",
+      "original_index": 164,
+      "start_ms": 25420,
+      "end_ms": 25540,
+      "confidence": 0.5969146561622619,
+      "source": "substitution"
+    },
+    {
+      "text": "c",
+      "original_index": 166,
+      "start_ms": 25540,
+      "end_ms": 25640,
+      "confidence": 0.5995951414108276,
+      "source": "substitution"
+    },
+    {
+      "text": "o",
+      "original_index": 167,
+      "start_ms": 25640,
+      "end_ms": 25760,
+      "confidence": 0.5017176294326782,
+      "source": "substitution"
+    },
+    {
+      "text": "m",
+      "original_index": 168,
+      "start_ms": 25760,
+      "end_ms": 25980,
+      "confidence": 0.4271827319264412,
+      "source": "substitution"
+    },
+    {
+      "text": "不",
+      "original_index": 170,
+      "start_ms": 25980,
+      "end_ms": 26240,
+      "confidence": 0.9020752310752869,
+      "source": "deepgram"
+    },
+    {
+      "text": "要",
+      "original_index": 171,
+      "start_ms": 26240,
+      "end_ms": 26500,
+      "confidence": 0.9020752310752869,
+      "source": "deepgram"
+    },
+    {
+      "text": "记",
+      "original_index": 172,
+      "start_ms": 26500,
+      "end_ms": 26720,
+      "confidence": 0.87516850233078,
+      "source": "deepgram"
+    },
+    {
+      "text": "错",
+      "original_index": 173,
+      "start_ms": 26720,
+      "end_ms": 26940,
+      "confidence": 0.9971609115600586,
+      "source": "deepgram"
+    },
+    {
+      "text": "了",
+      "original_index": 174,
+      "start_ms": 26940,
+      "end_ms": 27120,
+      "confidence": 0.9836651682853699,
+      "source": "deepgram"
+    },
+    {
+      "text": "然",
+      "original_index": 176,
+      "start_ms": 27120,
+      "end_ms": 27240,
+      "confidence": 0.9318583011627197,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 177,
+      "start_ms": 27240,
+      "end_ms": 27360,
+      "confidence": 0.9318583011627197,
+      "source": "deepgram"
+    },
+    {
+      "text": "开",
+      "original_index": 178,
+      "start_ms": 27360,
+      "end_ms": 27710,
+      "confidence": 0.9682117700576782,
+      "source": "deepgram"
+    },
+    {
+      "text": "始",
+      "original_index": 179,
+      "start_ms": 27710,
+      "end_ms": 28060,
+      "confidence": 0.9682117700576782,
+      "source": "deepgram"
+    },
+    {
+      "text": "创",
+      "original_index": 180,
+      "start_ms": 28060,
+      "end_ms": 28320,
+      "confidence": 0.9986521303653717,
+      "source": "deepgram"
+    },
+    {
+      "text": "作",
+      "original_index": 181,
+      "start_ms": 28320,
+      "end_ms": 28540,
+      "confidence": 0.9927944540977478,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 183,
+      "start_ms": 28540,
+      "end_ms": 28860,
+      "confidence": 0.6567721962928772,
+      "source": "deepgram"
+    },
+    {
+      "text": "进",
+      "original_index": 184,
+      "start_ms": 28860,
+      "end_ms": 28980,
+      "confidence": 0.9757151007652283,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 185,
+      "start_ms": 28980,
+      "end_ms": 29140,
+      "confidence": 0.9983731508255005,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 186,
+      "start_ms": 29140,
+      "end_ms": 29220,
+      "confidence": 0.8979727029800415,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 187,
+      "start_ms": 29220,
+      "end_ms": 29300,
+      "confidence": 0.8979727029800415,
+      "source": "deepgram"
+    },
+    {
+      "text": "会",
+      "original_index": 188,
+      "start_ms": 29300,
+      "end_ms": 29480,
+      "confidence": 0.9943299293518066,
+      "source": "deepgram"
+    },
+    {
+      "text": "有",
+      "original_index": 189,
+      "start_ms": 29480,
+      "end_ms": 29580,
+      "confidence": 0.9989845156669617,
+      "source": "deepgram"
+    },
+    {
+      "text": "录",
+      "original_index": 190,
+      "start_ms": 29580,
+      "end_ms": 29700,
+      "confidence": 0.8238255977630615,
+      "source": "deepgram"
+    },
+    {
+      "text": "制",
+      "original_index": 191,
+      "start_ms": 29700,
+      "end_ms": 29880,
+      "confidence": 0.9352291226387024,
+      "source": "deepgram"
+    },
+    {
+      "text": "间",
+      "original_index": 192,
+      "start_ms": 29880,
+      "end_ms": 30060,
+      "confidence": 0.9980975985527039,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 194,
+      "start_ms": 30060,
+      "end_ms": 30167,
+      "confidence": 0.8502625823020935,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 195,
+      "start_ms": 30167,
+      "end_ms": 30273,
+      "confidence": 0.8502625823020935,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 196,
+      "start_ms": 30273,
+      "end_ms": 30380,
+      "confidence": 0.8502625823020935,
+      "source": "deepgram"
+    },
+    {
+      "text": "看",
+      "original_index": 197,
+      "start_ms": 30380,
+      "end_ms": 30520,
+      "confidence": 0.9652901887893677,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 198,
+      "start_ms": 30520,
+      "end_ms": 30660,
+      "confidence": 0.9652901887893677,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 199,
+      "start_ms": 30660,
+      "end_ms": 30960,
+      "confidence": 0.9855680465698242,
+      "source": "deepgram"
+    },
+    {
+      "text": "之",
+      "original_index": 200,
+      "start_ms": 30960,
+      "end_ms": 31030,
+      "confidence": 0.9677409529685974,
+      "source": "deepgram"
+    },
+    {
+      "text": "前",
+      "original_index": 201,
+      "start_ms": 31030,
+      "end_ms": 31100,
+      "confidence": 0.9677409529685974,
+      "source": "deepgram"
+    },
+    {
+      "text": "跟",
+      "original_index": 202,
+      "start_ms": 31100,
+      "end_ms": 31190,
+      "confidence": 0.46122406125068666,
+      "source": "substitution"
+    },
+    {
+      "text": "他",
+      "original_index": 203,
+      "start_ms": 31190,
+      "end_ms": 31280,
+      "confidence": 0.46122406125068666,
+      "source": "substitution"
+    },
+    {
+      "text": "对",
+      "original_index": 204,
+      "start_ms": 31280,
+      "end_ms": 31440,
+      "confidence": 0.9934865236282349,
+      "source": "deepgram"
+    },
+    {
+      "text": "话",
+      "original_index": 205,
+      "start_ms": 31440,
+      "end_ms": 31640,
+      "confidence": 0.99081951379776,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 207,
+      "start_ms": 31640,
+      "end_ms": 31750,
+      "confidence": 0.873230516910553,
+      "source": "deepgram"
+    },
+    {
+      "text": "想",
+      "original_index": 208,
+      "start_ms": 31750,
+      "end_ms": 31860,
+      "confidence": 0.873230516910553,
+      "source": "deepgram"
+    },
+    {
+      "text": "讲",
+      "original_index": 209,
+      "start_ms": 31860,
+      "end_ms": 32060,
+      "confidence": 0.997990608215332,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 210,
+      "start_ms": 32060,
+      "end_ms": 32140,
+      "confidence": 0.9634279012680054,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 211,
+      "start_ms": 32140,
+      "end_ms": 32220,
+      "confidence": 0.9634279012680054,
+      "source": "deepgram"
+    },
+    {
+      "text": "诸",
+      "original_index": 212,
+      "start_ms": 32220,
+      "end_ms": 32320,
+      "confidence": 0.28572404384613037,
+      "source": "substitution"
+    },
+    {
+      "text": "葛",
+      "original_index": 213,
+      "start_ms": 32320,
+      "end_ms": 32440,
+      "confidence": 0.13844111889600755,
+      "source": "substitution"
+    },
+    {
+      "text": "亮",
+      "original_index": 214,
+      "start_ms": 32440,
+      "end_ms": 32480,
+      "confidence": 0.4778614437580109,
+      "source": "substitution"
+    },
+    {
+      "text": "的",
+      "original_index": 215,
+      "start_ms": 32480,
+      "end_ms": 32580,
+      "confidence": 0.9978420734405518,
+      "source": "deepgram"
+    },
+    {
+      "text": "生",
+      "original_index": 216,
+      "start_ms": 32580,
+      "end_ms": 32720,
+      "confidence": 0.4884392976760864,
+      "source": "substitution"
+    },
+    {
+      "text": "平",
+      "original_index": 217,
+      "start_ms": 32720,
+      "end_ms": 32980,
+      "confidence": 0.2564980000257492,
+      "source": "substitution"
+    },
+    {
+      "text": "他",
+      "original_index": 219,
+      "start_ms": 32980,
+      "end_ms": 33460,
+      "confidence": 0.32177278995513914,
+      "source": "substitution"
+    },
+    {
+      "text": "会",
+      "original_index": 220,
+      "start_ms": 33460,
+      "end_ms": 33620,
+      "confidence": 0.9993826150894165,
+      "source": "deepgram"
+    },
+    {
+      "text": "建",
+      "original_index": 221,
+      "start_ms": 33620,
+      "end_ms": 33820,
+      "confidence": 0.9859839081764221,
+      "source": "deepgram"
+    },
+    {
+      "text": "议",
+      "original_index": 222,
+      "start_ms": 33820,
+      "end_ms": 33940,
+      "confidence": 0.9994220733642578,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 223,
+      "start_ms": 33940,
+      "end_ms": 34060,
+      "confidence": 0.9549833536148071,
+      "source": "deepgram"
+    },
+    {
+      "text": "哪",
+      "original_index": 224,
+      "start_ms": 34060,
+      "end_ms": 34160,
+      "confidence": 0.7704117298126221,
+      "source": "deepgram"
+    },
+    {
+      "text": "些",
+      "original_index": 225,
+      "start_ms": 34160,
+      "end_ms": 34300,
+      "confidence": 0.9984014630317688,
+      "source": "deepgram"
+    },
+    {
+      "text": "角",
+      "original_index": 226,
+      "start_ms": 34300,
+      "end_ms": 34480,
+      "confidence": 0.9997046589851379,
+      "source": "deepgram"
+    },
+    {
+      "text": "度",
+      "original_index": 227,
+      "start_ms": 34480,
+      "end_ms": 34700,
+      "confidence": 0.9984548091888428,
+      "source": "deepgram"
+    },
+    {
+      "text": "然",
+      "original_index": 229,
+      "start_ms": 34700,
+      "end_ms": 34810,
+      "confidence": 0.8461480140686035,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 230,
+      "start_ms": 34810,
+      "end_ms": 34920,
+      "confidence": 0.8461480140686035,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 231,
+      "start_ms": 34920,
+      "end_ms": 35100,
+      "confidence": 0.9982486963272095,
+      "source": "deepgram"
+    },
+    {
+      "text": "加",
+      "original_index": 232,
+      "start_ms": 35100,
+      "end_ms": 35220,
+      "confidence": 0.9974798560142517,
+      "source": "deepgram"
+    },
+    {
+      "text": "入",
+      "original_index": 233,
+      "start_ms": 35220,
+      "end_ms": 35340,
+      "confidence": 0.9974798560142517,
+      "source": "deepgram"
+    },
+    {
+      "text": "之",
+      "original_index": 234,
+      "start_ms": 35340,
+      "end_ms": 35620,
+      "confidence": 0.9967126846313477,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 235,
+      "start_ms": 35620,
+      "end_ms": 35760,
+      "confidence": 0.9999864101409912,
+      "source": "deepgram"
+    },
+    {
+      "text": "他",
+      "original_index": 237,
+      "start_ms": 35760,
+      "end_ms": 36340,
+      "confidence": 0.5106664383411408,
+      "source": "substitution"
+    },
+    {
+      "text": "这",
+      "original_index": 238,
+      "start_ms": 36340,
+      "end_ms": 36460,
+      "confidence": 0.9955328702926636,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 239,
+      "start_ms": 36460,
+      "end_ms": 36580,
+      "confidence": 0.9955328702926636,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 240,
+      "start_ms": 36580,
+      "end_ms": 36760,
+      "confidence": 0.9698160290718079,
+      "source": "deepgram"
+    },
+    {
+      "text": "会",
+      "original_index": 241,
+      "start_ms": 36760,
+      "end_ms": 36880,
+      "confidence": 0.9946573376655579,
+      "source": "deepgram"
+    },
+    {
+      "text": "有",
+      "original_index": 242,
+      "start_ms": 36880,
+      "end_ms": 37000,
+      "confidence": 0.9947142004966736,
+      "source": "deepgram"
+    },
+    {
+      "text": "对",
+      "original_index": 243,
+      "start_ms": 37000,
+      "end_ms": 37100,
+      "confidence": 0.9451925158500671,
+      "source": "deepgram"
+    },
+    {
+      "text": "应",
+      "original_index": 244,
+      "start_ms": 37100,
+      "end_ms": 37180,
+      "confidence": 0.873378574848175,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 245,
+      "start_ms": 37180,
+      "end_ms": 37260,
+      "confidence": 0.9920666217803955,
+      "source": "deepgram"
+    },
+    {
+      "text": "口",
+      "original_index": 246,
+      "start_ms": 37260,
+      "end_ms": 37440,
+      "confidence": 0.3867595905065537,
+      "source": "substitution"
+    },
+    {
+      "text": "播",
+      "original_index": 247,
+      "start_ms": 37440,
+      "end_ms": 37580,
+      "confidence": 0.4081169068813324,
+      "source": "deepgram"
+    },
+    {
+      "text": "稿",
+      "original_index": 248,
+      "start_ms": 37580,
+      "end_ms": 37740,
+      "confidence": 0.5212414836883544,
+      "source": "substitution"
+    },
+    {
+      "text": "然",
+      "original_index": 250,
+      "start_ms": 37740,
+      "end_ms": 37960,
+      "confidence": 0.9752891063690186,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 251,
+      "start_ms": 37960,
+      "end_ms": 38180,
+      "confidence": 0.9752891063690186,
+      "source": "deepgram"
+    },
+    {
+      "text": "然",
+      "original_index": 253,
+      "start_ms": 38754,
+      "end_ms": 39034,
+      "confidence": 0.9144775867462158,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 254,
+      "start_ms": 39034,
+      "end_ms": 39314,
+      "confidence": 0.9144775867462158,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 255,
+      "start_ms": 39314,
+      "end_ms": 39434,
+      "confidence": 0.5804139375686646,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 256,
+      "start_ms": 39394,
+      "end_ms": 39474,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "是",
+      "original_index": 257,
+      "start_ms": 39434,
+      "end_ms": 39554,
+      "confidence": 0.5804139375686646,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 258,
+      "start_ms": 39554,
+      "end_ms": 39754,
+      "confidence": 0.943795382976532,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 259,
+      "start_ms": 39754,
+      "end_ms": 39954,
+      "confidence": 0.943795382976532,
+      "source": "deepgram"
+    },
+    {
+      "text": "上",
+      "original_index": 260,
+      "start_ms": 39954,
+      "end_ms": 40174,
+      "confidence": 0.9781579375267029,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 261,
+      "start_ms": 40174,
+      "end_ms": 40274,
+      "confidence": 0.9787622094154358,
+      "source": "deepgram"
+    },
+    {
+      "text": "次",
+      "original_index": 262,
+      "start_ms": 40274,
+      "end_ms": 40374,
+      "confidence": 0.9787622094154358,
+      "source": "deepgram"
+    },
+    {
+      "text": "生",
+      "original_index": 263,
+      "start_ms": 40374,
+      "end_ms": 40634,
+      "confidence": 0.7246101498603821,
+      "source": "deepgram"
+    },
+    {
+      "text": "成",
+      "original_index": 264,
+      "start_ms": 40634,
+      "end_ms": 40774,
+      "confidence": 0.7796593308448792,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 265,
+      "start_ms": 40774,
+      "end_ms": 40934,
+      "confidence": 0.9203589558601379,
+      "source": "deepgram"
+    },
+    {
+      "text": "口",
+      "original_index": 266,
+      "start_ms": 40934,
+      "end_ms": 41114,
+      "confidence": 0.3920557975769043,
+      "source": "substitution"
+    },
+    {
+      "text": "播",
+      "original_index": 267,
+      "start_ms": 41114,
+      "end_ms": 41274,
+      "confidence": 0.334262877702713,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 268,
+      "start_ms": 41274,
+      "end_ms": 41374,
+      "confidence": 0.9440942406654358,
+      "source": "deepgram"
+    },
+    {
+      "text": "成",
+      "original_index": 269,
+      "start_ms": 41374,
+      "end_ms": 41494,
+      "confidence": 0.8380584716796875,
+      "source": "deepgram"
+    },
+    {
+      "text": "片",
+      "original_index": 270,
+      "start_ms": 41494,
+      "end_ms": 41674,
+      "confidence": 0.88396817445755,
+      "source": "deepgram"
+    },
+    {
+      "text": "预",
+      "original_index": 271,
+      "start_ms": 41674,
+      "end_ms": 41854,
+      "confidence": 0.8165221810340881,
+      "source": "deepgram"
+    },
+    {
+      "text": "览",
+      "original_index": 272,
+      "start_ms": 41854,
+      "end_ms": 41974,
+      "confidence": 0.8673683106899261,
+      "source": "deepgram"
+    },
+    {
+      "text": "它",
+      "original_index": 274,
+      "start_ms": 41974,
+      "end_ms": 42234,
+      "confidence": 0.798179566860199,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 275,
+      "start_ms": 42234,
+      "end_ms": 42334,
+      "confidence": 0.9740217924118042,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 276,
+      "start_ms": 42334,
+      "end_ms": 42434,
+      "confidence": 0.9740217924118042,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 277,
+      "start_ms": 42434,
+      "end_ms": 42634,
+      "confidence": 0.9926395416259766,
+      "source": "deepgram"
+    },
+    {
+      "text": "G",
+      "original_index": 278,
+      "start_ms": 42634,
+      "end_ms": 42774,
+      "confidence": 0.17367100954055786,
+      "source": "substitution"
+    },
+    {
+      "text": "L",
+      "original_index": 279,
+      "start_ms": 42774,
+      "end_ms": 42894,
+      "confidence": 0.41696183443069457,
+      "source": "substitution"
+    },
+    {
+      "text": "M",
+      "original_index": 280,
+      "start_ms": 42894,
+      "end_ms": 43014,
+      "confidence": 0.5160532402992248,
+      "source": "substitution"
+    },
+    {
+      "text": "点",
+      "original_index": 281,
+      "start_ms": 43014,
+      "end_ms": 43174,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "二",
+      "original_index": 282,
+      "start_ms": 43174,
+      "end_ms": 43314,
+      "confidence": 0.6190783822536469,
+      "source": "substitution"
+    },
+    {
+      "text": "规",
+      "original_index": 283,
+      "start_ms": 43314,
+      "end_ms": 43494,
+      "confidence": 0.149863558113575,
+      "source": "substitution"
+    },
+    {
+      "text": "划",
+      "original_index": 284,
+      "start_ms": 43494,
+      "end_ms": 43654,
+      "confidence": 0.6083861440420151,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 285,
+      "start_ms": 43654,
+      "end_ms": 43814,
+      "confidence": 0.9718791842460632,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 287,
+      "start_ms": 43814,
+      "end_ms": 44414,
+      "confidence": 0.896085262298584,
+      "source": "deepgram"
+    },
+    {
+      "text": "些",
+      "original_index": 288,
+      "start_ms": 44414,
+      "end_ms": 44554,
+      "confidence": 0.9994890689849854,
+      "source": "deepgram"
+    },
+    {
+      "text": "它",
+      "original_index": 289,
+      "start_ms": 44554,
+      "end_ms": 44674,
+      "confidence": 0.8210455775260925,
+      "source": "deepgram"
+    },
+    {
+      "text": "都",
+      "original_index": 290,
+      "start_ms": 44674,
+      "end_ms": 44794,
+      "confidence": 0.9978811144828796,
+      "source": "deepgram"
+    },
+    {
+      "text": "会",
+      "original_index": 291,
+      "start_ms": 44794,
+      "end_ms": 45014,
+      "confidence": 0.9972744584083557,
+      "source": "deepgram"
+    },
+    {
+      "text": "记",
+      "original_index": 292,
+      "start_ms": 45014,
+      "end_ms": 45514,
+      "confidence": 0.9216020703315735,
+      "source": "deepgram"
+    },
+    {
+      "text": "录",
+      "original_index": 293,
+      "start_ms": 45514,
+      "end_ms": 45634,
+      "confidence": 0.999372273683548,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 295,
+      "start_ms": 45634,
+      "end_ms": 45714,
+      "confidence": 0.7395119071006775,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 296,
+      "start_ms": 45714,
+      "end_ms": 45794,
+      "confidence": 0.7395119071006775,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 297,
+      "start_ms": 45794,
+      "end_ms": 45874,
+      "confidence": 0.7395119071006775,
+      "source": "deepgram"
+    },
+    {
+      "text": "重",
+      "original_index": 298,
+      "start_ms": 45874,
+      "end_ms": 46174,
+      "confidence": 0.9962682127952576,
+      "source": "deepgram"
+    },
+    {
+      "text": "新",
+      "original_index": 299,
+      "start_ms": 46174,
+      "end_ms": 46334,
+      "confidence": 0.9984007477760315,
+      "source": "deepgram"
+    },
+    {
+      "text": "剪",
+      "original_index": 300,
+      "start_ms": 46334,
+      "end_ms": 46474,
+      "confidence": 0.49728398621082304,
+      "source": "substitution"
+    },
+    {
+      "text": "一",
+      "original_index": 301,
+      "start_ms": 46527,
+      "end_ms": 46581,
+      "confidence": 0.3453840386867523,
+      "source": "substitution"
+    },
+    {
+      "text": "版",
+      "original_index": 302,
+      "start_ms": 46581,
+      "end_ms": 46634,
+      "confidence": 0.3453840386867523,
+      "source": "substitution"
+    },
+    {
+      "text": "剪",
+      "original_index": 304,
+      "start_ms": 46814,
+      "end_ms": 46914,
+      "confidence": 0.5773720288276672,
+      "source": "substitution"
+    },
+    {
+      "text": "下",
+      "original_index": 305,
+      "start_ms": 46914,
+      "end_ms": 47044,
+      "confidence": 0.892259418964386,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 306,
+      "start_ms": 47044,
+      "end_ms": 47174,
+      "confidence": 0.892259418964386,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 307,
+      "start_ms": 47174,
+      "end_ms": 47374,
+      "confidence": 0.3580777072906494,
+      "source": "substitution"
+    },
+    {
+      "text": "然",
+      "original_index": 309,
+      "start_ms": 47754,
+      "end_ms": 47934,
+      "confidence": 0.9632292985916138,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 310,
+      "start_ms": 47934,
+      "end_ms": 48114,
+      "confidence": 0.9632292985916138,
+      "source": "deepgram"
+    },
+    {
+      "text": "对",
+      "original_index": 311,
+      "start_ms": 48114,
+      "end_ms": 48374,
+      "confidence": 0.995261549949646,
+      "source": "deepgram"
+    },
+    {
+      "text": "应",
+      "original_index": 312,
+      "start_ms": 48374,
+      "end_ms": 48514,
+      "confidence": 0.42844438076019287,
+      "source": "substitution"
+    },
+    {
+      "text": "我",
+      "original_index": 313,
+      "start_ms": 48514,
+      "end_ms": 48604,
+      "confidence": 0.9927288889884949,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 314,
+      "start_ms": 48604,
+      "end_ms": 48694,
+      "confidence": 0.9927288889884949,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 315,
+      "start_ms": 48694,
+      "end_ms": 48834,
+      "confidence": 0.9833967089653015,
+      "source": "deepgram"
+    },
+    {
+      "text": "社",
+      "original_index": 316,
+      "start_ms": 48834,
+      "end_ms": 49014,
+      "confidence": 0.9943081736564636,
+      "source": "deepgram"
+    },
+    {
+      "text": "区",
+      "original_index": 317,
+      "start_ms": 49014,
+      "end_ms": 49274,
+      "confidence": 0.9996823370456696,
+      "source": "deepgram"
+    },
+    {
+      "text": "社",
+      "original_index": 319,
+      "start_ms": 49274,
+      "end_ms": 49654,
+      "confidence": 0.9060391783714294,
+      "source": "deepgram"
+    },
+    {
+      "text": "区",
+      "original_index": 320,
+      "start_ms": 49654,
+      "end_ms": 49854,
+      "confidence": 0.9999346733093262,
+      "source": "deepgram"
+    },
+    {
+      "text": "功",
+      "original_index": 321,
+      "start_ms": 49854,
+      "end_ms": 49994,
+      "confidence": 0.2624199086427689,
+      "source": "substitution"
+    },
+    {
+      "text": "能",
+      "original_index": 322,
+      "start_ms": 49994,
+      "end_ms": 50084,
+      "confidence": 0.4396907114982605,
+      "source": "substitution"
+    },
+    {
+      "text": "是",
+      "original_index": 323,
+      "start_ms": 50084,
+      "end_ms": 50174,
+      "confidence": 0.7091785669326782,
+      "source": "deepgram"
+    },
+    {
+      "text": "怎",
+      "original_index": 324,
+      "start_ms": 50174,
+      "end_ms": 50247,
+      "confidence": 0.9512019157409668,
+      "source": "deepgram"
+    },
+    {
+      "text": "么",
+      "original_index": 325,
+      "start_ms": 50247,
+      "end_ms": 50321,
+      "confidence": 0.9512019157409668,
+      "source": "deepgram"
+    },
+    {
+      "text": "样",
+      "original_index": 326,
+      "start_ms": 50321,
+      "end_ms": 50394,
+      "confidence": 0.9512019157409668,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 327,
+      "start_ms": 50394,
+      "end_ms": 50594,
+      "confidence": 0.23035465836524963,
+      "source": "substitution"
+    },
+    {
+      "text": "呢",
+      "original_index": 328,
+      "start_ms": 50594,
+      "end_ms": 50694,
+      "confidence": 0.8608267903327942,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 330,
+      "start_ms": 50694,
+      "end_ms": 50744,
+      "confidence": 0.7212253212928772,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 331,
+      "start_ms": 50744,
+      "end_ms": 50794,
+      "confidence": 0.7212253212928772,
+      "source": "deepgram"
+    },
+    {
+      "text": "比",
+      "original_index": 332,
+      "start_ms": 50794,
+      "end_ms": 50914,
+      "confidence": 0.9848255515098572,
+      "source": "deepgram"
+    },
+    {
+      "text": "如",
+      "original_index": 333,
+      "start_ms": 50914,
+      "end_ms": 51034,
+      "confidence": 0.9848255515098572,
+      "source": "deepgram"
+    },
+    {
+      "text": "说",
+      "original_index": 334,
+      "start_ms": 51034,
+      "end_ms": 51254,
+      "confidence": 0.9975530505180359,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 335,
+      "start_ms": 51254,
+      "end_ms": 51364,
+      "confidence": 0.9572358131408691,
+      "source": "deepgram"
+    },
+    {
+      "text": "想",
+      "original_index": 336,
+      "start_ms": 51364,
+      "end_ms": 51474,
+      "confidence": 0.9572358131408691,
+      "source": "deepgram"
+    },
+    {
+      "text": "让",
+      "original_index": 337,
+      "start_ms": 51474,
+      "end_ms": 51634,
+      "confidence": 0.9915441274642944,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 338,
+      "start_ms": 51634,
+      "end_ms": 51764,
+      "confidence": 0.9908129572868347,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 339,
+      "start_ms": 51764,
+      "end_ms": 51894,
+      "confidence": 0.9908129572868347,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 340,
+      "start_ms": 51894,
+      "end_ms": 52174,
+      "confidence": 0.9850382208824158,
+      "source": "deepgram"
+    },
+    {
+      "text": "M",
+      "original_index": 341,
+      "start_ms": 52014,
+      "end_ms": 52094,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "o",
+      "original_index": 342,
+      "start_ms": 52094,
+      "end_ms": 52174,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "e",
+      "original_index": 343,
+      "start_ms": 52174,
+      "end_ms": 52254,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "n",
+      "original_index": 344,
+      "start_ms": 52254,
+      "end_ms": 52334,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "C",
+      "original_index": 345,
+      "start_ms": 52174,
+      "end_ms": 52734,
+      "confidence": 0.5180248755216599,
+      "source": "substitution"
+    },
+    {
+      "text": "h",
+      "original_index": 346,
+      "start_ms": 52734,
+      "end_ms": 52854,
+      "confidence": 0.5718281316757202,
+      "source": "substitution"
+    },
+    {
+      "text": "a",
+      "original_index": 347,
+      "start_ms": 52854,
+      "end_ms": 53014,
+      "confidence": 0.3145444616675377,
+      "source": "substitution"
+    },
+    {
+      "text": "t",
+      "original_index": 348,
+      "start_ms": 53014,
+      "end_ms": 53154,
+      "confidence": 0.5399296772480011,
+      "source": "substitution"
+    },
+    {
+      "text": "支",
+      "original_index": 349,
+      "start_ms": 53154,
+      "end_ms": 53274,
+      "confidence": 0.7890086770057678,
+      "source": "deepgram"
+    },
+    {
+      "text": "持",
+      "original_index": 350,
+      "start_ms": 53274,
+      "end_ms": 53394,
+      "confidence": 0.7890086770057678,
+      "source": "deepgram"
+    },
+    {
+      "text": "剪",
+      "original_index": 351,
+      "start_ms": 53394,
+      "end_ms": 53714,
+      "confidence": 0.6068780612945557,
+      "source": "substitution"
+    },
+    {
+      "text": "一",
+      "original_index": 352,
+      "start_ms": 53714,
+      "end_ms": 53844,
+      "confidence": 0.9757035970687866,
+      "source": "deepgram"
+    },
+    {
+      "text": "点",
+      "original_index": 353,
+      "start_ms": 53844,
+      "end_ms": 53974,
+      "confidence": 0.9757035970687866,
+      "source": "deepgram"
+    },
+    {
+      "text": "F",
+      "original_index": 354,
+      "start_ms": 53894,
+      "end_ms": 53974,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "I",
+      "original_index": 355,
+      "start_ms": 53974,
+      "end_ms": 54054,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "F",
+      "original_index": 356,
+      "start_ms": 53974,
+      "end_ms": 54254,
+      "confidence": 0.4987621259689331,
+      "source": "substitution"
+    },
+    {
+      "text": "A",
+      "original_index": 357,
+      "start_ms": 54254,
+      "end_ms": 54394,
+      "confidence": 0.4277847731113434,
+      "source": "substitution"
+    },
+    {
+      "text": "的",
+      "original_index": 358,
+      "start_ms": 54394,
+      "end_ms": 54514,
+      "confidence": 0.9813791513442993,
+      "source": "deepgram"
+    },
+    {
+      "text": "赛",
+      "original_index": 359,
+      "start_ms": 54514,
+      "end_ms": 54614,
+      "confidence": 0.8685203790664673,
+      "source": "deepgram"
+    },
+    {
+      "text": "事",
+      "original_index": 360,
+      "start_ms": 54614,
+      "end_ms": 54714,
+      "confidence": 0.8538823127746582,
+      "source": "deepgram"
+    },
+    {
+      "text": "材",
+      "original_index": 361,
+      "start_ms": 54714,
+      "end_ms": 54934,
+      "confidence": 0.9964459240436554,
+      "source": "deepgram"
+    },
+    {
+      "text": "料",
+      "original_index": 362,
+      "start_ms": 54934,
+      "end_ms": 55134,
+      "confidence": 0.9996383190155029,
+      "source": "deepgram"
+    },
+    {
+      "text": "那",
+      "original_index": 364,
+      "start_ms": 55134,
+      "end_ms": 55254,
+      "confidence": 0.9841845035552979,
+      "source": "deepgram"
+    },
+    {
+      "text": "么",
+      "original_index": 365,
+      "start_ms": 55254,
+      "end_ms": 55374,
+      "confidence": 0.9841845035552979,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 366,
+      "start_ms": 55374,
+      "end_ms": 55594,
+      "confidence": 0.6602470874786377,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 367,
+      "start_ms": 55594,
+      "end_ms": 55701,
+      "confidence": 0.9989458918571472,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 368,
+      "start_ms": 55701,
+      "end_ms": 55807,
+      "confidence": 0.9989458918571472,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 369,
+      "start_ms": 55807,
+      "end_ms": 55914,
+      "confidence": 0.9989458918571472,
+      "source": "deepgram"
+    },
+    {
+      "text": "在",
+      "original_index": 370,
+      "start_ms": 55914,
+      "end_ms": 56134,
+      "confidence": 0.9962312579154968,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 371,
+      "start_ms": 56134,
+      "end_ms": 56294,
+      "confidence": 0.9974749684333801,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 372,
+      "start_ms": 56294,
+      "end_ms": 56454,
+      "confidence": 0.9974749684333801,
+      "source": "deepgram"
+    },
+    {
+      "text": "制",
+      "original_index": 373,
+      "start_ms": 56454,
+      "end_ms": 57114,
+      "confidence": 0.9785328507423401,
+      "source": "deepgram"
+    },
+    {
+      "text": "作",
+      "original_index": 374,
+      "start_ms": 57114,
+      "end_ms": 57314,
+      "confidence": 0.9927807450294495,
+      "source": "deepgram"
+    },
+    {
+      "text": "好",
+      "original_index": 375,
+      "start_ms": 57314,
+      "end_ms": 57454,
+      "confidence": 0.994878888130188,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 376,
+      "start_ms": 57454,
+      "end_ms": 57514,
+      "confidence": 0.359331876039505,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 377,
+      "start_ms": 57514,
+      "end_ms": 57574,
+      "confidence": 0.359331876039505,
+      "source": "deepgram"
+    },
+    {
+      "text": "F",
+      "original_index": 378,
+      "start_ms": 57814,
+      "end_ms": 57934,
+      "confidence": 0.6149323773384094,
+      "source": "substitution"
+    },
+    {
+      "text": "I",
+      "original_index": 379,
+      "start_ms": 57934,
+      "end_ms": 58114,
+      "confidence": 0.6174163734912872,
+      "source": "substitution"
+    },
+    {
+      "text": "F",
+      "original_index": 380,
+      "start_ms": 58114,
+      "end_ms": 58194,
+      "confidence": 0.07403243124485016,
+      "source": "substitution"
+    },
+    {
+      "text": "A",
+      "original_index": 381,
+      "start_ms": 58194,
+      "end_ms": 58274,
+      "confidence": 0.07403243124485016,
+      "source": "substitution"
+    },
+    {
+      "text": "的",
+      "original_index": 382,
+      "start_ms": 58274,
+      "end_ms": 58354,
+      "confidence": 0.07403243124485016,
+      "source": "substitution"
+    },
+    {
+      "text": "技",
+      "original_index": 383,
+      "start_ms": 58354,
+      "end_ms": 58414,
+      "confidence": 0.2711074095964432,
+      "source": "substitution"
+    },
+    {
+      "text": "能",
+      "original_index": 384,
+      "start_ms": 58414,
+      "end_ms": 58474,
+      "confidence": 0.2711074095964432,
+      "source": "substitution"
+    },
+    {
+      "text": "包",
+      "original_index": 385,
+      "start_ms": 58474,
+      "end_ms": 58674,
+      "confidence": 0.6542074680328369,
+      "source": "deepgram"
+    },
+    {
+      "text": "让",
+      "original_index": 387,
+      "start_ms": 58674,
+      "end_ms": 58934,
+      "confidence": 0.7143978476524353,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 388,
+      "start_ms": 58934,
+      "end_ms": 59054,
+      "confidence": 0.7398313283920288,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 389,
+      "start_ms": 59054,
+      "end_ms": 59174,
+      "confidence": 0.7398313283920288,
+      "source": "deepgram"
+    },
+    {
+      "text": "派",
+      "original_index": 390,
+      "start_ms": 59174,
+      "end_ms": 60034,
+      "confidence": 0.9188205301761627,
+      "source": "deepgram"
+    },
+    {
+      "text": "a",
+      "original_index": 391,
+      "start_ms": 59954,
+      "end_ms": 60034,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "g",
+      "original_index": 392,
+      "start_ms": 60034,
+      "end_ms": 60114,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "e",
+      "original_index": 393,
+      "start_ms": 60034,
+      "end_ms": 60214,
+      "confidence": 0.2320152258872986,
+      "source": "substitution"
+    },
+    {
+      "text": "n",
+      "original_index": 394,
+      "start_ms": 60214,
+      "end_ms": 60254,
+      "confidence": 0.37892476335167885,
+      "source": "substitution"
+    },
+    {
+      "text": "t",
+      "original_index": 395,
+      "start_ms": 60254,
+      "end_ms": 60314,
+      "confidence": 0.3441133081912994,
+      "source": "substitution"
+    },
+    {
+      "text": "可",
+      "original_index": 396,
+      "start_ms": 60314,
+      "end_ms": 60394,
+      "confidence": 0.9261534214019775,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 397,
+      "start_ms": 60394,
+      "end_ms": 60474,
+      "confidence": 0.9261534214019775,
+      "source": "deepgram"
+    },
+    {
+      "text": "调",
+      "original_index": 398,
+      "start_ms": 60474,
+      "end_ms": 60654,
+      "confidence": 0.9957570433616638,
+      "source": "deepgram"
+    },
+    {
+      "text": "用",
+      "original_index": 399,
+      "start_ms": 60654,
+      "end_ms": 60814,
+      "confidence": 0.9895658493041992,
+      "source": "deepgram"
+    },
+    {
+      "text": "那",
+      "original_index": 401,
+      "start_ms": 60814,
+      "end_ms": 60974,
+      "confidence": 0.36816444993019104,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 402,
+      "start_ms": 60974,
+      "end_ms": 61114,
+      "confidence": 0.9978405237197876,
+      "source": "deepgram"
+    },
+    {
+      "text": "时",
+      "original_index": 403,
+      "start_ms": 61114,
+      "end_ms": 61244,
+      "confidence": 0.9979043006896973,
+      "source": "deepgram"
+    },
+    {
+      "text": "候",
+      "original_index": 404,
+      "start_ms": 61244,
+      "end_ms": 61374,
+      "confidence": 0.9979043006896973,
+      "source": "deepgram"
+    },
+    {
+      "text": "它",
+      "original_index": 405,
+      "start_ms": 61374,
+      "end_ms": 61534,
+      "confidence": 0.8195356726646423,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 406,
+      "start_ms": 61534,
+      "end_ms": 61674,
+      "confidence": 0.9859846830368042,
+      "source": "deepgram"
+    },
+    {
+      "text": "会",
+      "original_index": 407,
+      "start_ms": 61674,
+      "end_ms": 61974,
+      "confidence": 0.9992491602897644,
+      "source": "deepgram"
+    },
+    {
+      "text": "把",
+      "original_index": 408,
+      "start_ms": 61974,
+      "end_ms": 62494,
+      "confidence": 0.9549386501312256,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 409,
+      "start_ms": 62494,
+      "end_ms": 62614,
+      "confidence": 0.6235482692718506,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 410,
+      "start_ms": 62614,
+      "end_ms": 62734,
+      "confidence": 0.44782163500785827,
+      "source": "substitution"
+    },
+    {
+      "text": "F",
+      "original_index": 411,
+      "start_ms": 62654,
+      "end_ms": 62734,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "I",
+      "original_index": 412,
+      "start_ms": 62734,
+      "end_ms": 62814,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "F",
+      "original_index": 413,
+      "start_ms": 62734,
+      "end_ms": 62994,
+      "confidence": 0.34826541066169736,
+      "source": "substitution"
+    },
+    {
+      "text": "A",
+      "original_index": 414,
+      "start_ms": 62994,
+      "end_ms": 63234,
+      "confidence": 0.6178134167194367,
+      "source": "substitution"
+    },
+    {
+      "text": "的",
+      "original_index": 415,
+      "start_ms": 63234,
+      "end_ms": 63374,
+      "confidence": 0.9924018383026123,
+      "source": "deepgram"
+    },
+    {
+      "text": "材",
+      "original_index": 416,
+      "start_ms": 63374,
+      "end_ms": 63594,
+      "confidence": 0.99789759516716,
+      "source": "deepgram"
+    },
+    {
+      "text": "料",
+      "original_index": 417,
+      "start_ms": 63594,
+      "end_ms": 63714,
+      "confidence": 0.9999816417694092,
+      "source": "deepgram"
+    },
+    {
+      "text": "加",
+      "original_index": 418,
+      "start_ms": 63674,
+      "end_ms": 63754,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "进",
+      "original_index": 419,
+      "start_ms": 63714,
+      "end_ms": 63824,
+      "confidence": 0.16191124618053437,
+      "source": "substitution"
+    },
+    {
+      "text": "去",
+      "original_index": 420,
+      "start_ms": 63824,
+      "end_ms": 63934,
+      "confidence": 0.2611471712589264,
+      "source": "deepgram"
+    },
+    {
+      "text": "让",
+      "original_index": 422,
+      "start_ms": 63934,
+      "end_ms": 64114,
+      "confidence": 0.9582071304321289,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 423,
+      "start_ms": 64114,
+      "end_ms": 64234,
+      "confidence": 0.9967633485794067,
+      "source": "deepgram"
+    },
+    {
+      "text": "做",
+      "original_index": 424,
+      "start_ms": 64234,
+      "end_ms": 64354,
+      "confidence": 0.9802544713020325,
+      "source": "deepgram"
+    },
+    {
+      "text": "出",
+      "original_index": 425,
+      "start_ms": 64354,
+      "end_ms": 64434,
+      "confidence": 0.5761844515800476,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 426,
+      "start_ms": 64434,
+      "end_ms": 64514,
+      "confidence": 0.5761844515800476,
+      "source": "deepgram"
+    },
+    {
+      "text": "更",
+      "original_index": 427,
+      "start_ms": 64514,
+      "end_ms": 64614,
+      "confidence": 0.2802797853946686,
+      "source": "deepgram"
+    },
+    {
+      "text": "精",
+      "original_index": 428,
+      "start_ms": 64614,
+      "end_ms": 64834,
+      "confidence": 0.9877238273620605,
+      "source": "deepgram"
+    },
+    {
+      "text": "美",
+      "original_index": 429,
+      "start_ms": 64834,
+      "end_ms": 64974,
+      "confidence": 0.9927507638931274,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 430,
+      "start_ms": 64974,
+      "end_ms": 65114,
+      "confidence": 0.8493568301200867,
+      "source": "deepgram"
+    },
+    {
+      "text": "足",
+      "original_index": 431,
+      "start_ms": 65114,
+      "end_ms": 65134,
+      "confidence": 0.5657817125320435,
+      "source": "deepgram"
+    },
+    {
+      "text": "球",
+      "original_index": 432,
+      "start_ms": 65134,
+      "end_ms": 65214,
+      "confidence": 0.8971306085586548,
+      "source": "deepgram"
+    },
+    {
+      "text": "视",
+      "original_index": 433,
+      "start_ms": 65214,
+      "end_ms": 65394,
+      "confidence": 0.7053857445716858,
+      "source": "deepgram"
+    },
+    {
+      "text": "频",
+      "original_index": 434,
+      "start_ms": 65394,
+      "end_ms": 65554,
+      "confidence": 0.9951680898666382,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 436,
+      "start_ms": 65554,
+      "end_ms": 65754,
+      "confidence": 0.6127188205718994,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 437,
+      "start_ms": 65754,
+      "end_ms": 65874,
+      "confidence": 0.19811557233333588,
+      "source": "substitution"
+    },
+    {
+      "text": "我",
+      "original_index": 438,
+      "start_ms": 65874,
+      "end_ms": 66014,
+      "confidence": 0.7970799207687378,
+      "source": "deepgram"
+    },
+    {
+      "text": "相",
+      "original_index": 439,
+      "start_ms": 66014,
+      "end_ms": 66134,
+      "confidence": 0.9975075721740723,
+      "source": "deepgram"
+    },
+    {
+      "text": "信",
+      "original_index": 440,
+      "start_ms": 66134,
+      "end_ms": 66254,
+      "confidence": 0.9975075721740723,
+      "source": "deepgram"
+    },
+    {
+      "text": "随",
+      "original_index": 441,
+      "start_ms": 66854,
+      "end_ms": 66954,
+      "confidence": 0.9930574595928192,
+      "source": "deepgram"
+    },
+    {
+      "text": "着",
+      "original_index": 442,
+      "start_ms": 66954,
+      "end_ms": 67094,
+      "confidence": 0.9036690592765808,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 443,
+      "start_ms": 67094,
+      "end_ms": 67174,
+      "confidence": 0.9756218194961548,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 444,
+      "start_ms": 67174,
+      "end_ms": 67254,
+      "confidence": 0.9756218194961548,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 445,
+      "start_ms": 67254,
+      "end_ms": 67374,
+      "confidence": 0.9707173109054565,
+      "source": "deepgram"
+    },
+    {
+      "text": "产",
+      "original_index": 446,
+      "start_ms": 67374,
+      "end_ms": 67534,
+      "confidence": 0.9992227554321289,
+      "source": "deepgram"
+    },
+    {
+      "text": "品",
+      "original_index": 447,
+      "start_ms": 67534,
+      "end_ms": 67674,
+      "confidence": 0.9997904896736145,
+      "source": "deepgram"
+    },
+    {
+      "text": "影",
+      "original_index": 448,
+      "start_ms": 67674,
+      "end_ms": 67794,
+      "confidence": 0.9957263469696045,
+      "source": "deepgram"
+    },
+    {
+      "text": "响",
+      "original_index": 449,
+      "start_ms": 67794,
+      "end_ms": 67894,
+      "confidence": 0.9994458258152008,
+      "source": "deepgram"
+    },
+    {
+      "text": "力",
+      "original_index": 450,
+      "start_ms": 67894,
+      "end_ms": 67994,
+      "confidence": 0.997204065322876,
+      "source": "deepgram"
+    },
+    {
+      "text": "不",
+      "original_index": 451,
+      "start_ms": 67994,
+      "end_ms": 68134,
+      "confidence": 0.8982346653938293,
+      "source": "deepgram"
+    },
+    {
+      "text": "断",
+      "original_index": 452,
+      "start_ms": 68134,
+      "end_ms": 68254,
+      "confidence": 0.9995155036449432,
+      "source": "deepgram"
+    },
+    {
+      "text": "扩",
+      "original_index": 453,
+      "start_ms": 68254,
+      "end_ms": 68414,
+      "confidence": 0.40935282468795775,
+      "source": "substitution"
+    },
+    {
+      "text": "大",
+      "original_index": 454,
+      "start_ms": 68414,
+      "end_ms": 68634,
+      "confidence": 0.922991156578064,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 456,
+      "start_ms": 68634,
+      "end_ms": 69034,
+      "confidence": 0.04960764944553375,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 457,
+      "start_ms": 69034,
+      "end_ms": 69134,
+      "confidence": 0.27767558515071866,
+      "source": "substitution"
+    },
+    {
+      "text": "社",
+      "original_index": 458,
+      "start_ms": 69134,
+      "end_ms": 69294,
+      "confidence": 0.9519268870353699,
+      "source": "deepgram"
+    },
+    {
+      "text": "区",
+      "original_index": 459,
+      "start_ms": 69294,
+      "end_ms": 69534,
+      "confidence": 0.9996113777160645,
+      "source": "deepgram"
+    },
+    {
+      "text": "会",
+      "original_index": 460,
+      "start_ms": 69534,
+      "end_ms": 69774,
+      "confidence": 0.9142556190490723,
+      "source": "deepgram"
+    },
+    {
+      "text": "越",
+      "original_index": 461,
+      "start_ms": 69774,
+      "end_ms": 69874,
+      "confidence": 0.9828082919120789,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 462,
+      "start_ms": 69874,
+      "end_ms": 69974,
+      "confidence": 0.9986756443977356,
+      "source": "deepgram"
+    },
+    {
+      "text": "越",
+      "original_index": 463,
+      "start_ms": 69974,
+      "end_ms": 70094,
+      "confidence": 0.9986467957496643,
+      "source": "deepgram"
+    },
+    {
+      "text": "壮",
+      "original_index": 464,
+      "start_ms": 70094,
+      "end_ms": 70234,
+      "confidence": 0.9933245182037354,
+      "source": "deepgram"
+    },
+    {
+      "text": "大",
+      "original_index": 465,
+      "start_ms": 70234,
+      "end_ms": 70414,
+      "confidence": 0.9790842533111572,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 467,
+      "start_ms": 70414,
+      "end_ms": 70554,
+      "confidence": 0.8301117420196533,
+      "source": "deepgram"
+    },
+    {
+      "text": "时",
+      "original_index": 468,
+      "start_ms": 70554,
+      "end_ms": 70664,
+      "confidence": 0.9935560822486877,
+      "source": "deepgram"
+    },
+    {
+      "text": "候",
+      "original_index": 469,
+      "start_ms": 70664,
+      "end_ms": 70774,
+      "confidence": 0.9935560822486877,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 470,
+      "start_ms": 70774,
+      "end_ms": 70974,
+      "confidence": 0.468912273645401,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 471,
+      "start_ms": 70974,
+      "end_ms": 71174,
+      "confidence": 0.468912273645401,
+      "source": "deepgram"
+    },
+    {
+      "text": "做",
+      "original_index": 472,
+      "start_ms": 71174,
+      "end_ms": 71594,
+      "confidence": 0.972467303276062,
+      "source": "deepgram"
+    },
+    {
+      "text": "世",
+      "original_index": 473,
+      "start_ms": 71594,
+      "end_ms": 71744,
+      "confidence": 0.9008692502975464,
+      "source": "deepgram"
+    },
+    {
+      "text": "界",
+      "original_index": 474,
+      "start_ms": 71744,
+      "end_ms": 71894,
+      "confidence": 0.9008692502975464,
+      "source": "deepgram"
+    },
+    {
+      "text": "上",
+      "original_index": 475,
+      "start_ms": 71894,
+      "end_ms": 72094,
+      "confidence": 0.9941269159317017,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 476,
+      "start_ms": 72094,
+      "end_ms": 72294,
+      "confidence": 0.9870285987854004,
+      "source": "deepgram"
+    },
+    {
+      "text": "切",
+      "original_index": 477,
+      "start_ms": 72294,
+      "end_ms": 72394,
+      "confidence": 0.9997804760932922,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 478,
+      "start_ms": 72394,
+      "end_ms": 72514,
+      "confidence": 0.9564797878265381,
+      "source": "deepgram"
+    },
+    {
+      "text": "口",
+      "original_index": 479,
+      "start_ms": 72514,
+      "end_ms": 72614,
+      "confidence": 0.3805748403072357,
+      "source": "substitution"
+    },
+    {
+      "text": "播",
+      "original_index": 480,
+      "start_ms": 72614,
+      "end_ms": 72754,
+      "confidence": 0.4058753705024719,
+      "source": "substitution"
+    },
+    {
+      "text": "视",
+      "original_index": 481,
+      "start_ms": 72754,
+      "end_ms": 72894,
+      "confidence": 0.9374129176139832,
+      "source": "deepgram"
+    },
+    {
+      "text": "频",
+      "original_index": 482,
+      "start_ms": 72894,
+      "end_ms": 73414,
+      "confidence": 0.9987156391143799,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 484,
+      "start_ms": 75874,
+      "end_ms": 76164,
+      "confidence": 0.9320566654205322,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 485,
+      "start_ms": 76164,
+      "end_ms": 76454,
+      "confidence": 0.9320566654205322,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 486,
+      "start_ms": 76454,
+      "end_ms": 76634,
+      "confidence": 0.9496506452560425,
+      "source": "deepgram"
+    },
+    {
+      "text": "是",
+      "original_index": 487,
+      "start_ms": 76634,
+      "end_ms": 76814,
+      "confidence": 0.9496506452560425,
+      "source": "deepgram"
+    },
+    {
+      "text": "我",
+      "original_index": 488,
+      "start_ms": 76814,
+      "end_ms": 76934,
+      "confidence": 0.9952120780944824,
+      "source": "deepgram"
+    },
+    {
+      "text": "们",
+      "original_index": 489,
+      "start_ms": 76934,
+      "end_ms": 77054,
+      "confidence": 0.9952120780944824,
+      "source": "deepgram"
+    },
+    {
+      "text": "的",
+      "original_index": 490,
+      "start_ms": 77054,
+      "end_ms": 77254,
+      "confidence": 0.9884568452835083,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 491,
+      "start_ms": 77254,
+      "end_ms": 77344,
+      "confidence": 0.9798622727394104,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 492,
+      "start_ms": 77344,
+      "end_ms": 77434,
+      "confidence": 0.9798622727394104,
+      "source": "deepgram"
+    },
+    {
+      "text": "产",
+      "original_index": 493,
+      "start_ms": 77434,
+      "end_ms": 77774,
+      "confidence": 0.9598883390426636,
+      "source": "deepgram"
+    },
+    {
+      "text": "品",
+      "original_index": 494,
+      "start_ms": 77774,
+      "end_ms": 77994,
+      "confidence": 0.9998160004615784,
+      "source": "deepgram"
+    },
+    {
+      "text": "介",
+      "original_index": 495,
+      "start_ms": 77994,
+      "end_ms": 78174,
+      "confidence": 0.9997949004173279,
+      "source": "deepgram"
+    },
+    {
+      "text": "绍",
+      "original_index": 496,
+      "start_ms": 78174,
+      "end_ms": 78354,
+      "confidence": 0.9974051713943481,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 498,
+      "start_ms": 78354,
+      "end_ms": 78514,
+      "confidence": 0.7897065877914429,
+      "source": "deepgram"
+    },
+    {
+      "text": "最",
+      "original_index": 499,
+      "start_ms": 78514,
+      "end_ms": 78654,
+      "confidence": 0.9956047534942627,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 500,
+      "start_ms": 78654,
+      "end_ms": 78854,
+      "confidence": 0.9998748302459717,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 501,
+      "start_ms": 78854,
+      "end_ms": 79054,
+      "confidence": 0.6559604406356812,
+      "source": "deepgram"
+    },
+    {
+      "text": "生",
+      "original_index": 502,
+      "start_ms": 79054,
+      "end_ms": 79214,
+      "confidence": 0.9104963541030884,
+      "source": "deepgram"
+    },
+    {
+      "text": "成",
+      "original_index": 503,
+      "start_ms": 79214,
+      "end_ms": 79334,
+      "confidence": 0.9592015743255615,
+      "source": "deepgram"
+    },
+    {
+      "text": "到",
+      "original_index": 504,
+      "start_ms": 79294,
+      "end_ms": 79374,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "的",
+      "original_index": 505,
+      "start_ms": 79334,
+      "end_ms": 79414,
+      "confidence": 0.8565873503684998,
+      "source": "deepgram"
+    },
+    {
+      "text": "视",
+      "original_index": 506,
+      "start_ms": 79414,
+      "end_ms": 79654,
+      "confidence": 0.5107693672180176,
+      "source": "deepgram"
+    },
+    {
+      "text": "频",
+      "original_index": 507,
+      "start_ms": 79654,
+      "end_ms": 79934,
+      "confidence": 0.9984527826309204,
+      "source": "deepgram"
+    },
+    {
+      "text": "会",
+      "original_index": 508,
+      "start_ms": 79934,
+      "end_ms": 80154,
+      "confidence": 0.8522000312805176,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 509,
+      "start_ms": 80154,
+      "end_ms": 80434,
+      "confidence": 0.6157318949699402,
+      "source": "deepgram"
+    },
+    {
+      "text": "邮",
+      "original_index": 510,
+      "start_ms": 80434,
+      "end_ms": 80654,
+      "confidence": 0.3709956181049347,
+      "source": "substitution"
+    },
+    {
+      "text": "件",
+      "original_index": 511,
+      "start_ms": 80654,
+      "end_ms": 80834,
+      "confidence": 0.3014408987760544,
+      "source": "substitution"
+    },
+    {
+      "text": "的",
+      "original_index": 512,
+      "start_ms": 80834,
+      "end_ms": 80914,
+      "confidence": 0.9321336150169373,
+      "source": "deepgram"
+    },
+    {
+      "text": "形",
+      "original_index": 513,
+      "start_ms": 80914,
+      "end_ms": 81034,
+      "confidence": 0.4252414405345917,
+      "source": "deepgram"
+    },
+    {
+      "text": "式",
+      "original_index": 514,
+      "start_ms": 81034,
+      "end_ms": 81134,
+      "confidence": 0.9058061242103577,
+      "source": "deepgram"
+    },
+    {
+      "text": "发",
+      "original_index": 515,
+      "start_ms": 81134,
+      "end_ms": 81274,
+      "confidence": 0.9774102568626404,
+      "source": "deepgram"
+    },
+    {
+      "text": "给",
+      "original_index": 516,
+      "start_ms": 81274,
+      "end_ms": 81394,
+      "confidence": 0.6543114185333252,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 517,
+      "start_ms": 81394,
+      "end_ms": 81494,
+      "confidence": 0.7289714217185974,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 519,
+      "start_ms": 81494,
+      "end_ms": 81574,
+      "confidence": 0.21829213201999664,
+      "source": "deepgram"
+    },
+    {
+      "text": "像",
+      "original_index": 520,
+      "start_ms": 81574,
+      "end_ms": 81634,
+      "confidence": 0.886216938495636,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 521,
+      "start_ms": 81634,
+      "end_ms": 81744,
+      "confidence": 0.9955079555511475,
+      "source": "deepgram"
+    },
+    {
+      "text": "样",
+      "original_index": 522,
+      "start_ms": 81744,
+      "end_ms": 81854,
+      "confidence": 0.9955079555511475,
+      "source": "deepgram"
+    },
+    {
+      "text": "它",
+      "original_index": 524,
+      "start_ms": 81854,
+      "end_ms": 82087,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "会",
+      "original_index": 525,
+      "start_ms": 82087,
+      "end_ms": 82321,
+      "confidence": 0.35,
+      "source": "interpolated"
+    },
+    {
+      "text": "他",
+      "original_index": 526,
+      "start_ms": 82102,
+      "end_ms": 82582,
+      "confidence": 0.2583508253097534,
+      "source": "substitution"
+    },
+    {
+      "text": "会",
+      "original_index": 527,
+      "start_ms": 82582,
+      "end_ms": 82682,
+      "confidence": 0.9531477093696594,
+      "source": "deepgram"
+    },
+    {
+      "text": "发",
+      "original_index": 528,
+      "start_ms": 82682,
+      "end_ms": 82822,
+      "confidence": 0.9928682446479797,
+      "source": "deepgram"
+    },
+    {
+      "text": "给",
+      "original_index": 529,
+      "start_ms": 82822,
+      "end_ms": 82942,
+      "confidence": 0.8196418285369873,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 530,
+      "start_ms": 82942,
+      "end_ms": 83022,
+      "confidence": 0.967103898525238,
+      "source": "deepgram"
+    },
+    {
+      "text": "一",
+      "original_index": 531,
+      "start_ms": 83022,
+      "end_ms": 83082,
+      "confidence": 0.9911320805549622,
+      "source": "deepgram"
+    },
+    {
+      "text": "个",
+      "original_index": 532,
+      "start_ms": 83082,
+      "end_ms": 83142,
+      "confidence": 0.9911320805549622,
+      "source": "deepgram"
+    },
+    {
+      "text": "邮",
+      "original_index": 533,
+      "start_ms": 83142,
+      "end_ms": 83302,
+      "confidence": 0.9904568493366241,
+      "source": "deepgram"
+    },
+    {
+      "text": "件",
+      "original_index": 534,
+      "start_ms": 83302,
+      "end_ms": 83522,
+      "confidence": 0.998688280582428,
+      "source": "deepgram"
+    },
+    {
+      "text": "然",
+      "original_index": 536,
+      "start_ms": 83522,
+      "end_ms": 83632,
+      "confidence": 0.6428805589675903,
+      "source": "deepgram"
+    },
+    {
+      "text": "后",
+      "original_index": 537,
+      "start_ms": 83632,
+      "end_ms": 83742,
+      "confidence": 0.6428805589675903,
+      "source": "deepgram"
+    },
+    {
+      "text": "你",
+      "original_index": 538,
+      "start_ms": 83742,
+      "end_ms": 83809,
+      "confidence": 0.9132226705551147,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 539,
+      "start_ms": 83809,
+      "end_ms": 83875,
+      "confidence": 0.9132226705551147,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 540,
+      "start_ms": 83875,
+      "end_ms": 83942,
+      "confidence": 0.9132226705551147,
+      "source": "deepgram"
+    },
+    {
+      "text": "在",
+      "original_index": 541,
+      "start_ms": 83942,
+      "end_ms": 84162,
+      "confidence": 0.9714524149894714,
+      "source": "deepgram"
+    },
+    {
+      "text": "这",
+      "original_index": 542,
+      "start_ms": 84162,
+      "end_ms": 84262,
+      "confidence": 0.9958330988883972,
+      "source": "deepgram"
+    },
+    {
+      "text": "里",
+      "original_index": 543,
+      "start_ms": 84262,
+      "end_ms": 84362,
+      "confidence": 0.9958330988883972,
+      "source": "deepgram"
+    },
+    {
+      "text": "直",
+      "original_index": 544,
+      "start_ms": 84362,
+      "end_ms": 84462,
+      "confidence": 0.9434114694595337,
+      "source": "deepgram"
+    },
+    {
+      "text": "接",
+      "original_index": 545,
+      "start_ms": 84462,
+      "end_ms": 84562,
+      "confidence": 0.9434114694595337,
+      "source": "deepgram"
+    },
+    {
+      "text": "下",
+      "original_index": 546,
+      "start_ms": 84562,
+      "end_ms": 84802,
+      "confidence": 0.9870635271072388,
+      "source": "deepgram"
+    },
+    {
+      "text": "载",
+      "original_index": 547,
+      "start_ms": 84802,
+      "end_ms": 84922,
+      "confidence": 0.9373524188995361,
+      "source": "deepgram"
+    },
+    {
+      "text": "下",
+      "original_index": 548,
+      "start_ms": 84922,
+      "end_ms": 85042,
+      "confidence": 0.9526897072792053,
+      "source": "deepgram"
+    },
+    {
+      "text": "来",
+      "original_index": 549,
+      "start_ms": 85042,
+      "end_ms": 85182,
+      "confidence": 0.9143034815788269,
+      "source": "deepgram"
+    },
+    {
+      "text": "就",
+      "original_index": 551,
+      "start_ms": 85182,
+      "end_ms": 85242,
+      "confidence": 0.8437372446060181,
+      "source": "deepgram"
+    },
+    {
+      "text": "可",
+      "original_index": 552,
+      "start_ms": 85242,
+      "end_ms": 85302,
+      "confidence": 0.8437372446060181,
+      "source": "deepgram"
+    },
+    {
+      "text": "以",
+      "original_index": 553,
+      "start_ms": 85302,
+      "end_ms": 85362,
+      "confidence": 0.8437372446060181,
+      "source": "deepgram"
+    },
+    {
+      "text": "去",
+      "original_index": 554,
+      "start_ms": 85362,
+      "end_ms": 85582,
+      "confidence": 0.9959905743598938,
+      "source": "deepgram"
+    },
+    {
+      "text": "看",
+      "original_index": 555,
+      "start_ms": 85582,
+      "end_ms": 85762,
+      "confidence": 0.9535000324249268,
+      "source": "deepgram"
+    },
+    {
+      "text": "了",
+      "original_index": 556,
+      "start_ms": 85762,
+      "end_ms": 85922,
+      "confidence": 0.9930682182312012,
+      "source": "deepgram"
+    }
+  ],
+  "alignment": {
+    "exact_ratio": 0.8093385214007782,
+    "mapped_ratio": 0.953307392996109,
+    "average_confidence": 0.8050100519444344,
+    "uncertain_ranges": [
+      {
+        "text": "各",
+        "start_ms": 0,
+        "end_ms": 160,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "神",
+        "start_ms": 1360,
+        "end_ms": 1500,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "啊",
+        "start_ms": 2820,
+        "end_ms": 2900,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "MoenCut",
+        "start_ms": 4020,
+        "end_ms": 4880,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "口",
+        "start_ms": 7420,
+        "end_ms": 7600,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "口",
+        "start_ms": 10420,
+        "end_ms": 10640,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "是",
+        "start_ms": 22060,
+        "end_ms": 22180,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "键",
+        "start_ms": 22720,
+        "end_ms": 22820,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "moen",
+        "start_ms": 24940,
+        "end_ms": 25260,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "om",
+        "start_ms": 25640,
+        "end_ms": 25980,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "跟他",
+        "start_ms": 31100,
+        "end_ms": 31280,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "诸葛亮",
+        "start_ms": 32220,
+        "end_ms": 32480,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "生平",
+        "start_ms": 32580,
+        "end_ms": 32980,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "他",
+        "start_ms": 32980,
+        "end_ms": 33460,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "他",
+        "start_ms": 35760,
+        "end_ms": 36340,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "口播稿",
+        "start_ms": 37260,
+        "end_ms": 37740,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "里",
+        "start_ms": 39394,
+        "end_ms": 39474,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "口播",
+        "start_ms": 40934,
+        "end_ms": 41274,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "GLM点",
+        "start_ms": 42634,
+        "end_ms": 43174,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "规",
+        "start_ms": 43314,
+        "end_ms": 43494,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "剪一版",
+        "start_ms": 46334,
+        "end_ms": 46634,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "个",
+        "start_ms": 47174,
+        "end_ms": 47374,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "应",
+        "start_ms": 48374,
+        "end_ms": 48514,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "功能",
+        "start_ms": 49854,
+        "end_ms": 50084,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "的",
+        "start_ms": 50394,
+        "end_ms": 50594,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "MoenC",
+        "start_ms": 52014,
+        "end_ms": 52734,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "at",
+        "start_ms": 52854,
+        "end_ms": 53154,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "FIFA",
+        "start_ms": 53894,
+        "end_ms": 54394,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "一个",
+        "start_ms": 57454,
+        "end_ms": 57574,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "FA的技能",
+        "start_ms": 58114,
+        "end_ms": 58474,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "agent",
+        "start_ms": 59954,
+        "end_ms": 60314,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "那",
+        "start_ms": 60814,
+        "end_ms": 60974,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "个FIF",
+        "start_ms": 62614,
+        "end_ms": 62994,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "加进去",
+        "start_ms": 63674,
+        "end_ms": 63934,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "更",
+        "start_ms": 64514,
+        "end_ms": 64614,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "个",
+        "start_ms": 65754,
+        "end_ms": 65874,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "扩",
+        "start_ms": 68254,
+        "end_ms": 68414,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "这个",
+        "start_ms": 68634,
+        "end_ms": 69134,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "可以",
+        "start_ms": 70774,
+        "end_ms": 71174,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "口播",
+        "start_ms": 72514,
+        "end_ms": 72754,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "到",
+        "start_ms": 79294,
+        "end_ms": 79374,
+        "reason": "timestamp_interpolated"
+      },
+      {
+        "text": "视",
+        "start_ms": 79414,
+        "end_ms": 79654,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "邮件",
+        "start_ms": 80434,
+        "end_ms": 80834,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "形",
+        "start_ms": 80914,
+        "end_ms": 81034,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "就",
+        "start_ms": 81494,
+        "end_ms": 81574,
+        "reason": "low_alignment_confidence"
+      },
+      {
+        "text": "它会他",
+        "start_ms": 81854,
+        "end_ms": 82582,
+        "reason": "timestamp_interpolated"
+      }
+    ]
+  },
+  "providers": {
+    "text_provider": "mimo-v2.5-asr",
+    "timestamp_provider": "faster-whisper-536b0662742c02347bc0e980a01041f333bce120",
+    "chunk_count": 3,
+    "fallback_chunks": 0,
+    "glossary_corrections": []
+  }
+}

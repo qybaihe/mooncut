@@ -18,15 +18,24 @@ import {
 } from './compositions/PerfectTalkingHeadVideo';
 import {CommunityMotionDemo} from './extensions/community-motion/CommunityMotionDemo';
 import {ARGENTINA_EGYPT_DURATION_IN_FRAMES} from './argentina-egypt-timeline';
+import {FootballRulesExplainer, FOOTBALL_RULES_DURATION_IN_FRAMES, FOOTBALL_RULES_FPS} from './compositions/FootballRulesExplainer';
+import {
+  MoonCutEpicDemo,
+  MOONCUT_EPIC_DURATION_IN_FRAMES,
+  MOONCUT_EPIC_FPS,
+} from './compositions/MoonCutEpicDemo';
 import {horizontalTimeline} from './horizontal-timeline';
 import {DEFAULT_TALKING_HEAD_GENERATION_PRESET} from './presets/default-talking-head';
 import talkingHeadFaceTrackData from './data/talking-head-face-track.json';
 import perfectTalkingHeadFaceTrackData from './data/763e8d-face-track.json';
 import perfectTalkingHeadSpecData from './data/763e8d-perfect-edit-spec.json';
+import moonCutEpicFaceTrackData from './data/mooncut-epic-face-track.json';
+import moonCutEpicSubtitleData from './data/mooncut-epic-subtitles.json';
 import {demoTimeline} from './timeline';
 
 const talkingHeadFaceTrack = assertFaceTrackManifest(talkingHeadFaceTrackData);
 const perfectTalkingHeadFaceTrack = assertFaceTrackManifest(perfectTalkingHeadFaceTrackData);
+const moonCutEpicFaceTrack = assertFaceTrackManifest(moonCutEpicFaceTrackData);
 // Keep legacy demo data from blocking unrelated compositions at bundle time.
 // Its schema is validated by its own render workflow when that composition is selected.
 const perfectTalkingHeadSpec = perfectTalkingHeadSpecData as unknown as PerfectTalkingHeadSpec;
@@ -34,6 +43,18 @@ const perfectTalkingHeadSpec = perfectTalkingHeadSpecData as unknown as PerfectT
 export const RemotionRoot = () => {
   return (
     <>
+      <Composition
+        id="MoonCutEpicDemo"
+        component={MoonCutEpicDemo}
+        durationInFrames={MOONCUT_EPIC_DURATION_IN_FRAMES}
+        fps={MOONCUT_EPIC_FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          faceTrack: moonCutEpicFaceTrack,
+          subtitles: moonCutEpicSubtitleData.segments,
+        }}
+      />
       <Composition
         id="TalkingHeadDemo"
         component={TalkingHeadDemo}
@@ -166,6 +187,14 @@ export const RemotionRoot = () => {
         width={1920}
         height={1080}
         defaultProps={{version: 'official-highlights'}}
+      />
+      <Composition
+        id="FootballRulesExplainer2026"
+        component={FootballRulesExplainer}
+        durationInFrames={FOOTBALL_RULES_DURATION_IN_FRAMES}
+        fps={FOOTBALL_RULES_FPS}
+        width={1080}
+        height={1920}
       />
       <Composition
         id="CommunityMotionDemo"
