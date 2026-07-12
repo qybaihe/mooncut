@@ -99,14 +99,24 @@
     {
       "startMs": 13890,
       "endMs": 19290,
-      "kind": "quote",
+      "kind": "evidence",
       "headline": "官网已上线",
-      "body": "口播中提及 mooncut.me；未提供网页截图，本卡仅为口播信息整理。",
+      "body": "真实打开 mooncut.me，从首屏滚动浏览产品价值与成片案例。",
       "keywords": [
         "官网",
         "上线",
         "mooncut.me"
       ],
+      "evidencePanels": [
+        {
+          "evidenceId": "web-mooncut-官网-从想法到可发布口播-1c9642",
+          "role": "primary",
+          "purpose": "MoonCut 官网真实页面 · 从首屏滚动至产品价值与成片案例",
+          "scrollStartPct": 0,
+          "scrollEndPct": 56
+        }
+      ],
+      "evidenceMode": "single",
       "speakerLayout": "circle"
     },
     {
@@ -172,7 +182,17 @@
       "speakerLayout": "native"
     }
   ],
-  "evidenceAssets": [],
+  "evidenceAssets": [
+    {
+      "id": "web-mooncut-官网-从想法到可发布口播-1c9642",
+      "kind": "webpage",
+      "label": "MoonCut 官网 · 从想法到可发布口播",
+      "url": "https://mooncut.me/",
+      "src": "agent-jobs/0db89adfc3914f28a7dd3f29bef4a8dd/evidence/web-mooncut-官网-从想法到可发布口播-1c9642.png",
+      "localPath": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/research/web-mooncut-官网-从想法到可发布口播-1c9642/page.png",
+      "evidencePath": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/research/web-mooncut-官网-从想法到可发布口播-1c9642/evidence.json"
+    }
+  ],
   "generatedVisuals": [
     {
       "id": "diagram-01-dda55d81",

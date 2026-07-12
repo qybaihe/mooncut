@@ -14,10 +14,11 @@
   "qualityReview": {
     "schemaVersion": "mooncut.quality.v1",
     "ok": true,
-    "reviewedAt": "2026-07-12T01:22:22.008Z",
+    "reviewedAt": "2026-07-12T01:31:05.305Z",
     "findings": [],
     "qaAssets": {
       "02-diagram": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/quality/02-diagram-sequence.jpg",
+      "03-evidence": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/quality/03-evidence-sequence.jpg",
       "04-impact": "/Users/baihe/Documents/moonbot/mooncut-pi-agent/data/jobs/0db89adfc3914f28a7dd3f29bef4a8dd/quality/04-impact-sequence.jpg"
     }
   }
