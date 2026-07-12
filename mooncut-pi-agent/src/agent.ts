@@ -12,6 +12,7 @@ import {
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
 import {agentRoot, agentRuntimeRoot, config, workspaceRoot} from "./config.ts";
+import {runCodexEditingAgent} from "./codex-agent.ts";
 import {runGrokEditingAgent} from "./grok-agent.ts";
 import {applySubtitleRepair, planSubtitleRepair} from "./subtitle-repair.ts";
 import {createMooncutTools, type StageUpdate} from "./tools.ts";
@@ -143,6 +144,7 @@ export const runEditingAgent = async (
 ): Promise<string> => {
   if (config.agentExecutionMode === "reliable") return await runReliableEditingPipeline(context, update);
   if (config.agentExecutionMode === "grok") return await runGrokEditingAgent(context, update);
+  if (config.agentExecutionMode === "codex") return await runCodexEditingAgent(context, update);
   return await runPiEditingAgent(context, update);
 };
 
@@ -268,6 +270,8 @@ const runPiEditingAgent = async (
     "转写后必须先调用 clean_speech_delivery；它即使安全跳过也会留下审计记录。之后才能调用 schedule_generated_visuals、track_speaker 和 save_edit_spec，所有后续阶段必须使用清理后的时间轴。",
     "清理完成后调用 schedule_generated_visuals。默认不生图；只有工具实际返回 generatedVisualId 时，才可安排 illustration 分镜，且必须明确这是 AI 示例而非事实证据。",
     "如果口播涉及产品发布、官方声明或网页证据，先读取并使用 x-post-evidence / browser-evidence Skill，再保存带 evidenceId 的分镜。",
+    "证据分镜默认单窗；只有两到三份真实素材各自提供不同信息时，才使用 evidencePanels 与 parallel/comparison/sequence。不得重复证据 ID、URL 或用途，不得把未解释的冲突并排当成共同事实。",
+    "desktop 分镜按内容自主选择 editorial/workflow/comparison/dashboard，并用最多四个 visualItems 构建信息层级；避免无意义的大按钮和装饰数字。流程、关系或架构确实更清楚时，可用手绘图 Skill 生成并注册 diagramId，单独安排 diagram 分镜，不能冒充证据。",
     context.evidenceAssets.length
       ? `本任务已有用户确认的证据资产，若它们支持视频中的相关事实，必须在 evidence 分镜中使用：${context.evidenceAssets.map((asset) => `${asset.id} (${asset.label})`).join(", ")}`
       : "",

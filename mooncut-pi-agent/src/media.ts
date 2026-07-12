@@ -115,17 +115,32 @@ export const encodeMailPreviewVideo = async (
   const scaleFilter = `scale=-2:'min(${maxHeight},ih)',scale=trunc(iw/2)*2:trunc(ih/2)*2`;
 
   const encodeOnce = async (bitrate: number) => {
+    // Prefer Apple VideoToolbox on macOS when hardware acceleration is enabled.
+    const useVideoToolbox = config.renderHardwareAcceleration && process.platform === "darwin";
+    const videoArgs = useVideoToolbox
+      ? [
+        "-c:v", "h264_videotoolbox",
+        "-b:v", String(bitrate),
+        "-maxrate", String(Math.floor(bitrate * 1.2)),
+        "-bufsize", String(Math.floor(bitrate * 2)),
+        "-profile:v", "main",
+        "-pix_fmt", "yuv420p",
+        "-allow_sw", "1",
+      ]
+      : [
+        "-c:v", "libx264",
+        "-preset", "fast",
+        "-profile:v", "main",
+        "-pix_fmt", "yuv420p",
+        "-b:v", String(bitrate),
+        "-maxrate", String(Math.floor(bitrate * 1.2)),
+        "-bufsize", String(Math.floor(bitrate * 2)),
+      ];
     await runProcess("ffmpeg", [
       "-hide_banner", "-loglevel", "error", "-y",
       "-i", inputPath,
       "-vf", scaleFilter,
-      "-c:v", "libx264",
-      "-preset", "fast",
-      "-profile:v", "main",
-      "-pix_fmt", "yuv420p",
-      "-b:v", String(bitrate),
-      "-maxrate", String(Math.floor(bitrate * 1.2)),
-      "-bufsize", String(Math.floor(bitrate * 2)),
+      ...videoArgs,
       "-c:a", "aac",
       "-b:a", "96k",
       "-ac", "2",

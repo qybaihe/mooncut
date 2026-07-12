@@ -377,6 +377,11 @@ export class JobManager {
       if (existsSync(join(jobDir, "grok-headless.log"))) artifacts.grokLog = join(jobDir, "grok-headless.log");
       if (existsSync(join(jobDir, "grok-events.jsonl"))) artifacts.grokEvents = join(jobDir, "grok-events.jsonl");
       if (existsSync(join(jobDir, "GROK_PROMPT.md"))) artifacts.grokPrompt = join(jobDir, "GROK_PROMPT.md");
+      if (existsSync(join(jobDir, "codex-headless.log"))) artifacts.codexLog = join(jobDir, "codex-headless.log");
+      if (existsSync(join(jobDir, "codex-events.jsonl"))) artifacts.codexEvents = join(jobDir, "codex-events.jsonl");
+      if (existsSync(join(jobDir, "CODEX_PROMPT.md"))) artifacts.codexPrompt = join(jobDir, "CODEX_PROMPT.md");
+      if (existsSync(join(jobDir, "codex-launch.json"))) artifacts.codexLaunch = join(jobDir, "codex-launch.json");
+      if (existsSync(join(jobDir, "codex-final-message.txt"))) artifacts.codexFinalMessage = join(jobDir, "codex-final-message.txt");
       if (existsSync(join(jobDir, "run-context.json"))) artifacts.runContext = join(jobDir, "run-context.json");
       if (context.faceTrack) artifacts.faceTrack = join(jobDir, "face-track.json");
       if (context.speechCleanupPath) artifacts.speechCleanup = context.speechCleanupPath;
@@ -421,9 +426,19 @@ export class JobManager {
         artifacts,
         probe: context.probe,
         models: {
-          planner: config.agentExecutionMode === "grok" ? config.grokModel : config.plannerModel,
-          vision: context.visionModel ?? (config.agentExecutionMode === "grok" ? config.grokModel : "unknown"),
-          ...(context.generatedVisuals.length > 0 ? {image: config.imageGenerationModel} : {}),
+          planner: config.agentExecutionMode === "grok"
+            ? config.grokModel
+            : config.agentExecutionMode === "codex"
+              ? config.codexModel
+              : config.plannerModel,
+          vision: context.visionModel ?? (config.agentExecutionMode === "grok"
+            ? config.grokModel
+            : config.agentExecutionMode === "codex"
+              ? config.codexModel
+              : "unknown"),
+          ...(context.generatedVisuals.length > 0 ? {
+            image: config.agentExecutionMode === "codex" ? "codex-imagegen" : config.imageGenerationModel,
+          } : {}),
         },
         visuals: context.imageSchedule,
         quality: context.qualityReviews.at(-1),

@@ -124,8 +124,27 @@ export type SubtitleRepairRecord = {
   analysis?: SubtitleRepairAnalysis;
 };
 
-export type EditBeatKind = "speaker" | "desktop" | "quote" | "impact" | "evidence" | "illustration";
+export type EditBeatKind = "speaker" | "desktop" | "quote" | "impact" | "evidence" | "illustration" | "diagram";
 export type SpeakerLayout = "native" | "circle";
+export type EvidenceCompositionMode = "single" | "parallel" | "comparison" | "sequence";
+export type EvidencePanelRole = "primary" | "supporting" | "contrast" | "step";
+export type DesktopTemplate = "editorial" | "workflow" | "comparison" | "dashboard";
+
+/** One independently animated source inside an evidence beat. */
+export type EvidencePanel = {
+  evidenceId: string;
+  role: EvidencePanelRole;
+  purpose: string;
+  /** Percentage of the long screenshot traversed during this beat. */
+  scrollStartPct?: number;
+  scrollEndPct?: number;
+};
+
+export type DesktopVisualItem = {
+  title: string;
+  detail: string;
+  value?: string;
+};
 
 export type EditBeat = {
   startMs: number;
@@ -137,8 +156,16 @@ export type EditBeat = {
   impactText?: string;
   /** Absolute source-timeline time where the impact pulse must land. */
   impactAtMs?: number;
+  /** Legacy single-source evidence reference. Kept renderable for v1 jobs. */
   evidenceId?: string;
+  /** Optional AI-authored multi-source composition. Never required. Max three. */
+  evidencePanels?: EvidencePanel[];
+  evidenceMode?: EvidenceCompositionMode;
   generatedVisualId?: string;
+  /** Hand-drawn Excalidraw-derived visual, separate from factual evidence. */
+  diagramId?: string;
+  desktopTemplate?: DesktopTemplate;
+  visualItems?: DesktopVisualItem[];
   speakerLayout?: SpeakerLayout;
 };
 
@@ -154,13 +181,15 @@ export type EvidenceAsset = {
 
 export type GeneratedVisualAsset = {
   id: string;
-  kind: "generated-illustration";
+  /** Kept in the legacy generatedVisuals collection for backwards compatibility. */
+  kind: "generated-illustration" | "handdrawn-diagram";
   label: string;
   purpose: string;
   prompt: string;
   src: string;
   localPath: string;
   metadataPath: string;
+  sourceJsonPath?: string;
   model: string;
   generatedAt: string;
 };
@@ -246,6 +275,8 @@ export type EditJobRequest = {
   title?: string;
   notificationEmail?: string;
   imageGeneration?: "auto" | "off";
+  /** Edge-issued plan ceiling. The browser cannot choose a higher export tier. */
+  maxOutputHeight?: 720 | 1080 | 2160;
   /** Installed capabilities explicitly selected for this task. */
   capabilityInstallIds?: string[];
   /** User-authorized calls that should produce research before editing begins. */

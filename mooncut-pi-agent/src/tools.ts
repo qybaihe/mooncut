@@ -5,9 +5,10 @@ import {defineTool} from "@earendil-works/pi-coding-agent";
 import {config, remotionRoot} from "./config.ts";
 import {copyDerivedVideoIntoRemotion, inspectVideo, makeContactSheet, probeVideo, trackFace, transcribeVideo} from "./media.ts";
 import {runProcess} from "./process.ts";
+import {buildRemotionRenderArgs, describeRenderGpuConfig, remotionCliPath} from "./render.ts";
 import {captureWebPage, captureXPost} from "./research.ts";
 import {detectAudioSilences, planSpeechCleanup, renderSpeechCleanup, retimeSubtitlesAfterCleanup} from "./speech-cleanup.ts";
-import {scheduleGeneratedVisuals} from "./visuals.ts";
+import {importCodexGeneratedVisual, importHanddrawnDiagram, scheduleGeneratedVisuals} from "./visuals.ts";
 import {isVisionGateProtocolOnlyFailure, reviewRenderedVideo} from "./quality.ts";
 import {DEFAULT_CAMERA_POLICY, expectedSpeakerLayout, shortSpeakerLayoutRuns} from "./camera-policy.ts";
 import type {AgentEditSpec, EditBeat, EditBeatKind, RunContext, SubtitleWord} from "./types.ts";
@@ -46,7 +47,12 @@ export const normalizeBeats = (
     impactText?: string;
     impactAtMs?: number;
     evidenceId?: string;
+    evidencePanels?: EditBeat["evidencePanels"];
+    evidenceMode?: EditBeat["evidenceMode"];
     generatedVisualId?: string;
+    diagramId?: string;
+    desktopTemplate?: EditBeat["desktopTemplate"];
+    visualItems?: EditBeat["visualItems"];
   }>,
   durationMs: number,
 ): EditBeat[] => {
@@ -92,11 +98,28 @@ export const normalizeBeats = (
         ? {impactAtMs: clampNumber(Math.round(beat.impactAtMs!), startMs, endMs - 1)}
         : {}),
       ...(beat.evidenceId ? {evidenceId: beat.evidenceId} : {}),
+      ...(beat.evidencePanels?.length ? {evidencePanels: beat.evidencePanels.slice(0, 3).map((panel) => ({
+        evidenceId: panel.evidenceId.trim().slice(0, 100),
+        role: panel.role,
+        purpose: panel.purpose.trim().slice(0, 80),
+        ...(Number.isFinite(panel.scrollStartPct) ? {scrollStartPct: clampNumber(panel.scrollStartPct!, 0, 70)} : {}),
+        ...(Number.isFinite(panel.scrollEndPct) ? {scrollEndPct: clampNumber(panel.scrollEndPct!, 0, 70)} : {}),
+      }))} : {}),
+      ...(beat.evidenceMode ? {evidenceMode: beat.evidenceMode} : {}),
       ...(beat.generatedVisualId ? {generatedVisualId: beat.generatedVisualId} : {}),
+      ...(beat.diagramId ? {diagramId: beat.diagramId} : {}),
+      ...(beat.desktopTemplate ? {desktopTemplate: beat.desktopTemplate} : {}),
+      ...(beat.visualItems?.length ? {visualItems: beat.visualItems.slice(0, 4).map((item) => ({
+        title: item.title.trim().slice(0, 30),
+        detail: item.detail.trim().slice(0, 80),
+        ...(item.value?.trim() ? {value: item.value.trim().slice(0, 24)} : {}),
+      }))} : {}),
       speakerLayout: expectedSpeakerLayout({
         kind,
         evidenceId: beat.evidenceId,
+        evidencePanels: beat.evidencePanels,
         generatedVisualId: beat.generatedVisualId,
+        diagramId: beat.diagramId,
       }),
     });
   }
@@ -267,6 +290,63 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
     },
   });
 
+  const importCodexVisual = defineTool({
+    name: "import_codex_generated_visual",
+    label: "Import Codex ImageGen visual",
+    description: "Import one ImageGen result that Codex created inside this job directory. The file is signature-checked, copied into job/public media, and registered for an illustration beat.",
+    parameters: Type.Object({
+      sourcePath: Type.String({minLength: 1, maxLength: 600}),
+      label: Type.String({minLength: 1, maxLength: 80}),
+      purpose: Type.String({minLength: 1, maxLength: 240}),
+      prompt: Type.String({minLength: 1, maxLength: 1200}),
+      avoid: Type.Optional(Type.String({maxLength: 400})),
+      relatedQuote: Type.Optional(Type.String({maxLength: 240})),
+    }),
+    execute: async (_toolCallId, params) => {
+      if (!context.probe || !context.subtitles || !context.speechCleanup) {
+        throw new Error("inspect_source, transcribe_source and clean_speech_delivery must run before importing a Codex ImageGen visual");
+      }
+      await update("importing-codex-imagegen", 0.48);
+      const asset = await importCodexGeneratedVisual(context, {
+        sourcePath: params.sourcePath,
+        label: params.label,
+        purpose: params.purpose,
+        prompt: params.prompt,
+        avoid: params.avoid ?? "文字、Logo、水印、二维码、真实人物和品牌标识",
+        relatedQuote: params.relatedQuote ?? "",
+      });
+      await update("codex-imagegen-imported", 0.50);
+      return textResult({
+        generatedVisual: asset,
+        instruction: `Use generatedVisualId=${asset.id} only on the matching illustration beat. Present it as an AI-generated example, never as factual evidence.`,
+      });
+    },
+  });
+
+  const importDiagram = defineTool({
+    name: "import_handdrawn_diagram",
+    label: "Import hand-drawn diagram",
+    description: "Import a PNG rendered from Excalidraw JSON inside this job. It becomes a diagram asset, never factual evidence.",
+    parameters: Type.Object({
+      sourcePath: Type.String({minLength: 1, maxLength: 600}),
+      sourceExcalidrawPath: Type.String({minLength: 1, maxLength: 600}),
+      label: Type.String({minLength: 1, maxLength: 80}),
+      purpose: Type.String({minLength: 1, maxLength: 240}),
+    }),
+    execute: async (_toolCallId, params) => {
+      if (!context.probe || !context.subtitles || !context.speechCleanup) {
+        throw new Error("inspect_source, transcribe_source and clean_speech_delivery must run before importing a diagram");
+      }
+      await update("importing-handdrawn-diagram", 0.49);
+      const asset = await importHanddrawnDiagram(context, params);
+      await update("handdrawn-diagram-imported", 0.51);
+      return textResult({
+        diagram: asset,
+        instruction: `Use diagramId=${asset.id} only on a diagram beat. It explains structure; it is not factual evidence.`,
+      });
+    },
+  });
+
   const trackSpeaker = defineTool({
     name: "track_speaker",
     label: "Track primary speaker",
@@ -364,6 +444,7 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
           Type.Literal("impact"),
           Type.Literal("evidence"),
           Type.Literal("illustration"),
+          Type.Literal("diagram"),
         ]),
         headline: Type.String({minLength: 1, maxLength: 30}),
         body: Type.String({maxLength: 100}),
@@ -371,7 +452,37 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         impactText: Type.Optional(Type.String({maxLength: 20})),
         impactAtMs: Type.Optional(Type.Number({minimum: 0, description: "Absolute word timestamp where the visual pulse should land"})),
         evidenceId: Type.Optional(Type.String({maxLength: 100})),
+        evidencePanels: Type.Optional(Type.Array(Type.Object({
+          evidenceId: Type.String({minLength: 1, maxLength: 100}),
+          role: Type.Union([
+            Type.Literal("primary"),
+            Type.Literal("supporting"),
+            Type.Literal("contrast"),
+            Type.Literal("step"),
+          ]),
+          purpose: Type.String({minLength: 1, maxLength: 80}),
+          scrollStartPct: Type.Optional(Type.Number({minimum: 0, maximum: 70})),
+          scrollEndPct: Type.Optional(Type.Number({minimum: 0, maximum: 70})),
+        }), {minItems: 1, maxItems: 3})),
+        evidenceMode: Type.Optional(Type.Union([
+          Type.Literal("single"),
+          Type.Literal("parallel"),
+          Type.Literal("comparison"),
+          Type.Literal("sequence"),
+        ])),
         generatedVisualId: Type.Optional(Type.String({maxLength: 100})),
+        diagramId: Type.Optional(Type.String({maxLength: 100})),
+        desktopTemplate: Type.Optional(Type.Union([
+          Type.Literal("editorial"),
+          Type.Literal("workflow"),
+          Type.Literal("comparison"),
+          Type.Literal("dashboard"),
+        ])),
+        visualItems: Type.Optional(Type.Array(Type.Object({
+          title: Type.String({minLength: 1, maxLength: 30}),
+          detail: Type.String({maxLength: 80}),
+          value: Type.Optional(Type.String({maxLength: 24})),
+        }), {maxItems: 4})),
       }), {minItems: 1, maxItems: 12}),
     }),
     execute: async (_toolCallId, params) => {
@@ -391,6 +502,11 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         );
       }
       const fps = config.renderFps;
+      const outputHeight = context.job.request.maxOutputHeight ?? config.renderHeight;
+      // Agent desktop/browser compositions are authored on a 1920x1080 design
+      // canvas. Keep every export at 16:9 so HTML-like windows never stretch or
+      // clip when a plan selects 720p, 1080p, or 4K.
+      const outputWidth = Math.max(320, Math.round((16 / 9 * outputHeight) / 2) * 2);
       const spec: AgentEditSpec = {
         schemaVersion: "mooncut.edit.v1",
         title: params.title.trim(),
@@ -398,8 +514,8 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
         accent: normalizeAccent(params.accent),
         fps,
         durationInFrames: Math.max(1, Math.ceil(context.probe.durationMs / 1000 * fps)),
-        width: config.renderWidth,
-        height: config.renderHeight,
+        width: outputWidth,
+        height: outputHeight,
         source: {
           src: context.publicMediaSrc,
           aspectRatio: context.probe.width / context.probe.height,
@@ -433,22 +549,34 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
       const propsPath = join(context.jobDir, "render-props.json");
       await writeJson(propsPath, {spec: context.spec, faceTrack: context.faceTrack ?? null});
       const outputPath = join(context.jobDir, "final.mp4");
-      const remotionBinary = join(remotionRoot, "node_modules/.bin/remotion");
-      const result = await runProcess(remotionBinary, [
-        "render",
-        "src/index.ts",
-        "AgentTalkingHeadVideo",
+      const renderArgs = buildRemotionRenderArgs({
+        composition: "AgentTalkingHeadVideo",
         outputPath,
-        `--props=${propsPath}`,
-        "--codec=h264",
-        `--concurrency=${Math.max(1, config.renderConcurrency)}`,
-        ...(config.browserExecutable ? [`--browser-executable=${config.browserExecutable}`] : []),
-        "--overwrite",
-      ], {cwd: remotionRoot, timeoutMs: config.renderTimeoutMs});
+        propsPath,
+      });
+      const gpu = describeRenderGpuConfig();
+      const result = await runProcess(remotionCliPath(), renderArgs, {
+        cwd: remotionRoot,
+        timeoutMs: config.renderTimeoutMs,
+      });
       context.renderPath = outputPath;
-      await writeFile(join(context.jobDir, "render.log"), `${result.stdout}\n${result.stderr}`);
+      await writeFile(
+        join(context.jobDir, "render.log"),
+        [
+          `# MoonCut render`,
+          `# gpu=${JSON.stringify(gpu)}`,
+          `# args=${JSON.stringify(renderArgs)}`,
+          result.stdout,
+          result.stderr,
+        ].join("\n"),
+      );
       await update("rendered", 0.92);
-      return textResult({outputPath, composition: "AgentTalkingHeadVideo"});
+      return textResult({
+        outputPath,
+        composition: "AgentTalkingHeadVideo",
+        gpu,
+        renderArgs,
+      });
     },
   });
 
@@ -518,6 +646,8 @@ export const createMooncutTools = (context: RunContext, update: StageUpdate) => 
     transcribeSource,
     cleanSpeechDelivery,
     scheduleVisuals,
+    importCodexVisual,
+    importDiagram,
     captureXPostEvidence,
     captureWebEvidence,
     trackSpeaker,

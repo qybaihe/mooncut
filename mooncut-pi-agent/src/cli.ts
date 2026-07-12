@@ -18,8 +18,9 @@ Usage:
   node src/cli.ts edit /absolute/path/video.mp4 [prompt...]
   node src/cli.ts tool <jobDir> <toolName> [jsonParams]
 
-Execution mode is controlled by MOONCUT_AGENT_EXECUTION_MODE=reliable|pi|grok
+Execution mode is controlled by MOONCUT_AGENT_EXECUTION_MODE=reliable|pi|grok|codex
 Grok settings: MOONCUT_GROK_MODEL, MOONCUT_GROK_REASONING_EFFORT, MOONCUT_GROK_BINARY
+Codex settings: MOONCUT_CODEX_MODEL, MOONCUT_CODEX_REASONING_EFFORT, MOONCUT_CODEX_BINARY
 `);
 };
 
@@ -39,6 +40,12 @@ if (command === "serve") {
         model: config.grokModel,
         reasoningEffort: config.grokReasoningEffort,
         maxTurns: config.grokMaxTurns,
+      },
+      codex: {
+        binary: config.codexBinary,
+        model: config.codexModel,
+        reasoningEffort: config.codexReasoningEffort,
+        sandbox: "workspace-write",
       },
     },
   }, null, 2));

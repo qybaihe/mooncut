@@ -50,3 +50,36 @@ test("anchors an impact pulse to the matching spoken keyword", () => {
   ]);
   assert.equal(beats[0].impactAtMs, 19_145);
 });
+
+test("preserves rich desktop and multi-evidence orchestration fields", () => {
+  const beats = normalizeBeats([
+    {
+      startMs: 0,
+      endMs: 5000,
+      kind: "desktop",
+      headline: "丰富页面",
+      body: "使用流程模板",
+      keywords: ["理解", "编排"],
+      desktopTemplate: "workflow",
+      visualItems: [{title: "理解", detail: "读取上下文"}, {title: "编排", detail: "选择视觉"}],
+    },
+    {
+      startMs: 5000,
+      endMs: 10_000,
+      kind: "evidence",
+      headline: "并行证据",
+      body: "互补来源",
+      keywords: [],
+      evidenceMode: "parallel",
+      evidencePanels: [
+        {evidenceId: "one", role: "primary", purpose: "确认能力", scrollStartPct: 0, scrollEndPct: 28},
+        {evidenceId: "two", role: "supporting", purpose: "补充价格", scrollStartPct: 8, scrollEndPct: 44},
+      ],
+    },
+  ], 10_000);
+  assert.equal(beats[0].desktopTemplate, "workflow");
+  assert.equal(beats[0].visualItems?.length, 2);
+  assert.equal(beats[1].evidenceMode, "parallel");
+  assert.equal(beats[1].evidencePanels?.length, 2);
+  assert.equal(beats[1].speakerLayout, "circle");
+});

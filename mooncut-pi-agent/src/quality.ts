@@ -1,6 +1,6 @@
 import {mkdir, writeFile} from "node:fs/promises";
 import {join} from "node:path";
-import {reviewEvidenceSequence, reviewGeneratedVisualSequence, reviewImpactSequence} from "./gateway.ts";
+import {reviewDiagramSequence, reviewEvidenceSequence, reviewGeneratedVisualSequence, reviewImpactSequence} from "./gateway.ts";
 import {runProcess} from "./process.ts";
 import {DEFAULT_CAMERA_POLICY, expectedSpeakerLayout, shortSpeakerLayoutRuns} from "./camera-policy.ts";
 import type {AgentEditSpec, EditBeat, QualityFinding, QualityReview} from "./types.ts";
@@ -68,11 +68,16 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
   const evidenceAssets = spec.evidenceAssets ?? [];
   const evidenceById = new Map(evidenceAssets.map((asset) => [asset.id, asset]));
   const usedEvidenceIds = new Set<string>();
-  const generatedVisuals = spec.generatedVisuals ?? [];
-  const generatedById = new Map(generatedVisuals.map((asset) => [asset.id, asset]));
+  const generatedVisuals = (spec.generatedVisuals ?? []).filter((asset) => asset.kind === "generated-illustration");
+  const diagrams = (spec.generatedVisuals ?? []).filter((asset) => asset.kind === "handdrawn-diagram");
+  const visualById = new Map((spec.generatedVisuals ?? []).map((asset) => [asset.id, asset]));
   const usedGeneratedIds = new Set<string>();
+  const usedDiagramIds = new Set<string>();
   if (generatedVisuals.length > 2) {
     findings.push({id: "generated-visual-budget-exceeded", severity: "error", message: `Edit spec contains ${generatedVisuals.length} generated images; maximum is 2.`});
+  }
+  if (diagrams.length > 2) {
+    findings.push({id: "diagram-budget-exceeded", severity: "error", message: `Edit spec contains ${diagrams.length} hand-drawn diagrams; maximum is 2.`});
   }
   for (const [index, beat] of spec.beats.entries()) {
     const expectedLayout = expectedSpeakerLayout(beat);
@@ -95,18 +100,55 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
         findings.push({id: "impact-anchor-outside-beat", severity: "error", beatIndex: index, message: "Impact pulse anchor is outside its beat."});
       }
     }
-    if (beat.evidenceId) {
-      usedEvidenceIds.add(beat.evidenceId);
-      if (!evidenceById.has(beat.evidenceId)) {
-        findings.push({id: "evidence-missing", severity: "error", beatIndex: index, message: `Unknown evidenceId: ${beat.evidenceId}`});
+    const evidencePanels = beat.evidencePanels?.length
+      ? beat.evidencePanels
+      : beat.evidenceId
+        ? [{evidenceId: beat.evidenceId, role: "primary" as const, purpose: beat.body || beat.headline}]
+        : [];
+    if (beat.evidenceId && beat.evidencePanels?.length) {
+      findings.push({id: "evidence-reference-ambiguous", severity: "error", beatIndex: index, message: "Use either legacy evidenceId or evidencePanels, never both on the same beat."});
+    }
+    if (evidencePanels.length > 3) {
+      findings.push({id: "evidence-panel-budget-exceeded", severity: "error", beatIndex: index, message: "An evidence beat may show at most three simultaneous sources."});
+    }
+    const panelIds = evidencePanels.map((panel) => panel.evidenceId);
+    if (new Set(panelIds).size !== panelIds.length) {
+      findings.push({id: "evidence-panel-duplicate", severity: "error", beatIndex: index, message: "Parallel evidence panels repeat the same evidence asset."});
+    }
+    const purposes = evidencePanels.map((panel) => panel.purpose.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, "")).filter(Boolean);
+    if (new Set(purposes).size !== purposes.length) {
+      findings.push({id: "evidence-purpose-duplicate", severity: "error", beatIndex: index, message: "Parallel evidence panels must explain distinct, non-repeating purposes."});
+    }
+    const urls = evidencePanels
+      .map((panel) => evidenceById.get(panel.evidenceId)?.url.replace(/#.*$/u, "").replace(/\/$/u, ""))
+      .filter((url): url is string => Boolean(url));
+    if (new Set(urls).size !== urls.length) {
+      findings.push({id: "evidence-source-duplicate", severity: "error", beatIndex: index, message: "Parallel evidence panels repeat the same source URL instead of adding new information."});
+    }
+    if ((beat.evidenceMode === "parallel" || beat.evidenceMode === "comparison" || beat.evidenceMode === "sequence") && evidencePanels.length < 2) {
+      findings.push({id: "evidence-mode-underfilled", severity: "error", beatIndex: index, message: `${beat.evidenceMode} evidence mode requires at least two complementary panels.`});
+    }
+    if ((beat.evidenceMode ?? (evidencePanels.length > 1 ? "parallel" : "single")) === "single" && evidencePanels.length > 1) {
+      findings.push({id: "evidence-mode-conflict", severity: "error", beatIndex: index, message: "Multiple panels cannot use single evidence mode."});
+    }
+    if (beat.evidenceMode === "comparison" && !evidencePanels.some((panel) => panel.role === "contrast")) {
+      findings.push({id: "evidence-comparison-missing-contrast", severity: "error", beatIndex: index, message: "Comparison evidence needs one panel marked as contrast."});
+    }
+    if (beat.evidenceMode === "sequence" && evidencePanels.some((panel) => panel.role !== "step")) {
+      findings.push({id: "evidence-sequence-role-invalid", severity: "error", beatIndex: index, message: "Every panel in sequence mode must use the step role."});
+    }
+    for (const panel of evidencePanels) {
+      usedEvidenceIds.add(panel.evidenceId);
+      if (!evidenceById.has(panel.evidenceId)) {
+        findings.push({id: "evidence-missing", severity: "error", beatIndex: index, message: `Unknown evidenceId: ${panel.evidenceId}`});
       }
-      if (beat.kind !== "evidence") {
-        findings.push({id: "evidence-wrong-beat", severity: "warning", beatIndex: index, message: "evidenceId is attached to a non-evidence beat."});
-      }
+    }
+    if (evidencePanels.length && beat.kind !== "evidence") {
+      findings.push({id: "evidence-wrong-beat", severity: "warning", beatIndex: index, message: "Evidence panels are attached to a non-evidence beat."});
     }
     if (beat.generatedVisualId) {
       usedGeneratedIds.add(beat.generatedVisualId);
-      if (!generatedById.has(beat.generatedVisualId)) {
+      if (visualById.get(beat.generatedVisualId)?.kind !== "generated-illustration") {
         findings.push({id: "generated-visual-missing", severity: "error", beatIndex: index, message: `Unknown generatedVisualId: ${beat.generatedVisualId}`});
       }
       if (beat.kind !== "illustration") {
@@ -115,6 +157,18 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
     }
     if (beat.kind === "illustration" && !beat.generatedVisualId) {
       findings.push({id: "illustration-asset-missing", severity: "error", beatIndex: index, message: "Illustration beat must reference a generatedVisualId returned by the scheduler."});
+    }
+    if (beat.diagramId) {
+      usedDiagramIds.add(beat.diagramId);
+      if (visualById.get(beat.diagramId)?.kind !== "handdrawn-diagram") {
+        findings.push({id: "diagram-missing", severity: "error", beatIndex: index, message: `Unknown hand-drawn diagramId: ${beat.diagramId}`});
+      }
+      if (beat.kind !== "diagram") {
+        findings.push({id: "diagram-wrong-beat", severity: "error", beatIndex: index, message: "diagramId is allowed only on a diagram beat."});
+      }
+    }
+    if (beat.kind === "diagram" && !beat.diagramId) {
+      findings.push({id: "diagram-asset-missing", severity: "error", beatIndex: index, message: "Diagram beat must reference an imported hand-drawn diagramId."});
     }
     if (beat.evidenceId && beat.generatedVisualId) {
       findings.push({id: "generated-evidence-confusion", severity: "error", beatIndex: index, message: "A generated illustration can never be attached as factual evidence."});
@@ -139,13 +193,25 @@ export const validateSpecQuality = (spec: AgentEditSpec, requestPrompt = ""): Qu
       findings.push({id: "generated-visual-unused", severity: "error", message: `Generated image is not used by any illustration beat: ${asset.label}`});
     }
   }
-  if (/真实|官网|网页|X\s*原帖|官方原帖|证据/iu.test(requestPrompt) && evidenceAssets.length === 0) {
+  for (const asset of diagrams) {
+    if (!usedDiagramIds.has(asset.id)) {
+      findings.push({id: "diagram-unused", severity: "error", message: `Imported hand-drawn diagram is not used by any diagram beat: ${asset.label}`});
+    }
+  }
+  // A request such as "不要使用外部证据" is a prohibition, not a request
+  // to collect evidence. Keep this gate semantic enough that a user can opt
+  // out of research without making every render fail QA.
+  const evidenceForbidden = /(?:不要|不需要|无需|无须|禁止|避免|别|不使用|不用)[^，、。；\n]{0,16}(?:真实|官网|网页|X\s*原帖|官方原帖|证据)/iu.test(requestPrompt);
+  const evidenceRequested = /真实|官网|网页|X\s*原帖|官方原帖|证据/iu.test(requestPrompt) && !evidenceForbidden;
+  const webEvidenceRequested = /官网|网页|browser-evidence/iu.test(requestPrompt) && !evidenceForbidden;
+  const xEvidenceRequested = /X\s*原帖|官方原帖|x-post-evidence/iu.test(requestPrompt) && !evidenceForbidden;
+  if (evidenceRequested && evidenceAssets.length === 0) {
     findings.push({id: "requested-evidence-absent", severity: "error", message: "The request asked for real web/X evidence, but the edit spec has no evidence assets."});
   }
-  if (/官网|网页|browser-evidence/iu.test(requestPrompt) && !evidenceAssets.some((asset) => asset.kind === "webpage")) {
+  if (webEvidenceRequested && !evidenceAssets.some((asset) => asset.kind === "webpage")) {
     findings.push({id: "requested-web-evidence-absent", severity: "error", message: "The request explicitly requires real webpage evidence, but no webpage asset is present."});
   }
-  if (/X\s*原帖|官方原帖|x-post-evidence/iu.test(requestPrompt) && !evidenceAssets.some((asset) => asset.kind === "x-post")) {
+  if (xEvidenceRequested && !evidenceAssets.some((asset) => asset.kind === "x-post")) {
     findings.push({id: "requested-x-evidence-absent", severity: "error", message: "The request explicitly requires a trusted original X post, but no X-post asset is present."});
   }
   return findings;
@@ -170,7 +236,10 @@ export const reviewRenderedVideo = async ({
   const generatedById = new Map((spec.generatedVisuals ?? []).map((asset) => [asset.id, asset]));
 
   const visualResults = await Promise.all(spec.beats.map(async (beat, index) => {
-    if (beat.kind !== "impact" && !(beat.kind === "evidence" && beat.evidenceId) && !(beat.kind === "illustration" && beat.generatedVisualId)) return null;
+    const evidenceIds = beat.evidencePanels?.length
+      ? beat.evidencePanels.map((panel) => panel.evidenceId)
+      : beat.evidenceId ? [beat.evidenceId] : [];
+    if (beat.kind !== "impact" && !(beat.kind === "evidence" && evidenceIds.length) && !(beat.kind === "illustration" && beat.generatedVisualId) && !(beat.kind === "diagram" && beat.diagramId)) return null;
     const label = `${String(index + 1).padStart(2, "0")}-${beat.kind}`;
     const stripPath = await makeStrip(videoPath, buildQaSampleTimes(beat), qaDirectory, label);
     try {
@@ -208,9 +277,33 @@ export const reviewRenderedVideo = async ({
           },
         };
       }
-      const asset = beat.evidenceId ? evidenceById.get(beat.evidenceId) : undefined;
-      if (!asset) return {label, stripPath};
-      const review = await reviewEvidenceSequence(stripPath, asset.label, asset.kind);
+      if (beat.kind === "diagram") {
+        const asset = beat.diagramId ? generatedById.get(beat.diagramId) : undefined;
+        if (!asset) return {label, stripPath};
+        const review = await reviewDiagramSequence(stripPath, asset.label);
+        return {
+          label,
+          stripPath,
+          finding: review.result.pass ? undefined : {
+            id: "diagram-display-failed",
+            severity: review.result.confidence >= 0.5 ? "error" as const : "warning" as const,
+            beatIndex: index,
+            message: review.result.summary || review.result.issues.join("; ") || "Hand-drawn diagram was not visually confirmed.",
+            evidencePath: stripPath,
+            model: review.model,
+            confidence: review.result.confidence,
+          },
+        };
+      }
+      const assets = evidenceIds.map((id) => evidenceById.get(id)).filter((asset): asset is NonNullable<typeof asset> => Boolean(asset));
+      if (!assets.length) return {label, stripPath};
+      const kinds = new Set(assets.map((asset) => asset.kind));
+      const review = await reviewEvidenceSequence(
+        stripPath,
+        assets.map((asset) => asset.label).join(" + "),
+        kinds.size === 1 ? assets[0].kind : "mixed",
+        assets.length,
+      );
       return {
         label,
         stripPath,

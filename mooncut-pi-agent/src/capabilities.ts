@@ -53,6 +53,15 @@ export type CapabilityInvocationRequest =
   | {tool: "fifa_find_highlights"; input: {query: string}}
   | {tool: "fifa_match_context"; input: {matchId: string; includeChineseContext?: boolean; screenshotView?: "ratings" | "match" | "chat"}; confirmedArtifact?: boolean};
 export type CapabilityArtifact = {id: string; kind: "web-screenshot" | "research-json"; sourceUrl?: string; sha256?: string; createdAt: string; filename: string};
+/** Declarative package received from the Pages community connect endpoint. */
+export type CommunityCapabilityImport = {
+  slug: string;
+  version: string;
+  manifest: string;
+  skill: string;
+  connector: string;
+  integrity: {skillSha256: string; connectorSha256: string};
+};
 export type CapabilityInvocation = {
   id: string;
   installationId: string;
@@ -172,6 +181,31 @@ export const parseCapabilityManifest = (value: unknown): CapabilityManifest => {
   };
 };
 
+/**
+ * Community connectors are metadata only. This deliberately accepts no URL,
+ * command or script field that could turn a downloaded package into code.
+ */
+const parseCommunityConnector = (value: unknown, manifest: CapabilityManifest) => {
+  const source = record(value, "connector");
+  only(source, ["schemaVersion", "id", "mode", "adapter", "execution", "toolBindings", "networkAllowlist", "security"], "connector");
+  if (source.schemaVersion !== "mooncut.connector.v1" || source.mode !== "builtin-adapter-reference") {
+    throw new CapabilityStoreError(400, "INVALID_CONNECTOR", "Connector must reference a built-in reviewed adapter");
+  }
+  const security = record(source.security, "connector.security");
+  only(security, ["neverExecutePackageCode", "requiresLocalAdapter", "requiresUserConfirmationFor"], "connector.security");
+  if (security.neverExecutePackageCode !== true || security.requiresLocalAdapter !== true) {
+    throw new CapabilityStoreError(400, "UNSAFE_CONNECTOR", "Downloaded connector code is never executable");
+  }
+  if (manifest.kind === "hosted-cli") {
+    if (source.adapter !== manifest.adapter || source.adapter !== "fifa-highlights") {
+      throw new CapabilityStoreError(400, "UNSUPPORTED_ADAPTER", "Connector adapter is not installed or reviewed by this Agent");
+    }
+  } else if (source.adapter !== undefined) {
+    throw new CapabilityStoreError(400, "INVALID_CONNECTOR", "Skill-only packages cannot provide an adapter");
+  }
+  return source;
+};
+
 const fifaManifest: CapabilityManifest = {
   schemaVersion: "mooncut.capability.v1", id: "com.mooncut.fifa-highlights", version: "1.0.0", kind: "hosted-cli", adapter: "fifa-highlights",
   display: {name: "FIFA 赛事资料", tagline: "为赛后口播查找官方集锦、赛况与可引用截图", category: "体育 / 事实资料"},
@@ -241,6 +275,9 @@ export class CapabilityStore {
       CREATE INDEX IF NOT EXISTS capability_invocations_installation_idx ON capability_invocations(installation_id,started_at DESC);
       CREATE TABLE IF NOT EXISTS capability_artifacts (id TEXT PRIMARY KEY, invocation_id TEXT NOT NULL REFERENCES capability_invocations(id), kind TEXT NOT NULL CHECK(kind IN ('web-screenshot','research-json')), path TEXT NOT NULL, filename TEXT NOT NULL, source_url TEXT, sha256 TEXT, created_at TEXT NOT NULL);
       CREATE INDEX IF NOT EXISTS capability_artifacts_invocation_idx ON capability_artifacts(invocation_id);
+      -- Keep downloaded declarations for audit/reconnect. They are never loaded
+      -- as JavaScript or shell code; runtime execution remains adapter-only.
+      CREATE TABLE IF NOT EXISTS capability_release_sources (release_id TEXT PRIMARY KEY REFERENCES capability_releases(id), source TEXT NOT NULL, skill_text TEXT NOT NULL, connector_json TEXT NOT NULL, skill_sha256 TEXT NOT NULL, connector_sha256 TEXT NOT NULL, imported_at TEXT NOT NULL);
     `);
     this.database = database;
     return database;
@@ -316,6 +353,56 @@ export class CapabilityStore {
     const publishedAt = now();
     this.db().prepare("INSERT INTO capability_releases (id,package_id,version,manifest_json,content_sha256,signature,published_at,is_yanked) VALUES (?,?,?,?,?,?,?,0)").run(releaseId,packageId,manifest.version,content,contentHash,this.sign(contentHash),publishedAt);
     return {id: releaseId, packageId, slug: packageRow.slug, version: manifest.version, manifestHash: contentHash, publishedAt};
+  }
+  importCommunityRelease(userId: string, value: CommunityCapabilityImport) {
+    if (!/^[a-z0-9][a-z0-9-]{2,79}$/u.test(value.slug) || !semver.test(value.version)) {
+      throw new CapabilityStoreError(400, "INVALID_PACKAGE", "Community package slug or version is invalid");
+    }
+    if (typeof value.manifest !== "string" || value.manifest.length > 64 * 1024 || typeof value.skill !== "string" || !value.skill.trim() || value.skill.length > 200 * 1024 || /\u0000/u.test(value.skill) || typeof value.connector !== "string" || value.connector.length > 64 * 1024) {
+      throw new CapabilityStoreError(400, "INVALID_PACKAGE", "Community package files are invalid or too large");
+    }
+    if (!value.integrity || !/^[a-f0-9]{64}$/u.test(value.integrity.skillSha256) || !/^[a-f0-9]{64}$/u.test(value.integrity.connectorSha256)) {
+      throw new CapabilityStoreError(400, "INVALID_PACKAGE", "Community package integrity data is invalid");
+    }
+    let manifestValue: unknown;
+    let connectorValue: unknown;
+    try {
+      manifestValue = JSON.parse(value.manifest) as unknown;
+      connectorValue = JSON.parse(value.connector) as unknown;
+    } catch {
+      throw new CapabilityStoreError(400, "INVALID_PACKAGE", "Community manifest or connector is not JSON");
+    }
+    const manifest = parseCapabilityManifest(manifestValue);
+    if (manifest.version !== value.version) throw new CapabilityStoreError(400, "VERSION_MISMATCH", "Community manifest version does not match release version");
+    parseCommunityConnector(connectorValue, manifest);
+    const skillHash = sha256(value.skill);
+    const connectorHash = sha256(value.connector);
+    if (skillHash !== value.integrity.skillSha256 || connectorHash !== value.integrity.connectorSha256) {
+      throw new CapabilityStoreError(409, "PACKAGE_INTEGRITY_MISMATCH", "Community package content changed after publication");
+    }
+    const content = canonicalManifest(manifest);
+    const contentHash = sha256(content);
+    const existingPackage = this.db().prepare("SELECT * FROM capability_packages WHERE slug=?").get(value.slug) as PackageRow | undefined;
+    const packageId = existingPackage?.id ?? newId();
+    if (!existingPackage) {
+      // Local 'verified' means validated against this host's strict schema,
+      // not that arbitrary downloaded code has gained execution privileges.
+      this.db().prepare("INSERT INTO capability_packages (id,slug,trust_level,status,created_at) VALUES (?,?,'verified','published',?)").run(packageId,value.slug,now());
+    }
+    const existingRelease = this.db().prepare("SELECT * FROM capability_releases WHERE package_id=? AND version=?").get(packageId,value.version) as ReleaseRow | undefined;
+    let releaseId: string;
+    let created = false;
+    if (existingRelease) {
+      if (existingRelease.content_sha256 !== contentHash) throw new CapabilityStoreError(409, "RELEASE_VERSION_EXISTS", "This version is already connected with different content");
+      releaseId = existingRelease.id;
+    } else {
+      releaseId = sha256(`${packageId}:${contentHash}`).slice(0,32);
+      this.db().prepare("INSERT INTO capability_releases (id,package_id,version,manifest_json,content_sha256,signature,published_at,is_yanked) VALUES (?,?,?,?,?,?,?,0)").run(releaseId,packageId,manifest.version,content,contentHash,this.sign(contentHash),now());
+      created = true;
+    }
+    this.db().prepare("INSERT OR REPLACE INTO capability_release_sources (release_id,source,skill_text,connector_json,skill_sha256,connector_sha256,imported_at) VALUES (?,'mooncut-pages-community',?,?,?,?,?)").run(releaseId,value.skill,value.connector,skillHash,connectorHash,now());
+    const installed = this.install(userId, value.slug);
+    return {created, installation: installed.installation};
   }
   private installRow(userId: string, installationId: string, enabledOnly = true) {
     const result = this.db().prepare("SELECT * FROM capability_installations WHERE id=? AND user_id=?").get(installationId,userId) as InstallationRow | undefined;

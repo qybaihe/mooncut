@@ -1,6 +1,6 @@
 import {randomUUID} from "node:crypto";
-import {mkdir, writeFile} from "node:fs/promises";
-import {dirname, join} from "node:path";
+import {mkdir, readFile, writeFile} from "node:fs/promises";
+import {dirname, join, relative, resolve} from "node:path";
 import {config} from "./config.ts";
 import {requestStructuredCompletion} from "./gateway.ts";
 import type {
@@ -25,6 +25,7 @@ type PlannedVisuals = {
 };
 
 const MAX_GENERATED_IMAGES = 2;
+const MAX_HANDDRAWN_DIAGRAMS = 2;
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 
 const text = (value: unknown, maximum: number) =>
@@ -216,6 +217,178 @@ const persistSchedule = async (context: RunContext, schedule: ImageGenerationSch
   return schedule;
 };
 
+const isPathInside = (candidate: string, parent: string) => {
+  const relativePath = relative(parent, candidate);
+  return relativePath !== "" && !relativePath.startsWith("..") && !relativePath.includes(`..${process.platform === "win32" ? "\\" : "/"}`);
+};
+
+/**
+ * Codex's built-in ImageGen tool writes an image to the current job workspace.
+ * This controlled import is the only bridge from that sandboxed file into the
+ * MoonCut render contract. It deliberately accepts only an existing file below
+ * the current job directory, checks its byte signature, and copies it to both
+ * the durable job artifact and public Remotion media locations.
+ */
+export const importCodexGeneratedVisual = async (
+  context: RunContext,
+  input: Pick<ImageGenerationPlanItem, "label" | "purpose" | "prompt" | "avoid" | "relatedQuote"> & {sourcePath: string},
+): Promise<GeneratedVisualAsset> => {
+  if (context.job.request.imageGeneration === "off") {
+    throw new Error("Image generation is disabled for this job");
+  }
+  const maximum = Math.min(MAX_GENERATED_IMAGES, Math.max(0, config.imageGenerationMaxImages));
+  if (maximum === 0) throw new Error("Image generation budget is disabled for this job");
+  const generatedImageCount = context.generatedVisuals.filter((asset) => asset.kind === "generated-illustration").length;
+  if (generatedImageCount >= maximum) {
+    throw new Error(`Generated visual budget reached (${maximum})`);
+  }
+
+  const jobDirectory = resolve(context.jobDir);
+  const sourcePath = resolve(input.sourcePath);
+  if (!isPathInside(sourcePath, jobDirectory)) {
+    throw new Error("Codex ImageGen sourcePath must be inside the current job directory");
+  }
+  const buffer = await readFile(sourcePath);
+  if (buffer.length === 0 || buffer.length > MAX_IMAGE_BYTES) {
+    throw new Error("Codex ImageGen output must be a non-empty image no larger than 20 MB");
+  }
+  const format = detectGeneratedImageFormat(buffer);
+  const id = `codex-imagegen-${String(generatedImageCount + 1).padStart(2, "0")}-${randomUUID().slice(0, 8)}`;
+  const filename = `${id}.${format.extension}`;
+  const localDirectory = join(context.jobDir, "generated-visuals");
+  const publicDirectory = join(dirname(context.publicMediaPath), "generated-visuals", context.job.id);
+  const localPath = join(localDirectory, filename);
+  const publicPath = join(publicDirectory, filename);
+  const metadataPath = join(localDirectory, `${id}.json`);
+  const generatedAt = new Date().toISOString();
+  const asset: GeneratedVisualAsset = {
+    id,
+    kind: "generated-illustration",
+    label: text(input.label, 80) || "Codex AI 示例图",
+    purpose: text(input.purpose, 240) || "解释口播中的抽象概念",
+    prompt: text(input.prompt, 1200),
+    src: `${dirname(context.publicMediaSrc)}/generated-visuals/${context.job.id}/${filename}`,
+    localPath,
+    metadataPath,
+    model: "codex-imagegen",
+    generatedAt,
+  };
+  const planItem: ImageGenerationPlanItem = {
+    label: asset.label,
+    purpose: asset.purpose,
+    prompt: asset.prompt,
+    avoid: text(input.avoid, 400) || "文字、Logo、水印、二维码、真实人物和品牌标识",
+    relatedQuote: text(input.relatedQuote, 240),
+  };
+
+  await mkdir(localDirectory, {recursive: true});
+  await mkdir(publicDirectory, {recursive: true});
+  await Promise.all([
+    writeFile(localPath, buffer),
+    writeFile(publicPath, buffer),
+    writeFile(metadataPath, `${JSON.stringify({
+      schemaVersion: "mooncut.generated-visual.v1",
+      ...asset,
+      source: "codex-imagegen",
+      sourcePath: relative(context.jobDir, sourcePath),
+      contentType: format.contentType,
+      avoid: planItem.avoid,
+      relatedQuote: planItem.relatedQuote,
+    }, null, 2)}\n`),
+  ]);
+
+  context.generatedVisuals.push(asset);
+  await persistSchedule(context, {
+    mode: "generated",
+    reason: "Codex 在隔离任务目录中使用 ImageGen 生成了必要的示意图",
+    maxImages: maximum,
+    requestedCount: generatedImageCount + 1,
+    providerConfigured: true,
+    plan: [...(context.imageSchedule?.plan ?? []), planItem].slice(0, maximum),
+    assets: context.generatedVisuals.filter((item) => item.kind === "generated-illustration"),
+    errors: context.imageSchedule?.errors ?? [],
+  });
+  return asset;
+};
+
+/**
+ * Register a diagram produced by the local Excalidraw skill. Both the editable
+ * JSON and rendered PNG must stay inside the job sandbox; the renderer consumes
+ * the PNG while the JSON remains a reusable, auditable source artifact.
+ */
+export const importHanddrawnDiagram = async (
+  context: RunContext,
+  input: {sourcePath: string; sourceExcalidrawPath: string; label: string; purpose: string},
+): Promise<GeneratedVisualAsset> => {
+  const existingCount = context.generatedVisuals.filter((asset) => asset.kind === "handdrawn-diagram").length;
+  if (existingCount >= MAX_HANDDRAWN_DIAGRAMS) {
+    throw new Error(`Hand-drawn diagram budget reached (${MAX_HANDDRAWN_DIAGRAMS})`);
+  }
+
+  const jobDirectory = resolve(context.jobDir);
+  const sourcePath = resolve(input.sourcePath);
+  const sourceExcalidrawPath = resolve(input.sourceExcalidrawPath);
+  if (!isPathInside(sourcePath, jobDirectory) || !isPathInside(sourceExcalidrawPath, jobDirectory)) {
+    throw new Error("Diagram PNG and Excalidraw JSON must both be inside the current job directory");
+  }
+  const [buffer, sourceJson] = await Promise.all([
+    readFile(sourcePath),
+    readFile(sourceExcalidrawPath, "utf8"),
+  ]);
+  const format = detectGeneratedImageFormat(buffer);
+  if (format.extension !== "png") throw new Error("Hand-drawn diagram render must be a PNG");
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(sourceJson);
+  } catch {
+    throw new Error("Hand-drawn diagram source is not valid Excalidraw JSON");
+  }
+  if (!parsed || typeof parsed !== "object" || !Array.isArray((parsed as {elements?: unknown}).elements)) {
+    throw new Error("Hand-drawn diagram source must contain an Excalidraw elements array");
+  }
+
+  const id = `diagram-${String(existingCount + 1).padStart(2, "0")}-${randomUUID().slice(0, 8)}`;
+  const localDirectory = join(context.jobDir, "generated-visuals");
+  const publicDirectory = join(dirname(context.publicMediaPath), "generated-visuals", context.job.id);
+  const localPath = join(localDirectory, `${id}.png`);
+  const publicPath = join(publicDirectory, `${id}.png`);
+  const sourceJsonPath = join(localDirectory, `${id}.excalidraw`);
+  const metadataPath = join(localDirectory, `${id}.json`);
+  const generatedAt = new Date().toISOString();
+  const asset: GeneratedVisualAsset = {
+    id,
+    kind: "handdrawn-diagram",
+    label: text(input.label, 80) || "手绘流程图",
+    purpose: text(input.purpose, 240) || "解释口播中的流程或关系",
+    prompt: "Local Excalidraw skill render",
+    src: `${dirname(context.publicMediaSrc)}/generated-visuals/${context.job.id}/${id}.png`,
+    localPath,
+    metadataPath,
+    sourceJsonPath,
+    model: "excalidraw-skill",
+    generatedAt,
+  };
+
+  await Promise.all([
+    mkdir(localDirectory, {recursive: true}),
+    mkdir(publicDirectory, {recursive: true}),
+  ]);
+  await Promise.all([
+    writeFile(localPath, buffer),
+    writeFile(publicPath, buffer),
+    writeFile(sourceJsonPath, sourceJson),
+    writeFile(metadataPath, `${JSON.stringify({
+      schemaVersion: "mooncut.handdrawn-diagram.v1",
+      ...asset,
+      sourcePng: relative(context.jobDir, sourcePath),
+      sourceExcalidraw: relative(context.jobDir, sourceExcalidrawPath),
+      disclaimer: "Explanatory diagram; not factual evidence",
+    }, null, 2)}\n`),
+  ]);
+  context.generatedVisuals.push(asset);
+  return asset;
+};
+
 export const scheduleGeneratedVisuals = async (context: RunContext): Promise<ImageGenerationSchedule> => {
   const maximum = config.imageGenerationMaxImages;
   const configured = providerConfigured();
@@ -226,6 +399,23 @@ export const scheduleGeneratedVisuals = async (context: RunContext): Promise<Ima
       maxImages: maximum,
       requestedCount: 0,
       providerConfigured: configured,
+      plan: [],
+      assets: [],
+      errors: [],
+    });
+  }
+
+  // Codex owns the creative decision in headless Codex mode. It may call the
+  // built-in ImageGen tool and then register the result through the guarded
+  // import tool; do not send a duplicate planning/image request to the legacy
+  // gateway just to populate this required pipeline stage.
+  if (config.agentExecutionMode === "codex") {
+    return persistSchedule(context, {
+      mode: "none",
+      reason: "Codex 将在完成素材分析后自主决定是否使用内置 ImageGen；当前尚无已登记示意图",
+      maxImages: maximum,
+      requestedCount: 0,
+      providerConfigured: true,
       plan: [],
       assets: [],
       errors: [],

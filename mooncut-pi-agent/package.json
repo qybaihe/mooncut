@@ -18,6 +18,7 @@
     "serve": "node --experimental-strip-types src/cli.ts serve",
     "edit": "node --experimental-strip-types src/cli.ts edit",
     "edit:grok": "MOONCUT_AGENT_EXECUTION_MODE=grok node --experimental-strip-types src/cli.ts edit",
+    "edit:codex": "MOONCUT_AGENT_EXECUTION_MODE=codex node --experimental-strip-types src/cli.ts edit",
     "models": "node --experimental-strip-types src/cli.ts models",
     "tool": "node --experimental-strip-types src/cli.ts tool",
     "build:studio": "node scripts/build-studio-entry.mjs",

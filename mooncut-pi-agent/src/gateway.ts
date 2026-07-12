@@ -328,14 +328,27 @@ export const reviewImpactSequence = async (imagePath: string, expectedText: stri
 export const reviewEvidenceSequence = async (
   imagePath: string,
   expectedLabel: string,
-  expectedKind: "webpage" | "x-post",
+  expectedKind: "webpage" | "x-post" | "mixed",
+  expectedPanelCount = 1,
 ) => visualGate(
   imagePath,
   [
     "你正在验收口播视频中的真实网页证据场景。图片从左到右是同一场景的连续三帧。",
-    `预期来源：${expectedLabel}；类型：${expectedKind}`,
-    "通过条件：Safari/浏览器窗口内确实显示了真实页面或原始 X 帖子截图，主体清晰可读，没有空白、加载失败、假卡片或严重裁切。",
-    expectedKind === "webpage" ? "长网页的三帧最好能看到轻微滚动变化；没有变化记为 issue，但页面真实清晰时仍可通过。" : "X 原帖必须保留账号、正文和原始媒体/互动区域，不得重绘成拟真卡片。",
+    `预期来源：${expectedLabel}；类型：${expectedKind}；面板数：${expectedPanelCount}`,
+    `通过条件：浏览器窗口内确实显示 ${expectedPanelCount} 份真实页面或原始 X 帖子截图，主体清晰可读，面板互不遮挡，没有空白、加载失败、假卡片或严重裁切。`,
+    expectedKind !== "x-post" ? "长网页的三帧应能看到独立、轻微的滚动变化；所有面板完全同步或静止记为 issue，但页面真实清晰时仍可通过。" : "X 原帖必须保留账号、正文和原始媒体/互动区域，不得重绘成拟真卡片。",
+  ].join("\n"),
+);
+
+export const reviewDiagramSequence = async (
+  imagePath: string,
+  expectedLabel: string,
+) => visualGate(
+  imagePath,
+  [
+    "你正在验收口播视频中的手绘流程图讲解场景。图片从左到右是同一场景的连续三帧。",
+    `预期图解：${expectedLabel}`,
+    "通过条件：手绘节点、连线和主要标签清楚可见，构图完整，画面明确表示这是解释性图解，不能伪装成网页证据或真实数据截图。",
   ].join("\n"),
 );
 

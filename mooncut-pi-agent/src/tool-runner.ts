@@ -7,6 +7,8 @@ export type MooncutToolName =
   | "transcribe_source"
   | "clean_speech_delivery"
   | "schedule_generated_visuals"
+  | "import_codex_generated_visual"
+  | "import_handdrawn_diagram"
   | "track_speaker"
   | "capture_x_post"
   | "capture_web_page"
@@ -19,6 +21,8 @@ export const MOONCUT_TOOL_NAMES: readonly MooncutToolName[] = [
   "transcribe_source",
   "clean_speech_delivery",
   "schedule_generated_visuals",
+  "import_codex_generated_visual",
+  "import_handdrawn_diagram",
   "track_speaker",
   "capture_x_post",
   "capture_web_page",

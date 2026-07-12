@@ -56,6 +56,11 @@ test("rejects a requested real-evidence edit with no evidence assets", () => {
   assert.ok(findings.some((finding) => finding.id === "requested-x-evidence-absent" && finding.severity === "error"));
 });
 
+test("does not treat an evidence prohibition as an evidence request", () => {
+  const findings = validateSpecQuality(spec(), "不要使用生成图片或外部证据，完成自然口播剪辑");
+  assert.equal(findings.some((finding) => finding.id.startsWith("requested-")), false);
+});
+
 test("requires every captured evidence asset to be used by an evidence beat", () => {
   const asset = {
     id: "official-page",
@@ -82,6 +87,82 @@ test("requires every captured evidence asset to be used by an evidence beat", ()
     }],
   }), "使用真实官网证据");
   assert.equal(used.filter((finding) => finding.severity === "error").length, 0);
+});
+
+test("accepts distinct parallel evidence panels with independent scroll ranges", () => {
+  const assets = [
+    {id: "product", kind: "webpage" as const, label: "Product", url: "https://example.com/product", src: "product.png", localPath: "/tmp/product.png", evidencePath: "/tmp/product.json"},
+    {id: "pricing", kind: "webpage" as const, label: "Pricing", url: "https://example.com/pricing", src: "pricing.png", localPath: "/tmp/pricing.png", evidencePath: "/tmp/pricing.json"},
+  ];
+  const findings = validateSpecQuality(spec({
+    evidenceAssets: assets,
+    beats: [{
+      startMs: 0,
+      endMs: 10_000,
+      kind: "evidence",
+      headline: "能力与价格",
+      body: "两份来源各自补充信息",
+      keywords: [],
+      evidenceMode: "parallel",
+      evidencePanels: [
+        {evidenceId: "product", role: "primary", purpose: "确认产品能力", scrollStartPct: 0, scrollEndPct: 24},
+        {evidenceId: "pricing", role: "supporting", purpose: "补充价格范围", scrollStartPct: 8, scrollEndPct: 38},
+      ],
+    }],
+  }));
+  assert.equal(findings.some((finding) => finding.severity === "error"), false);
+});
+
+test("rejects duplicate or structurally conflicting multi-evidence panels", () => {
+  const asset = {id: "same", kind: "webpage" as const, label: "Same", url: "https://example.com/same", src: "same.png", localPath: "/tmp/same.png", evidencePath: "/tmp/same.json"};
+  const findings = validateSpecQuality(spec({
+    evidenceAssets: [asset],
+    beats: [{
+      startMs: 0,
+      endMs: 10_000,
+      kind: "evidence",
+      headline: "重复面板",
+      body: "不应通过",
+      keywords: [],
+      evidenceId: "same",
+      evidenceMode: "comparison",
+      evidencePanels: [
+        {evidenceId: "same", role: "primary", purpose: "相同用途"},
+        {evidenceId: "same", role: "supporting", purpose: "相同用途"},
+      ],
+    }],
+  }));
+  assert.ok(findings.some((finding) => finding.id === "evidence-panel-duplicate"));
+  assert.ok(findings.some((finding) => finding.id === "evidence-reference-ambiguous"));
+  assert.ok(findings.some((finding) => finding.id === "evidence-purpose-duplicate"));
+  assert.ok(findings.some((finding) => finding.id === "evidence-comparison-missing-contrast"));
+});
+
+test("keeps hand-drawn diagrams separate from evidence and generated illustrations", () => {
+  const diagram = {
+    id: "diagram-01",
+    kind: "handdrawn-diagram" as const,
+    label: "流程图",
+    purpose: "解释流程",
+    prompt: "Local Excalidraw skill render",
+    src: "diagram.png",
+    localPath: "/tmp/diagram.png",
+    metadataPath: "/tmp/diagram.json",
+    sourceJsonPath: "/tmp/diagram.excalidraw",
+    model: "excalidraw-skill",
+    generatedAt: new Date(0).toISOString(),
+  };
+  const valid = validateSpecQuality(spec({
+    generatedVisuals: [diagram],
+    beats: [{startMs: 0, endMs: 10_000, kind: "diagram", headline: "证据编排流程", body: "解释选择关系", keywords: [], diagramId: diagram.id}],
+  }));
+  assert.equal(valid.some((finding) => finding.severity === "error"), false);
+
+  const wrong = validateSpecQuality(spec({
+    generatedVisuals: [diagram],
+    beats: [{startMs: 0, endMs: 10_000, kind: "evidence", headline: "错误", body: "", keywords: [], diagramId: diagram.id}],
+  }));
+  assert.ok(wrong.some((finding) => finding.id === "diagram-wrong-beat"));
 });
 
 test("keeps generated illustrations separate from factual evidence and within budget", () => {

@@ -53,11 +53,13 @@ Read and obey:
 
 - Sonoma desktop + native macOS windows
 - `speaker` / `impact` → `native` main camera (preserve source framing)
-- `desktop` / `quote` / `illustration` / evidence-with-id → `circle` speaker bubble
+- `desktop` / `quote` / `illustration` / `diagram` / evidence-with-assets → `circle` speaker bubble
 - Cover full duration; prefer 4–9s beats; layout runs ≥ 2500ms
 - Impact aligned to spoken keyword (`impactAtMs` from word timings when possible)
 - Real Playwright / X capture > faked UI
 - Generated art only on `illustration` beats with real `generatedVisualId`
+- Multi-evidence is optional: use 2–3 `evidencePanels` only for distinct complementary, comparison, or sequence roles; never duplicate an ID, URL, or purpose
+- Desktop stages are 16:9 and may use a meaning-matched `editorial`, `workflow`, `comparison`, or `dashboard` template with up to four concrete visual items
 
 ### Canvas
 

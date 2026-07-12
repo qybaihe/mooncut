@@ -10,15 +10,17 @@ export const DEFAULT_CAMERA_POLICY = {
 };
 
 export const expectedSpeakerLayout = (
-  beat: Pick<EditBeat, 'kind' | 'evidenceId' | 'generatedVisualId'> | {
+  beat: Pick<EditBeat, 'kind' | 'evidenceId' | 'evidencePanels' | 'generatedVisualId' | 'diagramId'> | {
     kind: EditBeatKind;
     evidenceId?: string;
+    evidencePanels?: EditBeat['evidencePanels'];
     generatedVisualId?: string;
+    diagramId?: string;
   },
 ): SpeakerLayout => {
   if (beat.kind === 'desktop' || beat.kind === 'quote') return 'circle';
-  if (beat.kind === 'evidence' && beat.evidenceId) return 'circle';
-  if (beat.kind === 'illustration') return 'circle';
+  if (beat.kind === 'evidence' && (beat.evidenceId || beat.evidencePanels?.length)) return 'circle';
+  if (beat.kind === 'illustration' || beat.kind === 'diagram') return 'circle';
   return 'native';
 };
 

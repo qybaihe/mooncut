@@ -63,6 +63,9 @@ const enumEnv = <T extends string>(name: string, values: readonly T[], fallback:
   return value && values.includes(value) ? value : fallback;
 };
 
+const bundledCodexBinary = "/Applications/ChatGPT.app/Contents/Resources/codex";
+const defaultCodexBinary = existsSync(bundledCodexBinary) ? bundledCodexBinary : "codex";
+
 export const config = {
   gatewayBaseUrl: (process.env.MOONCUT_GATEWAY_BASE_URL ?? "http://localhost:8080/v1").replace(/\/$/u, ""),
   gatewayApiKey: process.env.MOONCUT_GATEWAY_API_KEY ?? "",
@@ -91,7 +94,8 @@ export const config = {
   // reliable = deterministic tool pipeline (no conversational planner).
   // pi      = experimental Pi coding-agent planner over the same tools.
   // grok    = Grok Build headless agent over the same tools (Pi replacement path).
-  agentExecutionMode: enumEnv("MOONCUT_AGENT_EXECUTION_MODE", ["reliable", "pi", "grok"] as const, "reliable"),
+  // codex   = Codex headless agent over the same tools, with workspace-write isolation.
+  agentExecutionMode: enumEnv("MOONCUT_AGENT_EXECUTION_MODE", ["reliable", "pi", "grok", "codex"] as const, "reliable"),
   // Grok Build CLI (non-interactive). Used when agentExecutionMode=grok.
   grokBinary: process.env.MOONCUT_GROK_BINARY ?? "grok",
   grokModel: process.env.MOONCUT_GROK_MODEL ?? "grok-4.5",
@@ -99,12 +103,41 @@ export const config = {
   grokMaxTurns: Math.max(20, integerEnv("MOONCUT_GROK_MAX_TURNS", 120)),
   // Long enough for Remotion + research; override per deployment.
   grokTimeoutMs: Math.max(120_000, integerEnv("MOONCUT_GROK_TIMEOUT_MS", 45 * 60_000)),
+  // Codex CLI headless mode. On this Mac prefer the newer CLI bundled in ChatGPT;
+  // packaged/Linux deployments fall back to the PATH command and should set the
+  // binary explicitly if they keep it somewhere else.
+  codexBinary: process.env.MOONCUT_CODEX_BINARY ?? defaultCodexBinary,
+  codexModel: process.env.MOONCUT_CODEX_MODEL ?? "gpt-5.6-terra",
+  codexReasoningEffort: process.env.MOONCUT_CODEX_REASONING_EFFORT ?? "xhigh",
+  codexTimeoutMs: Math.max(120_000, integerEnv("MOONCUT_CODEX_TIMEOUT_MS", 45 * 60_000)),
   // Deliverable default: full-HD 16:9. Low-resolution output must be an
   // explicit deployment override, never an implicit quality downgrade.
   renderWidth: Math.max(320, integerEnv("MOONCUT_RENDER_WIDTH", 1920)),
   renderHeight: Math.max(180, integerEnv("MOONCUT_RENDER_HEIGHT", 1080)),
   renderFps: Math.min(60, Math.max(12, integerEnv("MOONCUT_RENDER_FPS", 30))),
-  renderConcurrency: integerEnv("MOONCUT_RENDER_CONCURRENCY", 1),
+  // Parallel Remotion frame workers. Apple Silicon defaults higher; override via env.
+  renderConcurrency: Math.max(1, integerEnv(
+    "MOONCUT_RENDER_CONCURRENCY",
+    process.platform === "darwin" ? 2 : 1,
+  )),
+  /**
+   * Chromium OpenGL backend for Remotion (shared by reliable / pi / grok).
+   * - angle: hardware GPU in headless Chrome (recommended on local Mac)
+   * - swangle / swiftshader: software (slow, no GPU)
+   * - off / empty: omit --gl (Chrome default)
+   * Docs: https://www.remotion.dev/docs/gpu
+   */
+  renderGl: (() => {
+    const raw = (process.env.MOONCUT_RENDER_GL ?? (process.platform === "darwin" ? "angle" : "off")).trim().toLowerCase();
+    if (!raw || raw === "off" || raw === "none" || raw === "default" || raw === "null") return null;
+    const allowed = ["angle", "angle-egl", "egl", "swangle", "swiftshader", "vulkan"] as const;
+    return (allowed as readonly string[]).includes(raw) ? raw as typeof allowed[number] : (process.platform === "darwin" ? "angle" : null);
+  })(),
+  // Prefer hardware H.264 on Apple Silicon when Remotion/ffmpeg supports the encoder path.
+  renderHardwareAcceleration: booleanEnv(
+    "MOONCUT_RENDER_HARDWARE_ACCELERATION",
+    process.platform === "darwin",
+  ),
   // Talking-head delivery cleanup is local and non-destructive. The original
   // upload remains intact; only the derived source supplied to Remotion changes.
   speechCleanupEnabled: booleanEnv("MOONCUT_SPEECH_CLEANUP_ENABLED", true),
