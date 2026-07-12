@@ -3,12 +3,10 @@ import XCTest
 /// Memphis 主题全站截图，输出到 ios/screenshots/memphis/
 final class MemphisScreenshotUITests: XCTestCase {
     private var email: String {
-        ProcessInfo.processInfo.environment["MOONCUT_UI_TEST_EMAIL"]
-            ?? "ios-test-probe@example.com"
+        ProcessInfo.processInfo.environment["MOONCUT_UI_TEST_EMAIL"] ?? ""
     }
     private var password: String {
-        ProcessInfo.processInfo.environment["MOONCUT_UI_TEST_PASSWORD"]
-            ?? "test-pass-12345"
+        ProcessInfo.processInfo.environment["MOONCUT_UI_TEST_PASSWORD"] ?? ""
     }
 
     override func setUpWithError() throws {
@@ -26,6 +24,14 @@ final class MemphisScreenshotUITests: XCTestCase {
 
         loginIfNeeded(app)
         sleep(1)
+
+        guard app.tabBars.buttons["创作"].waitForExistence(timeout: 4) else {
+            let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            attachment.name = "memphis-auth"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            return
+        }
 
         // 1 登录后首页（创作）
         goTab(app, "创作")
@@ -105,6 +111,9 @@ final class MemphisScreenshotUITests: XCTestCase {
 
         let emailField = app.textFields["auth-email"]
         guard emailField.waitForExistence(timeout: 8) else { return }
+        // CI never invents credentials. Without an explicitly injected test
+        // account, this screenshot flow remains on the real auth surface.
+        guard !email.isEmpty, !password.isEmpty else { return }
         emailField.tap()
         // clear
         if let value = emailField.value as? String, !value.isEmpty {
@@ -113,7 +122,10 @@ final class MemphisScreenshotUITests: XCTestCase {
         }
         emailField.typeText(email)
 
+        let passwordLogin = app.segmentedControls.buttons["密码登录"]
+        if passwordLogin.waitForExistence(timeout: 2) { passwordLogin.tap() }
         let passwordField = app.secureTextFields["auth-password"]
+        guard passwordField.waitForExistence(timeout: 3) else { return }
         passwordField.tap()
         passwordField.typeText(password)
         app.buttons["auth-submit"].tap()

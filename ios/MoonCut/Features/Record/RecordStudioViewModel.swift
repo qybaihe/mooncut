@@ -275,6 +275,7 @@ final class RecordStudioViewModel {
             sizeLabel: VideoFileStore.sizeLabel(for: reviewURL),
             url: reviewURL,
             durationLabel: MediaFormatters.duration(Double(recordedDuration)),
+            durationSeconds: Double(recordedDuration),
             source: .recording
         )
     }

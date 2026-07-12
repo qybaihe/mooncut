@@ -6,11 +6,18 @@ import SwiftUI
 final class CommunityViewModel {
     var posts: [CommunityPostDTO] = []
     var nextCursor: String?
+    var packages: [CommunityRegistryPackageDTO] = []
     var isLoading = false
+    var isLoadingPackages = false
+    var connectingSlug: String?
     var errorMessage: String?
     var errorDiagnostic: String?
+    var packageError: String?
+    var connectHint: String?
     private let api: MoonCutAPIClient
     private let env: AppEnvironment
+
+    var apiForPublisher: MoonCutAPIClient { api }
 
     init(api: MoonCutAPIClient, env: AppEnvironment) {
         self.api = api
@@ -41,12 +48,43 @@ final class CommunityViewModel {
             errorMessage = error.localizedDescription
         }
     }
+
+    func loadPackages() async {
+        guard !isLoadingPackages else { return }
+        isLoadingPackages = true
+        defer { isLoadingPackages = false }
+        do {
+            packages = try await api.listCommunityPackages().items
+            packageError = nil
+        } catch let error as APIError {
+            packageError = error.errorDescription
+        } catch {
+            packageError = error.localizedDescription
+        }
+    }
+
+    func connect(_ item: CommunityRegistryPackageDTO) async {
+        guard connectingSlug == nil else { return }
+        connectingSlug = item.slug
+        connectHint = nil
+        defer { connectingSlug = nil }
+        do {
+            let result = try await api.connectCommunityPackage(slug: item.slug)
+            connectHint = "\(item.display.name) 已\(result.created ? "连接到" : "同步到")本机 Agent，可在剪辑任务中选择。"
+        } catch let error as APIError {
+            connectHint = error.errorDescription
+            if error == .unauthorized { env.handleAPIError(error) }
+        } catch {
+            connectHint = error.localizedDescription
+        }
+    }
 }
 
 struct CommunityView: View {
     @State private var model: CommunityViewModel
     @Environment(\.theme) private var theme
     @State private var playing: CommunityPostDTO?
+    @State private var showsPackagePublisher = false
 
     init(api: MoonCutAPIClient, env: AppEnvironment) {
         _model = State(initialValue: CommunityViewModel(api: api, env: env))
@@ -57,6 +95,7 @@ struct CommunityView: View {
             VStack(alignment: .leading, spacing: 18) {
                 header
                 trustStrip
+                registrySection
 
                 if let error = model.errorMessage {
                     ErrorBanner(
@@ -110,7 +149,10 @@ struct CommunityView: View {
         .background(theme.canvas.ignoresSafeArea())
         .navigationTitle("社区")
         .navigationBarTitleDisplayMode(.inline)
-        .refreshable { await model.load(reset: true) }
+        .refreshable {
+            await model.load(reset: true)
+            await model.loadPackages()
+        }
         .overlay {
             if model.isLoading && model.posts.isEmpty {
                 ProgressView("打开社区…")
@@ -118,11 +160,30 @@ struct CommunityView: View {
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
         }
-        .task { await model.load(reset: true) }
+        .task {
+            await model.load(reset: true)
+            await model.loadPackages()
+        }
         .sheet(item: $playing) { post in
             CommunityPlayerSheet(post: post)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showsPackagePublisher) {
+            CommunityPackagePublisherSheet(api: model.apiForPublisher) {
+                Task { await model.loadPackages() }
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showsPackagePublisher = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .accessibilityLabel("发布能力包")
+                .accessibilityIdentifier("community-package-publish")
+            }
         }
         .accessibilityIdentifier("community-screen")
     }
@@ -155,6 +216,68 @@ struct CommunityView: View {
         .moonCard(radius: 14)
     }
 
+    @ViewBuilder
+    private var registrySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("能力社区")
+                        .font(.headline)
+                        .foregroundStyle(theme.textPrimary)
+                    Text("与 Web 同一 Pages 目录。包只含声明文件；连接时仅允许已审核的本机 adapter。")
+                        .font(.caption)
+                        .foregroundStyle(theme.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                Button {
+                    Task { await model.loadPackages() }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .disabled(model.isLoadingPackages)
+                .accessibilityLabel("刷新能力社区")
+            }
+
+            if let packageError = model.packageError {
+                ErrorBanner(message: packageError, diagnostic: nil, onRetry: { Task { await model.loadPackages() } })
+            } else if model.isLoadingPackages && model.packages.isEmpty {
+                ProgressView("正在读取能力包…")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else if model.packages.isEmpty {
+                Text("还没有已发布能力包。你可以从右上角上传 manifest、SKILL.md 和 connector.json。")
+                    .font(.caption)
+                    .foregroundStyle(theme.textSecondary)
+                    .padding(12)
+                    .moonCard(radius: 14)
+            } else {
+                ForEach(model.packages) { item in
+                    CommunityPackageCard(
+                        item: item,
+                        isConnecting: model.connectingSlug == item.slug,
+                        onConnect: { Task { await model.connect(item) } },
+                        packageURL: packageURL
+                    )
+                }
+            }
+            if let hint = model.connectHint {
+                Text(hint)
+                    .font(.caption)
+                    .foregroundStyle(theme.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(14)
+        .moonCard(radius: 16)
+        .accessibilityIdentifier("community-package-registry")
+    }
+
+    private func packageURL(_ path: String) -> URL? {
+        let normalized = path.hasPrefix("/api/") ? String(path.dropFirst(4)) : path
+        return APIConfiguration.current.url(path: normalized)
+    }
+
     private var divider: some View {
         Rectangle()
             .fill(theme.hairline)
@@ -175,6 +298,63 @@ struct CommunityView: View {
                 .minimumScaleFactor(0.85)
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Capability registry
+
+private struct CommunityPackageCard: View {
+    @Environment(\.theme) private var theme
+    let item: CommunityRegistryPackageDTO
+    let isConnecting: Bool
+    let onConnect: () -> Void
+    let packageURL: (String) -> URL?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(alignment: .firstTextBaseline) {
+                Label(item.publisher.label, systemImage: "checkmark.shield")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(theme.textSecondary)
+                Spacer()
+                Text("v\(item.release.version)")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(theme.textTertiary)
+            }
+            Text(item.display.name)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(theme.textPrimary)
+            Text(item.display.tagline)
+                .font(.caption)
+                .foregroundStyle(theme.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            if !item.permissions.isEmpty {
+                Text("需要确认：\(item.permissions.map(\.reason).joined(separator: "；"))")
+                    .font(.caption2)
+                    .foregroundStyle(theme.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack(spacing: 10) {
+                Button(action: onConnect) {
+                    if isConnecting {
+                        ProgressView().frame(minWidth: 108)
+                    } else {
+                        Label("连接到 Agent", systemImage: "cable.connector")
+                    }
+                }
+                .buttonStyle(SecondaryButtonStyle())
+                .disabled(isConnecting)
+                .accessibilityIdentifier("community-connect-\(item.slug)")
+                if let url = packageURL(item.release.files.package) {
+                    Link(destination: url) {
+                        Label("下载", systemImage: "arrow.down.circle")
+                    }
+                    .font(.caption.weight(.semibold))
+                }
+            }
+        }
+        .padding(12)
+        .background(theme.inset.opacity(0.45), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
     }
 }
 

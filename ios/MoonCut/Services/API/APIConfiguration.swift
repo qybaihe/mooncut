@@ -2,8 +2,14 @@ import Foundation
 
 /// API 基址与安全相关配置。机密不得写入源码；仅注入 Base URL / 受信 host。
 struct APIConfiguration: Sendable, Equatable {
+    enum TLSMode: String, Sendable, Equatable {
+        case system
+        case pinnedPrivateCA = "pinned-private-ca"
+    }
+
     let baseURL: URL
     let trustedHost: String
+    let tlsMode: TLSMode
     let requestTimeout: TimeInterval
     let resourceTimeout: TimeInterval
     let uploadTimeout: TimeInterval
@@ -24,6 +30,10 @@ struct APIConfiguration: Sendable, Equatable {
         let mode = (info?["MoonCutDistributionMode"] as? String)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased() ?? ""
+        let tlsRaw = (info?["MoonCutTLSMode"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() ?? ""
+        let tlsMode = TLSMode(rawValue: tlsRaw) ?? .system
 
         #if PUBLIC_DISTRIBUTION
         let forcePublic = true
@@ -36,6 +46,7 @@ struct APIConfiguration: Sendable, Equatable {
             return APIConfiguration(
                 baseURL: URL(string: unconfiguredPlaceholder)!,
                 trustedHost: "",
+                tlsMode: .system,
                 requestTimeout: 15,
                 resourceTimeout: 30,
                 uploadTimeout: 60,
@@ -47,13 +58,15 @@ struct APIConfiguration: Sendable, Equatable {
 
         let fallback: String
         #if DEBUG
-        fallback = "http://127.0.0.1:4317"
-        // Debug 用更短超时：本机 agent 未开时快速失败，避免启动卡死
+        fallback = "https://mooncut.me/api"
+        // Debug uses the same edge contract with a shorter timeout so a local
+        // network failure cannot hold the launch screen indefinitely.
         let reqTimeout: TimeInterval = 5
         let resTimeout: TimeInterval = 8
         #else
-        // 仅非公开 Release 回退；公开包不会走到这里
-        fallback = "https://42.194.219.172"
+        // Only non-public Release can reach this fallback; public builds are
+        // intercepted above and remain intentionally unconfigured.
+        fallback = "https://mooncut.me/api"
         let reqTimeout: TimeInterval = 30
         let resTimeout: TimeInterval = 120
         #endif
@@ -65,6 +78,7 @@ struct APIConfiguration: Sendable, Equatable {
         return APIConfiguration(
             baseURL: URL(string: baseString) ?? URL(string: fallback)!,
             trustedHost: resolvedHost,
+            tlsMode: tlsMode,
             requestTimeout: reqTimeout,
             resourceTimeout: resTimeout,
             uploadTimeout: 600,
@@ -81,6 +95,12 @@ struct APIConfiguration: Sendable, Equatable {
 
     var isPublicDistribution: Bool {
         distributionMode == "public" || !isConfigured
+    }
+
+    /// Normal Web/Pages traffic remains on system TLS. A private CA is only
+    /// enabled deliberately for an operator-controlled host.
+    var requiresPinnedPrivateCA: Bool {
+        tlsMode == .pinnedPrivateCA
     }
 
     func url(path: String, query: [URLQueryItem] = []) -> URL {

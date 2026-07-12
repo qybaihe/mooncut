@@ -26,6 +26,8 @@
 	<string>$(MOONCUT_API_BASE_URL)</string>
 	<key>MoonCutTrustedHost</key>
 	<string>$(MOONCUT_TRUSTED_HOST)</string>
+	<key>MoonCutTLSMode</key>
+	<string>$(MOONCUT_TLS_MODE)</string>
 	<key>MoonCutDistributionMode</key>
 	<string>$(MOONCUT_DISTRIBUTION_MODE)</string>
 	<key>NSCameraUsageDescription</key>

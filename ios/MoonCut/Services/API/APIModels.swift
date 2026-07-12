@@ -16,6 +16,31 @@ struct AuthLoginEnvelope: Codable, Sendable {
     let user: AuthUserDTO
 }
 
+enum AuthOTPPurpose: String, Codable, Sendable {
+    case login
+    case register
+}
+
+struct AuthOTPSendRequest: Codable, Sendable {
+    let email: String
+    let purpose: AuthOTPPurpose
+}
+
+struct AuthOTPSendResponse: Codable, Sendable {
+    let ok: Bool
+    let email: String
+    let purpose: AuthOTPPurpose
+    let expiresInSec: Int
+    let resendAfterSec: Int
+}
+
+struct AuthOTPVerifyRequest: Codable, Sendable {
+    let email: String
+    let code: String
+    let password: String?
+    let purpose: AuthOTPPurpose
+}
+
 // MARK: - Health
 
 struct HealthzDTO: Codable, Sendable {
@@ -128,6 +153,113 @@ struct RenderQueueItemDTO: Codable, Identifiable, Sendable, Equatable {
     let mine: Bool
 }
 
+// MARK: - Billing
+
+enum BillingPlanID: String, Codable, CaseIterable, Sendable {
+    case free
+    case creator
+    case pro
+}
+
+struct BillingSummaryDTO: Codable, Sendable {
+    let account: BillingAccountDTO
+    let usage: BillingUsageDTO
+    let limits: BillingLimitsDTO
+    let upgradePrompt: BillingUpgradePromptDTO?
+    let checkoutRequests: [BillingCheckoutRecordDTO]
+    let plans: [BillingPlanDTO]
+}
+
+struct BillingAccountDTO: Codable, Sendable {
+    let plan: BillingPlanID
+    let planLabel: String
+    let subscriptionStatus: String
+    let periodStartedAt: String
+    let periodEndsAt: String?
+    let cancelAtPeriodEnd: Bool
+    let exportQuality: String
+    let maxParallelJobs: Int
+}
+
+struct BillingUsageDTO: Codable, Sendable {
+    let videoGenerations: BillingMeterDTO
+    let smartMinutes: BillingMeterDTO
+    let creativePoints: BillingMeterDTO
+}
+
+struct BillingMeterDTO: Codable, Sendable {
+    let used: Int
+    let completed: Int?
+    let inProgress: Int?
+    let limit: Int?
+    let remaining: Int?
+}
+
+struct BillingLimitsDTO: Codable, Sendable {
+    let maxSourceSeconds: Int?
+    let checkoutConfigured: Bool
+}
+
+struct BillingUpgradePromptDTO: Codable, Sendable {
+    let level: String
+    let title: String
+    let detail: String
+    let recommendedPlan: BillingPlanID
+}
+
+struct BillingPlanDTO: Codable, Identifiable, Sendable {
+    let id: BillingPlanID
+    let label: String
+    let priceCny: Int
+    let smartMinuteLimit: Int?
+    let creativePointLimit: Int
+    let exportQuality: String
+    let maxParallelJobs: Int
+}
+
+struct BillingCheckoutRequest: Codable, Sendable {
+    let plan: BillingPlanID
+}
+
+struct BillingCheckoutRecordDTO: Codable, Identifiable, Sendable {
+    let id: String
+    let requestedPlan: BillingPlanID
+    let status: String
+    let checkoutURL: String?
+    let createdAt: String
+    let updatedAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case requestedPlan = "requested_plan"
+        case status
+        case checkoutURL = "checkout_url"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+struct BillingCheckoutResponseDTO: Codable, Sendable {
+    struct Checkout: Codable, Sendable {
+        let id: String
+        let plan: BillingPlanID
+        let status: String
+        let checkoutURL: String?
+        let createdAt: String
+
+        enum CodingKeys: String, CodingKey {
+            case id
+            case plan
+            case status
+            case checkoutURL = "checkoutUrl"
+            case createdAt
+        }
+    }
+
+    let checkout: Checkout
+    let message: String
+}
+
 // MARK: - Assistant
 
 struct ScriptMessageDTO: Codable, Sendable, Equatable {
@@ -214,6 +346,60 @@ struct CommunityPublishRequest: Codable, Sendable {
 struct CommunityPublishResponse: Codable, Sendable {
     let created: Bool?
     let post: CommunityPostDTO
+}
+
+struct CommunityPackageListResponseDTO: Codable, Sendable {
+    let items: [CommunityRegistryPackageDTO]
+}
+
+struct CommunityRegistryPackageDTO: Codable, Identifiable, Sendable {
+    struct Publisher: Codable, Sendable {
+        let id: String
+        let label: String
+        let trust: String
+    }
+
+    struct Display: Codable, Sendable {
+        let name: String
+        let tagline: String
+        let category: String
+    }
+
+    struct Permission: Codable, Identifiable, Sendable {
+        var id: String { "\(name)-\(reason)" }
+        let name: String
+        let reason: String
+    }
+
+    struct Release: Codable, Sendable {
+        struct Files: Codable, Sendable {
+            let package: String
+            let manifest: String
+            let skill: String
+            let connector: String
+        }
+
+        let version: String
+        let publishedAt: String
+        let files: Files
+    }
+
+    let slug: String
+    let publisher: Publisher
+    let display: Display
+    let kinds: [String]
+    let permissions: [Permission]
+    let release: Release
+
+    var id: String { slug }
+}
+
+struct CommunityPackageConnectResponseDTO: Codable, Sendable {
+    let created: Bool
+}
+
+struct CommunityPackageUploadResponseDTO: Codable, Sendable {
+    let item: CommunityRegistryPackageDTO
 }
 
 // MARK: - Server error body

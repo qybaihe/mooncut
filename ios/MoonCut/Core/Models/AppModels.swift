@@ -103,6 +103,9 @@ struct VideoAsset: Identifiable, Equatable, Sendable {
     let sizeLabel: String
     let url: URL?
     let durationLabel: String?
+    /// Measured from the real local media file. This is also sent to the Web
+    /// billing contract as an estimate and is reconciled server-side later.
+    let durationSeconds: Double?
     let source: VideoSource
 
     init(
@@ -111,6 +114,7 @@ struct VideoAsset: Identifiable, Equatable, Sendable {
         sizeLabel: String,
         url: URL?,
         durationLabel: String? = nil,
+        durationSeconds: Double? = nil,
         source: VideoSource
     ) {
         self.id = id
@@ -118,6 +122,7 @@ struct VideoAsset: Identifiable, Equatable, Sendable {
         self.sizeLabel = sizeLabel
         self.url = url
         self.durationLabel = durationLabel
+        self.durationSeconds = durationSeconds
         self.source = source
     }
 

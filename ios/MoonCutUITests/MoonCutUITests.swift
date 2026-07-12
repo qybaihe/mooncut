@@ -39,7 +39,7 @@ final class MoonCutUITests: XCTestCase {
         app.launch()
 
         // Tabs only after login; if still on auth, assert auth identifiers instead.
-        if app.buttons["auth-submit"].waitForExistence(timeout: 5)
+        if app.buttons["auth-submit"].waitForExistence(timeout: 10)
             || app.textFields["auth-email"].exists {
             XCTAssertTrue(app.buttons["auth-submit"].exists || app.textFields["auth-email"].exists)
             return

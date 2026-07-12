@@ -62,6 +62,7 @@ final class ClipStudioViewModel {
                             sizeLabel: current.sizeLabel,
                             url: current.url,
                             durationLabel: label,
+                            durationSeconds: seconds,
                             source: current.source
                         )
                         asset = current
@@ -147,7 +148,8 @@ final class ClipStudioViewModel {
                     assetId: uploaded.assetId,
                     title: title.isEmpty ? nil : title,
                     prompt: prompt.isEmpty ? nil : prompt,
-                    imageGeneration: imageGeneration
+                    imageGeneration: imageGeneration,
+                    billingEstimateSeconds: max(1, Int(ceil(asset.durationSeconds ?? 60)))
                 )
                 guard !Task.isCancelled else { return }
 

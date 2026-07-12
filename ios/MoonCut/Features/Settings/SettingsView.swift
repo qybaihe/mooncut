@@ -14,6 +14,12 @@ struct SettingsView: View {
                         Task { await env.signOut() }
                     }
                     .accessibilityIdentifier("logout-button")
+                    NavigationLink {
+                        BillingView(api: env.api)
+                    } label: {
+                        Label("套餐与额度", systemImage: "creditcard")
+                    }
+                    .accessibilityIdentifier("billing-settings-link")
                 }
             }
 
@@ -45,7 +51,7 @@ struct SettingsView: View {
             }
 
             Section("安全") {
-                Text("认证使用邮箱登录后的 Cookie 会话，App 不嵌入 MOONCUT_API_KEY。生产 TLS 通过捆绑 mooncut-ca 对固定 host 做锚定校验。")
+                Text("认证使用邮箱验证码或密码登录后的 Cookie 会话，App 不嵌入 MOONCUT_API_KEY。Web Pages 入口使用系统 TLS；仅显式配置的私有服务才使用捆绑 CA 锚定。")
                     .font(.caption)
                     .foregroundStyle(theme.textSecondary)
             }

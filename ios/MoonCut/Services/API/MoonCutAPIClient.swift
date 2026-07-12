@@ -16,9 +16,15 @@ actor MoonCutAPIClient {
         let cookies = HTTPCookieStorage.shared
         self.cookieStorage = cookies
 
-        let caData = MoonCutCertificateTrust.loadBundledCA()
+        let caData = configuration.requiresPinnedPrivateCA
+            ? MoonCutCertificateTrust.loadBundledCA()
+            : nil
         let trust = MoonCutCertificateTrust(
-            trustedHost: configuration.trustedHost,
+            // Leaving this empty deliberately makes the delegate fall through
+            // to system trust for the public Pages host. A missing private CA
+            // must fail closed only when the operator explicitly opted into
+            // private-CA pinning.
+            trustedHost: configuration.requiresPinnedPrivateCA ? configuration.trustedHost : "",
             caCertificateData: caData
         )
         self.trustDelegate = trust
@@ -56,20 +62,39 @@ actor MoonCutAPIClient {
 
     // MARK: - Auth (Cookie session)
 
-    func register(email: String, password: String) async throws -> AuthUserDTO {
-        let envelope: AuthLoginEnvelope = try await postJSON(
-            "/v1/auth/register",
-            body: ["email": email, "password": password]
-        )
+    func register(email: String, password: String, code: String? = nil) async throws -> AuthUserDTO {
+        var body: [String: Any] = ["email": email, "password": password]
+        if let code, !code.isEmpty { body["code"] = code }
+        let envelope: AuthLoginEnvelope = try await postJSON("/v1/auth/register", body: body)
         return envelope.user
     }
 
-    func login(email: String, password: String) async throws -> AuthUserDTO {
-        let envelope: AuthLoginEnvelope = try await postJSON(
-            "/v1/auth/login",
-            body: ["email": email, "password": password]
-        )
+    func login(email: String, password: String? = nil, code: String? = nil) async throws -> AuthUserDTO {
+        var body: [String: Any] = ["email": email]
+        if let password, !password.isEmpty { body["password"] = password }
+        if let code, !code.isEmpty { body["code"] = code }
+        let envelope: AuthLoginEnvelope = try await postJSON("/v1/auth/login", body: body)
         return envelope.user
+    }
+
+    func sendAuthOTP(email: String, purpose: AuthOTPPurpose) async throws -> AuthOTPSendResponse {
+        try await postCodable(
+            "/v1/auth/otp/send",
+            body: AuthOTPSendRequest(email: email, purpose: purpose)
+        )
+    }
+
+    func verifyAuthOTP(
+        email: String,
+        code: String,
+        password: String? = nil,
+        purpose: AuthOTPPurpose
+    ) async throws -> AuthUserDTO {
+        let response: AuthLoginEnvelope = try await postCodable(
+            "/v1/auth/otp/verify",
+            body: AuthOTPVerifyRequest(email: email, code: code, password: password, purpose: purpose)
+        )
+        return response.user
     }
 
     func session() async throws -> AuthUserDTO? {
@@ -137,6 +162,7 @@ actor MoonCutAPIClient {
         title: String?,
         prompt: String?,
         imageGeneration: String = "auto",
+        billingEstimateSeconds: Int? = nil,
         capabilityInstallIds: [String] = [],
         capabilityRequests: [[String: Any]] = []
     ) async throws -> EditJobCreateResponse {
@@ -146,6 +172,9 @@ actor MoonCutAPIClient {
         ]
         if let title, !title.isEmpty { body["title"] = title }
         if let prompt, !prompt.isEmpty { body["prompt"] = prompt }
+        if let billingEstimateSeconds, billingEstimateSeconds > 0 {
+            body["billingEstimateSeconds"] = billingEstimateSeconds
+        }
         if !capabilityInstallIds.isEmpty {
             body["capabilityInstallIds"] = capabilityInstallIds
         }
@@ -182,6 +211,17 @@ actor MoonCutAPIClient {
         try await get("/v1/render-queue")
     }
 
+    // MARK: - Billing
+
+    func billingSummary() async throws -> BillingSummaryDTO {
+        try await get("/v1/billing/summary")
+    }
+
+    func createBillingCheckout(plan: BillingPlanID) async throws -> BillingCheckoutResponseDTO {
+        guard plan != .free else { throw APIError.server(status: 400, message: "免费方案不需要支付", code: nil, requestId: nil) }
+        return try await postCodable("/v1/billing/checkout", body: BillingCheckoutRequest(plan: plan))
+    }
+
     // MARK: - Assistant
 
     func scriptAssistant(_ payload: ScriptAssistantRequest) async throws -> ScriptAssistantResponseDTO {
@@ -204,6 +244,75 @@ actor MoonCutAPIClient {
 
     func publishCommunityPost(_ payload: CommunityPublishRequest) async throws -> CommunityPublishResponse {
         try await postCodable("/v1/community/posts", body: payload)
+    }
+
+    func listCommunityPackages(query: String? = nil) async throws -> CommunityPackageListResponseDTO {
+        var queryItems: [URLQueryItem] = []
+        if let query, !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            queryItems.append(URLQueryItem(name: "query", value: query))
+        }
+        return try await get("/v1/community/packages", query: queryItems)
+    }
+
+    func connectCommunityPackage(slug: String) async throws -> CommunityPackageConnectResponseDTO {
+        struct EmptyBody: Codable {}
+        let encoded = slug.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? slug
+        return try await postCodable("/v1/community/packages/\(encoded)/connect", body: EmptyBody())
+    }
+
+    /// Community package declarations are deliberately small and declarative
+    /// (manifest, SKILL.md and connector). Their server-side limits keep this
+    /// multipart body below a few hundred KB; video assets still use uploadTask
+    /// from file above.
+    func uploadCommunityPackage(
+        slug: String,
+        version: String,
+        publisherName: String,
+        manifestURL: URL,
+        skillURL: URL,
+        connectorURL: URL
+    ) async throws -> CommunityPackageUploadResponseDTO {
+        let boundary = "MoonCutBoundary-\(UUID().uuidString)"
+        let fields = [
+            ("slug", slug),
+            ("version", version),
+            ("publisherName", publisherName)
+        ]
+        let files = [
+            ("manifest", manifestURL, "manifest.json", "application/json"),
+            ("skill", skillURL, "SKILL.md", "text/markdown; charset=utf-8"),
+            ("connector", connectorURL, "connector.json", "application/json")
+        ]
+        var body = Data()
+        for (name, value) in fields {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8)!)
+            body.append(value.data(using: .utf8)!)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        for (name, fileURL, filename, mimeType) in files {
+            let fileData: Data
+            do {
+                fileData = try Data(contentsOf: fileURL)
+            } catch {
+                throw APIError.transport("无法读取 \(filename)，请重新选择该文件")
+            }
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+            body.append(fileData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        try ensureConfigured()
+        var request = URLRequest(url: configuration.url(path: "/v1/community/packages"))
+        request.httpMethod = "POST"
+        request.timeoutInterval = configuration.uploadTimeout
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpBody = body
+        return try await perform(request)
     }
 
     // MARK: - Core HTTP
@@ -352,6 +461,7 @@ extension MoonCutAPIClient {
             configuration: APIConfiguration(
                 baseURL: baseURL,
                 trustedHost: baseURL.host ?? "localhost",
+                tlsMode: .system,
                 requestTimeout: 5,
                 resourceTimeout: 10,
                 uploadTimeout: 10,
