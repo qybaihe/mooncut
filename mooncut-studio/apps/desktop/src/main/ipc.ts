@@ -506,8 +506,6 @@ export function registerIpc(services: StudioServices) {
         artifacts,
         prompt: typeof remote.request?.prompt === "string" ? remote.request.prompt : undefined,
         title: typeof remote.request?.title === "string" ? remote.request.title : undefined,
-        ...(remote.result ? {result: remote.result} : {}),
-        ...(remote.subtitleRepair ? {subtitleRepair: remote.subtitleRepair} : {}),
       };
       await upsertJob(entry.rootPath, job);
       return job;
@@ -544,46 +542,6 @@ export function registerIpc(services: StudioServices) {
     }
     items.sort((a, b) => (b.updatedAt > a.updatedAt ? 1 : -1));
     return items;
-  });
-
-  /** P0: 渲染队列看板 — 透传 pi-agent /v1/render-queue。 */
-  ipcMain.handle(IPC_CHANNELS.jobRenderQueue, async () => {
-    if (supervisor.getStatus().state !== "healthy") {
-      throw new Error("Agent Host 未就绪，无法获取渲染队列。");
-    }
-    return supervisor.getClient().getRenderQueue();
-  });
-
-  /** P3: 字幕修复 — 创建修复任务。 */
-  ipcMain.handle(IPC_CHANNELS.subtitleRepairCreate, async (_e, payload: {jobId: string; payload: {instruction: string; atMs?: number; replacementText?: string}}) => {
-    if (supervisor.getStatus().state !== "healthy") {
-      throw new Error("Agent Host 未就绪，无法提交字幕修复。");
-    }
-    return supervisor.getClient().createSubtitleRepair(payload.jobId, payload.payload);
-  });
-
-  /** P3: 字幕修复 — 列出修复版本。 */
-  ipcMain.handle(IPC_CHANNELS.subtitleRepairList, async (_e, jobId: string) => {
-    if (supervisor.getStatus().state !== "healthy") {
-      throw new Error("Agent Host 未就绪，无法获取修复历史。");
-    }
-    return supervisor.getClient().listSubtitleRepairs(jobId);
-  });
-
-  /** P4: ASR 状态。 */
-  ipcMain.handle(IPC_CHANNELS.asrStatus, async () => {
-    if (supervisor.getStatus().state !== "healthy") {
-      return {configured: false, provider: "none", model: "", language: "", mode: "unavailable", note: "Agent Host 未就绪"};
-    }
-    return supervisor.getClient().getAsrStatus();
-  });
-
-  /** P4: ASR 转录。 */
-  ipcMain.handle(IPC_CHANNELS.asrTranscribe, async (_e, payload: {audio: ArrayBuffer; options?: {contentType?: string; encoding?: string; sampleRate?: number; language?: string; model?: string}}) => {
-    if (supervisor.getStatus().state !== "healthy") {
-      throw new Error("Agent Host 未就绪，ASR 不可用。");
-    }
-    return supervisor.getClient().transcribeAudioChunk(payload.audio, payload.options);
   });
 
   ipcMain.handle(IPC_CHANNELS.jobCancel, async (_e, payload: {projectId: string; jobId: string}) => {

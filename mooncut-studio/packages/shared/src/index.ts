@@ -281,39 +281,6 @@ export type ProjectMediaAsset = {
   height?: number;
 };
 
-/** 成片结果详情（与 pi-agent result 对齐）。 */
-export type JobResult = {
-  summary?: string;
-  artifacts?: Record<string, string>;
-  probe?: {durationMs?: number; width?: number; height?: number; hasAudio?: boolean};
-  models?: {planner?: string; vision?: string; image?: string};
-  visuals?: {
-    mode?: "off" | "none" | "generated" | "unavailable";
-    reason?: string;
-    maxImages?: number;
-    requestedCount?: number;
-    providerConfigured?: boolean;
-    assets?: Array<{id: string; label: string; model: string}>;
-    errors?: string[];
-  };
-  quality?: {ok: boolean};
-};
-
-/** 字幕修复分析。 */
-export type SubtitleRepairAnalysis = {
-  summary: string;
-  model: string;
-  changes: Array<{segmentIndex: number; before: string; after: string; startMs: number; endMs: number; reason: string}>;
-};
-
-/** 字幕修复信息。 */
-export type SubtitleRepair = {
-  parentJobId: string;
-  rootJobId: string;
-  feedback: {instruction: string; atMs?: number; replacementText?: string};
-  analysis?: SubtitleRepairAnalysis;
-};
-
 export type StudioJob = {
   id: string;
   projectId: string;
@@ -328,60 +295,11 @@ export type StudioJob = {
   mediaAssetId?: string;
   artifacts?: Record<string, string>;
   providerProfileId?: string;
-  result?: JobResult;
-  subtitleRepair?: SubtitleRepair;
 };
 
 /** Inbox 聚合条目 — StudioJob + 所属项目名（收件箱跨项目展示用）。 */
 export type InboxItem = StudioJob & {
   projectName: string;
-};
-
-/** 渲染队列条目（与 pi-agent render-queue 对齐）。 */
-export type RenderQueueItem = {
-  name: string;
-  status: "queued" | "running" | "completed" | "failed";
-  stage: string;
-  progress: number;
-  createdAt: string;
-  updatedAt: string;
-  queuePosition?: number;
-  mine: boolean;
-};
-
-/** 渲染队列快照。 */
-export type RenderQueueSnapshot = {
-  updatedAt: string;
-  summary: {running: number; queued: number; completedToday: number};
-  active: RenderQueueItem[];
-  recent: RenderQueueItem[];
-};
-
-/** 字幕修复提交输入。 */
-export type SubtitleRepairInput = {
-  instruction: string;
-  atMs?: number;
-  replacementText?: string;
-};
-
-/** ASR 状态。 */
-export type AsrStatus = {
-  configured: boolean;
-  provider: string;
-  model: string;
-  language: string;
-  mode: string;
-  note?: string;
-};
-
-/** ASR 转录结果。 */
-export type AsrTranscribeResult = {
-  transcript: string;
-  confidence: number | null;
-  duration: number | null;
-  provider: string;
-  model: string;
-  language: string;
 };
 
 /** 三选一助手来源：
@@ -487,11 +405,6 @@ export const IPC_CHANNELS = {
   jobRetry: "studio:job:retry",
   jobRevealArtifact: "studio:job:revealArtifact",
   jobListAll: "studio:job:listAll",
-  jobRenderQueue: "studio:job:renderQueue",
-  subtitleRepairCreate: "studio:subtitleRepair:create",
-  subtitleRepairList: "studio:subtitleRepair:list",
-  asrStatus: "studio:asr:status",
-  asrTranscribe: "studio:asr:transcribe",
   providerList: "studio:provider:list",
   providerCatalog: "studio:provider:catalog",
   providerUpsert: "studio:provider:upsert",

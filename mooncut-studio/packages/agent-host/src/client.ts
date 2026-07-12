@@ -30,47 +30,8 @@ export type AgentJobView = {
   result?: {
     summary?: string;
     artifacts?: Record<string, string>;
-    probe?: {durationMs?: number; width?: number; height?: number; hasAudio?: boolean};
-    models?: {planner?: string; vision?: string; image?: string};
-    visuals?: {
-      mode?: "off" | "none" | "generated" | "unavailable";
-      reason?: string;
-      maxImages?: number;
-      requestedCount?: number;
-      providerConfigured?: boolean;
-      assets?: Array<{id: string; label: string; model: string}>;
-      errors?: string[];
-    };
-    quality?: {ok: boolean};
+    probe?: Record<string, unknown>;
   };
-  subtitleRepair?: {
-    parentJobId: string;
-    rootJobId: string;
-    feedback: {instruction: string; atMs?: number; replacementText?: string};
-    analysis?: {
-      summary: string;
-      model: string;
-      changes: Array<{segmentIndex: number; before: string; after: string; startMs: number; endMs: number; reason: string}>;
-    };
-  };
-};
-
-export type RenderQueueItem = {
-  name: string;
-  status: "queued" | "running" | "completed" | "failed";
-  stage: string;
-  progress: number;
-  createdAt: string;
-  updatedAt: string;
-  queuePosition?: number;
-  mine: boolean;
-};
-
-export type RenderQueueSnapshot = {
-  updatedAt: string;
-  summary: {running: number; queued: number; completedToday: number};
-  active: RenderQueueItem[];
-  recent: RenderQueueItem[];
 };
 
 export class AgentClient {
@@ -206,76 +167,5 @@ export class AgentClient {
     } finally {
       clearTimeout(timer);
     }
-  }
-
-  /** P0: GET /v1/render-queue — global render queue snapshot. */
-  async getRenderQueue(): Promise<RenderQueueSnapshot> {
-    const response = await this.fetchImpl(`${this.baseUrl}/v1/render-queue`, {
-      headers: this.headers(),
-    });
-    const text = await response.text();
-    const data = text ? JSON.parse(text) as RenderQueueSnapshot & {error?: string} : null;
-    if (!response.ok || !data) {
-      throw new Error(redactSecrets(data?.error ?? `render queue failed (${response.status})`));
-    }
-    return data;
-  }
-
-  /** P3: POST /v1/edit-jobs/:id/subtitle-repairs — create a subtitle repair job. */
-  async createSubtitleRepair(
-    jobId: string,
-    payload: {instruction: string; atMs?: number; replacementText?: string},
-  ): Promise<{id: string; status: string; parentJobId: string}> {
-    return this.postJson(`/v1/edit-jobs/${jobId}/subtitle-repairs`, payload);
-  }
-
-  /** P3: GET /v1/edit-jobs/:id/subtitle-repairs — list repair versions. */
-  async listSubtitleRepairs(jobId: string): Promise<{rootJobId: string; items: AgentJobView[]}> {
-    const response = await this.fetchImpl(`${this.baseUrl}/v1/edit-jobs/${jobId}/subtitle-repairs`, {
-      headers: this.headers(),
-    });
-    const text = await response.text();
-    const data = text ? JSON.parse(text) as {rootJobId: string; items: AgentJobView[]; error?: string} : null;
-    if (!response.ok || !data) {
-      throw new Error(redactSecrets(data?.error ?? `list repairs failed (${response.status})`));
-    }
-    return data;
-  }
-
-  /** P4: GET /v1/asr/status — check local ASR availability. */
-  async getAsrStatus(): Promise<{configured: boolean; provider: string; model: string; language: string; mode: string; note?: string}> {
-    const response = await this.fetchImpl(`${this.baseUrl}/v1/asr/status`, {
-      headers: this.headers(),
-    });
-    const text = await response.text();
-    const data = text ? JSON.parse(text) as {configured: boolean; provider: string; model: string; language: string; mode: string; note?: string; error?: string} : null;
-    if (!response.ok || !data) {
-      throw new Error(redactSecrets(data?.error ?? `asr status failed (${response.status})`));
-    }
-    return data;
-  }
-
-  /** P4: POST /v1/asr/transcribe — transcribe an audio chunk via local Whisper. */
-  async transcribeAudioChunk(
-    audio: ArrayBuffer,
-    options?: {contentType?: string; encoding?: string; sampleRate?: number; language?: string; model?: string},
-  ): Promise<{transcript: string; confidence: number | null; duration: number | null; provider: string; model: string; language: string}> {
-    const params = new URLSearchParams();
-    if (options?.encoding) params.set("encoding", options.encoding);
-    if (options?.sampleRate) params.set("sample_rate", String(options.sampleRate));
-    if (options?.language) params.set("language", options.language);
-    if (options?.model) params.set("model", options.model);
-    const query = params.toString() ? `?${params.toString()}` : "";
-    const response = await this.fetchImpl(`${this.baseUrl}/v1/asr/transcribe${query}`, {
-      method: "POST",
-      headers: this.headers({"Content-Type": options?.contentType ?? "application/octet-stream"}),
-      body: audio,
-    });
-    const text = await response.text();
-    const data = text ? JSON.parse(text) as {transcript: string; confidence: number | null; duration: number | null; provider: string; model: string; language: string; error?: string} : null;
-    if (!response.ok || !data) {
-      throw new Error(redactSecrets(data?.error ?? `transcribe failed (${response.status})`));
-    }
-    return data;
   }
 }

@@ -92,19 +92,6 @@ export function useSpeakingCoach(script: Ref<string>) {
   let recognition: BrowserSpeechRecognition | null = null
   let recognitionRestartTimer: number | null = null
   let audioContext: AudioContext | null = null
-
-  // P4: local Whisper ASR pipeline state
-  let asrContext: AudioContext | null = null
-  let asrSource: MediaStreamAudioSourceNode | null = null
-  let asrProcessor: ScriptProcessorNode | null = null
-  let asrActive = false
-  let asrBusy = false
-  let asrSamples: Float32Array[] = []
-  let asrSampleCount = 0
-  let asrInputRate = 48000
-  const ASR_TARGET_RATE = 16000
-  const ASR_CHUNK_SECONDS = 1.6
-  let asrAvailable = false
   let audioFrame = 0
   let visionFrame = 0
   let faceLandmarker: FaceLandmarker | null = null
@@ -391,135 +378,11 @@ export function useSpeakingCoach(script: Ref<string>) {
     }
   }
 
-  // P4: local Whisper ASR — downsample + send chunks via IPC
-  function downsampleTo16k(input: Float32Array, inputRate: number): Float32Array {
-    if (inputRate === ASR_TARGET_RATE) return input
-    const ratio = inputRate / ASR_TARGET_RATE
-    const outputLength = Math.round(input.length / ratio)
-    const output = new Float32Array(outputLength)
-    for (let i = 0; i < outputLength; i++) {
-      const start = Math.floor(i * ratio)
-      const end = Math.min(Math.floor((i + 1) * ratio), input.length)
-      let sum = 0
-      for (let j = start; j < end; j++) sum += input[j] ?? 0
-      output[i] = sum / (end - start || 1)
-    }
-    return output
-  }
-
-  function floatToLinear16(input: Float32Array): ArrayBuffer {
-    const buffer = new ArrayBuffer(input.length * 2)
-    const view = new DataView(buffer)
-    for (let i = 0; i < input.length; i++) {
-      const clamped = Math.max(-1, Math.min(1, input[i] ?? 0))
-      view.setInt16(i * 2, clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff, true)
-    }
-    return buffer
-  }
-
-  async function startLocalAsrCapture(stream: MediaStream) {
-    try {
-      const mooncut = (window as unknown as {mooncut?: {asrStatus?: () => Promise<{configured: boolean; provider: string; model: string; note?: string}>}}).mooncut
-      if (!mooncut?.asrStatus) return
-      const status = await mooncut.asrStatus()
-      if (!status.configured) {
-        speechStatus.value = '本地 ASR 未配置 · 使用浏览器识别'
-        return
-      }
-      asrAvailable = true
-      asrContext = new AudioContext()
-      await asrContext.resume()
-      asrInputRate = asrContext.sampleRate
-      asrSource = asrContext.createMediaStreamSource(stream)
-      asrProcessor = asrContext.createScriptProcessor(4096, 1, 1)
-      const gain = asrContext.createGain()
-      gain.gain.value = 0
-      asrSource.connect(asrProcessor)
-      asrProcessor.connect(gain)
-      gain.connect(asrContext.destination)
-      asrProcessor.onaudioprocess = (event: AudioProcessingEvent) => {
-        if (!asrActive) return
-        const chunk = event.inputBuffer.getChannelData(0)
-        asrSamples.push(new Float32Array(chunk))
-        asrSampleCount += chunk.length
-        const target = asrInputRate * ASR_CHUNK_SECONDS
-        if (asrSampleCount >= target) void flushAsrChunk()
-      }
-      asrActive = true
-      speechStatus.value = `Whisper 已连接 · ${status.model}`
-      // Stop browser Web Speech — local ASR takes priority
-      recognition?.abort()
-      recognition = null
-    } catch {
-      asrAvailable = false
-    }
-  }
-
-  async function flushAsrChunk() {
-    if (!asrActive || asrBusy || asrSampleCount < ASR_TARGET_RATE * 0.6) return
-    asrBusy = true
-    const merged = new Float32Array(asrSampleCount)
-    let offset = 0
-    for (const chunk of asrSamples) {
-      merged.set(chunk, offset)
-      offset += chunk.length
-    }
-    asrSamples = []
-    asrSampleCount = 0
-    // Skip near-silence
-    let energy = 0
-    for (let i = 0; i < merged.length; i += 64) energy += Math.abs(merged[i] ?? 0)
-    energy /= Math.ceil(merged.length / 64)
-    if (energy < 0.008) {
-      asrBusy = false
-      return
-    }
-    const downsampled = downsampleTo16k(merged, asrInputRate)
-    const audioBuffer = floatToLinear16(downsampled)
-    try {
-      const mooncut = (window as unknown as {mooncut?: {asrTranscribe?: (audio: ArrayBuffer, options?: {contentType?: string; encoding?: string; sampleRate?: number; language?: string; model?: string}) => Promise<{transcript: string; confidence: number | null}>}}).mooncut
-      if (!mooncut?.asrTranscribe) return
-      const result = await mooncut.asrTranscribe(audioBuffer, {
-        contentType: 'application/octet-stream',
-        encoding: 'linear16',
-        sampleRate: 16000,
-        language: 'zh-CN',
-      })
-      if (result.transcript) {
-        const existing = transcriptFinal.value
-        const merged_text = existing ? `${existing} ${result.transcript}` : result.transcript
-        transcriptFinal.value = merged_text
-        recognizedTimeline.push({at: performance.now(), characters: merged_text.length})
-        stableSentenceIndex.value = resolveSpokenSentenceIndex(merged_text, sentences.value, stableSentenceIndex.value)
-        speechStatus.value = `Whisper 跟读 · ${result.confidence !== null ? Math.round(result.confidence * 100) : '?'}%`
-      }
-    } catch {
-      // Keep going — single chunk failure is recoverable
-    } finally {
-      asrBusy = false
-    }
-  }
-
-  function stopLocalAsrCapture() {
-    asrActive = false
-    asrBusy = false
-    asrSamples = []
-    asrSampleCount = 0
-    try { asrProcessor?.disconnect() } catch { /* noop */ }
-    try { asrSource?.disconnect() } catch { /* noop */ }
-    asrProcessor = null
-    asrSource = null
-    void asrContext?.close()
-    asrContext = null
-  }
-
   async function start(stream: MediaStream, video: HTMLVideoElement | null) {
     stop()
     reset()
     active = true
-    // P4: try local Whisper ASR first; if unavailable, fall back to browser Web Speech
-    await startLocalAsrCapture(stream).catch(() => undefined)
-    if (!asrAvailable) startRecognition()
+    startRecognition()
     await Promise.allSettled([startAudio(stream), startVision(video)])
   }
 
@@ -535,8 +398,6 @@ export function useSpeakingCoach(script: Ref<string>) {
     visionFrame = 0
     void audioContext?.close()
     audioContext = null
-    stopLocalAsrCapture()
-    asrAvailable = false
     faceLandmarker?.close()
     faceLandmarker = null
   }

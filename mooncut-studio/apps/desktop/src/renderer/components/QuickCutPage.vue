@@ -165,14 +165,6 @@ async function revealResult() {
   if (path) await getMooncut().revealArtifact(path);
 }
 
-// P2: result detail computeds
-const resultDuration = computed(() => {
-  const ms = activeJob.value?.result?.probe?.durationMs;
-  return ms ? `${(ms / 1000).toFixed(1)}秒` : "—";
-});
-const resultModel = computed(() => activeJob.value?.result?.models?.planner ?? "—");
-const resultQuality = computed(() => (activeJob.value?.result?.quality?.ok ? "通过" : "待检查"));
-
 function reset() {
   stopPolling();
   stage.value = "empty";
@@ -275,14 +267,9 @@ onBeforeUnmount(() => stopPolling());
       </div>
       <aside class="settings-card">
         <span class="mini-label">已完成</span>
-        <p class="meta" style="margin: 0 0 0.5rem; line-height: 1.5">
+        <p class="meta" style="margin: 0 0 0.75rem; line-height: 1.5">
           成片已保存在本机「快速剪辑」项目目录。
         </p>
-        <div class="result-stats">
-          <span><small>成片时长</small><strong>{{ resultDuration }}</strong></span>
-          <span><small>规划模型</small><strong>{{ resultModel }}</strong></span>
-          <span><small>质量检查</small><strong>{{ resultQuality }}</strong></span>
-        </div>
         <button type="button" class="primary start-cut" @click="revealResult">
           <UiIcon name="download" :size="16" />
           打开成片位置
