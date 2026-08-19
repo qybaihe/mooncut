@@ -1,5 +1,0 @@
-{
-  "title": "AI",
-  "collapsible": false,
-  "pages": ["index", "claude-chat", "chat-gpt", "v0", "claude-code", "opencode"]
-}
